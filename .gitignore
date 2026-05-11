@@ -1,0 +1,3 @@
+# Claude Code - personal/machine-specific, not for teammates
+.claude/skills/
+.claude/settings.local.json
