@@ -51,9 +51,9 @@ Reprendre à : "Ouvrir Claude Code dans C:\Users\SIGMA IT\Desktop\Demenagement,
 ### PHASE 2 — DESIGN SYSTEM (Dev 1 lead)
 | # | Étape | Statut | Dev | Branche | Notes |
 |---|---|---|---|---|---|
-| 7 | Tokens Tailwind complets | ⬜ À faire | Dev 1 | `dev1/design-system` | |
-| 8 | Polices auto-hébergées + globals.css | ⬜ À faire | Dev 1 | `dev1/design-system` | |
-| 9 | next-themes ThemeProvider | ⬜ À faire | Dev 1 | `dev1/design-system` | |
+| 7 | Tokens Tailwind complets | ✅ Terminée | Dev 1 | `main` | globals.css @theme v4 + constants.ts source de vérité |
+| 8 | Polices auto-hébergées + globals.css | ✅ Terminée | Dev 1 | `main` | next/font/google — 5 polices + CSS variables dans layout.tsx |
+| 9 | next-themes ThemeProvider | ✅ Terminée | Dev 1 | `main` | ThemeProvider dark par défaut + data-theme attribute |
 | 10 | Composants ui/ complets | ⬜ À faire | Dev 1 | `dev1/design-system` | |
 | 11 | Stories Storybook ui/ | ⬜ À faire | Dev 1 | `dev1/design-system` | |
 

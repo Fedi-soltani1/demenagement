@@ -1,0 +1,214 @@
+@import "tailwindcss";
+
+/* ============================================================
+   DESIGN TOKENS — SOURCE DE VÉRITÉ UNIQUE
+   Toutes les valeurs du cahier des charges DT Déménagement
+   ============================================================ */
+
+@theme {
+  /* ----------------------------------------------------------
+     COULEURS — IMMUABLES (charte client DT Déménagement)
+     ---------------------------------------------------------- */
+
+  /* Rouge client — NE JAMAIS MODIFIER */
+  --color-red:          #b52027;
+  --color-red-dark:     #8a1820;
+  --color-red-light:    #d4353d;
+
+  /* Or — accent premium, usage parcimonieux */
+  --color-gold:         #c9a84c;
+
+  /* Fonds mode sombre (DÉFAUT) */
+  --color-bg:           #0a0a0a;
+  --color-bg-2:         #111111;
+  --color-bg-card:      #1a1a1a;
+  --color-bg-hover:     #222222;
+
+  /* Textes */
+  --color-text:         #f8f5f0;
+  --color-text-muted:   #a0a0a0;
+
+  /* Bordures */
+  --color-border:       #2a2a2a;
+
+  /* Fonds mode clair */
+  --color-bg-light:         #f8f5f0;
+  --color-bg-2-light:       #ffffff;
+  --color-bg-card-light:    #ffffff;
+  --color-text-light:       #0a0a0a;
+  --color-text-muted-light: #555555;
+  --color-border-light:     #e0e0e0;
+
+  /* ----------------------------------------------------------
+     TYPOGRAPHIE
+     Polices auto-hébergées dans /public/fonts/
+     ---------------------------------------------------------- */
+  --font-display:  'Cormorant Garamond', Georgia, serif;
+  --font-heading:  'Playfair Display', Georgia, serif;
+  --font-body:     'DM Sans', system-ui, sans-serif;
+  --font-mono:     'JetBrains Mono', 'Courier New', monospace;
+  --font-arabic:   'Noto Sans Arabic', Arial, sans-serif;
+
+  /* ----------------------------------------------------------
+     BORDER RADIUS
+     ---------------------------------------------------------- */
+  --radius-card:   12px;
+  --radius-btn:    6px;
+  --radius-full:   9999px;
+
+  /* ----------------------------------------------------------
+     OMBRES
+     ---------------------------------------------------------- */
+  --shadow-red:    0 25px 60px rgba(181, 32, 39, 0.2);
+  --shadow-card:   0 4px 30px rgba(0, 0, 0, 0.4);
+
+  /* ----------------------------------------------------------
+     ANIMATIONS — keyframes
+     Uniquement transform + opacity (règle perf absolue)
+     ---------------------------------------------------------- */
+
+  /* Fade-in + slide-up — utilisé sur tous les blocs en scroll */
+  --animate-fade-up: fade-up 0.6s ease forwards;
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(40px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Fade-in simple */
+  --animate-fade-in: fade-in 0.4s ease forwards;
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  /* Bounce — WhatsApp button, scroll indicator */
+  --animate-bounce-slow: bounce-slow 2s ease-in-out infinite;
+  @keyframes bounce-slow {
+    0%, 100% { transform: translateY(0); }
+    50%       { transform: translateY(-10px); }
+  }
+
+  /* Pulsation rouge — WhatsApp button ring */
+  --animate-pulse-red: pulse-red 2s ease-in-out infinite;
+  @keyframes pulse-red {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(181, 32, 39, 0.4); }
+    50%       { box-shadow: 0 0 0 12px rgba(181, 32, 39, 0); }
+  }
+
+  /* Slider infini — partenaires */
+  --animate-marquee: marquee 30s linear infinite;
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+
+  /* Spin — loader */
+  --animate-spin-slow: spin-slow 1s linear infinite;
+  @keyframes spin-slow {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+
+  /* Slide horizontal — transitions de page */
+  --animate-slide-in: slide-in 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  @keyframes slide-in {
+    from { opacity: 0; transform: translateX(30px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+}
+
+/* ============================================================
+   CSS VARIABLES RUNTIME — MODE SOMBRE / CLAIR
+   ============================================================ */
+
+:root {
+  /* Défaut : mode SOMBRE */
+  --bg:           var(--color-bg);
+  --bg-2:         var(--color-bg-2);
+  --bg-card:      var(--color-bg-card);
+  --bg-hover:     var(--color-bg-hover);
+  --text:         var(--color-text);
+  --text-muted:   var(--color-text-muted);
+  --border:       var(--color-border);
+}
+
+[data-theme="light"] {
+  --bg:           var(--color-bg-light);
+  --bg-2:         var(--color-bg-2-light);
+  --bg-card:      var(--color-bg-card-light);
+  --bg-hover:     #f0ece6;
+  --text:         var(--color-text-light);
+  --text-muted:   var(--color-text-muted-light);
+  --border:       var(--color-border-light);
+}
+
+/* ============================================================
+   GRAIN FILM — overlay subtil sur toutes les sections sombres
+   ============================================================ */
+.grain {
+  position: relative;
+}
+.grain::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+  opacity: 0.04;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ============================================================
+   GLASSMORPHISM — utilitaire réutilisable
+   ============================================================ */
+.glass {
+  backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* ============================================================
+   ACCESSIBILITÉ — prefers-reduced-motion
+   RÈGLE ABSOLUE — ne jamais supprimer ce bloc
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ============================================================
+   BASE STYLES
+   ============================================================ */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Focus visible — JAMAIS outline: none sans alternative */
+:focus-visible {
+  outline: 2px solid var(--color-red);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Scrollbar custom — mode sombre */
+::-webkit-scrollbar       { width: 6px; }
+::-webkit-scrollbar-track { background: var(--color-bg-2); }
+::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-red); }
+
+/* Sélection de texte */
+::selection {
+  background: rgba(181, 32, 39, 0.3);
+  color: var(--color-text);
+}
