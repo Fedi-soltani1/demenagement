@@ -17,6 +17,30 @@
     "europeLabel": "Europe (9 countries)",
     "skipToContent": "Skip to main content"
   },
+  "Layout": {
+    "scrollToTop": "Back to top",
+    "whatsappLabel": "Contact us on WhatsApp",
+    "newTab": "opens in a new tab",
+    "breadcrumbLabel": "Breadcrumb",
+    "home": "Home"
+  },
+  "Cookies": {
+    "ariaLabel": "Cookie consent banner",
+    "title": "We use cookies",
+    "description": "This site uses cookies to improve your experience and analyze traffic.",
+    "learnMore": "Learn more",
+    "accept": "Accept",
+    "decline": "Decline"
+  },
+  "DevisModal": {
+    "title": "Your move",
+    "description": "Choose your profile to start your free quote in 2 minutes.",
+    "close": "Close the quote form",
+    "optionParticulier": "Individual",
+    "optionParticulierDesc": "Residential move",
+    "optionEntreprise": "Business",
+    "optionEntrepriseDesc": "Office relocation"
+  },
   "Footer": {
     "ariaLabel": "DT Moving Tunisia footer",
     "tagline": "Tunisia's #1 moving company for over 15 years. Residential, corporate, international — we take care of your belongings.",

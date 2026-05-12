@@ -17,6 +17,30 @@
     "europeLabel": "Europe (9 pays)",
     "skipToContent": "Aller au contenu principal"
   },
+  "Layout": {
+    "scrollToTop": "Retour en haut de la page",
+    "whatsappLabel": "Nous contacter sur WhatsApp",
+    "newTab": "ouvre dans un nouvel onglet",
+    "breadcrumbLabel": "Fil d'Ariane",
+    "home": "Accueil"
+  },
+  "Cookies": {
+    "ariaLabel": "Bandeau de consentement aux cookies",
+    "title": "Nous utilisons des cookies",
+    "description": "Ce site utilise des cookies pour améliorer votre expérience et analyser le trafic.",
+    "learnMore": "En savoir plus",
+    "accept": "Accepter",
+    "decline": "Refuser"
+  },
+  "DevisModal": {
+    "title": "Votre déménagement",
+    "description": "Choisissez votre profil pour démarrer votre devis gratuit en 2 minutes.",
+    "close": "Fermer le formulaire de devis",
+    "optionParticulier": "Particulier",
+    "optionParticulierDesc": "Déménagement résidentiel",
+    "optionEntreprise": "Entreprise",
+    "optionEntrepriseDesc": "Transfert de bureaux"
+  },
   "Footer": {
     "ariaLabel": "Pied de page DT Déménagement Tunisie",
     "tagline": "N°1 du déménagement en Tunisie depuis plus de 15 ans. Particuliers, entreprises, international — nous prenons soin de vos affaires.",

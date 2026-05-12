@@ -18,12 +18,12 @@
 ```
 Date        : 2026-05-12
 Session     : Dev 1
-Étape       : Phase 3 — Étape 13 — Footer complet
-Fichier     : dt-demenagement/components/layout/Footer.tsx
-Statut      : ✅ Étape 13 terminée
-Prochain    : Phase 3 — Étape 14 — CustomCursor + PageLoader + ScrollToTop + WhatsApp + CookieBanner + DevisModal + Breadcrumb
+Étape       : Phase 3 — Étape 14 — Composants layout globaux
+Fichier     : dt-demenagement/components/layout/Breadcrumb.tsx
+Statut      : ✅ Étape 14 terminée
+Prochain    : Phase 3 — Étape 15 — next-intl middleware + routing [locale]
 Reprendre à : "Ouvrir Claude Code dans C:\Users\SIGMA IT\Desktop\Demenagement,
-               lire SUIVI-PROJET.md, reprendre Phase 3 Étape 14"
+               lire SUIVI-PROJET.md, reprendre Phase 3 Étape 15 — dev2/i18n"
 ```
 
 ---
@@ -32,7 +32,7 @@ Reprendre à : "Ouvrir Claude Code dans C:\Users\SIGMA IT\Desktop\Demenagement,
 
 **Dernière mise à jour** : 2026-05-12
 **Phase actuelle** : Phase 3 🔄 — Layout Global
-**Progression globale** : 13 / 30 étapes
+**Progression globale** : 14 / 30 étapes
 
 ---
 
@@ -62,7 +62,7 @@ Reprendre à : "Ouvrir Claude Code dans C:\Users\SIGMA IT\Desktop\Demenagement,
 |---|---|---|---|---|---|
 | 12 | Navbar complète | ✅ Terminée | Dev 1 | `main` | sticky + dropdowns services/zones + hamburger mobile + ThemeToggle + LocaleSwitcher + PhoneLink + RTL + i18n fr/ar/en |
 | 13 | Footer complet | ✅ Terminée | Dev 1 | `main` | 4 colonnes : brand+contact, services, zones (Tunisie+Europe), liens utiles — i18n fr/ar/en |
-| 14 | CustomCursor + PageLoader + ScrollToTop + WhatsApp + CookieBanner + DevisModal + Breadcrumb | ⬜ À faire | Dev 1 | `dev1/layout` | |
+| 14 | CustomCursor + PageLoader + ScrollToTop + WhatsApp + CookieBanner + DevisModal + Breadcrumb | ✅ Terminée | Dev 1 | `main` | 7 composants layout/ — CustomCursor (dot+ring, touch disabled), PageLoader (barre progression route), ScrollToTop, WhatsAppButton (flottant), CookieBanner (localStorage), DevisModal (Context Provider), Breadcrumb (Schema.org) |
 | 15 | next-intl 3 langues + middleware | ⬜ À faire | Dev 2 | `dev2/i18n` | |
 | 16 | NextAuth.js v5 Magic Link | ⬜ À faire | Dev 2 | `dev2/auth` | |
 
@@ -101,12 +101,12 @@ Reprendre à : "Ouvrir Claude Code dans C:\Users\SIGMA IT\Desktop\Demenagement,
 
 ```
 PHASE ACTUELLE    : Phase 3 — Layout Global
-ÉTAPE ACTUELLE    : Étape 14 — CustomCursor + PageLoader + ScrollToTop + WhatsApp + CookieBanner + DevisModal + Breadcrumb
+ÉTAPE ACTUELLE    : Étape 15 — next-intl middleware + routing [locale]
 STATUT            : ⬜ À démarrer
-DERNIER FICHIER   : dt-demenagement/components/layout/Footer.tsx
-PROCHAINE ACTION  : Créer les 7 composants layout/ de l'étape 14 (un par un)
+DERNIER FICHIER   : dt-demenagement/components/layout/Breadcrumb.tsx
+PROCHAINE ACTION  : Créer middleware.ts + restructurer app/[locale]/ + messages complets (branche dev2/i18n — Dev 2)
 BRANCHE ACTIVE    : main
-BLOQUEURS         : Aucun
+BLOQUEURS         : Aucun — mais étape Dev 2 (backend)
 ```
 
 ---
