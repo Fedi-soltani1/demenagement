@@ -8,6 +8,9 @@ const envSchema = z.object({
 
   // Payload CMS
   PAYLOAD_SECRET: z.string().min(32),
+
+  // NextAuth v5
+  AUTH_SECRET: z.string().min(32),
   NEXT_PUBLIC_SERVER_URL: z.string().min(1),
 
   // Emails (Resend)

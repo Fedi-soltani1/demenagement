@@ -69,6 +69,21 @@
     "cookies": "Politique cookies",
     "sitemap": "Plan du site"
   },
+  "Connexion": {
+    "title": "Connexion à votre espace",
+    "subtitle": "Entrez votre adresse email — nous vous enverrons un lien de connexion magique.",
+    "emailLabel": "Adresse email",
+    "emailPlaceholder": "vous@exemple.com",
+    "submit": "Envoyer le lien magique",
+    "submitting": "Envoi en cours...",
+    "verifyTitle": "Vérifiez vos emails",
+    "verifyDescription": "Un lien de connexion a été envoyé à votre adresse email. Cliquez dessus pour accéder à votre espace client.",
+    "verifySpam": "Vous ne voyez pas l'email ? Vérifiez vos spams.",
+    "backToLogin": "Retour à la connexion",
+    "errorDefault": "Une erreur est survenue. Veuillez réessayer.",
+    "metaTitle": "Connexion — Espace Client",
+    "metaDescription": "Connectez-vous à votre espace client DT Déménagement Tunisie."
+  },
   "Services": {
     "transporteur-en-tunisie": "Transporteur en Tunisie",
     "transfert-entreprises": "Transfert Entreprises",

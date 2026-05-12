@@ -17,13 +17,13 @@
 
 ```
 Date        : 2026-05-12
-Session     : Dev 1 + Dev 2
-Étape       : Phase 3 — Étape 15 — next-intl middleware + routing [locale]
-Fichier     : dt-demenagement/app/[locale]/page.tsx
-Statut      : ✅ Étape 15 terminée
-Prochain    : Phase 3 — Étape 16 — NextAuth.js v5 Magic Link
+Session     : Dev 2
+Étape       : Phase 3 — Étape 16 — NextAuth.js v5 Magic Link
+Fichier     : dt-demenagement/app/[locale]/connexion/page.tsx
+Statut      : ✅ Étape 16 terminée
+Prochain    : Phase 4 — Étape 17 — Collections Payload CMS (16 collections)
 Reprendre à : "Ouvrir Claude Code dans C:\Users\SIGMA IT\Desktop\Demenagement,
-               lire SUIVI-PROJET.md, reprendre Phase 3 Étape 16 — NextAuth Magic Link"
+               lire SUIVI-PROJET.md, reprendre Phase 4 Étape 17 — Collections Payload"
 ```
 
 ---
@@ -31,8 +31,8 @@ Reprendre à : "Ouvrir Claude Code dans C:\Users\SIGMA IT\Desktop\Demenagement,
 ## 📊 ÉTAT GLOBAL DU PROJET
 
 **Dernière mise à jour** : 2026-05-12
-**Phase actuelle** : Phase 3 🔄 — Layout Global
-**Progression globale** : 14 / 30 étapes
+**Phase actuelle** : Phase 3 ✅ → Phase 4 🔄 — Collections Payload
+**Progression globale** : 16 / 30 étapes
 
 ---
 
@@ -63,8 +63,8 @@ Reprendre à : "Ouvrir Claude Code dans C:\Users\SIGMA IT\Desktop\Demenagement,
 | 12 | Navbar complète | ✅ Terminée | Dev 1 | `main` | sticky + dropdowns services/zones + hamburger mobile + ThemeToggle + LocaleSwitcher + PhoneLink + RTL + i18n fr/ar/en |
 | 13 | Footer complet | ✅ Terminée | Dev 1 | `main` | 4 colonnes : brand+contact, services, zones (Tunisie+Europe), liens utiles — i18n fr/ar/en |
 | 14 | CustomCursor + PageLoader + ScrollToTop + WhatsApp + CookieBanner + DevisModal + Breadcrumb | ✅ Terminée | Dev 1 | `main` | 7 composants layout/ — CustomCursor (dot+ring, touch disabled), PageLoader (barre progression route), ScrollToTop, WhatsAppButton (flottant), CookieBanner (localStorage), DevisModal (Context Provider), Breadcrumb (Schema.org) |
-| 15 | next-intl 3 langues + middleware | ⬜ À faire | Dev 2 | `dev2/i18n` | |
-| 16 | NextAuth.js v5 Magic Link | ⬜ À faire | Dev 2 | `dev2/auth` | |
+| 15 | next-intl 3 langues + middleware | ✅ Terminée | Dev 2 | `main` | next-intl 4.11.2 + defineRouting fr/ar/en + middleware + app/[locale]/ |
+| 16 | NextAuth.js v5 Magic Link | ✅ Terminée | Dev 2 | `main` | next-auth 5.0.0-beta.31 + Resend + DrizzleAdapter (auth_ tables) + middleware protection espace-client + page /connexion |
 
 ### PHASE 4 — COLLECTIONS PAYLOAD (Dev 2 lead)
 | # | Étape | Statut | Dev | Branche | Notes |
@@ -100,13 +100,16 @@ Reprendre à : "Ouvrir Claude Code dans C:\Users\SIGMA IT\Desktop\Demenagement,
 > Elle lui dit exactement où reprendre sans poser de questions.
 
 ```
-PHASE ACTUELLE    : Phase 3 — Layout Global
-ÉTAPE ACTUELLE    : Étape 15 — next-intl middleware + routing [locale]
+PHASE ACTUELLE    : Phase 4 — Collections Payload CMS
+ÉTAPE ACTUELLE    : Étape 17 — Toutes les collections Payload (16 collections)
 STATUT            : ⬜ À démarrer
-DERNIER FICHIER   : dt-demenagement/components/layout/Breadcrumb.tsx
-PROCHAINE ACTION  : Créer middleware.ts + restructurer app/[locale]/ + messages complets (branche dev2/i18n — Dev 2)
+DERNIER FICHIER   : dt-demenagement/app/[locale]/connexion/page.tsx
+PROCHAINE ACTION  : Créer les 16 collections Payload CMS dans payload/collections/
+                    + payload.config.ts mis à jour
+                    ⚠️ Ne pas utiliser les slugs : auth_users/auth_accounts/auth_sessions/auth_verification_tokens
+                    (réservés à NextAuth — voir lib/auth-schema.ts)
 BRANCHE ACTIVE    : main
-BLOQUEURS         : Aucun — mais étape Dev 2 (backend)
+BLOQUEURS         : Aucun
 ```
 
 ---

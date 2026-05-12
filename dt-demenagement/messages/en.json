@@ -69,6 +69,21 @@
     "cookies": "Cookie policy",
     "sitemap": "Sitemap"
   },
+  "Connexion": {
+    "title": "Sign in to your account",
+    "subtitle": "Enter your email address — we'll send you a magic sign-in link.",
+    "emailLabel": "Email address",
+    "emailPlaceholder": "you@example.com",
+    "submit": "Send magic link",
+    "submitting": "Sending...",
+    "verifyTitle": "Check your email",
+    "verifyDescription": "A sign-in link has been sent to your email address. Click it to access your client area.",
+    "verifySpam": "Don't see the email? Check your spam folder.",
+    "backToLogin": "Back to sign in",
+    "errorDefault": "An error occurred. Please try again.",
+    "metaTitle": "Sign In — Client Area",
+    "metaDescription": "Sign in to your DT Déménagement Tunisie client area."
+  },
   "Services": {
     "transporteur-en-tunisie": "Moving Across Tunisia",
     "transfert-entreprises": "Corporate Relocation",
