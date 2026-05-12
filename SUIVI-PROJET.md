@@ -18,12 +18,12 @@
 ```
 Date        : 2026-05-12
 Session     : Dev 1
-Étape       : Phase 2 — Étape 11 — Stories Storybook ui/
-Fichier     : dt-demenagement/components/ui/ShareButtons.stories.tsx
-Statut      : ✅ Phase 2 TERMINÉE (11/11 étapes)
-Prochain    : Phase 3 — Étape 12 — Navbar complète
+Étape       : Phase 3 — Étape 12 — Navbar complète
+Fichier     : dt-demenagement/components/layout/Navbar.tsx
+Statut      : ✅ Étape 12 terminée
+Prochain    : Phase 3 — Étape 13 — Footer complet
 Reprendre à : "Ouvrir Claude Code dans C:\Users\SIGMA IT\Desktop\Demenagement,
-               lire SUIVI-PROJET.md, reprendre Phase 3 Étape 12 — Navbar"
+               lire SUIVI-PROJET.md, reprendre Phase 3 Étape 13 — Footer"
 ```
 
 ---
@@ -31,8 +31,8 @@ Reprendre à : "Ouvrir Claude Code dans C:\Users\SIGMA IT\Desktop\Demenagement,
 ## 📊 ÉTAT GLOBAL DU PROJET
 
 **Dernière mise à jour** : 2026-05-12
-**Phase actuelle** : Phase 2 ✅ — Phase 3 à démarrer
-**Progression globale** : 11 / 30 étapes
+**Phase actuelle** : Phase 3 🔄 — Layout Global
+**Progression globale** : 12 / 30 étapes
 
 ---
 
@@ -60,7 +60,7 @@ Reprendre à : "Ouvrir Claude Code dans C:\Users\SIGMA IT\Desktop\Demenagement,
 ### PHASE 3 — LAYOUT GLOBAL (Dev 1 lead)
 | # | Étape | Statut | Dev | Branche | Notes |
 |---|---|---|---|---|---|
-| 12 | Navbar complète | ⬜ À faire | Dev 1 | `dev1/layout` | |
+| 12 | Navbar complète | ✅ Terminée | Dev 1 | `main` | sticky + dropdowns services/zones + hamburger mobile + ThemeToggle + LocaleSwitcher + PhoneLink + RTL + i18n fr/ar/en |
 | 13 | Footer complet | ⬜ À faire | Dev 1 | `dev1/layout` | |
 | 14 | CustomCursor + PageLoader + ScrollToTop + WhatsApp + CookieBanner + DevisModal + Breadcrumb | ⬜ À faire | Dev 1 | `dev1/layout` | |
 | 15 | next-intl 3 langues + middleware | ⬜ À faire | Dev 2 | `dev2/i18n` | |
@@ -101,10 +101,10 @@ Reprendre à : "Ouvrir Claude Code dans C:\Users\SIGMA IT\Desktop\Demenagement,
 
 ```
 PHASE ACTUELLE    : Phase 3 — Layout Global
-ÉTAPE ACTUELLE    : Étape 12 — Navbar complète
+ÉTAPE ACTUELLE    : Étape 13 — Footer complet
 STATUT            : ⬜ À démarrer
-DERNIER FICHIER   : dt-demenagement/components/ui/ShareButtons.stories.tsx
-PROCHAINE ACTION  : Créer components/layout/Navbar.tsx (sticky, mega-menu, hamburger, RTL, ThemeToggle, LocaleSwitcher, PhoneLink)
+DERNIER FICHIER   : dt-demenagement/components/layout/Navbar.tsx
+PROCHAINE ACTION  : Créer components/layout/Footer.tsx (4 colonnes, PhoneLink, liens légaux, réseaux sociaux)
 BRANCHE ACTIVE    : main
 BLOQUEURS         : Aucun
 ```

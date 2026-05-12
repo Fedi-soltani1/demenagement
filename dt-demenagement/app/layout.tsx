@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
+import { NextIntlClientProvider } from 'next-intl'
 import { ThemeProvider } from '@/components/layout/ThemeProvider'
+import frMessages from '@/messages/fr.json'
 import {
   Cormorant_Garamond,
   Playfair_Display,
@@ -76,7 +78,10 @@ export default function RootLayout({
       ].join(' ')}
     >
       <body className="min-h-screen antialiased">
-        <ThemeProvider>{children}</ThemeProvider>
+        {/* ⚠️ Step 15 : locale dynamique via next-intl middleware. Pour l'instant : 'fr' par défaut. */}
+        <NextIntlClientProvider locale="fr" messages={frMessages}>
+          <ThemeProvider>{children}</ThemeProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   )

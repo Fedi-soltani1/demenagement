@@ -1,0 +1,28 @@
+{
+  "Navbar": {
+    "logoAlt": "دي تي للانتقال تونس",
+    "services": "الخدمات",
+    "zones": "مناطق التدخل",
+    "blog": "المدونة",
+    "about": "من نحن",
+    "contact": "اتصل بنا",
+    "devis": "عرض سعر مجاني",
+    "openMenu": "فتح قائمة التنقل",
+    "closeMenu": "إغلاق القائمة",
+    "changeLocale": "تغيير اللغة",
+    "switchToDark": "الوضع الداكن",
+    "switchToLight": "الوضع الفاتح",
+    "allZones": "عرض جميع المناطق",
+    "tunisiaLabel": "تونس (24 مدينة)",
+    "europeLabel": "أوروبا (9 دول)",
+    "skipToContent": "انتقل إلى المحتوى الرئيسي"
+  },
+  "Services": {
+    "transporteur-en-tunisie": "ناقل في تونس",
+    "transfert-entreprises": "نقل المؤسسات",
+    "location-monte-meubles": "تأجير رافعة الأثاث",
+    "gardes-meubles": "تخزين الأثاث",
+    "services-emballage": "خدمة التعبئة والتغليف",
+    "montage-demontage": "تركيب وفك التركيب"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "Navbar": {
+    "logoAlt": "DT Déménagement Tunisie",
+    "services": "Services",
+    "zones": "Zones d'intervention",
+    "blog": "Blog",
+    "about": "À propos",
+    "contact": "Contact",
+    "devis": "Devis gratuit",
+    "openMenu": "Ouvrir le menu de navigation",
+    "closeMenu": "Fermer le menu",
+    "changeLocale": "Changer la langue",
+    "switchToDark": "Passer en mode sombre",
+    "switchToLight": "Passer en mode clair",
+    "allZones": "Voir toutes les zones",
+    "tunisiaLabel": "Tunisie (24 villes)",
+    "europeLabel": "Europe (9 pays)",
+    "skipToContent": "Aller au contenu principal"
+  },
+  "Services": {
+    "transporteur-en-tunisie": "Transporteur en Tunisie",
+    "transfert-entreprises": "Transfert Entreprises",
+    "location-monte-meubles": "Location Monte-Meubles",
+    "gardes-meubles": "Gardes Meubles",
+    "services-emballage": "Service Emballage",
+    "montage-demontage": "Montage / Démontage"
+  }
+}

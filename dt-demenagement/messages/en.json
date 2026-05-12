@@ -1,0 +1,28 @@
+{
+  "Navbar": {
+    "logoAlt": "DT Moving Tunisia",
+    "services": "Services",
+    "zones": "Coverage Areas",
+    "blog": "Blog",
+    "about": "About Us",
+    "contact": "Contact",
+    "devis": "Free Quote",
+    "openMenu": "Open navigation menu",
+    "closeMenu": "Close menu",
+    "changeLocale": "Change language",
+    "switchToDark": "Switch to dark mode",
+    "switchToLight": "Switch to light mode",
+    "allZones": "View all areas",
+    "tunisiaLabel": "Tunisia (24 cities)",
+    "europeLabel": "Europe (9 countries)",
+    "skipToContent": "Skip to main content"
+  },
+  "Services": {
+    "transporteur-en-tunisie": "Moving Across Tunisia",
+    "transfert-entreprises": "Corporate Relocation",
+    "location-monte-meubles": "Furniture Lift Rental",
+    "gardes-meubles": "Furniture Storage",
+    "services-emballage": "Packing Services",
+    "montage-demontage": "Assembly / Disassembly"
+  }
+}
