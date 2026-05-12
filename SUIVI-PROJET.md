@@ -18,12 +18,12 @@
 ```
 Date        : 2026-05-12
 Session     : Dev 1
-Étape       : Phase 3 — Étape 12 — Navbar complète
-Fichier     : dt-demenagement/components/layout/Navbar.tsx
-Statut      : ✅ Étape 12 terminée
-Prochain    : Phase 3 — Étape 13 — Footer complet
+Étape       : Phase 3 — Étape 13 — Footer complet
+Fichier     : dt-demenagement/components/layout/Footer.tsx
+Statut      : ✅ Étape 13 terminée
+Prochain    : Phase 3 — Étape 14 — CustomCursor + PageLoader + ScrollToTop + WhatsApp + CookieBanner + DevisModal + Breadcrumb
 Reprendre à : "Ouvrir Claude Code dans C:\Users\SIGMA IT\Desktop\Demenagement,
-               lire SUIVI-PROJET.md, reprendre Phase 3 Étape 13 — Footer"
+               lire SUIVI-PROJET.md, reprendre Phase 3 Étape 14"
 ```
 
 ---
@@ -32,7 +32,7 @@ Reprendre à : "Ouvrir Claude Code dans C:\Users\SIGMA IT\Desktop\Demenagement,
 
 **Dernière mise à jour** : 2026-05-12
 **Phase actuelle** : Phase 3 🔄 — Layout Global
-**Progression globale** : 12 / 30 étapes
+**Progression globale** : 13 / 30 étapes
 
 ---
 
@@ -61,7 +61,7 @@ Reprendre à : "Ouvrir Claude Code dans C:\Users\SIGMA IT\Desktop\Demenagement,
 | # | Étape | Statut | Dev | Branche | Notes |
 |---|---|---|---|---|---|
 | 12 | Navbar complète | ✅ Terminée | Dev 1 | `main` | sticky + dropdowns services/zones + hamburger mobile + ThemeToggle + LocaleSwitcher + PhoneLink + RTL + i18n fr/ar/en |
-| 13 | Footer complet | ⬜ À faire | Dev 1 | `dev1/layout` | |
+| 13 | Footer complet | ✅ Terminée | Dev 1 | `main` | 4 colonnes : brand+contact, services, zones (Tunisie+Europe), liens utiles — i18n fr/ar/en |
 | 14 | CustomCursor + PageLoader + ScrollToTop + WhatsApp + CookieBanner + DevisModal + Breadcrumb | ⬜ À faire | Dev 1 | `dev1/layout` | |
 | 15 | next-intl 3 langues + middleware | ⬜ À faire | Dev 2 | `dev2/i18n` | |
 | 16 | NextAuth.js v5 Magic Link | ⬜ À faire | Dev 2 | `dev2/auth` | |
@@ -101,10 +101,10 @@ Reprendre à : "Ouvrir Claude Code dans C:\Users\SIGMA IT\Desktop\Demenagement,
 
 ```
 PHASE ACTUELLE    : Phase 3 — Layout Global
-ÉTAPE ACTUELLE    : Étape 13 — Footer complet
+ÉTAPE ACTUELLE    : Étape 14 — CustomCursor + PageLoader + ScrollToTop + WhatsApp + CookieBanner + DevisModal + Breadcrumb
 STATUT            : ⬜ À démarrer
-DERNIER FICHIER   : dt-demenagement/components/layout/Navbar.tsx
-PROCHAINE ACTION  : Créer components/layout/Footer.tsx (4 colonnes, PhoneLink, liens légaux, réseaux sociaux)
+DERNIER FICHIER   : dt-demenagement/components/layout/Footer.tsx
+PROCHAINE ACTION  : Créer les 7 composants layout/ de l'étape 14 (un par un)
 BRANCHE ACTIVE    : main
 BLOQUEURS         : Aucun
 ```
