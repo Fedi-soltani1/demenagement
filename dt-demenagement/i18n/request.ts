@@ -1,18 +1,20 @@
 import { getRequestConfig } from 'next-intl/server'
-import { DEFAULT_LOCALE, LOCALES, type Locale } from '@/lib/constants'
+import { routing } from './routing'
+import type { Locale } from '@/lib/constants'
 
 export default getRequestConfig(async ({ requestLocale }) => {
-  // ⚠️ Step 15 (next-intl middleware) will provide the locale from the URL.
-  // Until then, we fall back to the default locale.
   let locale = await requestLocale
-  if (!locale || !(LOCALES as readonly string[]).includes(locale)) {
-    locale = DEFAULT_LOCALE
+
+  // Fallback si la locale n'est pas dans la liste (ex : /admin exclu du middleware)
+  if (!locale || !routing.locales.includes(locale as Locale)) {
+    locale = routing.defaultLocale
   }
 
   return {
     locale,
-    messages: (
-      await import(`../messages/${locale as Locale}.json`)
-    ).default as Record<string, Record<string, string>>,
+    messages: (await import(`../messages/${locale}.json`)).default as Record<
+      string,
+      Record<string, string>
+    >,
   }
 })

@@ -1,7 +1,5 @@
 import type { Metadata } from 'next'
-import { NextIntlClientProvider } from 'next-intl'
-import { ThemeProvider } from '@/components/layout/ThemeProvider'
-import frMessages from '@/messages/fr.json'
+import { getLocale } from 'next-intl/server'
 import {
   Cormorant_Garamond,
   Playfair_Display,
@@ -62,12 +60,17 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://demenagement.tn'),
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  // Locale lue depuis les headers posés par le middleware next-intl.
+  // Pour les routes exclues du middleware (ex : /admin), retourne DEFAULT_LOCALE ('fr').
+  const locale = await getLocale()
+
   return (
     <html
-      lang="fr"
+      lang={locale}
+      dir={locale === 'ar' ? 'rtl' : 'ltr'}
       suppressHydrationWarning
       className={[
         cormorantGaramond.variable,
@@ -78,10 +81,7 @@ export default function RootLayout({
       ].join(' ')}
     >
       <body className="min-h-screen antialiased">
-        {/* ⚠️ Step 15 : locale dynamique via next-intl middleware. Pour l'instant : 'fr' par défaut. */}
-        <NextIntlClientProvider locale="fr" messages={frMessages}>
-          <ThemeProvider>{children}</ThemeProvider>
-        </NextIntlClientProvider>
+        {children}
       </body>
     </html>
   )

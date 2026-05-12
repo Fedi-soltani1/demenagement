@@ -17,13 +17,13 @@
 
 ```
 Date        : 2026-05-12
-Session     : Dev 1
-Étape       : Phase 3 — Étape 14 — Composants layout globaux
-Fichier     : dt-demenagement/components/layout/Breadcrumb.tsx
-Statut      : ✅ Étape 14 terminée
-Prochain    : Phase 3 — Étape 15 — next-intl middleware + routing [locale]
+Session     : Dev 1 + Dev 2
+Étape       : Phase 3 — Étape 15 — next-intl middleware + routing [locale]
+Fichier     : dt-demenagement/app/[locale]/page.tsx
+Statut      : ✅ Étape 15 terminée
+Prochain    : Phase 3 — Étape 16 — NextAuth.js v5 Magic Link
 Reprendre à : "Ouvrir Claude Code dans C:\Users\SIGMA IT\Desktop\Demenagement,
-               lire SUIVI-PROJET.md, reprendre Phase 3 Étape 15 — dev2/i18n"
+               lire SUIVI-PROJET.md, reprendre Phase 3 Étape 16 — NextAuth Magic Link"
 ```
 
 ---
