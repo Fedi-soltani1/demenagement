@@ -17,22 +17,22 @@
 
 ```
 Date        : 2026-05-12
-Session     : Dev 1 + Dev 2
-Étape       : Phase 1 — Étapes 1 à 6
-Fichier     : dt-demenagement/.storybook/main.ts
-Statut      : ✅ Phase 1 TERMINÉE (6/6 étapes)
-Prochain    : Créer tailwind.config.ts — Phase 2, Étape 7
+Session     : Dev 1
+Étape       : Phase 2 — Étape 11 — Stories Storybook ui/
+Fichier     : dt-demenagement/components/ui/ShareButtons.stories.tsx
+Statut      : ✅ Phase 2 TERMINÉE (11/11 étapes)
+Prochain    : Phase 3 — Étape 12 — Navbar complète
 Reprendre à : "Ouvrir Claude Code dans C:\Users\SIGMA IT\Desktop\Demenagement,
-               lire SUIVI-PROJET.md, reprendre Phase 2 Étape 7 — Tokens Tailwind"
+               lire SUIVI-PROJET.md, reprendre Phase 3 Étape 12 — Navbar"
 ```
 
 ---
 
 ## 📊 ÉTAT GLOBAL DU PROJET
 
-**Dernière mise à jour** : À remplir à chaque commit
-**Phase actuelle** : Phase 1 ✅ — Phase 2 à démarrer
-**Progression globale** : 6 / 30 étapes
+**Dernière mise à jour** : 2026-05-12
+**Phase actuelle** : Phase 2 ✅ — Phase 3 à démarrer
+**Progression globale** : 11 / 30 étapes
 
 ---
 
@@ -55,7 +55,7 @@ Reprendre à : "Ouvrir Claude Code dans C:\Users\SIGMA IT\Desktop\Demenagement,
 | 8 | Polices auto-hébergées + globals.css | ✅ Terminée | Dev 1 | `main` | next/font/google — 5 polices + CSS variables dans layout.tsx |
 | 9 | next-themes ThemeProvider | ✅ Terminée | Dev 1 | `main` | ThemeProvider dark par défaut + data-theme attribute |
 | 10 | Composants ui/ complets | ✅ Terminée | Dev 1 | `main` | 15 composants : Button Card Badge Input Textarea Select Checkbox StarRating Accordion Carousel ImageBlur CounterAnimation ReadingProgress ShareButtons PhoneLink |
-| 11 | Stories Storybook ui/ | ⬜ À faire | Dev 1 | `dev1/design-system` | |
+| 11 | Stories Storybook ui/ | ✅ Terminée | Dev 1 | `main` | 12 story files : Button Card Badge Input StarRating Accordion PhoneLink CounterAnimation Carousel ImageBlur ReadingProgress ShareButtons |
 
 ### PHASE 3 — LAYOUT GLOBAL (Dev 1 lead)
 | # | Étape | Statut | Dev | Branche | Notes |
@@ -100,11 +100,11 @@ Reprendre à : "Ouvrir Claude Code dans C:\Users\SIGMA IT\Desktop\Demenagement,
 > Elle lui dit exactement où reprendre sans poser de questions.
 
 ```
-PHASE ACTUELLE    : Phase 2 — Design System
-ÉTAPE ACTUELLE    : Étape 7 — Tokens Tailwind complets
+PHASE ACTUELLE    : Phase 3 — Layout Global
+ÉTAPE ACTUELLE    : Étape 12 — Navbar complète
 STATUT            : ⬜ À démarrer
-DERNIER FICHIER   : dt-demenagement/.storybook/main.ts
-PROCHAINE ACTION  : Créer tailwind.config.ts avec tous les tokens (couleurs, typo, spacing, animations)
+DERNIER FICHIER   : dt-demenagement/components/ui/ShareButtons.stories.tsx
+PROCHAINE ACTION  : Créer components/layout/Navbar.tsx (sticky, mega-menu, hamburger, RTL, ThemeToggle, LocaleSwitcher, PhoneLink)
 BRANCHE ACTIVE    : main
 BLOQUEURS         : Aucun
 ```
