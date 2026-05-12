@@ -17,13 +17,13 @@
 
 ```
 Date        : 2026-05-12
-Session     : Dev 2
-Étape       : Phase 1 — Étape 2
-Fichier     : dt-demenagement/tsconfig.json
-Statut      : ✅ Terminée
-Prochain    : pnpm add payload@latest @payloadcms/richtext-lexical @payloadcms/db-postgres
+Session     : Dev 1 + Dev 2
+Étape       : Phase 1 — Étapes 1 à 6
+Fichier     : dt-demenagement/.storybook/main.ts
+Statut      : ✅ Phase 1 TERMINÉE (6/6 étapes)
+Prochain    : Créer tailwind.config.ts — Phase 2, Étape 7
 Reprendre à : "Ouvrir Claude Code dans C:\Users\SIGMA IT\Desktop\Demenagement,
-               lire SUIVI-PROJET.md, reprendre à Étape 3 — Payload CMS v3"
+               lire SUIVI-PROJET.md, reprendre Phase 2 Étape 7 — Tokens Tailwind"
 ```
 
 ---
@@ -31,8 +31,8 @@ Reprendre à : "Ouvrir Claude Code dans C:\Users\SIGMA IT\Desktop\Demenagement,
 ## 📊 ÉTAT GLOBAL DU PROJET
 
 **Dernière mise à jour** : À remplir à chaque commit
-**Phase actuelle** : Phase 1 — Setup
-**Progression globale** : 0 / 30 étapes
+**Phase actuelle** : Phase 1 ✅ — Phase 2 à démarrer
+**Progression globale** : 6 / 30 étapes
 
 ---
 
@@ -43,10 +43,10 @@ Reprendre à : "Ouvrir Claude Code dans C:\Users\SIGMA IT\Desktop\Demenagement,
 |---|---|---|---|---|---|
 | 1 | Init Next.js 14 + TypeScript | ✅ Terminée | Dev 2 | `main` | Next.js 16.2.6 + Tailwind v4 + React 19 |
 | 2 | tsconfig.json + paths aliases | ✅ Terminée | Dev 2 | `main` | strict + noUncheckedIndexedAccess + aliases @/lib @/hooks @/types etc. |
-| 3 | Payload CMS v3 + PostgreSQL | ⬜ À faire | Dev 2 | `dev2/setup` | |
-| 4 | next.config.ts + headers sécurité | ⬜ À faire | Dev 2 | `dev2/setup` | |
-| 5 | .env.local depuis .env.example | ⬜ À faire | Dev 2 | `dev2/setup` | |
-| 6 | Storybook init | ⬜ À faire | Dev 1 | `dev1/setup` | |
+| 3 | Payload CMS v3 + PostgreSQL | ✅ Terminée | Dev 2 | `main` | payload 3.84.1 + @payloadcms/next + db-postgres + richtext-lexical installés |
+| 4 | next.config.ts + headers sécurité | ✅ Terminée | Dev 2 | `main` | withPayload + headers HSTS/XFO/nosniff + 301 WP + images Cloudinary |
+| 5 | .env.local depuis .env.example | ✅ Terminée | Dev 2 | `main` | .env.example + lib/env.ts validation Zod au démarrage |
+| 6 | Storybook init | ✅ Terminée | Dev 1 | `main` | @storybook/nextjs-vite + stories/ glob sur components/ |
 
 ### PHASE 2 — DESIGN SYSTEM (Dev 1 lead)
 | # | Étape | Statut | Dev | Branche | Notes |
@@ -100,11 +100,11 @@ Reprendre à : "Ouvrir Claude Code dans C:\Users\SIGMA IT\Desktop\Demenagement,
 > Elle lui dit exactement où reprendre sans poser de questions.
 
 ```
-PHASE ACTUELLE    : Phase 1 — Setup
-ÉTAPE ACTUELLE    : Étape 3 — Payload CMS v3 + PostgreSQL
-STATUT            : 🔄 En cours
-DERNIER FICHIER   : dt-demenagement/tsconfig.json
-PROCHAINE ACTION  : pnpm add payload@latest @payloadcms/richtext-lexical @payloadcms/db-postgres
+PHASE ACTUELLE    : Phase 2 — Design System
+ÉTAPE ACTUELLE    : Étape 7 — Tokens Tailwind complets
+STATUT            : ⬜ À démarrer
+DERNIER FICHIER   : dt-demenagement/.storybook/main.ts
+PROCHAINE ACTION  : Créer tailwind.config.ts avec tous les tokens (couleurs, typo, spacing, animations)
 BRANCHE ACTIVE    : main
 BLOQUEURS         : Aucun
 ```

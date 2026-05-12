@@ -30,7 +30,8 @@
       "@/types/*":      ["./types/*"],
       "@/payload/*":    ["./payload/*"],
       "@/messages/*":   ["./messages/*"],
-      "@/styles/*":     ["./styles/*"]
+      "@/styles/*":     ["./styles/*"],
+      "@payload-config": ["./payload.config.ts"]
     }
   },
   "include": [
