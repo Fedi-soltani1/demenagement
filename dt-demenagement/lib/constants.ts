@@ -9,6 +9,7 @@ export const COMPANY = {
   whatsapp:         '+21652880311',
   whatsappMessage:  'Bonjour, je souhaite un devis pour mon déménagement.',
   email:            'contact@demenagement.tn',
+  address:          'Tunis, Tunisie',
   facebook:         'https://www.facebook.com/dtdemenagementtunisie',
   instagram:        'https://www.instagram.com/dtdemenagement',
   colorPrimary:     '#b52027',   // IMMUABLE — charte client

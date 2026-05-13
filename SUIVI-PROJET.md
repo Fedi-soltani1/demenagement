@@ -18,12 +18,15 @@
 ```
 Date        : 2026-05-13
 Session     : Dev 1
-Étape       : Phase 5 — Étape 24 — Page Zones d'intervention (Leaflet)
-Fichier     : app/[locale]/zones/page.tsx + components/blocks/ZonesMap.tsx + messages/{fr,ar,en}.json
-Statut      : ✅ Étape 24 terminée
-Prochain    : Phase 5 — Étape 26 — Page 404 + pages légales (Dev 1)
+Étape       : Phase 5 — Étape 26 — Page 404 + pages légales
+Fichier     : app/[locale]/not-found.tsx + mentions-legales/page.tsx
+              + politique-confidentialite/page.tsx + politique-cookies/page.tsx
+              + messages/{fr,ar,en}.json (namespaces NotFound + Legal)
+Statut      : ✅ Étape 26 terminée
+Prochain    : Phase 5 — Étape 27 — Application Devis (Dev 2)
+              OU Phase 6 — Étape 28 — GTM + GA4 + Meta Pixel (Dev 2)
 Reprendre à : "Ouvrir Claude Code dans C:\Users\SIGMA IT\Desktop\Demenagement,
-               lire SUIVI-PROJET.md, reprendre Phase 5 Étape 26 — Page 404 + légales"
+               lire SUIVI-PROJET.md, Dev 2 reprend Étape 25 espace-client ou Étape 27 devis"
 ```
 
 ---
@@ -32,7 +35,7 @@ Reprendre à : "Ouvrir Claude Code dans C:\Users\SIGMA IT\Desktop\Demenagement,
 
 **Dernière mise à jour** : 2026-05-13
 **Phase actuelle** : Phase 5 🔄 — Pages
-**Progression globale** : 24 / 30 étapes
+**Progression globale** : 26 / 30 étapes
 
 ---
 
@@ -82,7 +85,7 @@ Reprendre à : "Ouvrir Claude Code dans C:\Users\SIGMA IT\Desktop\Demenagement,
 | 23 | Page FAQ | ✅ Terminée | Dev 1 | `main` | faq/page.tsx ISR 86400s + FAQClient filtrage par catégorie + Schema.org FAQPage + lib/lexical-to-text.ts |
 | 24 | Page Zone intervention (Leaflet) | ✅ Terminée | Dev 1 | `main` | zones/page.tsx ISR 604800s + ZonesMap (Leaflet dark, divIcon) + Schema.org AreaServed + i18n fr/ar/en |
 | 25 | Espace client dashboard + messagerie | ⬜ À faire | Dev 2 | `dev2/espace-client` | |
-| 26 | Page 404 + pages légales | ⬜ À faire | Dev 1 | `dev1/pages` | |
+| 26 | Page 404 + pages légales | ✅ Terminée | Dev 1 | `main` | not-found.tsx (Scene404 3D + fallback) + mentions-légales + confidentialité + cookies — i18n fr/ar/en |
 | 27 | Application Devis (2 parcours) | ⬜ À faire | Dev 2 | `dev2/devis` | |
 
 ### PHASE 6 — INTÉGRATIONS (Dev 2 lead)
@@ -101,13 +104,11 @@ Reprendre à : "Ouvrir Claude Code dans C:\Users\SIGMA IT\Desktop\Demenagement,
 
 ```
 PHASE ACTUELLE    : Phase 5 — Pages
-ÉTAPE ACTUELLE    : Étape 26 — Page 404 + pages légales
-STATUT            : ⬜ À démarrer
-DERNIER FICHIER   : dt-demenagement/app/[locale]/zones/page.tsx
-PROCHAINE ACTION  : Créer app/[locale]/not-found.tsx (page 404 custom avec Scene404)
-                    + app/[locale]/mentions-legales/page.tsx
-                    + app/[locale]/politique-confidentialite/page.tsx
-                    + app/[locale]/politique-cookies/page.tsx
+ÉTAPE ACTUELLE    : Étape 27 — Application Devis (2 parcours) — Dev 2
+STATUT            : ⬜ À démarrer (Dev 2)
+DERNIER FICHIER   : dt-demenagement/app/[locale]/politique-cookies/page.tsx
+PROCHAINE ACTION  : Dev 2 → Étape 25 espace-client + Étape 27 devis
+                    Dev 1 → Toutes les étapes Dev 1 (20-26) sont terminées ✅
 BRANCHE ACTIVE    : main
 BLOQUEURS         : Aucun
 ```
