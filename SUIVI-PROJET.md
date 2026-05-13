@@ -18,12 +18,12 @@
 ```
 Date        : 2026-05-13
 Session     : Dev 1
-Étape       : Phase 5 — Étape 22 — Templates dynamiques ISR
-Fichier     : app/[locale]/services/[slug]/page.tsx + villes/[slug] + blog/[slug]
-Statut      : ✅ Étape 22 terminée
-Prochain    : Phase 5 — Étape 23 — Page FAQ
+Étape       : Phase 5 — Étape 23 — Page FAQ
+Fichier     : app/[locale]/faq/page.tsx + components/blocks/FAQClient.tsx + lib/lexical-to-text.ts
+Statut      : ✅ Étape 23 terminée
+Prochain    : Phase 5 — Étape 24 — Page Zone d'intervention (Leaflet map pleine page)
 Reprendre à : "Ouvrir Claude Code dans C:\Users\SIGMA IT\Desktop\Demenagement,
-               lire SUIVI-PROJET.md, reprendre Phase 5 Étape 23 — Page FAQ"
+               lire SUIVI-PROJET.md, reprendre Phase 5 Étape 24 — Page zones"
 ```
 
 ---
@@ -32,7 +32,7 @@ Reprendre à : "Ouvrir Claude Code dans C:\Users\SIGMA IT\Desktop\Demenagement,
 
 **Dernière mise à jour** : 2026-05-13
 **Phase actuelle** : Phase 5 🔄 — Pages
-**Progression globale** : 22 / 30 étapes
+**Progression globale** : 23 / 30 étapes
 
 ---
 
@@ -79,7 +79,7 @@ Reprendre à : "Ouvrir Claude Code dans C:\Users\SIGMA IT\Desktop\Demenagement,
 | 20 | Page accueil 14 blocs | ✅ Terminée | Dev 1 | `main` | 13 blocs components/blocks/ + app/[locale]/page.tsx + leaflet + lucide-react |
 | 21 | Scènes 3D (9 scènes) | ✅ Terminée | Dev 1 | `main` | hooks/useIs3DEnabled + 7 scènes : TruckScene, LogoParticles, StatsParticles, BoxesScene, GlobeScene, RoadScene, Timeline3D, Scene404, ServiceCard3D |
 | 22 | Templates dynamiques ISR | ✅ Terminée | Dev 1 | `main` | services/[slug] (86400s) + villes/[slug] (604800s) + blog/[slug] (3600s) — generateStaticParams + generateMetadata + Schema.org JSON-LD |
-| 23 | Page FAQ | ⬜ À faire | Dev 1 | `dev1/pages` | |
+| 23 | Page FAQ | ✅ Terminée | Dev 1 | `main` | faq/page.tsx ISR 86400s + FAQClient filtrage par catégorie + Schema.org FAQPage + lib/lexical-to-text.ts |
 | 24 | Page Zone intervention (Leaflet) | ⬜ À faire | Dev 1 | `dev1/pages` | |
 | 25 | Espace client dashboard + messagerie | ⬜ À faire | Dev 2 | `dev2/espace-client` | |
 | 26 | Page 404 + pages légales | ⬜ À faire | Dev 1 | `dev1/pages` | |
@@ -101,12 +101,13 @@ Reprendre à : "Ouvrir Claude Code dans C:\Users\SIGMA IT\Desktop\Demenagement,
 
 ```
 PHASE ACTUELLE    : Phase 5 — Pages
-ÉTAPE ACTUELLE    : Étape 23 — Page FAQ
+ÉTAPE ACTUELLE    : Étape 24 — Page Zone d'intervention (Leaflet pleine page)
 STATUT            : ⬜ À démarrer
-DERNIER FICHIER   : dt-demenagement/app/[locale]/blog/[slug]/page.tsx
-PROCHAINE ACTION  : Créer app/[locale]/faq/page.tsx
-                    (accordion client component, données Payload collection FAQ,
-                     Schema.org FAQPage JSON-LD, filtrage par catégorie)
+DERNIER FICHIER   : dt-demenagement/app/[locale]/faq/page.tsx
+PROCHAINE ACTION  : Créer app/[locale]/zones/page.tsx
+                    (carte Leaflet interactive toutes villes + pays,
+                     listing villes avec liens, données Payload,
+                     Schema.org AreaServed JSON-LD)
 BRANCHE ACTIVE    : main
 BLOQUEURS         : Aucun
 ```

@@ -208,5 +208,21 @@
     "gardes-meubles": "Gardes Meubles",
     "services-emballage": "Service Emballage",
     "montage-demontage": "Montage / Démontage"
+  },
+  "FAQ": {
+    "metaTitle": "Questions Fréquentes",
+    "metaDescription": "Retrouvez les réponses à toutes vos questions sur nos services de déménagement en Tunisie et à l'international.",
+    "badge": "FAQ",
+    "title": "Questions Fréquentes",
+    "subtitle": "Tout ce que vous devez savoir avant votre déménagement.",
+    "breadcrumbHome": "Accueil",
+    "breadcrumbFAQ": "FAQ",
+    "filterAll": "Toutes",
+    "empty": "Aucune question dans cette catégorie.",
+    "comingSoon": "Les questions fréquentes arrivent bientôt. N'hésitez pas à nous appeler directement.",
+    "ctaTitle": "Vous n'avez pas trouvé la réponse ?",
+    "ctaSub": "Notre équipe est disponible du lundi au samedi, de 8h à 18h.",
+    "ctaContact": "Envoyer un message",
+    "ctaPhone": "Appeler maintenant"
   }
 }

@@ -208,5 +208,21 @@
     "gardes-meubles": "Furniture Storage",
     "services-emballage": "Packing Services",
     "montage-demontage": "Assembly / Disassembly"
+  },
+  "FAQ": {
+    "metaTitle": "Frequently Asked Questions",
+    "metaDescription": "Find answers to all your questions about our moving services in Tunisia and internationally.",
+    "badge": "FAQ",
+    "title": "Frequently Asked Questions",
+    "subtitle": "Everything you need to know before your move.",
+    "breadcrumbHome": "Home",
+    "breadcrumbFAQ": "FAQ",
+    "filterAll": "All",
+    "empty": "No questions in this category.",
+    "comingSoon": "FAQs coming soon. Feel free to call us directly.",
+    "ctaTitle": "Didn't find your answer?",
+    "ctaSub": "Our team is available Monday to Saturday, 8am to 6pm.",
+    "ctaContact": "Send a message",
+    "ctaPhone": "Call now"
   }
 }
