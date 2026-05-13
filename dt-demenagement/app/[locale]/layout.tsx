@@ -9,6 +9,7 @@ import { ScrollToTop } from '@/components/layout/ScrollToTop'
 import { WhatsAppButton } from '@/components/layout/WhatsAppButton'
 import { CookieBanner } from '@/components/layout/CookieBanner'
 import { DevisModalProvider } from '@/components/layout/DevisModal'
+import { Analytics, GTMNoScript } from '@/components/analytics/Analytics'
 import { LOCALES } from '@/lib/constants'
 
 interface LocaleLayoutProps {
@@ -34,6 +35,12 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
     <NextIntlClientProvider messages={messages}>
       <ThemeProvider>
         <DevisModalProvider>
+          <GTMNoScript gtmId={process.env.NEXT_PUBLIC_GTM_ID} />
+          <Analytics
+            gtmId={process.env.NEXT_PUBLIC_GTM_ID}
+            metaPixelId={process.env.NEXT_PUBLIC_META_PIXEL_ID}
+            clarityId={process.env.NEXT_PUBLIC_CLARITY_ID}
+          />
           <CustomCursor />
           <PageLoader />
           <Navbar />

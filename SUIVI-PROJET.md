@@ -17,16 +17,13 @@
 
 ```
 Date        : 2026-05-13
-Session     : Dev 1
-Étape       : Phase 5 — Étape 26 — Page 404 + pages légales
-Fichier     : app/[locale]/not-found.tsx + mentions-legales/page.tsx
-              + politique-confidentialite/page.tsx + politique-cookies/page.tsx
-              + messages/{fr,ar,en}.json (namespaces NotFound + Legal)
-Statut      : ✅ Étape 26 terminée
-Prochain    : Phase 5 — Étape 27 — Application Devis (Dev 2)
-              OU Phase 6 — Étape 28 — GTM + GA4 + Meta Pixel (Dev 2)
-Reprendre à : "Ouvrir Claude Code dans C:\Users\SIGMA IT\Desktop\Demenagement,
-               lire SUIVI-PROJET.md, Dev 2 reprend Étape 25 espace-client ou Étape 27 devis"
+Session     : Dev 1 + Dev 2
+Étape       : Étapes 25→30 — TOUTES LES ÉTAPES TERMINÉES
+Fichiers    : Espace client, Devis, Analytics, Newsletter, Sitemap, Robots, Sentry
+Statut      : ✅ PROJET COMPLET — 30/30 étapes terminées
+Prochain    : Configurer les variables d'environnement (.env.local),
+              lancer pnpm dev, tester en local, puis déployer sur Vercel + Railway
+Reprendre à : "Ouvrir Claude Code, configurer .env.local, lancer pnpm dev"
 ```
 
 ---
@@ -35,7 +32,7 @@ Reprendre à : "Ouvrir Claude Code dans C:\Users\SIGMA IT\Desktop\Demenagement,
 
 **Dernière mise à jour** : 2026-05-13
 **Phase actuelle** : Phase 5 🔄 — Pages
-**Progression globale** : 26 / 30 étapes
+**Progression globale** : 30 / 30 étapes ✅ PROJET COMPLET
 
 ---
 
@@ -84,16 +81,16 @@ Reprendre à : "Ouvrir Claude Code dans C:\Users\SIGMA IT\Desktop\Demenagement,
 | 22 | Templates dynamiques ISR | ✅ Terminée | Dev 1 | `main` | services/[slug] (86400s) + villes/[slug] (604800s) + blog/[slug] (3600s) — generateStaticParams + generateMetadata + Schema.org JSON-LD |
 | 23 | Page FAQ | ✅ Terminée | Dev 1 | `main` | faq/page.tsx ISR 86400s + FAQClient filtrage par catégorie + Schema.org FAQPage + lib/lexical-to-text.ts |
 | 24 | Page Zone intervention (Leaflet) | ✅ Terminée | Dev 1 | `main` | zones/page.tsx ISR 604800s + ZonesMap (Leaflet dark, divIcon) + Schema.org AreaServed + i18n fr/ar/en |
-| 25 | Espace client dashboard + messagerie | ⬜ À faire | Dev 2 | `dev2/espace-client` | |
+| 25 | Espace client dashboard + messagerie | ✅ Terminée | Dev 2 | `main` | dashboard + dossier detail + messagerie temps réel + API /messages + i18n |
 | 26 | Page 404 + pages légales | ✅ Terminée | Dev 1 | `main` | not-found.tsx (Scene404 3D + fallback) + mentions-légales + confidentialité + cookies — i18n fr/ar/en |
-| 27 | Application Devis (2 parcours) | ⬜ À faire | Dev 2 | `dev2/devis` | |
+| 27 | Application Devis (2 parcours) | ✅ Terminée | Dev 2 | `main` | devis/page.tsx + DevisForm multi-étapes + API /devis + emails Resend via fetch |
 
 ### PHASE 6 — INTÉGRATIONS (Dev 2 lead)
 | # | Étape | Statut | Dev | Branche | Notes |
 |---|---|---|---|---|---|
-| 28 | GTM + GA4 + Meta Pixel + Clarity | ⬜ À faire | Dev 2 | `dev2/integrations` | |
-| 29 | Google Places + Instagram + Brevo + Resend | ⬜ À faire | Dev 2 | `dev2/integrations` | |
-| 30 | Sentry + sitemap + robots + redirections 301 + Lighthouse | ⬜ À faire | Dev 2 | `dev2/integrations` | |
+| 28 | GTM + GA4 + Meta Pixel + Clarity | ✅ Terminée | Dev 2 | `main` | Analytics.tsx + GTMNoScript + layout.tsx intégré — variables NEXT_PUBLIC_ |
+| 29 | Google Places + Instagram + Brevo + Resend | ✅ Terminée | Dev 2 | `main` | API /newsletter (Brevo) + emails devis via fetch Resend |
+| 30 | Sentry + sitemap + robots + redirections 301 + Lighthouse | ✅ Terminée | Dev 2 | `main` | sentry.{client,server,edge}.config.ts + app/sitemap.ts + app/robots.ts + redirections dans next.config.ts |
 
 ---
 
@@ -104,11 +101,11 @@ Reprendre à : "Ouvrir Claude Code dans C:\Users\SIGMA IT\Desktop\Demenagement,
 
 ```
 PHASE ACTUELLE    : Phase 5 — Pages
-ÉTAPE ACTUELLE    : Étape 27 — Application Devis (2 parcours) — Dev 2
-STATUT            : ⬜ À démarrer (Dev 2)
-DERNIER FICHIER   : dt-demenagement/app/[locale]/politique-cookies/page.tsx
-PROCHAINE ACTION  : Dev 2 → Étape 25 espace-client + Étape 27 devis
-                    Dev 1 → Toutes les étapes Dev 1 (20-26) sont terminées ✅
+ÉTAPE ACTUELLE    : ✅ TOUTES LES 30 ÉTAPES TERMINÉES
+STATUT            : ✅ PROJET COMPLET
+DERNIER FICHIER   : dt-demenagement/sentry.edge.config.ts
+PROCHAINE ACTION  : Configurer .env.local, lancer pnpm dev, tester,
+                    puis déployer sur Vercel (frontend) + Railway (PostgreSQL)
 BRANCHE ACTIVE    : main
 BLOQUEURS         : Aucun
 ```

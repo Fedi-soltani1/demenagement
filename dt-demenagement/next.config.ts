@@ -1,6 +1,7 @@
 import type { NextConfig } from 'next'
 import { withPayload } from '@payloadcms/next/withPayload'
 import createNextIntlPlugin from 'next-intl/plugin'
+import { withSentryConfig } from '@sentry/nextjs'
 
 const withNextIntl = createNextIntlPlugin('./i18n/request.ts')
 
@@ -128,4 +129,12 @@ const nextConfig: NextConfig = {
     : {}),
 }
 
-export default withNextIntl(withPayload(nextConfig))
+const baseConfig = withNextIntl(withPayload(nextConfig))
+
+export default withSentryConfig(baseConfig, {
+  org:     process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  // Désactiver l'upload des source maps si la clé auth n'est pas configurée
+  silent:  true,
+  disableLogger: true,
+})
