@@ -138,7 +138,10 @@
       "title": "Services de Déménagement Complets",
       "subtitle": "De l'emballage à la livraison, nous gérons chaque étape avec soin.",
       "ctaText": "Voir tous nos services",
-      "learnMore": "En savoir plus"
+      "learnMore": "En savoir plus",
+      "ctaDevis": "Obtenir un devis gratuit",
+      "ctaBottomTitle": "Prêt à démarrer votre projet ?",
+      "ctaBottomSub": "Contactez-nous pour un devis personnalisé et gratuit."
     },
     "map": {
       "badge": "Zone d'intervention",

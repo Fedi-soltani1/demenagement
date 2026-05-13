@@ -138,7 +138,10 @@
       "title": "Complete Moving Services",
       "subtitle": "From packing to delivery, we handle every step with care.",
       "ctaText": "View all our services",
-      "learnMore": "Learn more"
+      "learnMore": "Learn more",
+      "ctaDevis": "Get a free quote",
+      "ctaBottomTitle": "Ready to start your project?",
+      "ctaBottomSub": "Contact us for a personalised, free quote."
     },
     "map": {
       "badge": "Coverage area",
