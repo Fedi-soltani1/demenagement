@@ -59,8 +59,8 @@ const Clients: CollectionConfig = {
       name: 'notesInternes',
       type: 'textarea',
       access: {
-        read:   ({ req: { user } }) => Boolean(user && (user as { role?: string }).role === 'admin'),
-        update: ({ req: { user } }) => Boolean(user && (user as { role?: string }).role === 'admin'),
+        read:   ({ req: { user } }) => Boolean(user && (user as { role?: string }).role === 'super-admin'),
+        update: ({ req: { user } }) => Boolean(user && (user as { role?: string }).role === 'super-admin'),
       },
       admin: { description: 'Notes internes visibles uniquement par les admins' },
     },

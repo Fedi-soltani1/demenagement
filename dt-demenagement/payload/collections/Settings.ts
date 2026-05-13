@@ -82,7 +82,7 @@ const Settings: GlobalConfig = {
       type: 'checkbox',
       defaultValue: false,
       access: {
-        update: ({ req: { user } }) => Boolean(user && (user as { role?: string }).role === 'admin'),
+        update: ({ req: { user } }) => Boolean(user && (user as { role?: string }).role === 'super-admin'),
       },
       admin: { description: '⚠️ Activer le mode maintenance (site inaccessible aux visiteurs)' },
     },

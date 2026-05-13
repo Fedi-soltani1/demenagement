@@ -18,12 +18,12 @@
 ```
 Date        : 2026-05-13
 Session     : Dev 2
-Étape       : Phase 4 — Étape 18 — Blocs Payload CMS
-Fichier     : dt-demenagement/payload/blocks/ (17 blocs) + payload/collections/Pages.ts
-Statut      : ✅ Étape 18 terminée
-Prochain    : Phase 4 — Étape 19 — 3 rôles + seed data
+Étape       : Phase 4 — Étape 19 — Rôles + Seed data
+Fichier     : dt-demenagement/payload/collections/Admins.ts + payload/seed.ts
+Statut      : ✅ Étape 19 terminée — Phase 4 COMPLÈTE ✅
+Prochain    : Phase 5 — Étape 20 — Page accueil 14 blocs (Dev 1)
 Reprendre à : "Ouvrir Claude Code dans C:\Users\SIGMA IT\Desktop\Demenagement,
-               lire SUIVI-PROJET.md, reprendre Phase 4 Étape 19 — Rôles + Seed"
+               lire SUIVI-PROJET.md, reprendre Phase 5 Étape 20 — Page accueil"
 ```
 
 ---
@@ -31,8 +31,8 @@ Reprendre à : "Ouvrir Claude Code dans C:\Users\SIGMA IT\Desktop\Demenagement,
 ## 📊 ÉTAT GLOBAL DU PROJET
 
 **Dernière mise à jour** : 2026-05-12
-**Phase actuelle** : Phase 3 ✅ → Phase 4 🔄 — Collections Payload
-**Progression globale** : 16 / 30 étapes
+**Phase actuelle** : Phase 4 ✅ → Phase 5 🔄 — Pages
+**Progression globale** : 19 / 30 étapes
 
 ---
 
@@ -71,7 +71,7 @@ Reprendre à : "Ouvrir Claude Code dans C:\Users\SIGMA IT\Desktop\Demenagement,
 |---|---|---|---|---|---|
 | 17 | Toutes les collections Payload (16) | ✅ Terminée | Dev 2 | `main` | 15 collections + 1 global Settings + 3 access files + payload.config.ts mis à jour |
 | 18 | Tous les blocs Payload (17) | ✅ Terminée | Dev 2 | `main` | 17 blocs dans payload/blocks/ + Pages.ts mis à jour |
-| 19 | 3 rôles + seed data | ⬜ À faire | Dev 2 | `dev2/cms` | |
+| 19 | 3 rôles + seed data | ✅ Terminée | Dev 2 | `main` | Collection Admins (super-admin/editeur/commercial) + payload/seed.ts (24 villes, 9 pays, 6 services, admin par défaut) |
 
 ### PHASE 5 — PAGES (Dev 1 + Dev 2)
 | # | Étape | Statut | Dev | Branche | Notes |
@@ -100,13 +100,12 @@ Reprendre à : "Ouvrir Claude Code dans C:\Users\SIGMA IT\Desktop\Demenagement,
 > Elle lui dit exactement où reprendre sans poser de questions.
 
 ```
-PHASE ACTUELLE    : Phase 4 — Collections Payload CMS
-ÉTAPE ACTUELLE    : Étape 19 — 3 rôles + seed data
+PHASE ACTUELLE    : Phase 5 — Pages
+ÉTAPE ACTUELLE    : Étape 20 — Page accueil 14 blocs
 STATUT            : ⬜ À démarrer
-DERNIER FICHIER   : dt-demenagement/payload/blocks/CustomBlock.ts
-PROCHAINE ACTION  : Créer payload/seed.ts avec les données initiales
-                    (24 villes, 9 pays, 6 services, settings par défaut)
-                    + système de rôles admin (super-admin, editeur, commercial)
+DERNIER FICHIER   : dt-demenagement/payload/seed.ts
+PROCHAINE ACTION  : Créer app/[locale]/page.tsx (page d'accueil)
+                    avec les 14 blocs dans l'ordre défini dans le prompt
 BRANCHE ACTIVE    : main
 BLOQUEURS         : Aucun
 ```

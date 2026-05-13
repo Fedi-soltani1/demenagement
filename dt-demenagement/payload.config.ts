@@ -4,6 +4,7 @@ import { buildConfig } from 'payload'
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 
+import Admins from './payload/collections/Admins'
 import Media from './payload/collections/Media'
 import Categories from './payload/collections/Categories'
 import Partners from './payload/collections/Partners'
@@ -39,7 +40,7 @@ export default buildConfig({
   editor: lexicalEditor({}),
 
   admin: {
-    user: 'clients',
+    user: 'admins',
     meta: {
       titleSuffix: '— DT Déménagement Admin',
     },
@@ -54,8 +55,9 @@ export default buildConfig({
     fallback: true,
   },
 
-  // 15 collections
+  // 16 collections (15 métier + 1 admins)
   collections: [
+    Admins,
     Media,
     Categories,
     Partners,

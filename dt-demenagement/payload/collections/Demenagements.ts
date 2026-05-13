@@ -1,15 +1,16 @@
 import type { CollectionConfig } from 'payload'
 import { isAdmin } from '../access/isAdmin'
 import { isAdminOrSelf } from '../access/isAdmin'
+import { isCommercial } from '../access/isClient'
 
 const Demenagements: CollectionConfig = {
   slug: 'demenagements',
   labels: { singular: 'Déménagement', plural: 'Déménagements' },
 
   access: {
-    read: isAdminOrSelf,
+    read:   isCommercial,
     create: isAdmin,
-    update: isAdmin,
+    update: isCommercial,
     delete: isAdmin,
   },
 
@@ -162,8 +163,8 @@ const Demenagements: CollectionConfig = {
       name: 'notesInternes',
       type: 'textarea',
       access: {
-        read:   ({ req: { user } }) => Boolean(user && (user as { role?: string }).role === 'admin'),
-        update: ({ req: { user } }) => Boolean(user && (user as { role?: string }).role === 'admin'),
+        read:   ({ req: { user } }) => Boolean(user && (user as { role?: string }).role === 'super-admin'),
+        update: ({ req: { user } }) => Boolean(user && (user as { role?: string }).role === 'super-admin'),
       },
       admin: { description: 'Notes internes — non visibles par le client' },
     },
