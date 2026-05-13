@@ -18,12 +18,12 @@
 ```
 Date        : 2026-05-13
 Session     : Dev 1
-Étape       : Phase 5 — Étape 20 — Page accueil 14 blocs
-Fichier     : app/[locale]/page.tsx + 13 components/blocks/ + messages/ (i18n)
-Statut      : ✅ Étape 20 terminée
-Prochain    : Phase 5 — Étape 21 — Scènes 3D (9 scènes Three.js + R3F)
+Étape       : Phase 5 — Étape 21 — 9 scènes 3D Three.js + R3F
+Fichier     : hooks/useIs3DEnabled.ts + components/3d/ (7 scènes)
+Statut      : ✅ Étape 21 terminée
+Prochain    : Phase 5 — Étape 22 — Templates dynamiques ISR
 Reprendre à : "Ouvrir Claude Code dans C:\Users\SIGMA IT\Desktop\Demenagement,
-               lire SUIVI-PROJET.md, reprendre Phase 5 Étape 21 — Scènes 3D"
+               lire SUIVI-PROJET.md, reprendre Phase 5 Étape 22 — Templates ISR"
 ```
 
 ---
@@ -32,7 +32,7 @@ Reprendre à : "Ouvrir Claude Code dans C:\Users\SIGMA IT\Desktop\Demenagement,
 
 **Dernière mise à jour** : 2026-05-13
 **Phase actuelle** : Phase 5 🔄 — Pages
-**Progression globale** : 20 / 30 étapes
+**Progression globale** : 21 / 30 étapes
 
 ---
 
@@ -77,7 +77,7 @@ Reprendre à : "Ouvrir Claude Code dans C:\Users\SIGMA IT\Desktop\Demenagement,
 | # | Étape | Statut | Dev | Branche | Notes |
 |---|---|---|---|---|---|
 | 20 | Page accueil 14 blocs | ✅ Terminée | Dev 1 | `main` | 13 blocs components/blocks/ + app/[locale]/page.tsx + leaflet + lucide-react |
-| 21 | Scènes 3D (9 scènes) | ⬜ À faire | Dev 1 | `dev1/3d` | |
+| 21 | Scènes 3D (9 scènes) | ✅ Terminée | Dev 1 | `main` | hooks/useIs3DEnabled + 7 scènes : TruckScene, LogoParticles, StatsParticles, BoxesScene, GlobeScene, RoadScene, Timeline3D, Scene404, ServiceCard3D |
 | 22 | Templates dynamiques ISR | ⬜ À faire | Dev 1 | `dev1/pages` | |
 | 23 | Page FAQ | ⬜ À faire | Dev 1 | `dev1/pages` | |
 | 24 | Page Zone intervention (Leaflet) | ⬜ À faire | Dev 1 | `dev1/pages` | |
@@ -101,13 +101,13 @@ Reprendre à : "Ouvrir Claude Code dans C:\Users\SIGMA IT\Desktop\Demenagement,
 
 ```
 PHASE ACTUELLE    : Phase 5 — Pages
-ÉTAPE ACTUELLE    : Étape 21 — Scènes 3D (9 scènes Three.js + R3F)
+ÉTAPE ACTUELLE    : Étape 22 — Templates dynamiques ISR
 STATUT            : ⬜ À démarrer
-DERNIER FICHIER   : dt-demenagement/app/[locale]/page.tsx
-PROCHAINE ACTION  : Installer @react-three/fiber @react-three/drei three
-                    Créer hooks/useIs3DEnabled.ts
-                    Créer components/3d/TruckScene.tsx (remplace placeholder HeroBlock)
-                    Puis les 8 autres scènes 3D (voir prompt-DT-demenagement-FINAL.md)
+DERNIER FICHIER   : dt-demenagement/components/3d/ServiceCard3D.tsx
+PROCHAINE ACTION  : Créer app/[locale]/services/[slug]/page.tsx (ISR revalidate 86400)
+                    Créer app/[locale]/villes/[slug]/page.tsx (ISR revalidate 604800)
+                    Créer app/[locale]/blog/[slug]/page.tsx (ISR revalidate 3600)
+                    (templates dynamiques avec données Payload CMS)
 BRANCHE ACTIVE    : main
 BLOQUEURS         : Aucun
 ```

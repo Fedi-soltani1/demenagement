@@ -1,26 +1,19 @@
 'use client'
 
 import React, { useRef } from 'react'
+import dynamic from 'next/dynamic'
 import Link from 'next/link'
+import { useIs3DEnabled } from '@/hooks/useIs3DEnabled'
+
+const TruckScene3D = dynamic(() => import('@/components/3d/TruckScene'), {
+  ssr: false,
+  loading: () => <div className="absolute inset-0 bg-[var(--color-bg-dark2)] animate-pulse" aria-hidden="true" />,
+})
 import { useTranslations, useLocale } from 'next-intl'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { PhoneLink } from '@/components/ui/PhoneLink'
 import { COMPANY } from '@/lib/constants'
 
-// ⚠️ TruckScene sera créée à l'Étape 21 (Phase 5 — scènes 3D)
-// Placeholder visuel en attendant
-function TruckScene() {
-  return (
-    <div
-      className="absolute inset-0"
-      style={{
-        background:
-          'radial-gradient(ellipse 80% 60% at 65% 50%, rgba(181,32,39,0.12) 0%, transparent 70%), radial-gradient(ellipse 40% 40% at 30% 60%, rgba(201,168,76,0.06) 0%, transparent 60%)',
-      }}
-      aria-hidden="true"
-    />
-  )
-}
 
 // Chaque lettre du titre est animée individuellement
 function AnimatedTitle({ text }: { text: string }) {
@@ -73,6 +66,7 @@ export function HeroBlock() {
   const t = useTranslations('Home.hero')
   const locale = useLocale()
   const containerRef = useRef<HTMLDivElement>(null)
+  const is3DEnabled = useIs3DEnabled()
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -107,7 +101,18 @@ export function HeroBlock() {
         style={{ y: sceneY }}
         aria-hidden="true"
       >
-        <TruckScene />
+        {is3DEnabled ? (
+          <TruckScene3D />
+        ) : null}
+        {/* Gradient rouge ambiant — visible sur tous les appareils */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              'radial-gradient(ellipse 80% 65% at 65% 50%, rgba(181,32,39,0.18) 0%, transparent 70%), radial-gradient(ellipse 50% 50% at 30% 60%, rgba(201,168,76,0.07) 0%, transparent 60%)',
+          }}
+          aria-hidden="true"
+        />
       </motion.div>
 
       {/* Dégradé bas — fondu vers la section suivante */}
