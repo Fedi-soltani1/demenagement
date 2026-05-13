@@ -1,0 +1,49 @@
+import type { CollectionConfig } from 'payload'
+import { isAdmin } from '../access/isAdmin'
+import { isEditor } from '../access/isEditor'
+
+const Media: CollectionConfig = {
+  slug: 'media',
+  labels: { singular: 'Média', plural: 'Médias' },
+
+  access: {
+    read: () => true,
+    create: isEditor,
+    update: isEditor,
+    delete: isAdmin,
+  },
+
+  upload: {
+    staticDir: 'public/media',
+    mimeTypes: ['image/*', 'application/pdf'],
+    imageSizes: [
+      { name: 'thumbnail', width: 300, height: 200, position: 'centre' },
+      { name: 'card', width: 800, height: 600, position: 'centre' },
+      { name: 'hero', width: 1920, height: 1080, position: 'centre' },
+    ],
+  },
+
+  fields: [
+    {
+      name: 'alt',
+      type: 'text',
+      localized: true,
+      admin: { description: 'Texte alternatif pour l\'accessibilité (SEO)' },
+    },
+    {
+      name: 'cloudinaryPublicId',
+      type: 'text',
+      admin: {
+        description: 'ID Cloudinary — rempli automatiquement lors de l\'upload',
+        readOnly: true,
+      },
+    },
+    {
+      name: 'caption',
+      type: 'text',
+      localized: true,
+    },
+  ],
+}
+
+export default Media

@@ -16,14 +16,14 @@
 ## 🤖 DERNIÈRE MISE À JOUR PAR CLAUDE CODE
 
 ```
-Date        : 2026-05-12
+Date        : 2026-05-13
 Session     : Dev 2
-Étape       : Phase 3 — Étape 16 — NextAuth.js v5 Magic Link
-Fichier     : dt-demenagement/app/[locale]/connexion/page.tsx
-Statut      : ✅ Étape 16 terminée
-Prochain    : Phase 4 — Étape 17 — Collections Payload CMS (16 collections)
+Étape       : Phase 4 — Étape 17 — Collections Payload CMS
+Fichier     : dt-demenagement/payload.config.ts (+ 15 collections + 1 global + 3 access)
+Statut      : ✅ Étape 17 terminée
+Prochain    : Phase 4 — Étape 18 — Tous les blocs Payload (17 blocs)
 Reprendre à : "Ouvrir Claude Code dans C:\Users\SIGMA IT\Desktop\Demenagement,
-               lire SUIVI-PROJET.md, reprendre Phase 4 Étape 17 — Collections Payload"
+               lire SUIVI-PROJET.md, reprendre Phase 4 Étape 18 — Blocs Payload"
 ```
 
 ---
@@ -69,7 +69,7 @@ Reprendre à : "Ouvrir Claude Code dans C:\Users\SIGMA IT\Desktop\Demenagement,
 ### PHASE 4 — COLLECTIONS PAYLOAD (Dev 2 lead)
 | # | Étape | Statut | Dev | Branche | Notes |
 |---|---|---|---|---|---|
-| 17 | Toutes les collections Payload (16) | ⬜ À faire | Dev 2 | `dev2/cms` | |
+| 17 | Toutes les collections Payload (16) | ✅ Terminée | Dev 2 | `main` | 15 collections + 1 global Settings + 3 access files + payload.config.ts mis à jour |
 | 18 | Tous les blocs Payload (17) | ⬜ À faire | Dev 2 | `dev2/cms` | |
 | 19 | 3 rôles + seed data | ⬜ À faire | Dev 2 | `dev2/cms` | |
 
@@ -101,13 +101,11 @@ Reprendre à : "Ouvrir Claude Code dans C:\Users\SIGMA IT\Desktop\Demenagement,
 
 ```
 PHASE ACTUELLE    : Phase 4 — Collections Payload CMS
-ÉTAPE ACTUELLE    : Étape 17 — Toutes les collections Payload (16 collections)
+ÉTAPE ACTUELLE    : Étape 18 — Tous les blocs Payload (17 blocs)
 STATUT            : ⬜ À démarrer
-DERNIER FICHIER   : dt-demenagement/app/[locale]/connexion/page.tsx
-PROCHAINE ACTION  : Créer les 16 collections Payload CMS dans payload/collections/
-                    + payload.config.ts mis à jour
-                    ⚠️ Ne pas utiliser les slugs : auth_users/auth_accounts/auth_sessions/auth_verification_tokens
-                    (réservés à NextAuth — voir lib/auth-schema.ts)
+DERNIER FICHIER   : dt-demenagement/payload.config.ts
+PROCHAINE ACTION  : Créer les 17 blocs Payload dans payload/blocks/
+                    + mettre à jour Pages.ts layout field avec les blocs
 BRANCHE ACTIVE    : main
 BLOQUEURS         : Aucun
 ```
