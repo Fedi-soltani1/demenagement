@@ -84,6 +84,120 @@
     "metaTitle": "Sign In — Client Area",
     "metaDescription": "Sign in to your DT Déménagement Tunisie client area."
   },
+  "Home": {
+    "hero": {
+      "badge": "#1 Moving Company in Tunisia",
+      "title": "Moving Across All of Tunisia",
+      "subtitle": "Professional, reliable and certified. Individuals, businesses and international — we take care of every move.",
+      "ctaPrimary": "Free Quote in 24h",
+      "ctaSecondary": "Call Now",
+      "scrollLabel": "Scroll down"
+    },
+    "miniFeatures": {
+      "item1Title": "Individuals & Businesses",
+      "item1Desc": "Tailored solutions for every profile — residential, office, embassy.",
+      "item2Title": "Professional Carrier",
+      "item2Desc": "Modern fleet, trained team, all-risk insurance included.",
+      "item3Title": "Expert Packing",
+      "item3Desc": "Certified materials, fragile items protected, guaranteed intact delivery."
+    },
+    "about": {
+      "badge": "About DT",
+      "title": "15 years of expertise at the service of your move",
+      "text": "DT Moving Tunisia is the national reference for all your relocation projects.",
+      "stat1Value": "5000",
+      "stat1Suffix": "+",
+      "stat1Label": "Moves completed",
+      "stat2Value": "15",
+      "stat2Suffix": "yrs",
+      "stat2Label": "Experience",
+      "stat3Value": "24",
+      "stat3Suffix": "h",
+      "stat3Label": "Response time",
+      "stat4Value": "98",
+      "stat4Suffix": "%",
+      "stat4Label": "Satisfied clients",
+      "videoLabel": "Watch our presentation video",
+      "ctaText": "Learn more"
+    },
+    "whyUs": {
+      "badge": "Why choose us",
+      "title": "What sets us apart",
+      "subtitle": "Our commitment to excellence shows in every aspect of our service.",
+      "item1Title": "Proven efficiency",
+      "item1Desc": "Optimized processes for a fast and stress-free move.",
+      "item2Title": "Client listening",
+      "item2Desc": "Every project is unique — we adapt our service to your needs.",
+      "item3Title": "Total reliability",
+      "item3Desc": "On-time delivery, transparent pricing, zero bad surprises.",
+      "item4Title": "Professional team",
+      "item4Desc": "Trained, certified staff passionate about service excellence."
+    },
+    "services": {
+      "badge": "Our services",
+      "title": "Complete Moving Services",
+      "subtitle": "From packing to delivery, we handle every step with care.",
+      "ctaText": "View all our services",
+      "learnMore": "Learn more"
+    },
+    "map": {
+      "badge": "Coverage area",
+      "title": "We operate throughout Tunisia and Europe",
+      "subtitle": "24 cities in Tunisia, 9 European countries — your international move is in good hands.",
+      "tunisiaLabel": "cities in Tunisia",
+      "europeLabel": "European countries",
+      "ctaText": "View all areas"
+    },
+    "testimonials": {
+      "badge": "Testimonials",
+      "title": "They trusted us",
+      "subtitle": "Over 5,000 satisfied families and businesses."
+    },
+    "googleReviews": {
+      "badge": "Google Reviews",
+      "title": "What our clients say",
+      "ratingLabel": "out of 5 based on",
+      "reviewsLabel": "Google reviews"
+    },
+    "partners": {
+      "badge": "Partners",
+      "title": "They trust us"
+    },
+    "instagram": {
+      "badge": "Instagram",
+      "title": "Follow our news",
+      "handle": "@dt.demenagement",
+      "ctaText": "View our Instagram profile",
+      "likesLabel": "likes"
+    },
+    "newsletter": {
+      "badge": "Newsletter",
+      "title": "Free moving tips",
+      "subtitle": "Receive our best tips directly in your inbox.",
+      "placeholder": "your@email.com",
+      "ctaText": "Subscribe for free",
+      "rgpd": "By subscribing, you accept our privacy policy. Unsubscribe anytime.",
+      "successTitle": "Thank you!",
+      "successText": "Check your inbox to confirm your subscription."
+    },
+    "blog": {
+      "badge": "Blog & Tips",
+      "title": "Our latest articles",
+      "subtitle": "Practical advice, moving tips and industry news.",
+      "ctaText": "View all articles",
+      "readMore": "Read article",
+      "minRead": "min read"
+    },
+    "ctaFinal": {
+      "title": "Ready for your move?",
+      "subtitle": "Get your free quote in 2 minutes. Our team calls you back within 24h.",
+      "ctaPrimary": "Free Quote",
+      "ctaSecondary": "Call us",
+      "guarantee1": "Free & no-obligation quote",
+      "guarantee2": "Reply within 24h",
+      "guarantee3": "Insurance included"
+    }
+  },
   "Services": {
     "transporteur-en-tunisie": "Moving Across Tunisia",
     "transfert-entreprises": "Corporate Relocation",

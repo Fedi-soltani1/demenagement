@@ -1,6 +1,20 @@
 import { setRequestLocale } from 'next-intl/server'
 import { LOCALES } from '@/lib/constants'
 
+import { HeroBlock }          from '@/components/blocks/HeroBlock'
+import { MiniFeaturesBlock }  from '@/components/blocks/MiniFeaturesBlock'
+import { StatsAboutBlock }    from '@/components/blocks/StatsAboutBlock'
+import { WhyUsBlock }         from '@/components/blocks/WhyUsBlock'
+import { ServicesBlock }      from '@/components/blocks/ServicesBlock'
+import { MapBlock }           from '@/components/blocks/MapBlock'
+import { TestimonialsBlock }  from '@/components/blocks/TestimonialsBlock'
+import { GoogleReviewsBlock } from '@/components/blocks/GoogleReviewsBlock'
+import { PartnersBlock }      from '@/components/blocks/PartnersBlock'
+import { InstagramFeedBlock } from '@/components/blocks/InstagramFeedBlock'
+import { NewsletterBlock }    from '@/components/blocks/NewsletterBlock'
+import { BlogPreviewBlock }   from '@/components/blocks/BlogPreviewBlock'
+import { CTAFinalBlock }      from '@/components/blocks/CTAFinalBlock'
+
 interface HomePageProps {
   params: Promise<{ locale: string }>
 }
@@ -9,24 +23,25 @@ export function generateStaticParams() {
   return Array.from(LOCALES).map((locale) => ({ locale }))
 }
 
-// Phase 5 — Étape 20 : ce placeholder sera remplacé par les 14 blocs de la page d'accueil.
 export default async function HomePage({ params }: HomePageProps) {
   const { locale } = await params
   setRequestLocale(locale)
 
   return (
-    <section className="min-h-[80vh] flex items-center justify-center px-4">
-      <div className="text-center max-w-xl">
-        <div className="w-16 h-16 rounded-xl bg-[var(--color-red)] flex items-center justify-center mx-auto mb-6">
-          <span className="font-display text-white text-2xl font-bold select-none">DT</span>
-        </div>
-        <h1 className="font-display text-4xl font-bold text-[var(--color-text-light)] mb-4">
-          DT Déménagement Tunisie
-        </h1>
-        <p className="text-[var(--color-text-muted)] text-lg leading-relaxed">
-          Site en cours de développement — Phase 5 à venir.
-        </p>
-      </div>
-    </section>
+    <main>
+      <HeroBlock />
+      <MiniFeaturesBlock />
+      <StatsAboutBlock />
+      <WhyUsBlock />
+      <ServicesBlock />
+      <MapBlock />
+      <TestimonialsBlock />
+      <GoogleReviewsBlock />
+      <PartnersBlock />
+      <InstagramFeedBlock />
+      <NewsletterBlock />
+      <BlogPreviewBlock />
+      <CTAFinalBlock />
+    </main>
   )
 }

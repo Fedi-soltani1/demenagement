@@ -17,22 +17,22 @@
 
 ```
 Date        : 2026-05-13
-Session     : Dev 2
-Étape       : Phase 4 — Étape 19 — Rôles + Seed data
-Fichier     : dt-demenagement/payload/collections/Admins.ts + payload/seed.ts
-Statut      : ✅ Étape 19 terminée — Phase 4 COMPLÈTE ✅
-Prochain    : Phase 5 — Étape 20 — Page accueil 14 blocs (Dev 1)
+Session     : Dev 1
+Étape       : Phase 5 — Étape 20 — Page accueil 14 blocs
+Fichier     : app/[locale]/page.tsx + 13 components/blocks/ + messages/ (i18n)
+Statut      : ✅ Étape 20 terminée
+Prochain    : Phase 5 — Étape 21 — Scènes 3D (9 scènes Three.js + R3F)
 Reprendre à : "Ouvrir Claude Code dans C:\Users\SIGMA IT\Desktop\Demenagement,
-               lire SUIVI-PROJET.md, reprendre Phase 5 Étape 20 — Page accueil"
+               lire SUIVI-PROJET.md, reprendre Phase 5 Étape 21 — Scènes 3D"
 ```
 
 ---
 
 ## 📊 ÉTAT GLOBAL DU PROJET
 
-**Dernière mise à jour** : 2026-05-12
-**Phase actuelle** : Phase 4 ✅ → Phase 5 🔄 — Pages
-**Progression globale** : 19 / 30 étapes
+**Dernière mise à jour** : 2026-05-13
+**Phase actuelle** : Phase 5 🔄 — Pages
+**Progression globale** : 20 / 30 étapes
 
 ---
 
@@ -76,7 +76,7 @@ Reprendre à : "Ouvrir Claude Code dans C:\Users\SIGMA IT\Desktop\Demenagement,
 ### PHASE 5 — PAGES (Dev 1 + Dev 2)
 | # | Étape | Statut | Dev | Branche | Notes |
 |---|---|---|---|---|---|
-| 20 | Page accueil 14 blocs | ⬜ À faire | Dev 1 | `dev1/pages` | |
+| 20 | Page accueil 14 blocs | ✅ Terminée | Dev 1 | `main` | 13 blocs components/blocks/ + app/[locale]/page.tsx + leaflet + lucide-react |
 | 21 | Scènes 3D (9 scènes) | ⬜ À faire | Dev 1 | `dev1/3d` | |
 | 22 | Templates dynamiques ISR | ⬜ À faire | Dev 1 | `dev1/pages` | |
 | 23 | Page FAQ | ⬜ À faire | Dev 1 | `dev1/pages` | |
@@ -101,11 +101,13 @@ Reprendre à : "Ouvrir Claude Code dans C:\Users\SIGMA IT\Desktop\Demenagement,
 
 ```
 PHASE ACTUELLE    : Phase 5 — Pages
-ÉTAPE ACTUELLE    : Étape 20 — Page accueil 14 blocs
+ÉTAPE ACTUELLE    : Étape 21 — Scènes 3D (9 scènes Three.js + R3F)
 STATUT            : ⬜ À démarrer
-DERNIER FICHIER   : dt-demenagement/payload/seed.ts
-PROCHAINE ACTION  : Créer app/[locale]/page.tsx (page d'accueil)
-                    avec les 14 blocs dans l'ordre défini dans le prompt
+DERNIER FICHIER   : dt-demenagement/app/[locale]/page.tsx
+PROCHAINE ACTION  : Installer @react-three/fiber @react-three/drei three
+                    Créer hooks/useIs3DEnabled.ts
+                    Créer components/3d/TruckScene.tsx (remplace placeholder HeroBlock)
+                    Puis les 8 autres scènes 3D (voir prompt-DT-demenagement-FINAL.md)
 BRANCHE ACTIVE    : main
 BLOQUEURS         : Aucun
 ```

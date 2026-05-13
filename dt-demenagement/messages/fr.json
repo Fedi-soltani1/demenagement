@@ -84,6 +84,120 @@
     "metaTitle": "Connexion — Espace Client",
     "metaDescription": "Connectez-vous à votre espace client DT Déménagement Tunisie."
   },
+  "Home": {
+    "hero": {
+      "badge": "N°1 du déménagement en Tunisie",
+      "title": "Déménagement à Travers Toute la Tunisie",
+      "subtitle": "Professionnel, fiable et certifié. Particuliers, entreprises et international — nous prenons soin de chaque déménagement.",
+      "ctaPrimary": "Devis gratuit en 24h",
+      "ctaSecondary": "Appeler maintenant",
+      "scrollLabel": "Défiler vers le bas"
+    },
+    "miniFeatures": {
+      "item1Title": "Particuliers & Entreprises",
+      "item1Desc": "Solutions adaptées à chaque profil — résidentiel, bureau, ambassade.",
+      "item2Title": "Transporteur Professionnel",
+      "item2Desc": "Flotte moderne, équipe formée, assurance tous risques incluse.",
+      "item3Title": "Emballage Expert",
+      "item3Desc": "Matériaux certifiés, fragiles protégés, livraison garantie intact."
+    },
+    "about": {
+      "badge": "À propos de DT",
+      "title": "15 ans d'expertise au service de votre déménagement",
+      "text": "DT Déménagement Tunisie est la référence nationale pour tous vos projets de déménagement. Fondée à Tunis, notre entreprise s'est bâtie sur des valeurs de confiance, de rigueur et de service client exceptionnel.",
+      "stat1Value": "5000",
+      "stat1Suffix": "+",
+      "stat1Label": "Déménagements réalisés",
+      "stat2Value": "15",
+      "stat2Suffix": "ans",
+      "stat2Label": "D'expérience",
+      "stat3Value": "24",
+      "stat3Suffix": "h",
+      "stat3Label": "Délai de réponse",
+      "stat4Value": "98",
+      "stat4Suffix": "%",
+      "stat4Label": "Clients satisfaits",
+      "videoLabel": "Voir notre vidéo de présentation",
+      "ctaText": "En savoir plus"
+    },
+    "whyUs": {
+      "badge": "Pourquoi nous choisir",
+      "title": "Ce qui nous distingue",
+      "subtitle": "Notre engagement envers l'excellence se traduit dans chaque aspect de notre service.",
+      "item1Title": "Efficacité prouvée",
+      "item1Desc": "Processus optimisés pour un déménagement rapide et sans stress.",
+      "item2Title": "Écoute client",
+      "item2Desc": "Chaque projet est unique — nous adaptons notre service à vos besoins.",
+      "item3Title": "Fiabilité totale",
+      "item3Desc": "Respect des délais, transparence des prix, zéro mauvaise surprise.",
+      "item4Title": "Équipe professionnelle",
+      "item4Desc": "Personnel formé, certifié et passionné par l'excellence du service."
+    },
+    "services": {
+      "badge": "Nos prestations",
+      "title": "Services de Déménagement Complets",
+      "subtitle": "De l'emballage à la livraison, nous gérons chaque étape avec soin.",
+      "ctaText": "Voir tous nos services",
+      "learnMore": "En savoir plus"
+    },
+    "map": {
+      "badge": "Zone d'intervention",
+      "title": "Nous intervenons partout en Tunisie et en Europe",
+      "subtitle": "24 villes en Tunisie, 9 pays européens — votre déménagement international est entre de bonnes mains.",
+      "tunisiaLabel": "villes en Tunisie",
+      "europeLabel": "pays européens",
+      "ctaText": "Voir toutes les zones"
+    },
+    "testimonials": {
+      "badge": "Témoignages",
+      "title": "Ils nous ont fait confiance",
+      "subtitle": "Plus de 5 000 familles et entreprises satisfaites."
+    },
+    "googleReviews": {
+      "badge": "Avis Google",
+      "title": "Ce que disent nos clients",
+      "ratingLabel": "sur 5 basé sur",
+      "reviewsLabel": "avis Google"
+    },
+    "partners": {
+      "badge": "Partenaires",
+      "title": "Ils nous font confiance"
+    },
+    "instagram": {
+      "badge": "Instagram",
+      "title": "Suivez notre actualité",
+      "handle": "@dt.demenagement",
+      "ctaText": "Voir notre profil Instagram",
+      "likesLabel": "mentions J'aime"
+    },
+    "newsletter": {
+      "badge": "Newsletter",
+      "title": "Conseils déménagement gratuits",
+      "subtitle": "Recevez nos meilleures astuces directement dans votre boîte mail.",
+      "placeholder": "votre@email.com",
+      "ctaText": "S'abonner gratuitement",
+      "rgpd": "En vous abonnant, vous acceptez notre politique de confidentialité. Désinscription à tout moment.",
+      "successTitle": "Merci !",
+      "successText": "Vérifiez votre boîte mail pour confirmer votre inscription."
+    },
+    "blog": {
+      "badge": "Blog & Conseils",
+      "title": "Nos derniers articles",
+      "subtitle": "Conseils pratiques, astuces déménagement et actualités du secteur.",
+      "ctaText": "Voir tous les articles",
+      "readMore": "Lire l'article",
+      "minRead": "min de lecture"
+    },
+    "ctaFinal": {
+      "title": "Prêt pour votre déménagement ?",
+      "subtitle": "Obtenez votre devis gratuit en 2 minutes. Notre équipe vous rappelle sous 24h.",
+      "ctaPrimary": "Devis gratuit",
+      "ctaSecondary": "Nous appeler",
+      "guarantee1": "Devis gratuit & sans engagement",
+      "guarantee2": "Réponse sous 24h",
+      "guarantee3": "Assurance incluse"
+    }
+  },
   "Services": {
     "transporteur-en-tunisie": "Transporteur en Tunisie",
     "transfert-entreprises": "Transfert Entreprises",
