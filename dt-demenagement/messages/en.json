@@ -209,6 +209,27 @@
     "services-emballage": "Packing Services",
     "montage-demontage": "Assembly / Disassembly"
   },
+  "Zones": {
+    "metaTitle": "Coverage Areas",
+    "metaDescription": "DT Moving Tunisia operates across 24 cities in Tunisia and 9 European countries. Discover all our service areas.",
+    "badge": "Coverage Areas",
+    "title": "We operate throughout Tunisia and Europe",
+    "subtitle": "24 cities covered across all of Tunisia, and 9 European countries for your international moves.",
+    "villesLabel": "Cities in Tunisia",
+    "paysLabel": "European countries",
+    "mapLabel": "Interactive map of coverage areas",
+    "mapHint": "Click on a marker to view details. Scroll disabled — use the +/− buttons to zoom.",
+    "tunisieBadge": "Tunisia",
+    "tunisieTitle": "24 cities across all of Tunisia",
+    "europeBadge": "Europe",
+    "europeTitle": "International moving across Europe",
+    "europeSubtitle": "We handle your moves to and from the main European countries, with full end-to-end coordination.",
+    "ctaTitle": "Your city isn't on the list?",
+    "ctaSub": "Contact us — we review all requests, even outside our standard coverage areas.",
+    "ctaButton": "Request a quote",
+    "breadcrumbHome": "Home",
+    "breadcrumbZones": "Coverage Areas"
+  },
   "FAQ": {
     "metaTitle": "Frequently Asked Questions",
     "metaDescription": "Find answers to all your questions about our moving services in Tunisia and internationally.",

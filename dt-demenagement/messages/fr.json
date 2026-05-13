@@ -209,6 +209,27 @@
     "services-emballage": "Service Emballage",
     "montage-demontage": "Montage / Démontage"
   },
+  "Zones": {
+    "metaTitle": "Zones d'intervention",
+    "metaDescription": "DT Déménagement intervient dans 24 villes en Tunisie et dans 9 pays européens. Découvrez toutes nos zones de couverture.",
+    "badge": "Zones d'intervention",
+    "title": "Nous intervenons partout en Tunisie et en Europe",
+    "subtitle": "24 villes couvertes à travers toute la Tunisie, et 9 pays européens pour vos déménagements internationaux.",
+    "villesLabel": "Villes en Tunisie",
+    "paysLabel": "Pays européens",
+    "mapLabel": "Carte interactive des zones d'intervention",
+    "mapHint": "Cliquez sur un marqueur pour afficher les détails. Scroll désactivé — utilisez les boutons +/− pour zoomer.",
+    "tunisieBadge": "Tunisie",
+    "tunisieTitle": "24 villes à travers toute la Tunisie",
+    "europeBadge": "Europe",
+    "europeTitle": "Déménagement international en Europe",
+    "europeSubtitle": "Nous gérons vos déménagements vers et depuis les principaux pays européens, avec un suivi complet de A à Z.",
+    "ctaTitle": "Votre ville n'est pas dans la liste ?",
+    "ctaSub": "Contactez-nous — nous étudions toutes les demandes, même hors zones habituelles.",
+    "ctaButton": "Demander un devis",
+    "breadcrumbHome": "Accueil",
+    "breadcrumbZones": "Zones d'intervention"
+  },
   "FAQ": {
     "metaTitle": "Questions Fréquentes",
     "metaDescription": "Retrouvez les réponses à toutes vos questions sur nos services de déménagement en Tunisie et à l'international.",
