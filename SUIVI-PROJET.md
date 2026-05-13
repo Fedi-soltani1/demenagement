@@ -18,12 +18,12 @@
 ```
 Date        : 2026-05-13
 Session     : Dev 2
-Étape       : Phase 4 — Étape 17 — Collections Payload CMS
-Fichier     : dt-demenagement/payload.config.ts (+ 15 collections + 1 global + 3 access)
-Statut      : ✅ Étape 17 terminée
-Prochain    : Phase 4 — Étape 18 — Tous les blocs Payload (17 blocs)
+Étape       : Phase 4 — Étape 18 — Blocs Payload CMS
+Fichier     : dt-demenagement/payload/blocks/ (17 blocs) + payload/collections/Pages.ts
+Statut      : ✅ Étape 18 terminée
+Prochain    : Phase 4 — Étape 19 — 3 rôles + seed data
 Reprendre à : "Ouvrir Claude Code dans C:\Users\SIGMA IT\Desktop\Demenagement,
-               lire SUIVI-PROJET.md, reprendre Phase 4 Étape 18 — Blocs Payload"
+               lire SUIVI-PROJET.md, reprendre Phase 4 Étape 19 — Rôles + Seed"
 ```
 
 ---
@@ -70,7 +70,7 @@ Reprendre à : "Ouvrir Claude Code dans C:\Users\SIGMA IT\Desktop\Demenagement,
 | # | Étape | Statut | Dev | Branche | Notes |
 |---|---|---|---|---|---|
 | 17 | Toutes les collections Payload (16) | ✅ Terminée | Dev 2 | `main` | 15 collections + 1 global Settings + 3 access files + payload.config.ts mis à jour |
-| 18 | Tous les blocs Payload (17) | ⬜ À faire | Dev 2 | `dev2/cms` | |
+| 18 | Tous les blocs Payload (17) | ✅ Terminée | Dev 2 | `main` | 17 blocs dans payload/blocks/ + Pages.ts mis à jour |
 | 19 | 3 rôles + seed data | ⬜ À faire | Dev 2 | `dev2/cms` | |
 
 ### PHASE 5 — PAGES (Dev 1 + Dev 2)
@@ -101,11 +101,12 @@ Reprendre à : "Ouvrir Claude Code dans C:\Users\SIGMA IT\Desktop\Demenagement,
 
 ```
 PHASE ACTUELLE    : Phase 4 — Collections Payload CMS
-ÉTAPE ACTUELLE    : Étape 18 — Tous les blocs Payload (17 blocs)
+ÉTAPE ACTUELLE    : Étape 19 — 3 rôles + seed data
 STATUT            : ⬜ À démarrer
-DERNIER FICHIER   : dt-demenagement/payload.config.ts
-PROCHAINE ACTION  : Créer les 17 blocs Payload dans payload/blocks/
-                    + mettre à jour Pages.ts layout field avec les blocs
+DERNIER FICHIER   : dt-demenagement/payload/blocks/CustomBlock.ts
+PROCHAINE ACTION  : Créer payload/seed.ts avec les données initiales
+                    (24 villes, 9 pays, 6 services, settings par défaut)
+                    + système de rôles admin (super-admin, editeur, commercial)
 BRANCHE ACTIVE    : main
 BLOQUEURS         : Aucun
 ```

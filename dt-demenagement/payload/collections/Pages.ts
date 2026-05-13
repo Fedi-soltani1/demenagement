@@ -1,6 +1,23 @@
 import type { CollectionConfig } from 'payload'
 import { isAdmin } from '../access/isAdmin'
 import { isEditor } from '../access/isEditor'
+import { HeroBlock }           from '../blocks/HeroBlock'
+import { ServicesBlock }       from '../blocks/ServicesBlock'
+import { AboutBlock }          from '../blocks/AboutBlock'
+import { StatsBlock }          from '../blocks/StatsBlock'
+import { WhyUsBlock }          from '../blocks/WhyUsBlock'
+import { TestimonialsBlock }   from '../blocks/TestimonialsBlock'
+import { GoogleReviewsBlock }  from '../blocks/GoogleReviewsBlock'
+import { PartnersBlock }       from '../blocks/PartnersBlock'
+import { BlogPreviewBlock }    from '../blocks/BlogPreviewBlock'
+import { CTABlock }            from '../blocks/CTABlock'
+import { FAQBlock }            from '../blocks/FAQBlock'
+import { MapBlock }            from '../blocks/MapBlock'
+import { GalleryBlock }        from '../blocks/GalleryBlock'
+import { VideoBlock }          from '../blocks/VideoBlock'
+import { InstagramFeedBlock }  from '../blocks/InstagramFeedBlock'
+import { NewsletterBlock }     from '../blocks/NewsletterBlock'
+import { CustomBlock }         from '../blocks/CustomBlock'
 
 const Pages: CollectionConfig = {
   slug: 'pages',
@@ -41,8 +58,25 @@ const Pages: CollectionConfig = {
       name: 'layout',
       type: 'blocks',
       label: 'Blocs de contenu',
-      blocks: [],
-      // Les blocs seront ajoutés en Phase 4 — Étape 18
+      blocks: [
+        HeroBlock,
+        ServicesBlock,
+        AboutBlock,
+        StatsBlock,
+        WhyUsBlock,
+        TestimonialsBlock,
+        GoogleReviewsBlock,
+        PartnersBlock,
+        BlogPreviewBlock,
+        CTABlock,
+        FAQBlock,
+        MapBlock,
+        GalleryBlock,
+        VideoBlock,
+        InstagramFeedBlock,
+        NewsletterBlock,
+        CustomBlock,
+      ],
     },
     {
       name: 'publie',
