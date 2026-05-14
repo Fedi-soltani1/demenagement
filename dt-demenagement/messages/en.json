@@ -346,6 +346,18 @@
     "cookiesContact": "Contact",
     "cookiesContactText": "For any questions about cookies, contact us at: {email}"
   },
+  "Villes": {
+    "metaTitle": "Moving {name} — DT Moving Tunisia",
+    "metaDescription": "Professional moving in {name}. Free quote, expert team. DT Moving Tunisia — your trusted partner.",
+    "metaNotFound": "City not found",
+    "breadcrumbHome": "Home",
+    "breadcrumbZones": "Coverage Areas",
+    "heroTitle": "Moving in {name}",
+    "heroSubtitle": "DT Moving Tunisia operates in {name} and the surrounding area. Trust our expertise for a stress-free move at the best price.",
+    "ctaDevis": "Free quote for {name}",
+    "servicesTitle": "Our services in {name}",
+    "comingSoon": "Detailed information about moving in {name} coming soon."
+  },
   "Zones": {
     "metaTitle": "Coverage Areas",
     "metaDescription": "DT Moving Tunisia operates across 24 cities in Tunisia and 9 European countries. Discover all our service areas.",

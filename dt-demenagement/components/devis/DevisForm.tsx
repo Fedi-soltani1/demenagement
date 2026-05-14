@@ -119,9 +119,15 @@ export function DevisForm({ type, locale }: { type: TypeDevis; locale: string })
             <p className="font-mono text-xl font-bold text-[var(--color-gold)] mt-1">{dossier}</p>
           </div>
         )}
-        <p className="font-body text-sm text-[var(--color-text-muted)]">
+        <p className="font-body text-sm text-[var(--color-text-muted)] mb-6">
           Un email de confirmation vous a été envoyé à <strong className="text-[var(--color-text-light)]">{form.email}</strong>
         </p>
+        <a
+          href={`/${locale}/espace-client`}
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[var(--color-red)]/10 border border-[var(--color-red)]/20 text-[var(--color-red)] font-body font-semibold text-sm hover:bg-[var(--color-red)]/20 transition-colors duration-200"
+        >
+          Suivre mon dossier
+        </a>
       </div>
     )
   }

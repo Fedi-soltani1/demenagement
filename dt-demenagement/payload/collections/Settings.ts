@@ -1,5 +1,4 @@
 import type { GlobalConfig } from 'payload'
-import { isAdmin } from '../access/isAdmin'
 import { isEditor } from '../access/isEditor'
 
 // Settings est un Global (singleton) — pas une Collection

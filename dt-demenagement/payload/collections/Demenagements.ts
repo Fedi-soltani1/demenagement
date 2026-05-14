@@ -1,6 +1,5 @@
 import type { CollectionConfig } from 'payload'
 import { isAdmin } from '../access/isAdmin'
-import { isAdminOrSelf } from '../access/isAdmin'
 import { isCommercial } from '../access/isClient'
 
 const Demenagements: CollectionConfig = {

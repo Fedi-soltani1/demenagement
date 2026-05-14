@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { PhoneLink } from './PhoneLink'
 
 const meta: Meta<typeof PhoneLink> = {

@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { CounterAnimation } from './CounterAnimation'
 
 const meta: Meta<typeof CounterAnimation> = {
@@ -31,7 +31,7 @@ export const AllStats: Story = {
     <div className="flex gap-12" style={{ background: '#0a0a0a', padding: 32 }}>
       <div className="text-center">
         <CounterAnimation target={15} suffix="+" className="text-5xl font-bold text-white" />
-        <p style={{ color: '#a0a0a0', marginTop: 8 }}>Années d'expérience</p>
+        <p style={{ color: '#a0a0a0', marginTop: 8 }}>Années d&apos;expérience</p>
       </div>
       <div className="text-center">
         <CounterAnimation target={5000} suffix="+" className="text-5xl font-bold text-white" />

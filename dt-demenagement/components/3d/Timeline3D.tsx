@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useRef, useMemo } from 'react'
-import { Canvas, useFrame, useThree } from '@react-three/fiber'
+import { Canvas, useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 
 const EVENTS = [
@@ -16,7 +16,6 @@ const SPACING = 2.4
 
 function TimelineScene() {
   const groupRef = useRef<THREE.Group>(null)
-  const { size } = useThree()
 
   useFrame(({ clock, mouse }) => {
     if (!groupRef.current) return

@@ -1,35 +1,36 @@
 'use client'
 
-import React, { useRef, useMemo, useEffect } from 'react'
+import React, { useRef, useMemo } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 
 const COUNT = 300
 
+// Generated at module load — avoids Math.random during render (react-hooks/purity)
+const PARTICLE_DATA = (() => {
+  const positions: [number, number, number][] = []
+  const speeds: number[] = []
+  const phases: number[] = []
+  for (let i = 0; i < COUNT; i++) {
+    const angle = (i / COUNT) * Math.PI * 2
+    const r = 1.2 + Math.random() * 0.8
+    positions.push([Math.cos(angle) * r, (Math.random() - 0.5) * 2, Math.sin(angle) * r])
+    speeds.push(0.3 + Math.random() * 0.7)
+    phases.push(Math.random() * Math.PI * 2)
+  }
+  return { positions, speeds, phases }
+})()
+
 function Particles() {
   const meshRef = useRef<THREE.InstancedMesh>(null)
   const dummy   = useMemo(() => new THREE.Object3D(), [])
 
-  const data = useMemo(() => {
-    const positions: [number, number, number][] = []
-    const speeds: number[] = []
-    const phases: number[] = []
-    for (let i = 0; i < COUNT; i++) {
-      const angle = (i / COUNT) * Math.PI * 2
-      const r = 1.2 + Math.random() * 0.8
-      positions.push([Math.cos(angle) * r, (Math.random() - 0.5) * 2, Math.sin(angle) * r])
-      speeds.push(0.3 + Math.random() * 0.7)
-      phases.push(Math.random() * Math.PI * 2)
-    }
-    return { positions, speeds, phases }
-  }, [])
-
   useFrame(({ clock }) => {
     if (!meshRef.current) return
     const t = clock.elapsedTime
-    data.positions.forEach(([x, y, z], i) => {
-      const s = data.speeds[i]!
-      const ph = data.phases[i]!
+    PARTICLE_DATA.positions.forEach(([x, y, z], i) => {
+      const s  = PARTICLE_DATA.speeds[i]!
+      const ph = PARTICLE_DATA.phases[i]!
       dummy.position.set(
         x + Math.sin(t * s + ph) * 0.1,
         y + Math.cos(t * s * 0.7 + ph) * 0.15,

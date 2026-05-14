@@ -83,7 +83,7 @@ export function GoogleReviewsBlock() {
                 </time>
               </div>
               <p className="font-body text-[var(--color-text-muted)] text-sm leading-relaxed mb-4 italic">
-                "{review.texte}"
+                &ldquo;{review.texte}&rdquo;
               </p>
               <p className="font-body font-semibold text-[var(--color-text-light)] text-sm">{review.nomAuteur}</p>
             </motion.article>

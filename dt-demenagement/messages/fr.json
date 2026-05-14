@@ -346,6 +346,18 @@
     "cookiesContact": "Contact",
     "cookiesContactText": "Pour toute question relative aux cookies, contactez-nous à : {email}"
   },
+  "Villes": {
+    "metaTitle": "Déménagement {name} — DT Déménagement Tunisie",
+    "metaDescription": "Déménagement professionnel à {name}. Devis gratuit, équipe experte. DT Déménagement Tunisie — votre partenaire de confiance.",
+    "metaNotFound": "Ville introuvable",
+    "breadcrumbHome": "Accueil",
+    "breadcrumbZones": "Zones d'intervention",
+    "heroTitle": "Déménagement à {name}",
+    "heroSubtitle": "DT Déménagement Tunisie intervient à {name} et ses environs. Profitez de notre expertise pour un déménagement serein, au meilleur prix.",
+    "ctaDevis": "Devis gratuit à {name}",
+    "servicesTitle": "Nos services à {name}",
+    "comingSoon": "Informations détaillées sur le déménagement à {name} bientôt disponibles."
+  },
   "Zones": {
     "metaTitle": "Zones d'intervention",
     "metaDescription": "DT Déménagement intervient dans 24 villes en Tunisie et dans 9 pays européens. Découvrez toutes nos zones de couverture.",

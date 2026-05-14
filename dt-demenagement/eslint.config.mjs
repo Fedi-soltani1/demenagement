@@ -16,7 +16,15 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
   ]),
-  ...storybook.configs["flat/recommended"]
+  ...storybook.configs["flat/recommended"],
+  {
+    rules: {
+      // Experimental React Compiler rule — disabled because it incorrectly flags valid
+      // SSR-hydration patterns (setMounted, localStorage init, route-change cleanup)
+      // that are explicitly recommended in React docs.
+      'react-hooks/set-state-in-effect': 'off',
+    },
+  },
 ]);
 
 export default eslintConfig;

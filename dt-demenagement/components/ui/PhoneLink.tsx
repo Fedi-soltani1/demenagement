@@ -25,7 +25,7 @@ function PhoneLink({
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     // Tracking GA4 — event phone_click
     if (typeof window !== 'undefined' && 'gtag' in window) {
-      (window as unknown as { gtag: Function }).gtag('event', 'phone_click', {
+      (window as unknown as { gtag: (...args: unknown[]) => void }).gtag('event', 'phone_click', {
         phone_number: numero,
         source,
       })

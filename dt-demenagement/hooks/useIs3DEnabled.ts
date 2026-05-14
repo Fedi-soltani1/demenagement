@@ -1,18 +1,17 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useSyncExternalStore } from 'react'
+
+const subscribe = () => () => {}
+
+function detect3DClient(): boolean {
+  const isTouch    = window.matchMedia('(pointer: coarse)').matches
+  const isLowEnd   = navigator.hardwareConcurrency <= 2
+  const isSaveData = (navigator as Navigator & { connection?: { saveData?: boolean } })
+                       .connection?.saveData === true
+  return !isTouch && !isLowEnd && !isSaveData
+}
 
 export function useIs3DEnabled(): boolean {
-  const [enabled, setEnabled] = useState(false)
-
-  useEffect(() => {
-    const isTouch    = window.matchMedia('(pointer: coarse)').matches
-    const isLowEnd   = navigator.hardwareConcurrency <= 2
-    const isSaveData = (navigator as Navigator & { connection?: { saveData?: boolean } })
-                         .connection?.saveData === true
-
-    setEnabled(!isTouch && !isLowEnd && !isSaveData)
-  }, [])
-
-  return enabled
+  return useSyncExternalStore(subscribe, detect3DClient, () => false)
 }

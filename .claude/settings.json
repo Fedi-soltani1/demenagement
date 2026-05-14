@@ -1,5 +1,6 @@
 {
   "enabledPlugins": {
-    "superpowers@superpowers-dev": true
+    "superpowers@superpowers-dev": true,
+    "ui-ux-pro-max@ui-ux-pro-max-skill": true
   }
 }

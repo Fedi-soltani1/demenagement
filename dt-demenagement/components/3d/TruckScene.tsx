@@ -74,27 +74,25 @@ function TruckMesh() {
   )
 }
 
+const BG_COUNT = 120
+
+// Generated at module load — avoids Math.random during render (react-hooks/purity)
+const BG_POSITIONS = (() => {
+  const arr: [number, number, number][] = []
+  for (let i = 0; i < BG_COUNT; i++) {
+    arr.push([(Math.random() - 0.5) * 12, (Math.random() - 0.5) * 8, (Math.random() - 0.5) * 6 - 2])
+  }
+  return arr
+})()
+
 // Particules de fond — InstancedMesh (0 draw calls supplémentaires)
 function BackgroundParticles() {
-  const count = 120
   const meshRef = useRef<THREE.InstancedMesh>(null)
   const dummy = useMemo(() => new THREE.Object3D(), [])
 
-  const positions = useMemo(() => {
-    const arr: [number, number, number][] = []
-    for (let i = 0; i < count; i++) {
-      arr.push([
-        (Math.random() - 0.5) * 12,
-        (Math.random() - 0.5) * 8,
-        (Math.random() - 0.5) * 6 - 2,
-      ])
-    }
-    return arr
-  }, [])
-
   useFrame((state) => {
     if (!meshRef.current) return
-    positions.forEach(([x, y, z], i) => {
+    BG_POSITIONS.forEach(([x, y, z], i) => {
       const t = state.clock.elapsedTime * 0.15 + i * 0.3
       dummy.position.set(x, y + Math.sin(t) * 0.2, z)
       dummy.scale.setScalar(0.5 + Math.sin(t * 1.5) * 0.2)
@@ -105,7 +103,7 @@ function BackgroundParticles() {
   })
 
   return (
-    <instancedMesh ref={meshRef} args={[undefined, undefined, count]}>
+    <instancedMesh ref={meshRef} args={[undefined, undefined, BG_COUNT]}>
       <sphereGeometry args={[0.02, 4, 4]} />
       <meshBasicMaterial color="#b52027" transparent opacity={0.4} />
     </instancedMesh>

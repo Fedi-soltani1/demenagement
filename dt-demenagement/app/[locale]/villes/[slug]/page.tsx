@@ -35,15 +35,6 @@ type VilleDoc = {
   }
 }
 
-const SERVICE_LABELS: Record<string, string> = {
-  'transporteur-en-tunisie':  'Transporteur en Tunisie',
-  'transfert-entreprises':    'Transfert Entreprises',
-  'location-monte-meubles':   'Location Monte-Meubles',
-  'gardes-meubles':           'Gardes Meubles',
-  'services-emballage':       'Service Emballage',
-  'montage-demontage':        'Montage / Démontage',
-}
-
 async function getVille(slug: string, locale: string): Promise<VilleDoc | null> {
   const payload = await getPayload({ config })
   const result = await payload.find({
@@ -70,13 +61,14 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: VillePageProps): Promise<Metadata> {
   const { locale, slug } = await params
-  const ville = await getVille(slug, locale)
-  if (!ville) return { title: 'Ville introuvable' }
+  const [ville, t] = await Promise.all([
+    getVille(slug, locale),
+    getTranslations({ locale, namespace: 'Villes' }),
+  ])
+  if (!ville) return { title: t('metaNotFound') }
 
-  const title = ville.seo?.metaTitle
-    ?? `Déménagement ${ville.nom} — ${COMPANY.name}`
-  const description = ville.seo?.metaDescription
-    ?? `Déménagement professionnel à ${ville.nom}. Devis gratuit, équipe experte. ${COMPANY.name} — votre partenaire de confiance.`
+  const title       = ville.seo?.metaTitle       ?? t('metaTitle', { name: ville.nom })
+  const description = ville.seo?.metaDescription ?? t('metaDescription', { name: ville.nom })
 
   return {
     title,
@@ -97,17 +89,20 @@ export default async function VillePage({ params }: VillePageProps) {
   const { locale, slug } = await params
   setRequestLocale(locale)
 
-  const ville = await getVille(slug, locale)
-  if (!ville) notFound()
+  const [ville, t, tServices] = await Promise.all([
+    getVille(slug, locale),
+    getTranslations({ locale, namespace: 'Villes' }),
+    getTranslations({ locale, namespace: 'Services' }),
+  ])
 
-  const t = await getTranslations({ locale, namespace: 'Home.services' })
+  if (!ville) notFound()
 
   return (
     <>
       <Breadcrumb
         items={[
-          { label: 'Accueil', href: `/${locale}` },
-          { label: 'Zones d\'intervention', href: `/${locale}/zones` },
+          { label: t('breadcrumbHome'), href: `/${locale}` },
+          { label: t('breadcrumbZones'), href: `/${locale}/zones` },
           { label: ville.nom },
         ]}
       />
@@ -147,12 +142,11 @@ export default async function VillePage({ params }: VillePageProps) {
             className="font-heading font-bold text-[var(--color-text-light)] mb-6 leading-tight"
             style={{ fontSize: 'clamp(2rem, 4vw, 3.5rem)' }}
           >
-            Déménagement à {ville.nom}
+            {t('heroTitle', { name: ville.nom })}
           </h1>
 
           <p className="font-body text-[var(--color-text-muted)] text-lg leading-relaxed mb-10 max-w-2xl">
-            DT Déménagement Tunisie intervient à {ville.nom} et ses environs.
-            Profitez de notre expertise pour un déménagement serein, au meilleur prix.
+            {t('heroSubtitle', { name: ville.nom })}
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4">
@@ -160,7 +154,7 @@ export default async function VillePage({ params }: VillePageProps) {
               href={`/${locale}/devis?ville=${slug}`}
               className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[var(--color-red)] text-white font-body font-bold text-sm uppercase tracking-wider hover:bg-[var(--color-red-dark)] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)]"
             >
-              Devis gratuit à {ville.nom}
+              {t('ctaDevis', { name: ville.nom })}
             </Link>
             <PhoneLink
               numero={COMPANY.phone1}
@@ -176,7 +170,7 @@ export default async function VillePage({ params }: VillePageProps) {
         <section className="py-16 px-container bg-[var(--color-bg-dark2)]">
           <div className="max-w-4xl mx-auto">
             <h2 className="font-heading font-bold text-[var(--color-text-light)] mb-8 text-2xl">
-              Nos services à {ville.nom}
+              {t('servicesTitle', { name: ville.nom })}
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {ville.servicesDisponibles.map((serviceSlug) => (
@@ -187,7 +181,7 @@ export default async function VillePage({ params }: VillePageProps) {
                 >
                   <CheckCircle className="w-5 h-5 text-[var(--color-red)] flex-shrink-0" aria-hidden="true" />
                   <span className="font-body text-[var(--color-text-muted)] group-hover:text-[var(--color-text-light)] transition-colors duration-200">
-                    {SERVICE_LABELS[serviceSlug] ?? serviceSlug}
+                    {tServices(serviceSlug as Parameters<typeof tServices>[0]) ?? serviceSlug}
                   </span>
                 </Link>
               ))}
@@ -196,13 +190,13 @@ export default async function VillePage({ params }: VillePageProps) {
         </section>
       )}
 
-      {/* Texte SEO unique (lexical → plain text provisoire) */}
+      {/* Texte SEO unique */}
       {ville.textesSeo && (
         <section className="py-16 px-container bg-[var(--color-bg-dark)]">
           <div className="max-w-3xl mx-auto">
             <div className="prose prose-invert max-w-none font-body text-[var(--color-text-muted)] leading-relaxed">
               <p className="text-sm italic border-s-2 border-[var(--color-red)]/30 ps-4">
-                Informations détaillées sur le déménagement à {ville.nom} bientôt disponibles.
+                {t('comingSoon', { name: ville.nom })}
               </p>
             </div>
           </div>
@@ -219,7 +213,11 @@ export default async function VillePage({ params }: VillePageProps) {
             name: COMPANY.name,
             url: COMPANY.siteUrl,
             telephone: COMPANY.phone1,
-            areaServed: { '@type': 'City', name: ville.nom, containedInPlace: { '@type': 'Country', name: 'Tunisia' } },
+            areaServed: {
+              '@type': 'City',
+              name: ville.nom,
+              containedInPlace: { '@type': 'Country', name: 'Tunisia' },
+            },
             ...(ville.coordonnees && {
               geo: { '@type': 'GeoCoordinates', latitude: ville.coordonnees.lat, longitude: ville.coordonnees.lng },
             }),

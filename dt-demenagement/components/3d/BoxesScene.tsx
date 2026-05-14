@@ -5,8 +5,7 @@ import { Canvas, useFrame } from '@react-three/fiber'
 import { Float } from '@react-three/drei'
 import * as THREE from 'three'
 
-const BOX_MAT = new THREE.MeshStandardMaterial({ color: '#b52027', metalness: 0.2, roughness: 0.6 })
-const EDGE_MAT = new THREE.MeshStandardMaterial({ color: '#c9a84c', metalness: 0.5, roughness: 0.3 })
+const BOX_MAT  = new THREE.MeshStandardMaterial({ color: '#b52027', metalness: 0.2, roughness: 0.6 })
 const DARK_MAT = new THREE.MeshStandardMaterial({ color: '#1a1a1a', metalness: 0.8, roughness: 0.2 })
 
 function MovingBox({ position, scale, speed, phase }: {

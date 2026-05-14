@@ -7,6 +7,15 @@ import * as THREE from 'three'
 
 const COUNT_DEBRIS = 18
 
+// Generated at module load — avoids Math.random during render (react-hooks/purity)
+const DEBRIS_DATA = (() =>
+  Array.from({ length: COUNT_DEBRIS }, () => ({
+    pos:   [(Math.random() - 0.5) * 8, (Math.random() - 0.5) * 5, (Math.random() - 0.5) * 3] as [number, number, number],
+    speed: 0.2 + Math.random() * 0.5,
+    phase: Math.random() * Math.PI * 2,
+  }))
+)()
+
 function LostBox({ pos, rot, scale, speed }: {
   pos: [number, number, number]
   rot: [number, number, number]
@@ -33,15 +42,9 @@ function DebrisParticles() {
   const meshRef = useRef<THREE.InstancedMesh>(null)
   const dummy   = useMemo(() => new THREE.Object3D(), [])
 
-  const data = useMemo(() => Array.from({ length: COUNT_DEBRIS }, () => ({
-    pos: [(Math.random() - 0.5) * 8, (Math.random() - 0.5) * 5, (Math.random() - 0.5) * 3] as [number,number,number],
-    speed: 0.2 + Math.random() * 0.5,
-    phase: Math.random() * Math.PI * 2,
-  })), [])
-
   useFrame(({ clock }) => {
     if (!meshRef.current) return
-    data.forEach(({ pos, speed, phase }, i) => {
+    DEBRIS_DATA.forEach(({ pos, speed, phase }, i) => {
       const t = clock.elapsedTime * speed + phase
       dummy.position.set(pos[0] + Math.sin(t) * 0.3, pos[1] + Math.cos(t * 0.7) * 0.4, pos[2])
       dummy.rotation.set(t, t * 0.8, t * 0.6)

@@ -118,15 +118,6 @@ function CityDots() {
   )
 }
 
-// Wrapper pour rotation globale synchronisée
-function RotatingGroup({ children }: { children: React.ReactNode }) {
-  const groupRef = useRef<THREE.Group>(null)
-  useFrame(({ clock }) => {
-    if (groupRef.current) groupRef.current.rotation.y = clock.elapsedTime * 0.08
-  })
-  return <group ref={groupRef}>{children}</group>
-}
-
 export default function GlobeScene() {
   return (
     <Canvas

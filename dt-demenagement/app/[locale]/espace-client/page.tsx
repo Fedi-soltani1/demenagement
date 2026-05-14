@@ -9,7 +9,7 @@ import config from '@payload-config'
 import { COMPANY, LOCALES } from '@/lib/constants'
 import { Breadcrumb } from '@/components/layout/Breadcrumb'
 import { StatusBadge } from '@/components/espace-client/StatusBadge'
-import { MapPin, Calendar, Package, ArrowRight, LogOut, User } from 'lucide-react'
+import { MapPin, Calendar, Package, ArrowRight, User } from 'lucide-react'
 import { SignOutButton } from '@/components/espace-client/SignOutButton'
 
 export const dynamic = 'force-dynamic'

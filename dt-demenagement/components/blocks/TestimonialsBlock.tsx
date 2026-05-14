@@ -73,7 +73,7 @@ export function TestimonialsBlock() {
                   transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
                 >
                   {/* Guillemet décoratif */}
-                  <span className="font-display text-8xl text-[var(--color-red)]/20 leading-none mb-2 select-none" aria-hidden="true">"</span>
+                  <span className="font-display text-8xl text-[var(--color-red)]/20 leading-none mb-2 select-none" aria-hidden="true">&ldquo;</span>
 
                   <p className="font-body text-[var(--color-text-muted)] text-lg leading-relaxed max-w-2xl mb-8 italic">
                     {item.texte}
