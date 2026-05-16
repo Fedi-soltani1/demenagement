@@ -91,7 +91,16 @@
       "subtitle": "Professionnel, fiable et certifié. Particuliers, entreprises et international — nous prenons soin de chaque déménagement.",
       "ctaPrimary": "Devis gratuit en 24h",
       "ctaSecondary": "Appeler maintenant",
-      "scrollLabel": "Défiler vers le bas"
+      "scrollLabel": "Défiler vers le bas",
+      "stat1Value": "5 000+",
+      "stat1Label": "déménagements",
+      "stat2Value": "15 ans",
+      "stat2Label": "d'expérience",
+      "stat3Value": "98%",
+      "stat3Label": "satisfaction",
+      "pill1": "Particuliers & Entreprises",
+      "pill2": "International",
+      "pill3": "Certifié & Assuré"
     },
     "miniFeatures": {
       "item1Title": "Particuliers & Entreprises",

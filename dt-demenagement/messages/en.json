@@ -91,7 +91,16 @@
       "subtitle": "Professional, reliable and certified. Individuals, businesses and international — we take care of every move.",
       "ctaPrimary": "Free Quote in 24h",
       "ctaSecondary": "Call Now",
-      "scrollLabel": "Scroll down"
+      "scrollLabel": "Scroll down",
+      "stat1Value": "5,000+",
+      "stat1Label": "relocations",
+      "stat2Value": "15 yrs",
+      "stat2Label": "experience",
+      "stat3Value": "98%",
+      "stat3Label": "satisfaction",
+      "pill1": "Individuals & Businesses",
+      "pill2": "International",
+      "pill3": "Certified & Insured"
     },
     "miniFeatures": {
       "item1Title": "Individuals & Businesses",

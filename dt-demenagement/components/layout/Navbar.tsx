@@ -6,25 +6,10 @@ import { usePathname } from 'next/navigation'
 import { useTheme } from 'next-themes'
 import { useLocale, useTranslations } from 'next-intl'
 import { PhoneLink } from '@/components/ui/PhoneLink'
+import { MenuToggleIcon } from '@/components/ui/MenuToggleIcon'
 import { COMPANY, SERVICES, VILLES, PAYS, LOCALES, type Locale } from '@/lib/constants'
 
 // ─── Icons ────────────────────────────────────────────────────────────────────
-
-function IconMenu() {
-  return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true">
-      <path d="M3 6h18M3 12h18M3 18h18" />
-    </svg>
-  )
-}
-
-function IconClose() {
-  return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true">
-      <path d="M18 6L6 18M6 6l12 12" />
-    </svg>
-  )
-}
 
 function IconChevronDown({ open }: { open: boolean }) {
   return (
@@ -185,6 +170,7 @@ function Navbar() {
   const t = useTranslations('Navbar')
   const tServices = useTranslations('Services')
   const pathname = usePathname()
+  const locale = useLocale()
 
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileOpen, setIsMobileOpen] = useState(false)
@@ -236,9 +222,9 @@ function Navbar() {
   }, [])
 
   const navLinks = [
-    { key: 'blog', href: '/blog' },
-    { key: 'about', href: '/a-propos' },
-    { key: 'contact', href: '/contact' },
+    { key: 'blog',    path: '/blog' },
+    { key: 'about',   path: '/a-propos' },
+    { key: 'contact', path: '/contact' },
   ] as const
 
   return (
@@ -264,7 +250,7 @@ function Navbar() {
 
             {/* ── Logo ── */}
             <Link
-              href="/"
+              href={`/${locale}`}
               className="flex items-center gap-3 shrink-0 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)] rounded"
               aria-label={t('logoAlt')}
             >
@@ -309,7 +295,7 @@ function Navbar() {
                     {SERVICES.map((service) => (
                       <Link
                         key={service.slug}
-                        href={`/services/${service.slug}`}
+                        href={`/${locale}/services/${service.slug}`}
                         role="menuitem"
                         className="flex items-center px-4 py-2.5 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text-light)] hover:bg-white/5 transition-colors"
                       >
@@ -351,7 +337,7 @@ function Navbar() {
                       {VILLES.slice(0, 8).map((ville) => (
                         <Link
                           key={ville.slug}
-                          href={`/demenagement/${ville.slug}`}
+                          href={`/${locale}/villes/${ville.slug}`}
                           role="menuitem"
                           className="px-2 py-1.5 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text-light)] hover:bg-white/5 rounded transition-colors"
                         >
@@ -366,7 +352,7 @@ function Navbar() {
                       {PAYS.map((pays) => (
                         <Link
                           key={pays.slug}
-                          href={`/demenagement-international/${pays.slug}`}
+                          href={`/${locale}/zones`}
                           role="menuitem"
                           className="px-2 py-1 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text-light)] hover:bg-white/5 rounded transition-colors"
                         >
@@ -376,7 +362,7 @@ function Navbar() {
                     </div>
                     <div className="pt-2 border-t border-[var(--color-border)]">
                       <Link
-                        href="/zones-intervention"
+                        href={`/${locale}/zones`}
                         role="menuitem"
                         className="text-sm font-medium text-[var(--color-red)] hover:text-[var(--color-red-light)] transition-colors"
                       >
@@ -388,10 +374,10 @@ function Navbar() {
               </div>
 
               {/* Static nav links */}
-              {navLinks.map(({ key, href }) => (
+              {navLinks.map(({ key, path }) => (
                 <Link
                   key={key}
-                  href={href}
+                  href={`/${locale}${path}`}
                   className="px-3 py-2 text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-text-light)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)] rounded"
                 >
                   {t(key)}
@@ -404,7 +390,7 @@ function Navbar() {
               <PhoneLink numero={COMPANY.phone1} source="navbar" />
               <LocaleSwitcher ariaLabel={t('changeLocale')} />
               <ThemeToggle labelDark={t('switchToDark')} labelLight={t('switchToLight')} />
-              <Link href="/devis" className={ctaClass}>
+              <Link href={`/${locale}/devis`} className={ctaClass}>
                 {t('devis')}
               </Link>
             </div>
@@ -418,7 +404,7 @@ function Navbar() {
               aria-controls="mobile-nav-menu"
               className="lg:hidden w-10 h-10 flex items-center justify-center text-[var(--color-text-light)] hover:text-[var(--color-red)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)] rounded"
             >
-              {isMobileOpen ? <IconClose /> : <IconMenu />}
+              <MenuToggleIcon open={isMobileOpen} className="w-6 h-6" />
             </button>
           </div>
         </div>
@@ -450,7 +436,7 @@ function Navbar() {
                     {SERVICES.map((service) => (
                       <Link
                         key={service.slug}
-                        href={`/services/${service.slug}`}
+                        href={`/${locale}/services/${service.slug}`}
                         className="block py-2 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text-light)] transition-colors"
                       >
                         {tServices(service.slug)}
@@ -480,7 +466,7 @@ function Navbar() {
                       {VILLES.slice(0, 8).map((ville) => (
                         <Link
                           key={ville.slug}
-                          href={`/demenagement/${ville.slug}`}
+                          href={`/${locale}/villes/${ville.slug}`}
                           className="py-1.5 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text-light)] transition-colors"
                         >
                           {ville.nom}
@@ -494,7 +480,7 @@ function Navbar() {
                       {PAYS.map((pays) => (
                         <Link
                           key={pays.slug}
-                          href={`/demenagement-international/${pays.slug}`}
+                          href={`/${locale}/zones`}
                           className="block py-1 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text-light)] transition-colors"
                         >
                           {pays.drapeau} {pays.nom}
@@ -502,7 +488,7 @@ function Navbar() {
                       ))}
                     </div>
                     <Link
-                      href="/zones-intervention"
+                      href={`/${locale}/zones`}
                       className="text-sm font-medium text-[var(--color-red)] hover:text-[var(--color-red-light)] transition-colors"
                     >
                       {t('allZones')} →
@@ -512,10 +498,10 @@ function Navbar() {
               </div>
 
               {/* Static links */}
-              {navLinks.map(({ key, href }) => (
+              {navLinks.map(({ key, path }) => (
                 <Link
                   key={key}
-                  href={href}
+                  href={`/${locale}${path}`}
                   className="block px-3 py-3 text-base font-medium text-[var(--color-text-light)] hover:text-[var(--color-red)] transition-colors rounded"
                 >
                   {t(key)}
@@ -529,7 +515,7 @@ function Navbar() {
                 <PhoneLink numero={COMPANY.phone1} source="navbar-mobile" />
                 <PhoneLink numero={COMPANY.phone2} source="navbar-mobile" />
               </div>
-              <Link href="/devis" className={[ctaClass, 'w-full justify-center py-3 text-base'].join(' ')}>
+              <Link href={`/${locale}/devis`} className={[ctaClass, 'w-full justify-center py-3 text-base'].join(' ')}>
                 {t('devis')}
               </Link>
               <div className="flex items-center justify-between pt-1">

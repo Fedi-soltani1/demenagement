@@ -22,7 +22,6 @@ import Clients from './payload/collections/Clients'
 import Messages from './payload/collections/Messages'
 import Demenagements from './payload/collections/Demenagements'
 import Settings from './payload/collections/Settings'
-import Homepage from './payload/globals/Homepage'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -77,8 +76,8 @@ export default buildConfig({
     Demenagements,
   ],
 
-  // 2 globals (singletons)
-  globals: [Settings, Homepage],
+  // 1 global (singleton)
+  globals: [Settings],
 
   sharp,
 

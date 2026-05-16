@@ -24,19 +24,32 @@ interface ZonesMapProps {
   locale: string
 }
 
+const TILE_DARK  = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+const TILE_LIGHT = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
+
 export function ZonesMap({ villes, pays, locale }: ZonesMapProps) {
-  const mapRef      = useRef<HTMLDivElement>(null)
-  const instanceRef = useRef<unknown>(null)
+  const mapRef       = useRef<HTMLDivElement>(null)
+  const instanceRef  = useRef<unknown>(null)
+  const tileLayerRef = useRef<unknown>(null)
 
   useEffect(() => {
-    if (!mapRef.current || instanceRef.current) return
+    if (!mapRef.current) return
 
-    let cleanup: (() => void) | undefined
+    let cancelled = false
 
     async function init() {
       const L = (await import('leaflet')).default
       await import('leaflet/dist/leaflet.css')
-      if (!mapRef.current) return
+
+      if (cancelled || !mapRef.current) return
+
+      // Détruire toute instance résiduelle (StrictMode / hot reload)
+      if (instanceRef.current) {
+        ;(instanceRef.current as ReturnType<typeof L.map>).remove()
+        instanceRef.current = null
+      }
+      const container = mapRef.current as HTMLElement & { _leaflet_id?: number }
+      if (container._leaflet_id) delete container._leaflet_id
 
       const map = L.map(mapRef.current, {
         center: [34.5, 9.0],
@@ -46,9 +59,19 @@ export function ZonesMap({ villes, pays, locale }: ZonesMapProps) {
         attributionControl: false,
       })
 
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      const isLight = () => document.documentElement.dataset.theme === 'light'
+
+      const tileLayer = L.tileLayer(isLight() ? TILE_LIGHT : TILE_DARK, {
         maxZoom: 18,
       }).addTo(map)
+      tileLayerRef.current = tileLayer
+
+      // Suivre les changements de thème
+      const observer = new MutationObserver(() => {
+        ;(tileLayerRef.current as { setUrl: (url: string) => void } | null)
+          ?.setUrl(isLight() ? TILE_LIGHT : TILE_DARK)
+      })
+      observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
 
       // Icône ville tunisienne — point rouge pulsant
       const tunisIcon = L.divIcon({
@@ -120,19 +143,27 @@ export function ZonesMap({ villes, pays, locale }: ZonesMapProps) {
         dashArray: '4 4',
       }).addTo(map)
 
+      if (cancelled) { map.remove(); observer.disconnect(); return }
       instanceRef.current = map
-      cleanup = () => { map.remove(); instanceRef.current = null }
+
+      return () => observer.disconnect()
     }
 
     init().catch(console.error)
-    return () => cleanup?.()
+    return () => {
+      cancelled = true
+      if (instanceRef.current) {
+        ;(instanceRef.current as { remove: () => void }).remove()
+        instanceRef.current = null
+      }
+    }
   }, [villes, pays, locale])
 
   return (
     <div
       ref={mapRef}
       className="w-full h-[520px] lg:h-[640px] rounded-2xl overflow-hidden"
-      style={{ background: '#1a1a2e' }}
+      style={{ background: 'var(--color-bg-card)' }}
       role="img"
       aria-label="Carte interactive des zones d'intervention DT Déménagement"
     />

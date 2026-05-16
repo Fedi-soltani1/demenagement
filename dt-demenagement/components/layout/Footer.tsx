@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { PhoneLink } from '@/components/ui/PhoneLink'
 import { COMPANY, SERVICES, VILLES, PAYS } from '@/lib/constants'
 
@@ -52,6 +52,7 @@ function IconMail() {
 function Footer() {
   const t = useTranslations('Footer')
   const tServices = useTranslations('Services')
+  const locale = useLocale()
 
   const currentYear = new Date().getFullYear()
 
@@ -144,7 +145,7 @@ function Footer() {
               {SERVICES.map((service) => (
                 <li key={service.slug}>
                   <Link
-                    href={`/services/${service.slug}`}
+                    href={`/${locale}/services/${service.slug}`}
                     className="text-sm text-[var(--color-text-muted)] hover:text-[var(--color-red)] transition-colors"
                   >
                     {tServices(service.slug)}
@@ -166,7 +167,7 @@ function Footer() {
               {VILLES.slice(0, 6).map((ville) => (
                 <li key={ville.slug}>
                   <Link
-                    href={`/demenagement/${ville.slug}`}
+                    href={`/${locale}/villes/${ville.slug}`}
                     className="text-sm text-[var(--color-text-muted)] hover:text-[var(--color-red)] transition-colors"
                   >
                     {ville.nom}
@@ -175,7 +176,7 @@ function Footer() {
               ))}
               <li>
                 <Link
-                  href="/zones-intervention"
+                  href={`/${locale}/zones`}
                   className="text-sm font-medium text-[var(--color-red)] hover:text-[var(--color-red-light)] transition-colors"
                 >
                   {t('allCities')} →
@@ -189,7 +190,7 @@ function Footer() {
               {PAYS.slice(0, 4).map((pays) => (
                 <li key={pays.slug}>
                   <Link
-                    href={`/demenagement-international/${pays.slug}`}
+                    href={`/${locale}/zones`}
                     className="text-sm text-[var(--color-text-muted)] hover:text-[var(--color-red)] transition-colors"
                   >
                     {pays.drapeau} {pays.nom}
@@ -198,7 +199,7 @@ function Footer() {
               ))}
               <li>
                 <Link
-                  href="/zones-intervention#europe"
+                  href={`/${locale}/zones#europe`}
                   className="text-sm font-medium text-[var(--color-red)] hover:text-[var(--color-red-light)] transition-colors"
                 >
                   {t('allCountries')} →
@@ -215,16 +216,16 @@ function Footer() {
             <ul className="space-y-2.5 mb-6">
               {(
                 [
-                  { key: 'blog', href: '/blog' },
-                  { key: 'about', href: '/a-propos' },
-                  { key: 'contact', href: '/contact' },
-                  { key: 'faq', href: '/faq' },
-                  { key: 'careers', href: '/recrutement' },
+                  { key: 'blog',    path: '/blog' },
+                  { key: 'about',   path: '/a-propos' },
+                  { key: 'contact', path: '/contact' },
+                  { key: 'faq',     path: '/faq' },
+                  { key: 'careers', path: '/recrutement' },
                 ] as const
-              ).map(({ key, href }) => (
+              ).map(({ key, path }) => (
                 <li key={key}>
                   <Link
-                    href={href}
+                    href={`/${locale}${path}`}
                     className="text-sm text-[var(--color-text-muted)] hover:text-[var(--color-red)] transition-colors"
                   >
                     {t(key)}
@@ -235,7 +236,7 @@ function Footer() {
 
             {/* CTA devis */}
             <Link
-              href="/devis"
+              href={`/${locale}/devis`}
               className="inline-flex items-center justify-center w-full px-4 py-3 text-sm font-semibold rounded-[var(--radius-btn)] bg-[var(--color-red)] text-white hover:bg-[var(--color-red-dark)] hover:shadow-[0_0_20px_rgba(181,32,39,0.4)] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-bg-dark-2)]"
             >
               {t('devis')}
@@ -256,15 +257,15 @@ function Footer() {
           >
             {(
               [
-                { key: 'privacy', href: '/politique-confidentialite' },
-                { key: 'terms', href: '/mentions-legales' },
-                { key: 'cookies', href: '/politique-cookies' },
-                { key: 'sitemap', href: '/plan-du-site' },
+                { key: 'privacy', path: '/politique-confidentialite' },
+                { key: 'terms',   path: '/mentions-legales' },
+                { key: 'cookies', path: '/politique-cookies' },
+                { key: 'sitemap', path: '/plan-du-site' },
               ] as const
-            ).map(({ key, href }) => (
+            ).map(({ key, path }) => (
               <Link
                 key={key}
-                href={href}
+                href={`/${locale}${path}`}
                 className="text-xs text-[var(--color-text-muted)] hover:text-[var(--color-text-light)] transition-colors"
               >
                 {t(key)}

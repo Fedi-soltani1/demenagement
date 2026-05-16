@@ -20,9 +20,14 @@ const VILLES = [
   { nom: 'Tataouine', lat: 32.9290, lng: 10.4513 },
 ]
 
+const TILE_DARK  = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+const TILE_LIGHT = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
+
 function LeafletMap() {
   const mapRef = useRef<HTMLDivElement>(null)
   const mapInstanceRef = useRef<unknown>(null)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const tileLayerRef = useRef<any>(null)
 
   useEffect(() => {
     if (!mapRef.current || mapInstanceRef.current) return
@@ -34,6 +39,8 @@ function LeafletMap() {
       await import('leaflet/dist/leaflet.css')
 
       if (!mapRef.current) return
+      // Guard against strict-mode double-mount: Leaflet sets _leaflet_id on the container
+      if ((mapRef.current as HTMLDivElement & { _leaflet_id?: number })._leaflet_id) return
 
       const map = L.map(mapRef.current, {
         center: [34.5, 9.5],
@@ -43,10 +50,22 @@ function LeafletMap() {
         attributionControl: false,
       })
 
-      L.tileLayer(
-        'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+      const isLight = () => document.documentElement.dataset.theme === 'light'
+
+      tileLayerRef.current = L.tileLayer(
+        isLight() ? TILE_LIGHT : TILE_DARK,
         { maxZoom: 18 }
       ).addTo(map)
+
+      // Swap tile layer when theme changes
+      const observer = new MutationObserver(() => {
+        if (!tileLayerRef.current) return
+        tileLayerRef.current.setUrl(isLight() ? TILE_LIGHT : TILE_DARK)
+      })
+      observer.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['data-theme'],
+      })
 
       const redIcon = L.divIcon({
         className: '',
@@ -73,8 +92,10 @@ function LeafletMap() {
       mapInstanceRef.current = map
 
       cleanup = () => {
+        observer.disconnect()
         map.remove()
         mapInstanceRef.current = null
+        tileLayerRef.current = null
       }
     }
 
@@ -87,7 +108,7 @@ function LeafletMap() {
     <div
       ref={mapRef}
       className="w-full h-[440px] lg:h-[520px] rounded-2xl overflow-hidden"
-      style={{ background: '#1a1a2e' }}
+      style={{ background: 'var(--color-bg-card)' }}
       role="img"
       aria-label="Carte des zones d'intervention DT Déménagement en Tunisie"
     />
@@ -99,7 +120,7 @@ export function MapBlock() {
 
   return (
     <section
-      className="py-section px-container bg-[var(--color-bg-dark)]"
+      className="py-section px-container bg-[var(--color-bg-dark2)]"
       aria-labelledby="map-title"
     >
       <div className="max-w-7xl mx-auto">

@@ -4,6 +4,7 @@ import React from 'react'
 import { useTranslations } from 'next-intl'
 import { motion } from 'framer-motion'
 import { StarRating } from '@/components/ui/StarRating'
+import { ShineBorderEffect } from '@/components/ui/ShineBorder'
 
 const MOCK_REVIEWS = [
   { id: '1', nomAuteur: 'Ahmed B.', note: 5 as const, texte: 'Excellent service ! Très professionnel et ponctuel.', dateOriginal: '2026-03-15' },
@@ -22,7 +23,7 @@ export function GoogleReviewsBlock() {
 
   return (
     <section
-      className="py-section px-container bg-[var(--color-bg-dark)]"
+      className="py-section px-container bg-[var(--color-bg-dark2)]"
       aria-labelledby="google-reviews-title"
     >
       <div className="max-w-7xl mx-auto">
@@ -46,7 +47,7 @@ export function GoogleReviewsBlock() {
           </h2>
 
           {/* Badge note globale Google */}
-          <div className="inline-flex items-center gap-4 px-8 py-4 rounded-2xl border border-white/10 bg-white/[0.03]">
+          <div className="relative inline-flex items-center gap-4 px-8 py-4 rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-card)]">
             <svg viewBox="0 0 24 24" className="w-8 h-8 flex-shrink-0" aria-hidden="true">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
               <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -62,6 +63,7 @@ export function GoogleReviewsBlock() {
                 {t('ratingLabel')} {TOTAL_REVIEWS} {t('reviewsLabel')}
               </p>
             </div>
+            <ShineBorderEffect duration={8} color={['#b52027', '#c9a84c', '#b52027']} />
           </div>
         </motion.div>
 
@@ -70,7 +72,7 @@ export function GoogleReviewsBlock() {
           {MOCK_REVIEWS.map((review, i) => (
             <motion.article
               key={review.id}
-              className="rounded-2xl border border-white/8 bg-white/[0.03] p-card"
+              className="relative rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-card)] p-card"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-40px' }}
@@ -86,6 +88,7 @@ export function GoogleReviewsBlock() {
                 &ldquo;{review.texte}&rdquo;
               </p>
               <p className="font-body font-semibold text-[var(--color-text-light)] text-sm">{review.nomAuteur}</p>
+              <ShineBorderEffect duration={14} />
             </motion.article>
           ))}
         </div>

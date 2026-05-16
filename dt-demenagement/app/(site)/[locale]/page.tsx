@@ -2,45 +2,18 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 import { setRequestLocale } from 'next-intl/server'
 import { LOCALES } from '@/lib/constants'
+import { BlockRenderer } from '@/components/blocks/BlockRenderer'
 
-import { HeroBlock }          from '@/components/blocks/HeroBlock'
-import { MiniFeaturesBlock }  from '@/components/blocks/MiniFeaturesBlock'
-import { StatsAboutBlock }    from '@/components/blocks/StatsAboutBlock'
-import { WhyUsBlock }         from '@/components/blocks/WhyUsBlock'
-import { ServicesBlock }      from '@/components/blocks/ServicesBlock'
-import { MapBlock }           from '@/components/blocks/MapBlock'
-import { TestimonialsBlock }  from '@/components/blocks/TestimonialsBlock'
-import { GoogleReviewsBlock } from '@/components/blocks/GoogleReviewsBlock'
-import { PartnersBlock }      from '@/components/blocks/PartnersBlock'
-import { InstagramFeedBlock } from '@/components/blocks/InstagramFeedBlock'
-import { NewsletterBlock }    from '@/components/blocks/NewsletterBlock'
-import { BlogPreviewBlock }   from '@/components/blocks/BlogPreviewBlock'
-import { CTAFinalBlock }      from '@/components/blocks/CTAFinalBlock'
-
-import type { CmsHero }         from '@/components/blocks/HeroBlock'
-import type { CmsPointsForts }  from '@/components/blocks/MiniFeaturesBlock'
-import type { CmsApropos }      from '@/components/blocks/StatsAboutBlock'
-import type { CmsPourquoiNous } from '@/components/blocks/WhyUsBlock'
-import type { CmsCtaFinal }     from '@/components/blocks/CTAFinalBlock'
 import type { ServiceData }     from '@/components/blocks/ServicesBlock'
 import type { TestimonialData } from '@/components/blocks/TestimonialsBlock'
 import type { BlogArticleData } from '@/components/blocks/BlogPreviewBlock'
 import type { PartnerData }     from '@/components/blocks/PartnersBlock'
 
-// En prod : page mise en cache 60 secondes — assez court pour voir les modifs rapidement
+// ISR : les modifications Payload sont visibles dans la minute en prod
 export const revalidate = 60
 
 interface HomePageProps {
   params: Promise<{ locale: string }>
-}
-
-// Type du Global Homepage (reflète payload/globals/Homepage.ts)
-type HomepageGlobal = {
-  hero?:          CmsHero          | null
-  pointsForts?:   CmsPointsForts   | null
-  apropos?:       CmsApropos       | null
-  pourquoiNous?:  CmsPourquoiNous  | null
-  ctaFinal?:      CmsCtaFinal      | null
 }
 
 export function generateStaticParams() {
@@ -54,20 +27,31 @@ export default async function HomePage({ params }: HomePageProps) {
   const payload = await getPayload({ config })
   const loc = locale as 'fr' | 'ar' | 'en'
 
-  // Fetch en parallèle — Global homepage + toutes les collections
+  // Fetch en parallèle — Page accueil (avec ses blocs) + collections relationnelles
   const [
-    homepage,
+    pageData,
     servicesRes,
     testimonialsRes,
     blogRes,
     partnersRes,
   ] = await Promise.all([
 
-    // Global "Page d'accueil" — hero, features, stats, whyUs, CTA
-    payload.findGlobal({ slug: 'homepage', locale: loc })
-      .catch(() => null) as Promise<HomepageGlobal | null>,
+    // Page accueil depuis la collection Pages (slug = 'accueil')
+    // depth: 3 pour peupler les relationships imbriquées dans les blocs
+    payload.find({
+      collection: 'pages',
+      where: {
+        and: [
+          { slug:   { equals: 'accueil' } },
+          { publie: { equals: true }      },
+        ],
+      },
+      locale: loc,
+      depth: 3,
+      limit: 1,
+    }).catch(() => ({ docs: [] as unknown[] })),
 
-    // Collections dynamiques
+    // Services publiés — fallback si le bloc Services n'a pas de sélection manuelle
     payload.find({
       collection: 'services',
       where: { publie: { equals: true } },
@@ -76,6 +60,7 @@ export default async function HomePage({ params }: HomePageProps) {
       limit: 12,
     }).catch(() => ({ docs: [] as unknown[] })),
 
+    // Témoignages publiés — fallback si le bloc Témoignages n'a pas de sélection
     payload.find({
       collection: 'testimonials',
       where: { publie: { equals: true } },
@@ -83,6 +68,7 @@ export default async function HomePage({ params }: HomePageProps) {
       limit: 20,
     }).catch(() => ({ docs: [] as unknown[] })),
 
+    // 3 derniers articles de blog publiés
     payload.find({
       collection: 'blog',
       where: { statut: { equals: 'publie' } },
@@ -92,6 +78,7 @@ export default async function HomePage({ params }: HomePageProps) {
       depth: 1,
     }).catch(() => ({ docs: [] as unknown[] })),
 
+    // Partenaires publiés
     payload.find({
       collection: 'partners',
       where: { publie: { equals: true } },
@@ -101,24 +88,47 @@ export default async function HomePage({ params }: HomePageProps) {
     }).catch(() => ({ docs: [] as unknown[] })),
   ])
 
+  // Extraire les blocs de la page accueil
+  type PageDoc = { layout?: unknown[] }
+  const page   = pageData.docs[0] as PageDoc | undefined
+  const blocks = (page?.layout ?? []) as Array<{ blockType: string; id?: string; [key: string]: unknown }>
+
   return (
     <main>
-      {/* Chaque bloc reçoit les données Payload.
-          Si le champ est vide dans l'admin → fallback sur les textes par défaut (i18n).
-          Si le champ est rempli → c'est la valeur CMS qui s'affiche. */}
-      <HeroBlock          cms={homepage?.hero          ?? undefined} />
-      <MiniFeaturesBlock  cms={homepage?.pointsForts   ?? undefined} />
-      <StatsAboutBlock    cms={homepage?.apropos        ?? undefined} />
-      <WhyUsBlock         cms={homepage?.pourquoiNous  ?? undefined} />
-      <ServicesBlock      services={servicesRes.docs     as ServiceData[]} />
-      <MapBlock />
-      <TestimonialsBlock  testimonials={testimonialsRes.docs as TestimonialData[]} />
-      <GoogleReviewsBlock />
-      <PartnersBlock      partners={partnersRes.docs    as PartnerData[]} />
-      <InstagramFeedBlock />
-      <NewsletterBlock />
-      <BlogPreviewBlock   articles={blogRes.docs         as BlogArticleData[]} />
-      <CTAFinalBlock      cms={homepage?.ctaFinal       ?? undefined} />
+      {blocks.length > 0 ? (
+        // Mode page builder : l'admin a configuré les blocs dans Payload
+        <BlockRenderer
+          blocks={blocks}
+          services={servicesRes.docs     as ServiceData[]}
+          testimonials={testimonialsRes.docs as TestimonialData[]}
+          blog={blogRes.docs             as BlogArticleData[]}
+          partners={partnersRes.docs     as PartnerData[]}
+        />
+      ) : (
+        // Mode fallback : aucune page 'accueil' dans Payload → affichage par défaut i18n
+        // L'admin doit créer la page dans /admin → Pages → Nouvelle page (slug: accueil)
+        <BlockRenderer
+          blocks={[
+            { blockType: 'hero' },
+            { blockType: 'mini-features' },
+            { blockType: 'about' },
+            { blockType: 'why-us' },
+            { blockType: 'services' },
+            { blockType: 'map' },
+            { blockType: 'testimonials' },
+            { blockType: 'google-reviews' },
+            { blockType: 'partners' },
+            { blockType: 'instagram-feed' },
+            { blockType: 'newsletter' },
+            { blockType: 'blog-preview' },
+            { blockType: 'cta' },
+          ]}
+          services={servicesRes.docs     as ServiceData[]}
+          testimonials={testimonialsRes.docs as TestimonialData[]}
+          blog={blogRes.docs             as BlogArticleData[]}
+          partners={partnersRes.docs     as PartnerData[]}
+        />
+      )}
     </main>
   )
 }

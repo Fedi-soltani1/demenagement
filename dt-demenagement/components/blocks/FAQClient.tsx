@@ -51,7 +51,7 @@ export function FAQClient({ items, categories, labelAll, emptyLabel }: FAQClient
           className={`px-5 py-2 rounded-full font-body text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)] focus-visible:ring-offset-1 focus-visible:ring-offset-[var(--color-bg-dark)] ${
             activeCategory === 'all'
               ? 'bg-[var(--color-red)] text-white'
-              : 'border border-white/15 text-[var(--color-text-muted)] hover:border-[var(--color-red)]/40 hover:text-[var(--color-text-light)]'
+              : 'border border-[var(--color-border)] text-[var(--color-text-muted)] hover:border-[var(--color-red)]/40 hover:text-[var(--color-text-light)]'
           }`}
         >
           {labelAll}
@@ -70,7 +70,7 @@ export function FAQClient({ items, categories, labelAll, emptyLabel }: FAQClient
               className={`px-5 py-2 rounded-full font-body text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)] focus-visible:ring-offset-1 focus-visible:ring-offset-[var(--color-bg-dark)] ${
                 activeCategory === cat.value
                   ? 'bg-[var(--color-red)] text-white'
-                  : 'border border-white/15 text-[var(--color-text-muted)] hover:border-[var(--color-red)]/40 hover:text-[var(--color-text-light)]'
+                  : 'border border-[var(--color-border)] text-[var(--color-text-muted)] hover:border-[var(--color-red)]/40 hover:text-[var(--color-text-light)]'
               }`}
             >
               {cat.label}

@@ -2,6 +2,7 @@ import type { CollectionConfig } from 'payload'
 import { isAdmin } from '../access/isAdmin'
 import { isEditor } from '../access/isEditor'
 import { HeroBlock }           from '../blocks/HeroBlock'
+import { MiniFeaturesBlock }   from '../blocks/MiniFeaturesBlock'
 import { ServicesBlock }       from '../blocks/ServicesBlock'
 import { AboutBlock }          from '../blocks/AboutBlock'
 import { StatsBlock }          from '../blocks/StatsBlock'
@@ -60,6 +61,7 @@ const Pages: CollectionConfig = {
       label: 'Blocs de contenu',
       blocks: [
         HeroBlock,
+        MiniFeaturesBlock,
         ServicesBlock,
         AboutBlock,
         StatsBlock,

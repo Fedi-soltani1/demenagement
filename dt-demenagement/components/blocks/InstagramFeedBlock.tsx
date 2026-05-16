@@ -60,7 +60,7 @@ export function InstagramFeedBlock() {
             href={INSTAGRAM_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="group flex-shrink-0 inline-flex items-center gap-2 px-6 py-3 rounded-full border border-white/15 bg-white/[0.03] text-[var(--color-text-muted)] font-body text-sm font-medium hover:border-pink-400/40 hover:text-pink-400 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 focus-visible:ring-offset-1 focus-visible:ring-offset-[var(--color-bg-dark2)]"
+            className="group flex-shrink-0 inline-flex items-center gap-2 px-6 py-3 rounded-full border border-[var(--color-border)] bg-[var(--color-bg-card)] text-[var(--color-text-muted)] font-body text-sm font-medium hover:border-pink-400/40 hover:text-pink-400 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 focus-visible:ring-offset-1 focus-visible:ring-offset-[var(--color-bg-dark2)]"
           >
             <InstagramIcon className="w-4 h-4" />
             {t('handle')}

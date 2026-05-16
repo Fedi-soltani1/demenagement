@@ -21,8 +21,8 @@
   /* Fonds mode sombre (DÉFAUT) */
   --color-bg:           #0a0a0a;
   --color-bg-2:         #111111;
-  --color-bg-card:      #1a1a1a;
-  --color-bg-hover:     #222222;
+  --color-bg-card:      #222222;
+  --color-bg-hover:     #2a2a2a;
 
   /* Textes */
   --color-text:         #f8f5f0;
@@ -48,6 +48,13 @@
   --font-body:     'DM Sans', system-ui, sans-serif;
   --font-mono:     'JetBrains Mono', 'Courier New', monospace;
   --font-arabic:   'Noto Sans Arabic', Arial, sans-serif;
+
+  /* ----------------------------------------------------------
+     SPACING SÉMANTIQUE — tokens utilisés dans tous les blocs
+     ---------------------------------------------------------- */
+  --spacing-section: 5rem;    /* py-section → padding vertical des sections */
+  --spacing-card:    1.5rem;  /* p-card    → padding intérieur des cartes */
+  --spacing-grid:    1.5rem;  /* gap-grid  → gouttière entre les cartes */
 
   /* ----------------------------------------------------------
      BORDER RADIUS
@@ -109,6 +116,14 @@
     to   { transform: rotate(360deg); }
   }
 
+  /* Shine border — effet bord brillant animé sur les cartes */
+  --animate-shine: shine var(--duration, 14s) infinite linear;
+  @keyframes shine {
+    0%  { background-position: 0% 0%; }
+    50% { background-position: 100% 100%; }
+    to  { background-position: 0% 0%; }
+  }
+
   /* Slide horizontal — transitions de page */
   --animate-slide-in: slide-in 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
   @keyframes slide-in {
@@ -130,16 +145,40 @@
   --text:         var(--color-text);
   --text-muted:   var(--color-text-muted);
   --border:       var(--color-border);
+
+  /* Alias sections — noms utilisés dans tous les blocs */
+  --color-bg-dark:   #0c0c0c;
+  --color-bg-dark2:  #141414;
+  --color-bg-dark-2: #141414;
+
+  /* --color-text-light = texte crème sur fond sombre (NE PAS RENOMMER —
+     tous les composants l'utilisent pour leurs titres en mode sombre) */
+  --color-text-light: #f0ece6;
 }
 
 [data-theme="light"] {
+  /* Backgrounds */
   --bg:           var(--color-bg-light);
   --bg-2:         var(--color-bg-2-light);
   --bg-card:      var(--color-bg-card-light);
-  --bg-hover:     #f0ece6;
-  --text:         var(--color-text-light);
-  --text-muted:   var(--color-text-muted-light);
+  --bg-hover:     #ebe7e0;
+  /* Texte : valeurs directes pour éviter le conflit de nommage
+     --color-text-light vaut #f0ece6 en dark — on force ici les bonnes valeurs */
+  --text:         #0a0a0a;
+  --text-muted:   #555555;
   --border:       var(--color-border-light);
+  /* Sections : remapper les bg dark vers les équivalents clairs */
+  --color-bg-dark:   #f8f5f0;
+  --color-bg-dark2:  #ffffff;
+  --color-bg-dark-2: #ffffff;
+  --color-text-light: #0a0a0a;
+  /* Tokens statiques @theme — remappés ici pour que les composants
+     qui utilisent var(--color-bg-card) / var(--color-border) / etc.
+     basculent aussi en clair */
+  --color-bg-card:    #ffffff;
+  --color-bg-hover:   #ebe7e0;
+  --color-border:     #e0e0e0;
+  --color-text-muted: #555555;
 }
 
 /* ============================================================
@@ -211,4 +250,88 @@ body {
 ::selection {
   background: rgba(181, 32, 39, 0.3);
   color: var(--color-text);
+}
+
+/* ============================================================
+   SÉPARATION VISUELLE DES SECTIONS
+   ============================================================ */
+
+/* Toutes les sections reçoivent une bordure top subtile — suit le thème */
+section + section {
+  border-top: 1px solid var(--color-border);
+}
+
+/* Sections sur fond dark2 — légère surbrillance pour les distinguer */
+section[class*="bg-[var(--color-bg-dark2)]"],
+section[style*="bg-dark2"] {
+  background-color: var(--color-bg-dark2);
+}
+
+/* ============================================================
+   CARTES — VISIBILITÉ AMÉLIORÉE
+   ============================================================ */
+
+/* Cartes avec border-white/8 → on renforce à 12% */
+.card-border {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* Conteneur padding standard pour les pages */
+.px-container {
+  padding-left: clamp(1.25rem, 5vw, 5rem);
+  padding-right: clamp(1.25rem, 5vw, 5rem);
+}
+
+/* ============================================================
+   TYPOGRAPHY HELPERS
+   ============================================================ */
+
+/* Eyebrow label style (comme marwa) */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.65rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: var(--color-red);
+}
+.eyebrow::before {
+  content: '';
+  width: 1.5rem;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   SHINE BORDER — effet bord brillant animé sur les cartes
+   Les classes Tailwind v4 arbitrary pseudo-element ne fonctionnent
+   pas de manière fiable → on écrit le CSS directement ici.
+   ============================================================ */
+.shine-border-effect {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  border-radius: var(--shine-radius, 16px);
+}
+.shine-border-effect::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--shine-radius, 16px);
+  padding: var(--shine-width, 1px);
+  background-image: var(--shine-gradient);
+  background-size: 300% 300%;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+          mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  will-change: background-position;
+  animation: shine var(--shine-duration, 10s) infinite linear;
 }

@@ -5,6 +5,7 @@
   "pnpm": {
     "onlyBuiltDependencies": [
       "@parcel/watcher",
+      "@sentry/cli",
       "@swc/core",
       "esbuild",
       "sharp",
@@ -16,6 +17,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "seed": "curl \"http://localhost:3000/api/seed?secret=$SEED_SECRET\"",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
@@ -33,7 +35,7 @@
     "framer-motion": "^12.38.0",
     "leaflet": "^1.9.4",
     "lucide-react": "^1.14.0",
-    "next": "16.2.6",
+    "next": "15.3.4",
     "next-auth": "5.0.0-beta.31",
     "next-intl": "^4.11.2",
     "next-themes": "^0.4.6",
@@ -41,6 +43,7 @@
     "postgres": "^3.4.9",
     "react": "19.2.4",
     "react-dom": "19.2.4",
+    "sharp": "^0.34.5",
     "three": "^0.184.0",
     "zod": "^4.4.3"
   },
@@ -59,11 +62,12 @@
     "@vitest/browser-playwright": "^4.1.6",
     "@vitest/coverage-v8": "^4.1.6",
     "eslint": "^9",
-    "eslint-config-next": "16.2.6",
+    "eslint-config-next": "15.3.4",
     "eslint-plugin-storybook": "^10.3.6",
     "playwright": "^1.60.0",
     "storybook": "^10.3.6",
     "tailwindcss": "^4",
+    "tsx": "^4.21.0",
     "typescript": "^5",
     "vite": "^8.0.12",
     "vitest": "^4.1.6"
