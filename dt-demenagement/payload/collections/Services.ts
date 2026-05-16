@@ -15,7 +15,8 @@ const Services: CollectionConfig = {
 
   admin: {
     useAsTitle: 'nom',
-    defaultColumns: ['nom', 'slug', 'publie'],
+    defaultColumns: ['nom', 'slug', 'publie', 'ordre'],
+    preview: (doc) => `${process.env.NEXT_PUBLIC_SITE_URL}/fr/services/${doc.slug as string}`,
   },
 
   fields: [
@@ -30,51 +31,102 @@ const Services: CollectionConfig = {
       type: 'text',
       required: true,
       unique: true,
-      admin: {
-        description: 'Identifiant URL (ex: transporteur-en-tunisie)',
-      },
+      admin: { description: "Identifiant URL (ex: transporteur-en-tunisie)" },
     },
     {
       name: 'description',
       type: 'textarea',
       required: true,
       localized: true,
-    },
-    {
-      name: 'contenu',
-      type: 'richText',
-      localized: true,
-      admin: { description: 'Contenu long de la page service' },
+      admin: { description: 'Court résumé affiché dans les cartes et la liste' },
     },
     {
       name: 'icone',
       type: 'text',
       required: true,
-      admin: { description: 'Nom de l\'icône Lucide (ex: truck, building, crane)' },
+      admin: { description: "Nom icône Lucide (ex: truck, building, crane, warehouse, package, wrench)" },
     },
     {
       name: 'image',
       type: 'upload',
       relationTo: 'media',
+      admin: { description: 'Image héro de la page service (16:9 recommandé)' },
+    },
+    {
+      name: 'caracteristiques',
+      type: 'array',
+      label: 'Caractéristiques / Prestations incluses',
+      admin: {
+        description: 'Liste des éléments inclus dans ce service (affichés en bullet points)',
+      },
+      fields: [
+        {
+          name: 'icone',
+          type: 'text',
+          admin: { description: 'Icône Lucide (ex: check, star, shield, zap) — laisser vide = check par défaut' },
+        },
+        {
+          name: 'texte',
+          type: 'text',
+          required: true,
+          localized: true,
+        },
+      ],
+    },
+    {
+      name: 'avantages',
+      type: 'array',
+      label: 'Nos avantages (section "Pourquoi nous choisir")',
+      fields: [
+        {
+          name: 'titre',
+          type: 'text',
+          required: true,
+          localized: true,
+        },
+        {
+          name: 'description',
+          type: 'textarea',
+          localized: true,
+        },
+        {
+          name: 'icone',
+          type: 'text',
+          admin: { description: 'Icône Lucide (ex: shield-check, clock, award, thumbs-up)' },
+        },
+      ],
+    },
+    {
+      name: 'contenu',
+      type: 'richText',
+      localized: true,
+      admin: { description: 'Contenu long / texte SEO de la page service' },
+    },
+    {
+      name: 'tarifDepuis',
+      type: 'number',
+      admin: { description: 'Prix de départ en TND (optionnel — affiché sur la carte)' },
     },
     {
       name: 'ordre',
       type: 'number',
       defaultValue: 0,
+      admin: { description: 'Ordre d\'affichage (plus petit = en premier)' },
     },
     {
       name: 'publie',
       type: 'checkbox',
       defaultValue: true,
+      admin: { description: 'Décocher pour masquer ce service du site' },
     },
     {
       name: 'seo',
       type: 'group',
-      label: 'SEO',
+      label: 'SEO & Partage',
       fields: [
-        { name: 'metaTitle', type: 'text', localized: true },
+        { name: 'metaTitle',       type: 'text',     localized: true },
         { name: 'metaDescription', type: 'textarea', localized: true },
-        { name: 'ogImage', type: 'upload', relationTo: 'media' },
+        { name: 'ogImage',         type: 'upload',   relationTo: 'media' },
       ],
     },
   ],

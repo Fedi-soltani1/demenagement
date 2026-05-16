@@ -50,6 +50,20 @@ const Settings: GlobalConfig = {
       defaultValue: 'contact@demenagement.tn',
     },
     {
+      name: 'adresse',
+      type: 'text',
+      defaultValue: 'Tunis, Tunisie',
+      localized: true,
+      admin: { description: "Adresse complète affichée sur la page Contact" },
+    },
+    {
+      name: 'horaires',
+      type: 'textarea',
+      localized: true,
+      defaultValue: 'Lun – Sam : 08h00 – 18h00\nDimanche : Sur rendez-vous',
+      admin: { description: "Horaires d'ouverture (affichés sur Contact et footer)" },
+    },
+    {
       name: 'facebook',
       type: 'text',
       admin: { description: 'URL de la page Facebook' },
@@ -58,6 +72,16 @@ const Settings: GlobalConfig = {
       name: 'instagram',
       type: 'text',
       admin: { description: 'URL du profil Instagram' },
+    },
+    {
+      name: 'tiktok',
+      type: 'text',
+      admin: { description: 'URL TikTok (optionnel)' },
+    },
+    {
+      name: 'linkedin',
+      type: 'text',
+      admin: { description: 'URL LinkedIn (optionnel)' },
     },
     {
       name: 'bandeauAlerte',

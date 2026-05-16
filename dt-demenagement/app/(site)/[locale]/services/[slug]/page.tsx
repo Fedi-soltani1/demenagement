@@ -6,9 +6,11 @@ import { getTranslations } from 'next-intl/server'
 import Image from 'next/image'
 import Link from 'next/link'
 import config from '@payload-config'
-import { COMPANY, LOCALES, SERVICES } from '@/lib/constants'
+import { COMPANY, LOCALES } from '@/lib/constants'
 import { PhoneLink } from '@/components/ui/PhoneLink'
 import { Breadcrumb } from '@/components/layout/Breadcrumb'
+import * as LucideIcons from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 
 export const revalidate = 86400
 
@@ -16,20 +18,39 @@ interface ServicePageProps {
   params: Promise<{ locale: string; slug: string }>
 }
 
+type Caracteristique = { icone?: string | null; texte?: string | null }
+type Avantage = { titre?: string | null; description?: string | null; icone?: string | null }
+
 type ServiceDoc = {
   id: string | number
   slug: string
   nom: string
   description: string
+  caracteristiques?: Caracteristique[] | null
+  avantages?: Avantage[] | null
   contenu?: unknown
-  icone?: string
-  image?: { url?: string; alt?: string } | null
+  icone?: string | null
+  image?: { url?: string | null; alt?: string | null } | null
+  tarifDepuis?: number | null
   publie?: boolean
   seo?: {
-    metaTitle?: string
-    metaDescription?: string
-    ogImage?: { url?: string } | null
+    metaTitle?: string | null
+    metaDescription?: string | null
+    ogImage?: { url?: string | null } | null
+  } | null
+}
+
+function getIcon(name: string | null | undefined, fallback: string = 'Check'): LucideIcon {
+  if (!name) {
+    const F = LucideIcons[fallback as keyof typeof LucideIcons]
+    return (typeof F === 'function' ? F : LucideIcons.Check) as LucideIcon
   }
+  const key = name
+    .split('-')
+    .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+    .join('') as keyof typeof LucideIcons
+  const Icon = LucideIcons[key]
+  return (typeof Icon === 'function' ? Icon : LucideIcons.Check) as LucideIcon
 }
 
 async function getService(slug: string, locale: string): Promise<ServiceDoc | null> {
@@ -50,9 +71,8 @@ export async function generateStaticParams() {
     where: { publie: { equals: true } },
     limit: 100,
   })
-  const dbSlugs = result.docs.map((d) => (d as ServiceDoc).slug)
-  const allSlugs = [...new Set([...SERVICES.map((s) => s.slug), ...dbSlugs])]
-  return LOCALES.flatMap((locale) => allSlugs.map((slug) => ({ locale, slug })))
+  const slugs = (result.docs as ServiceDoc[]).map((d) => d.slug)
+  return LOCALES.flatMap((locale) => slugs.map((slug) => ({ locale, slug })))
 }
 
 export async function generateMetadata({ params }: ServicePageProps): Promise<Metadata> {
@@ -60,7 +80,7 @@ export async function generateMetadata({ params }: ServicePageProps): Promise<Me
   const service = await getService(slug, locale)
   if (!service) return { title: 'Service introuvable' }
 
-  const title = service.seo?.metaTitle ?? `${service.nom} — ${COMPANY.name}`
+  const title       = service.seo?.metaTitle       ?? `${service.nom} — ${COMPANY.name}`
   const description = service.seo?.metaDescription ?? service.description
   return {
     title,
@@ -82,6 +102,9 @@ export default async function ServicePage({ params }: ServicePageProps) {
 
   const t = await getTranslations({ locale, namespace: 'Home.services' })
 
+  const caracteristiques = service.caracteristiques?.filter(Boolean) ?? []
+  const avantages        = service.avantages?.filter(Boolean)        ?? []
+
   return (
     <>
       <Breadcrumb
@@ -98,7 +121,6 @@ export default async function ServicePage({ params }: ServicePageProps) {
           className="pointer-events-none absolute inset-0 opacity-[0.04]"
           style={{
             backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
-            backgroundRepeat: 'repeat',
             backgroundSize: '128px 128px',
           }}
           aria-hidden="true"
@@ -135,6 +157,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
           <p className="font-body text-[var(--color-text-muted)] text-lg leading-relaxed mb-10 max-w-2xl">
             {service.description}
           </p>
+
           <div className="flex flex-col sm:flex-row gap-4">
             <Link
               href={`/${locale}/devis?service=${slug}`}
@@ -151,17 +174,78 @@ export default async function ServicePage({ params }: ServicePageProps) {
         </div>
       </section>
 
-      {service.contenu && (
+      {/* Caractéristiques — affiché uniquement si des items sont renseignés dans Payload */}
+      {caracteristiques.length > 0 && (
         <section className="py-section px-container bg-[var(--color-bg-dark2)]">
-          <div className="max-w-3xl mx-auto">
-            <p className="font-body text-sm text-[var(--color-text-muted)] italic border-s-2 border-[var(--color-red)]/30 ps-4">
-              Contenu détaillé disponible bientôt.
-            </p>
+          <div className="max-w-4xl mx-auto">
+            <h2
+              className="font-heading font-bold text-[var(--color-text-light)] mb-10"
+              style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)' }}
+            >
+              Ce service comprend
+            </h2>
+            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {caracteristiques.map((c, i) => {
+                const Icon = getIcon(c.icone, 'Check')
+                return (
+                  <li
+                    key={i}
+                    className="flex items-start gap-3 p-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-card)]"
+                  >
+                    <span className="flex-shrink-0 w-8 h-8 rounded-lg bg-[var(--color-red)]/10 border border-[var(--color-red)]/20 flex items-center justify-center mt-0.5">
+                      <Icon className="w-4 h-4 text-[var(--color-red)]" aria-hidden="true" />
+                    </span>
+                    <span className="font-body text-[var(--color-text-muted)] text-sm leading-relaxed">
+                      {c.texte}
+                    </span>
+                  </li>
+                )
+              })}
+            </ul>
           </div>
         </section>
       )}
 
-      {/* CTA */}
+      {/* Avantages — affiché uniquement si des items sont renseignés dans Payload */}
+      {avantages.length > 0 && (
+        <section className="py-section px-container bg-[var(--color-bg-dark)]">
+          <div className="max-w-4xl mx-auto">
+            <h2
+              className="font-heading font-bold text-[var(--color-text-light)] mb-10"
+              style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)' }}
+            >
+              Pourquoi nous choisir
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              {avantages.map((a, i) => {
+                const Icon = getIcon(a.icone, 'ShieldCheck')
+                return (
+                  <div
+                    key={i}
+                    className="flex items-start gap-4 p-6 rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-card)]"
+                  >
+                    <span className="flex-shrink-0 w-12 h-12 rounded-xl bg-[var(--color-red)]/10 border border-[var(--color-red)]/20 flex items-center justify-center">
+                      <Icon className="w-5 h-5 text-[var(--color-red)]" aria-hidden="true" />
+                    </span>
+                    <div>
+                      <h3 className="font-heading font-semibold text-[var(--color-text-light)] mb-1">
+                        {a.titre}
+                      </h3>
+                      {a.description && (
+                        <p className="font-body text-[var(--color-text-muted)] text-sm leading-relaxed">
+                          {a.description}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* CTA bas de page */}
       <section className="py-16 px-container bg-[var(--color-bg-dark2)] border-t border-[var(--color-border)]">
         <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
           <div>

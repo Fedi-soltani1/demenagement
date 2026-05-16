@@ -2,38 +2,129 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
 import { setRequestLocale, getTranslations } from 'next-intl/server'
+import { getPayload } from 'payload'
+import config from '@payload-config'
 import { LOCALES, COMPANY } from '@/lib/constants'
+import { BlockRenderer } from '@/components/blocks/BlockRenderer'
+import type { ServiceData }     from '@/components/blocks/ServicesBlock'
+import type { TestimonialData } from '@/components/blocks/TestimonialsBlock'
+import type { BlogArticleData } from '@/components/blocks/BlogPreviewBlock'
+import type { PartnerData }     from '@/components/blocks/PartnersBlock'
+
+export const revalidate = 3600
 
 export async function generateStaticParams() {
   return LOCALES.map((locale) => ({ locale }))
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
-  return { title: `À propos — ${COMPANY.name}` }
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> {
+  const { locale } = await params
+  const payload    = await getPayload({ config })
+  const result     = await payload
+    .find({
+      collection: 'pages',
+      where: { slug: { equals: 'a-propos' }, publie: { equals: true } },
+      locale: locale as 'fr' | 'ar' | 'en',
+      limit: 1,
+    })
+    .catch(() => ({ docs: [] as unknown[] }))
+
+  const page = result.docs[0] as
+    | { seo?: { metaTitle?: string; metaDescription?: string } }
+    | undefined
+
+  return {
+    title:       page?.seo?.metaTitle       ?? `À propos — ${COMPANY.name}`,
+    description: page?.seo?.metaDescription ?? undefined,
+  }
 }
 
-export default async function AProposPage({ params }: { params: Promise<{ locale: string }> }) {
+export default async function AProposPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}) {
   const { locale } = await params
   setRequestLocale(locale)
 
-  const t = await getTranslations({ locale, namespace: 'Home.about' })
+  const t       = await getTranslations({ locale, namespace: 'Home.about' })
+  const payload = await getPayload({ config })
+  const loc     = locale as 'fr' | 'ar' | 'en'
 
+  const [pageData, servicesRes, testimonialsRes, partnersRes] = await Promise.all([
+    payload
+      .find({
+        collection: 'pages',
+        where: { and: [{ slug: { equals: 'a-propos' } }, { publie: { equals: true } }] },
+        locale: loc,
+        depth: 3,
+        limit: 1,
+      })
+      .catch(() => ({ docs: [] as unknown[] })),
+
+    payload
+      .find({ collection: 'services', where: { publie: { equals: true } }, sort: 'ordre', locale: loc, limit: 12 })
+      .catch(() => ({ docs: [] as unknown[] })),
+
+    payload
+      .find({ collection: 'testimonials', where: { publie: { equals: true } }, limit: 20 })
+      .catch(() => ({ docs: [] as unknown[] })),
+
+    payload
+      .find({ collection: 'partners', where: { publie: { equals: true } }, sort: 'ordre', limit: 30, depth: 1 })
+      .catch(() => ({ docs: [] as unknown[] })),
+  ])
+
+  type PageDoc = { layout?: unknown[] }
+  const page   = pageData.docs[0] as PageDoc | undefined
+  const blocks = (page?.layout ?? []) as Array<{ blockType: string; id?: string; [key: string]: unknown }>
+
+  // Si l'admin a configuré la page via Payload → page builder
+  if (blocks.length > 0) {
+    return (
+      <main>
+        <BlockRenderer
+          blocks={blocks}
+          services={servicesRes.docs     as ServiceData[]}
+          testimonials={testimonialsRes.docs as TestimonialData[]}
+          blog={[]}
+          partners={partnersRes.docs     as PartnerData[]}
+        />
+      </main>
+    )
+  }
+
+  // Fallback statique — affiché tant que la page 'a-propos' n'est pas créée dans Payload
   return (
     <>
       {/* Hero */}
-      <section className="py-24 px-container bg-[var(--color-bg-dark)] text-center">
-        <span className="inline-block mb-4 px-4 py-1.5 rounded-full border border-[var(--color-red)]/30 bg-[var(--color-red)]/8 text-[var(--color-red)] text-xs font-body font-semibold uppercase tracking-widest">
-          {t('badge')}
-        </span>
-        <h1
-          className="font-heading font-bold text-[var(--color-text-light)] mb-4"
-          style={{ fontSize: 'clamp(2rem, 4vw, 3.5rem)' }}
-        >
-          {t('title')}
-        </h1>
-        <p className="font-body text-[var(--color-text-muted)] text-lg max-w-2xl mx-auto">
-          {t('text')}
-        </p>
+      <section className="py-24 px-container bg-[var(--color-bg-dark)] text-center relative overflow-hidden">
+        <div
+          className="pointer-events-none absolute inset-0 opacity-[0.04]"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+            backgroundSize: '128px 128px',
+          }}
+          aria-hidden="true"
+        />
+        <div className="relative z-10">
+          <span className="inline-block mb-4 px-4 py-1.5 rounded-full border border-[var(--color-red)]/30 bg-[var(--color-red)]/8 text-[var(--color-red)] text-xs font-body font-semibold uppercase tracking-widest">
+            {t('badge')}
+          </span>
+          <h1
+            className="font-heading font-bold text-[var(--color-text-light)] mb-4"
+            style={{ fontSize: 'clamp(2rem, 4vw, 3.5rem)' }}
+          >
+            {t('title')}
+          </h1>
+          <p className="font-body text-[var(--color-text-muted)] text-lg max-w-2xl mx-auto">
+            {t('text')}
+          </p>
+        </div>
       </section>
 
       {/* Image + stats */}
@@ -60,7 +151,9 @@ export default async function AProposPage({ params }: { params: Promise<{ locale
               ].map(({ value, label }) => (
                 <div key={label} className="border-s-2 border-[var(--color-red)] ps-4">
                   <div className="font-mono text-3xl font-bold text-[var(--color-gold)]">{value}</div>
-                  <span className="font-body text-xs text-[var(--color-text-muted)] uppercase tracking-wide">{label}</span>
+                  <span className="font-body text-xs text-[var(--color-text-muted)] uppercase tracking-wide">
+                    {label}
+                  </span>
                 </div>
               ))}
             </div>
