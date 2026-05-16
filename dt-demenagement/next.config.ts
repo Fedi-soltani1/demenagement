@@ -110,6 +110,12 @@ const nextConfig: NextConfig = {
   // Domaines autorisés pour next/image
   images: {
     remotePatterns: [
+      // Payload media local (dev)
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        pathname: '/api/media/**',
+      },
       {
         protocol: 'https',
         hostname: 'res.cloudinary.com',

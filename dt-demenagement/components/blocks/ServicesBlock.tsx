@@ -4,30 +4,63 @@ import React, { useRef } from 'react'
 import Link from 'next/link'
 import { useTranslations, useLocale } from 'next-intl'
 import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion'
-import { Truck, Building2, Construction, Warehouse, Package, Wrench, ArrowRight } from 'lucide-react'
+import { Truck, Building2, Construction, Warehouse, Package, Wrench, ArrowRight, type LucideIcon } from 'lucide-react'
+import { ShineBorderEffect } from '@/components/ui/ShineBorder'
 
-const SERVICES_DATA = [
-  { slug: 'transporteur-en-tunisie', icon: Truck },
-  { slug: 'transfert-entreprises',   icon: Building2 },
-  { slug: 'location-monte-meubles',  icon: Construction },
-  { slug: 'gardes-meubles',          icon: Warehouse },
-  { slug: 'services-emballage',      icon: Package },
-  { slug: 'montage-demontage',       icon: Wrench },
-] as const
+export type ServiceData = {
+  id: string
+  nom: string
+  slug: string
+  icone?: string | null
+}
+
+const ICON_MAP: Record<string, LucideIcon> = {
+  truck: Truck,
+  building: Building2,
+  building2: Building2,
+  construction: Construction,
+  crane: Construction,
+  warehouse: Warehouse,
+  package: Package,
+  wrench: Wrench,
+}
+
+function getIconForService(service: { slug: string; icone?: string | null }): LucideIcon {
+  if (service.icone) {
+    const mapped = ICON_MAP[service.icone]
+    if (mapped) return mapped
+  }
+  const s = service.slug
+  if (s.includes('transport')) return Truck
+  if (s.includes('entrepris') || s.includes('bureau')) return Building2
+  if (s.includes('monte')) return Construction
+  if (s.includes('garde') || s.includes('stockage')) return Warehouse
+  if (s.includes('emballag')) return Package
+  if (s.includes('montage') || s.includes('meuble')) return Wrench
+  return Package
+}
+
+const SERVICES_FALLBACK: ServiceData[] = [
+  { id: '1', nom: '', slug: 'transporteur-en-tunisie', icone: 'truck' },
+  { id: '2', nom: '', slug: 'transfert-entreprises',   icone: 'building2' },
+  { id: '3', nom: '', slug: 'location-monte-meubles',  icone: 'construction' },
+  { id: '4', nom: '', slug: 'gardes-meubles',          icone: 'warehouse' },
+  { id: '5', nom: '', slug: 'services-emballage',      icone: 'package' },
+  { id: '6', nom: '', slug: 'montage-demontage',       icone: 'wrench' },
+]
 
 // Card avec tilt 3D au hover
 function ServiceCard({
-  slug, Icon, index,
+  service, index,
 }: {
-  slug: string
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  Icon: React.ComponentType<any>
+  service: ServiceData
   index: number
 }) {
   const t = useTranslations('Home.services')
   const tServices = useTranslations('Services')
   const locale = useLocale()
   const cardRef = useRef<HTMLAnchorElement>(null)
+  const Icon = getIconForService(service)
 
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
@@ -47,11 +80,14 @@ function ServiceCard({
     mouseY.set(0)
   }
 
+  // Le titre: si Payload a un nom, l'utiliser, sinon utiliser la clé i18n du slug
+  const title = service.nom || tServices(service.slug as Parameters<typeof tServices>[0])
+
   return (
     <motion.a
       ref={cardRef}
-      href={`/${locale}/services/${slug}`}
-      className="group relative rounded-2xl border border-white/8 bg-white/[0.03] backdrop-blur-md p-card block overflow-hidden"
+      href={`/${locale}/services/${service.slug}`}
+      className="group relative rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-card)] backdrop-blur-md p-card block overflow-hidden"
       style={{ rotateX, rotateY, transformStyle: 'preserve-3d', perspective: 1000 }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
@@ -79,8 +115,8 @@ function ServiceCard({
       </div>
 
       {/* Titre */}
-      <h3 className="font-heading font-semibold text-[var(--color-text-light)] mb-3 text-lg leading-snug group-hover:text-white transition-colors duration-200">
-        {tServices(slug as Parameters<typeof tServices>[0])}
+      <h3 className="font-heading font-semibold text-[var(--color-text-light)] mb-3 text-lg leading-snug group-hover:text-[var(--color-red)] transition-colors duration-200">
+        {title}
       </h3>
 
       {/* Lien */}
@@ -88,17 +124,22 @@ function ServiceCard({
         {t('learnMore')}
         <ArrowRight className="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-1" aria-hidden="true" />
       </span>
+
+      <ShineBorderEffect duration={10} />
     </motion.a>
   )
 }
 
-export function ServicesBlock() {
+export function ServicesBlock({ services = [] }: { services?: ServiceData[] }) {
   const t = useTranslations('Home.services')
   const locale = useLocale()
 
+  // Utilise les données Payload si disponibles, sinon le fallback statique
+  const displayServices = services.length > 0 ? services : SERVICES_FALLBACK
+
   return (
     <section
-      className="py-section px-container bg-[var(--color-bg-dark2)]"
+      className="py-section px-container bg-[var(--color-bg-dark)]"
       aria-labelledby="services-title"
     >
       <div className="max-w-7xl mx-auto">
@@ -127,8 +168,8 @@ export function ServicesBlock() {
 
         {/* Grille services */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-grid mb-12">
-          {SERVICES_DATA.map(({ slug, icon: Icon }, i) => (
-            <ServiceCard key={slug} slug={slug} Icon={Icon} index={i} />
+          {displayServices.map((service, i) => (
+            <ServiceCard key={service.id} service={service} index={i} />
           ))}
         </div>
 

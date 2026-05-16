@@ -6,8 +6,31 @@ import Image from 'next/image'
 import { useTranslations, useLocale } from 'next-intl'
 import { motion } from 'framer-motion'
 import { ArrowRight, Clock } from 'lucide-react'
+import { ShineBorderEffect } from '@/components/ui/ShineBorder'
 
-const MOCK_ARTICLES = [
+export type BlogArticleData = {
+  id: string
+  titre: string
+  slug: string
+  extrait?: string | null
+  imageAlaUne?: { url?: string | null } | null
+  tempsLecture?: number | null
+  datePublication?: string | null
+  categories?: { id?: string; nom?: string }[] | null
+}
+
+type NormalizedArticle = {
+  id: string
+  titre: string
+  slug: string
+  extrait: string
+  categorie: string
+  tempsLecture: number
+  datePublication: string
+  imageUrl: string
+}
+
+const MOCK_ARTICLES: NormalizedArticle[] = [
   {
     id: '1',
     titre: 'Comment bien préparer son déménagement : le guide complet',
@@ -40,9 +63,24 @@ const MOCK_ARTICLES = [
   },
 ]
 
-export function BlogPreviewBlock() {
+function normalizeArticle(a: BlogArticleData): NormalizedArticle {
+  return {
+    id: a.id,
+    titre: a.titre,
+    slug: a.slug,
+    extrait: a.extrait ?? '',
+    categorie: a.categories?.[0]?.nom ?? 'Blog',
+    tempsLecture: a.tempsLecture ?? 5,
+    datePublication: a.datePublication ?? new Date().toISOString(),
+    imageUrl: a.imageAlaUne?.url ?? 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80',
+  }
+}
+
+export function BlogPreviewBlock({ articles = [] }: { articles?: BlogArticleData[] }) {
   const t = useTranslations('Home.blog')
   const locale = useLocale()
+
+  const displayArticles = articles.length > 0 ? articles.map(normalizeArticle) : MOCK_ARTICLES
 
   return (
     <section
@@ -81,10 +119,10 @@ export function BlogPreviewBlock() {
 
         {/* Grille articles */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-grid">
-          {MOCK_ARTICLES.map((article, i) => (
+          {displayArticles.map((article, i) => (
             <motion.article
               key={article.id}
-              className="group flex flex-col rounded-2xl border border-white/8 bg-white/[0.03] overflow-hidden hover:border-[var(--color-red)]/30 transition-colors duration-300"
+              className="group flex flex-col rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-card)] overflow-hidden hover:border-[var(--color-red)]/30 transition-colors duration-300"
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-60px' }}
@@ -118,7 +156,7 @@ export function BlogPreviewBlock() {
                   </span>
                 </div>
 
-                <h3 className="font-heading font-semibold text-[var(--color-text-light)] mb-3 leading-snug group-hover:text-white transition-colors duration-200 line-clamp-2">
+                <h3 className="font-heading font-semibold text-[var(--color-text-light)] mb-3 leading-snug group-hover:text-[var(--color-red)] transition-colors duration-200 line-clamp-2">
                   <Link href={`/${locale}/blog/${article.slug}`}>{article.titre}</Link>
                 </h3>
 
@@ -134,6 +172,7 @@ export function BlogPreviewBlock() {
                   <ArrowRight className="w-3.5 h-3.5 transition-transform duration-200 group-hover/link:translate-x-1" aria-hidden="true" />
                 </Link>
               </div>
+              <ShineBorderEffect duration={12} />
             </motion.article>
           ))}
         </div>

@@ -17,14 +17,26 @@
 
 ```
 Date        : 2026-05-16
-Session     : Dev 2 (correction critique)
-Étape       : Fix admin Payload CMS — restructure layouts + activation middleware
-Fichiers    : app/(site)/layout.tsx (nouveau), app/(payload)/layout.tsx (corrigé),
-              middleware.ts (renommé depuis proxy.ts), next.config.ts (withNextIntl restauré)
-Statut      : ✅ Admin Payload fonctionnel — HTTP 200 sur /admin/login
-Prochain    : Tester /admin/login dans le navigateur avec admin@dt-demenagement.tn / Admin@2024!
-              Puis : déployer sur Vercel + Railway
-Reprendre à : "Ouvrir Claude Code dans dt-demenagement/, vérifier le bon fonctionnement de /admin"
+Session     : Dev 2 (synchronisation Payload ↔ Site)
+Étape       : Connexion blocs homepage aux collections Payload CMS
+Fichiers    : components/blocks/ServicesBlock.tsx (props ServiceData + ICON_MAP)
+              components/blocks/TestimonialsBlock.tsx (props TestimonialData)
+              components/blocks/BlogPreviewBlock.tsx (props BlogArticleData)
+              components/blocks/PartnersBlock.tsx (props PartnerData + logo next/image)
+              app/(site)/[locale]/page.tsx (fetch Payload parallèle + ISR 3600s)
+              next.config.ts (remotePatterns localhost pour media Payload dev)
+Statut      : ✅ Homepage synchronisée avec Payload CMS
+              Les services/témoignages/blog/partenaires créés dans l'admin
+              apparaissent maintenant sur le site (avec fallback mock si vide)
+Prochain    : 1. Remplir les collections dans l'admin Payload
+                 → Ajouter des services (avec nom fr/ar/en, slug, icone)
+                 → Ajouter des témoignages (nom, ville, note, texte)
+                 → Ajouter des partenaires (nom, logo)
+                 → Ajouter des articles blog (statut: publie)
+              2. Tester que les changements apparaissent sur /fr/
+              3. Déployer sur Vercel + Railway
+Reprendre à : "Ouvrir Claude Code dans dt-demenagement/, tester le site /fr/ après
+               avoir ajouté du contenu dans l'admin Payload"
 ```
 
 ---
@@ -102,14 +114,18 @@ Reprendre à : "Ouvrir Claude Code dans dt-demenagement/, vérifier le bon fonct
 
 ```
 PHASE ACTUELLE    : Post-Phase 6 — Corrections techniques
-ÉTAPE ACTUELLE    : ✅ FIX ADMIN PAYLOAD TERMINÉ
-STATUT            : ✅ Admin Payload opérationnel — /admin répond HTTP 200
-DERNIER FICHIER   : dt-demenagement/app/(site)/layout.tsx
-                    dt-demenagement/app/(payload)/layout.tsx
-                    dt-demenagement/middleware.ts
-PROCHAINE ACTION  : Tester /admin/login, se connecter avec admin@dt-demenagement.tn / Admin@2024!
-                    Puis tester les routes publiques /fr/, /fr/services etc.
-                    Puis déployer sur Vercel + Railway
+ÉTAPE ACTUELLE    : ✅ SYNCHRONISATION PAYLOAD ↔ SITE TERMINÉE
+STATUT            : ✅ Homepage connectée à Payload CMS
+DERNIERS FICHIERS : dt-demenagement/app/(site)/[locale]/page.tsx
+                    dt-demenagement/components/blocks/ServicesBlock.tsx
+                    dt-demenagement/components/blocks/TestimonialsBlock.tsx
+                    dt-demenagement/components/blocks/BlogPreviewBlock.tsx
+                    dt-demenagement/components/blocks/PartnersBlock.tsx
+                    dt-demenagement/next.config.ts
+PROCHAINE ACTION  : 1. Remplir les collections Payload dans /admin
+                       (services, témoignages, blog, partenaires)
+                    2. Recharger /fr/ et vérifier que les données apparaissent
+                    3. Déployer sur Vercel + Railway
 BRANCHE ACTIVE    : main
 BLOQUEURS         : Aucun
 ```

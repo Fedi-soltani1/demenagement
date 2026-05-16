@@ -5,23 +5,48 @@ import { useTranslations } from 'next-intl'
 import { motion, AnimatePresence } from 'framer-motion'
 import { StarRating } from '@/components/ui/StarRating'
 
-// Mock data — remplacé par fetch Payload CMS en Phase 5
-const MOCK_TESTIMONIALS = [
-  { id: '1', nom: 'Khaled Ben Ali',   ville: 'Tunis',   note: 5 as const, texte: 'Service exceptionnel ! L\'équipe DT a géré notre déménagement de Tunis à Sousse en un temps record. Très professionnels, soigneux avec nos affaires. Je recommande vivement !' },
-  { id: '2', nom: 'Leila Mansouri',   ville: 'Sfax',    note: 5 as const, texte: 'Parfait du début à la fin. Devis rapide, équipe ponctuelle, rien n\'a été abîmé. Le meilleur service de déménagement que j\'aie utilisé en Tunisie.' },
-  { id: '3', nom: 'Sami Trabelsi',    ville: 'Sousse',  note: 5 as const, texte: 'Déménagement international vers la France géré avec une grande professionnalisme. Communication parfaite tout au long du processus. Merci DT !' },
-  { id: '4', nom: 'Monia Chouaïbi',  ville: 'Nabeul',  note: 4 as const, texte: 'Très bonne expérience globale. L\'équipe est arrivée à l\'heure et a terminé le travail plus vite que prévu. Prix compétitif et service de qualité.' },
-  { id: '5', nom: 'Riadh Ghariani',  ville: 'Monastir', note: 5 as const, texte: 'Service de monte-meubles impeccable pour notre appartement au 4ème étage. Rapides, efficaces et très soigneux. Prix honnête.' },
+export type TestimonialData = {
+  id: string
+  nom: string
+  ville: string
+  note: string // '1' à '5' (select Payload)
+  texte: string
+}
+
+type NormalizedTestimonial = {
+  id: string
+  nom: string
+  ville: string
+  note: 1 | 2 | 3 | 4 | 5
+  texte: string
+}
+
+const MOCK_TESTIMONIALS: NormalizedTestimonial[] = [
+  { id: '1', nom: 'Khaled Ben Ali',   ville: 'Tunis',    note: 5, texte: 'Service exceptionnel ! L\'équipe DT a géré notre déménagement de Tunis à Sousse en un temps record. Très professionnels, soigneux avec nos affaires. Je recommande vivement !' },
+  { id: '2', nom: 'Leila Mansouri',   ville: 'Sfax',     note: 5, texte: 'Parfait du début à la fin. Devis rapide, équipe ponctuelle, rien n\'a été abîmé. Le meilleur service de déménagement que j\'aie utilisé en Tunisie.' },
+  { id: '3', nom: 'Sami Trabelsi',    ville: 'Sousse',   note: 5, texte: 'Déménagement international vers la France géré avec une grande professionnalisme. Communication parfaite tout au long du processus. Merci DT !' },
+  { id: '4', nom: 'Monia Chouaïbi',  ville: 'Nabeul',   note: 4, texte: 'Très bonne expérience globale. L\'équipe est arrivée à l\'heure et a terminé le travail plus vite que prévu. Prix compétitif et service de qualité.' },
+  { id: '5', nom: 'Riadh Ghariani',  ville: 'Monastir', note: 5, texte: 'Service de monte-meubles impeccable pour notre appartement au 4ème étage. Rapides, efficaces et très soigneux. Prix honnête.' },
 ]
 
-export function TestimonialsBlock() {
+function normalize(t: TestimonialData): NormalizedTestimonial {
+  const n = parseInt(t.note, 10)
+  const note = (n >= 1 && n <= 5 ? n : 5) as 1 | 2 | 3 | 4 | 5
+  return { id: t.id, nom: t.nom, ville: t.ville, note, texte: t.texte }
+}
+
+export function TestimonialsBlock({ testimonials = [] }: { testimonials?: TestimonialData[] }) {
   const t = useTranslations('Home.testimonials')
   const [current, setCurrent] = useState(0)
   const [paused, setPaused] = useState(false)
 
+  const displayTestimonials = testimonials.length > 0
+    ? testimonials.map(normalize)
+    : MOCK_TESTIMONIALS
+
   const next = useCallback(() => {
-    setCurrent((c) => (c + 1) % MOCK_TESTIMONIALS.length)
-  }, [])
+    setCurrent((c) => (c + 1) % displayTestimonials.length)
+  }, [displayTestimonials.length])
 
   // Autoplay 4s
   useEffect(() => {
@@ -32,7 +57,7 @@ export function TestimonialsBlock() {
 
   return (
     <section
-      className="py-section px-container bg-[var(--color-bg-dark2)] overflow-hidden"
+      className="py-section px-container bg-[var(--color-bg-dark)] overflow-hidden"
       aria-labelledby="testimonials-title"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
@@ -62,7 +87,7 @@ export function TestimonialsBlock() {
         {/* Carousel */}
         <div className="relative min-h-[260px]" role="region" aria-live="polite" aria-label="Carousel témoignages">
           <AnimatePresence mode="wait">
-            {MOCK_TESTIMONIALS.map((item, i) =>
+            {displayTestimonials.map((item, i) =>
               i === current ? (
                 <motion.blockquote
                   key={item.id}
@@ -94,7 +119,7 @@ export function TestimonialsBlock() {
 
         {/* Indicateurs */}
         <div className="flex items-center justify-center gap-2 mt-8" role="tablist" aria-label="Navigation témoignages">
-          {MOCK_TESTIMONIALS.map((_, i) => (
+          {displayTestimonials.map((_, i) => (
             <button
               key={i}
               onClick={() => setCurrent(i)}
@@ -104,7 +129,7 @@ export function TestimonialsBlock() {
               className={`transition-all duration-300 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)] ${
                 i === current
                   ? 'w-8 h-2 bg-[var(--color-red)]'
-                  : 'w-2 h-2 bg-white/20 hover:bg-white/40'
+                  : 'w-2 h-2 bg-[var(--color-border)] hover:bg-[var(--color-text-muted)]'
               }`}
             />
           ))}
