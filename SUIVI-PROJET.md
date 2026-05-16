@@ -113,19 +113,28 @@ Reprendre à : "Ouvrir Claude Code dans dt-demenagement/, tester le site /fr/ ap
 > Elle lui dit exactement où reprendre sans poser de questions.
 
 ```
-PHASE ACTUELLE    : Post-Phase 6 — Corrections techniques
-ÉTAPE ACTUELLE    : ✅ SYNCHRONISATION PAYLOAD ↔ SITE TERMINÉE
-STATUT            : ✅ Homepage connectée à Payload CMS
-DERNIERS FICHIERS : dt-demenagement/app/(site)/[locale]/page.tsx
-                    dt-demenagement/components/blocks/ServicesBlock.tsx
-                    dt-demenagement/components/blocks/TestimonialsBlock.tsx
-                    dt-demenagement/components/blocks/BlogPreviewBlock.tsx
-                    dt-demenagement/components/blocks/PartnersBlock.tsx
-                    dt-demenagement/next.config.ts
-PROCHAINE ACTION  : 1. Remplir les collections Payload dans /admin
-                       (services, témoignages, blog, partenaires)
-                    2. Recharger /fr/ et vérifier que les données apparaissent
-                    3. Déployer sur Vercel + Railway
+PHASE ACTUELLE    : Post-Phase 6 — MIROIR PAYLOAD COMPLET
+ÉTAPE ACTUELLE    : ✅ TOUT LE SITE EST GÉRÉ PAR PAYLOAD CMS
+STATUT            : ✅ Homepage 100% connectée — Global + Collections
+ARCHITECTURE      :
+  Global Homepage → hero, points forts, à propos, pourquoi nous, CTA final
+  Collections     → services, témoignages, blog, partenaires, FAQ, villes, pays
+  Principe        → champ vide dans admin = fallback i18n (site ne casse jamais)
+                    champ rempli = valeur CMS affichée sur le site
+REVALIDATE        : 60 secondes (voir les modifs rapidement en prod)
+DERNIERS FICHIERS : payload/globals/Homepage.ts (NOUVEAU)
+                    payload.config.ts (globals: [Settings, Homepage])
+                    app/(site)/[locale]/page.tsx (fetch global + toutes collections)
+                    components/blocks/HeroBlock.tsx (CmsHero prop)
+                    components/blocks/MiniFeaturesBlock.tsx (CmsPointsForts prop)
+                    components/blocks/StatsAboutBlock.tsx (CmsApropos prop)
+                    components/blocks/WhyUsBlock.tsx (CmsPourquoiNous prop)
+                    components/blocks/CTAFinalBlock.tsx (CmsCtaFinal prop)
+PROCHAINE ACTION  : 1. Démarrer pnpm dev et aller sur /admin
+                    2. Cliquer sur "Page d'accueil" dans le menu Globals
+                    3. Remplir les champs et sauvegarder
+                    4. Recharger /fr/ — les modifications apparaissent
+                    5. Déployer sur Vercel + Railway
 BRANCHE ACTIVE    : main
 BLOQUEURS         : Aucun
 ```
