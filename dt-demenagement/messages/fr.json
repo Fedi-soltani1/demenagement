@@ -169,7 +169,8 @@
       "badge": "Avis Google",
       "title": "Ce que disent nos clients",
       "ratingLabel": "sur 5 basé sur",
-      "reviewsLabel": "avis Google"
+      "reviewsLabel": "avis Google",
+      "cta": "Voir tous les avis sur Google"
     },
     "partners": {
       "badge": "Partenaires",

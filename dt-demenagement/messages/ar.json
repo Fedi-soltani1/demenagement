@@ -169,7 +169,8 @@
       "badge": "تقييمات Google",
       "title": "ماذا يقول عملاؤنا",
       "ratingLabel": "من 5 بناءً على",
-      "reviewsLabel": "تقييم Google"
+      "reviewsLabel": "تقييم Google",
+      "cta": "عرض جميع التقييمات على Google"
     },
     "partners": {
       "badge": "الشركاء",

@@ -169,7 +169,8 @@
       "badge": "Google Reviews",
       "title": "What our clients say",
       "ratingLabel": "out of 5 based on",
-      "reviewsLabel": "Google reviews"
+      "reviewsLabel": "Google reviews",
+      "cta": "View all reviews on Google"
     },
     "partners": {
       "badge": "Partners",
