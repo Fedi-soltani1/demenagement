@@ -29,6 +29,13 @@ const securityHeaders = [
 ]
 
 const nextConfig: NextConfig = {
+  // Alias Turbopack — nécessaire pour que Payload résolve @payload-config
+  turbopack: {
+    resolveAlias: {
+      '@payload-config': './payload.config.ts',
+    },
+  },
+
   // Headers de sécurité sur toutes les routes
   async headers() {
     return [
@@ -118,6 +125,21 @@ const nextConfig: NextConfig = {
         hostname: 'graph.facebook.com',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cdninstagram.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.cdninstagram.com',
+        pathname: '/**',
+      },
     ],
   },
 
@@ -131,10 +153,11 @@ const nextConfig: NextConfig = {
 
 const baseConfig = withNextIntl(withPayload(nextConfig))
 
-export default withSentryConfig(baseConfig, {
-  org:     process.env.SENTRY_ORG,
-  project: process.env.SENTRY_PROJECT,
-  // Désactiver l'upload des source maps si la clé auth n'est pas configurée
-  silent:  true,
-  disableLogger: true,
-})
+export default baseConfig
+
+// export default withSentryConfig(baseConfig, {
+//   org:     process.env.SENTRY_ORG,
+//   project: process.env.SENTRY_PROJECT,
+//   silent:  true,
+//   webpack: { treeshake: { removeDebugLogging: true } },
+// })

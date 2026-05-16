@@ -7,9 +7,8 @@ import {
   JetBrains_Mono,
   Noto_Sans_Arabic,
 } from 'next/font/google'
-import './globals.css'
+import '../globals.css'
 
-// Preload : Cormorant Garamond + DM Sans uniquement (polices au-dessus du fold)
 const cormorantGaramond = Cormorant_Garamond({
   variable: '--font-display',
   subsets: ['latin'],
@@ -60,11 +59,11 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://demenagement.tn'),
 }
 
-export default async function RootLayout({
+export default async function SiteLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   // Locale lue depuis les headers posés par le middleware next-intl.
-  // Pour les routes exclues du middleware (ex : /admin), retourne DEFAULT_LOCALE ('fr').
+  // Pour les routes sans locale dans le path, retourne DEFAULT_LOCALE ('fr').
   const locale = await getLocale()
 
   return (
@@ -72,6 +71,7 @@ export default async function RootLayout({
       lang={locale}
       dir={locale === 'ar' ? 'rtl' : 'ltr'}
       suppressHydrationWarning
+      data-scroll-behavior="smooth"
       className={[
         cormorantGaramond.variable,
         playfairDisplay.variable,

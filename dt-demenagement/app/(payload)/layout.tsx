@@ -1,7 +1,24 @@
 import type { ReactNode } from 'react'
+import type { ServerFunctionClient } from 'payload'
+import config from '@payload-config'
+import { RootLayout, handleServerFunctions } from '@payloadcms/next/layouts'
+import '@payloadcms/next/css'
+import { importMap } from './admin/importMap.js'
 
-// Le root app/layout.tsx gère <html> et <body>.
-// Ce layout ne fournit que le contexte Payload CMS sans dupliquer la structure HTML.
-export default function PayloadLayout({ children }: { children: ReactNode }) {
-  return <>{children}</>
+type Args = {
+  children: ReactNode
 }
+
+const serverFunction: ServerFunctionClient = async function (args) {
+  'use server'
+  return handleServerFunctions({
+    ...args,
+    config,
+    importMap,
+  })
+}
+
+const Layout = ({ children }: Args) =>
+  RootLayout({ children, config, importMap, serverFunction })
+
+export default Layout

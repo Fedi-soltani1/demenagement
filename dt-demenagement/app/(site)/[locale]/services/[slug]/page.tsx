@@ -6,11 +6,10 @@ import { getTranslations } from 'next-intl/server'
 import Image from 'next/image'
 import Link from 'next/link'
 import config from '@payload-config'
-import { COMPANY, LOCALES } from '@/lib/constants'
+import { COMPANY, LOCALES, SERVICES } from '@/lib/constants'
 import { PhoneLink } from '@/components/ui/PhoneLink'
 import { Breadcrumb } from '@/components/layout/Breadcrumb'
 
-// ISR — données services changent rarement
 export const revalidate = 86400
 
 interface ServicePageProps {
@@ -46,11 +45,14 @@ async function getService(slug: string, locale: string): Promise<ServiceDoc | nu
 
 export async function generateStaticParams() {
   const payload = await getPayload({ config })
-  const result = await payload.find({ collection: 'services', where: { publie: { equals: true } }, limit: 100 })
-
-  return LOCALES.flatMap((locale) =>
-    result.docs.map((doc) => ({ locale, slug: (doc as ServiceDoc).slug }))
-  )
+  const result = await payload.find({
+    collection: 'services',
+    where: { publie: { equals: true } },
+    limit: 100,
+  })
+  const dbSlugs = result.docs.map((d) => (d as ServiceDoc).slug)
+  const allSlugs = [...new Set([...SERVICES.map((s) => s.slug), ...dbSlugs])]
+  return LOCALES.flatMap((locale) => allSlugs.map((slug) => ({ locale, slug })))
 }
 
 export async function generateMetadata({ params }: ServicePageProps): Promise<Metadata> {
@@ -60,7 +62,6 @@ export async function generateMetadata({ params }: ServicePageProps): Promise<Me
 
   const title = service.seo?.metaTitle ?? `${service.nom} — ${COMPANY.name}`
   const description = service.seo?.metaDescription ?? service.description
-
   return {
     title,
     description,
@@ -91,9 +92,8 @@ export default async function ServicePage({ params }: ServicePageProps) {
         ]}
       />
 
-      {/* Hero service */}
+      {/* Hero */}
       <section className="relative py-24 px-container bg-[var(--color-bg-dark)] overflow-hidden">
-        {/* Grain */}
         <div
           className="pointer-events-none absolute inset-0 opacity-[0.04]"
           style={{
@@ -103,8 +103,12 @@ export default async function ServicePage({ params }: ServicePageProps) {
           }}
           aria-hidden="true"
         />
+        <div
+          className="pointer-events-none absolute end-0 top-0 w-1/2 h-full opacity-10"
+          style={{ background: 'radial-gradient(ellipse 80% 80% at 80% 50%, #b52027 0%, transparent 70%)' }}
+          aria-hidden="true"
+        />
 
-        {/* Image hero si disponible */}
         {service.image?.url && (
           <div className="absolute inset-0 z-0">
             <Image
@@ -140,29 +144,25 @@ export default async function ServicePage({ params }: ServicePageProps) {
             </Link>
             <PhoneLink
               numero={COMPANY.phone1}
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-full border border-white/20 text-[var(--color-text-muted)] font-body text-sm hover:border-white/40 hover:text-white transition-all duration-200"
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-full border border-[var(--color-text-light)]/20 text-[var(--color-text-muted)] font-body text-sm hover:border-[var(--color-text-light)]/40 hover:text-[var(--color-text-light)] transition-all duration-200"
               showIcon
             />
           </div>
         </div>
       </section>
 
-      {/* Contenu enrichi (lexical → HTML à implémenter Phase 6) */}
       {service.contenu && (
         <section className="py-section px-container bg-[var(--color-bg-dark2)]">
           <div className="max-w-3xl mx-auto">
-            <div className="prose prose-invert prose-red max-w-none font-body text-[var(--color-text-muted)] leading-relaxed">
-              <p className="text-sm text-[var(--color-text-muted)] italic border-s-2 border-[var(--color-red)]/30 ps-4">
-                {/* Le rendu Lexical sera intégré à l'Étape 29 — Google Places + rich text renderers */}
-                Contenu détaillé disponible bientôt.
-              </p>
-            </div>
+            <p className="font-body text-sm text-[var(--color-text-muted)] italic border-s-2 border-[var(--color-red)]/30 ps-4">
+              Contenu détaillé disponible bientôt.
+            </p>
           </div>
         </section>
       )}
 
-      {/* CTA bas de page */}
-      <section className="py-16 px-container bg-[var(--color-bg-dark)] border-t border-white/5">
+      {/* CTA */}
+      <section className="py-16 px-container bg-[var(--color-bg-dark2)] border-t border-[var(--color-border)]">
         <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
           <div>
             <p className="font-heading font-semibold text-[var(--color-text-light)] text-xl mb-1">
