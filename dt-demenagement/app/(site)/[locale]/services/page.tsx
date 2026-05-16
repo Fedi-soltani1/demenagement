@@ -154,7 +154,7 @@ export default async function ServicesPage({
                       <div className="flex items-center justify-between">
                         {service.tarifDepuis ? (
                           <span className="font-mono text-sm text-[var(--color-gold)] font-semibold">
-                            Dès {service.tarifDepuis} TND
+                            {t('priceFrom')} {service.tarifDepuis} {t('currency')}
                           </span>
                         ) : (
                           <span />
@@ -171,7 +171,7 @@ export default async function ServicesPage({
           ) : (
             // Fallback si aucun service dans Payload
             <p className="text-center font-body text-[var(--color-text-muted)] py-20">
-              Aucun service disponible pour le moment.
+              {t('empty')}
             </p>
           )}
         </div>

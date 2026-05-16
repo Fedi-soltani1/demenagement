@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { setRequestLocale } from 'next-intl/server'
+import { setRequestLocale, getTranslations } from 'next-intl/server'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { LOCALES, COMPANY } from '@/lib/constants'
@@ -19,9 +19,10 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>
 }): Promise<Metadata> {
   const { locale } = await params
+  const t = await getTranslations({ locale, namespace: 'Contact' })
   return buildMetadata({
-    title:       `Contactez ${COMPANY.name}`,
-    description: `Contactez DT Déménagement Tunisie par téléphone, email ou formulaire. Devis gratuit en 24h. Disponibles 6j/7.`,
+    title:       `${t('title')} — ${COMPANY.name}`,
+    description: t('subtitle'),
     path:        '/contact',
     locale,
   })
@@ -44,8 +45,11 @@ export default async function ContactPage({
   setRequestLocale(locale)
   const loc = locale as 'fr' | 'ar' | 'en'
 
-  // Récupérer les infos de contact depuis le Global Settings
-  const payload  = await getPayload({ config })
+  const [t, payload] = await Promise.all([
+    getTranslations({ locale, namespace: 'Contact' }),
+    getPayload({ config }),
+  ])
+
   const settings = await payload
     .findGlobal({ slug: 'settings', locale: loc })
     .catch(() => null) as SettingsDoc | null
@@ -58,10 +62,10 @@ export default async function ContactPage({
   const horaires = settings?.horaires ?? 'Lun – Sam : 08h00 – 18h00\nDimanche : sur rendez-vous'
 
   const cards = [
-    { Icon: MapPin, title: 'Adresse',   content: adresse },
-    { Icon: Phone,  title: 'Téléphone', content: telephone },
-    { Icon: Mail,   title: 'E-mail',    content: email },
-    { Icon: Clock,  title: 'Horaires',  content: horaires },
+    { Icon: MapPin, title: t('labelAddress'), content: adresse },
+    { Icon: Phone,  title: t('labelPhone'),   content: telephone },
+    { Icon: Mail,   title: t('labelEmail'),   content: email },
+    { Icon: Clock,  title: t('labelHours'),   content: horaires },
   ]
 
   return (
@@ -76,49 +80,60 @@ export default async function ContactPage({
           }}
           aria-hidden="true"
         />
-        <span className="inline-block mb-4 px-4 py-1.5 rounded-full border border-[var(--color-red)]/30 bg-[var(--color-red)]/8 text-[var(--color-red)] text-xs font-body font-semibold uppercase tracking-widest">
-          Contact
-        </span>
-        <h1
-          className="font-heading font-bold text-[var(--color-text-light)] mb-4"
-          style={{ fontSize: 'clamp(2rem, 4vw, 3.5rem)' }}
-        >
-          Contactez-nous
-        </h1>
-        <p className="font-body text-[var(--color-text-muted)] text-lg max-w-xl mx-auto">
-          Notre équipe est disponible pour répondre à toutes vos questions.
-        </p>
+        <div
+          className="pointer-events-none absolute end-0 top-0 w-1/2 h-full opacity-10"
+          style={{ background: 'radial-gradient(ellipse 80% 80% at 80% 50%, #b52027 0%, transparent 70%)' }}
+          aria-hidden="true"
+        />
+        <div className="relative z-10">
+          <span className="inline-block mb-4 px-4 py-1.5 rounded-full border border-[var(--color-red)]/30 bg-[var(--color-red)]/8 text-[var(--color-red)] text-xs font-body font-semibold uppercase tracking-widest">
+            {t('badge')}
+          </span>
+          <h1
+            className="font-heading font-bold text-[var(--color-text-light)] mb-4"
+            style={{ fontSize: 'clamp(2rem, 4vw, 3.5rem)' }}
+          >
+            {t('title')}
+          </h1>
+          <p className="font-body text-[var(--color-text-muted)] text-lg max-w-xl mx-auto">
+            {t('subtitle')}
+          </p>
+        </div>
       </section>
 
-      {/* Infos contact — depuis Payload Settings */}
+      {/* Cartes contact */}
       <section className="py-section px-container bg-[var(--color-bg-dark2)]">
-        <div className="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-8">
-          {cards.map(({ Icon, title, content }) => (
+        <div className="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-6">
+          {cards.map(({ Icon, title, content }, i) => (
             <div
               key={title}
-              className="flex items-start gap-4 p-card rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-card)]"
+              className="flex items-start gap-4 p-card rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-card)] hover:border-[var(--color-red)]/30 transition-colors duration-300"
+              style={{ animationDelay: `${i * 80}ms` }}
             >
               <div className="w-12 h-12 rounded-xl bg-[var(--color-red)]/10 border border-[var(--color-red)]/20 flex items-center justify-center flex-shrink-0">
                 <Icon className="w-5 h-5 text-[var(--color-red)]" aria-hidden="true" />
               </div>
               <div>
-                <h2 className="font-heading font-semibold text-[var(--color-text-light)] mb-1">{title}</h2>
-                <p className="font-body text-[var(--color-text-muted)] text-sm whitespace-pre-line">{content}</p>
+                <h2 className="font-heading font-semibold text-[var(--color-text-light)] mb-1 text-base">{title}</h2>
+                <p className="font-body text-[var(--color-text-muted)] text-sm whitespace-pre-line leading-relaxed">{content}</p>
               </div>
             </div>
           ))}
         </div>
 
-        <div className="max-w-4xl mx-auto mt-12 text-center">
-          <p className="font-body text-[var(--color-text-muted)] mb-6">
-            Vous souhaitez un devis rapide ?
-          </p>
-          <Link
-            href={`/${locale}/devis`}
-            className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[var(--color-red)] text-white font-body font-semibold text-sm uppercase tracking-wider hover:bg-[var(--color-red-dark)] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)]"
-          >
-            Demander un devis gratuit →
-          </Link>
+        {/* CTA Devis */}
+        <div className="max-w-4xl mx-auto mt-14 text-center">
+          <div className="inline-block px-10 py-8 rounded-2xl border border-[var(--color-red)]/20 bg-[var(--color-red)]/5">
+            <p className="font-body text-[var(--color-text-muted)] mb-5 text-base">
+              {t('ctaText')}
+            </p>
+            <Link
+              href={`/${locale}/devis`}
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[var(--color-red)] text-white font-body font-semibold text-sm uppercase tracking-wider hover:bg-[var(--color-red-dark)] hover:shadow-[0_0_24px_rgba(181,32,39,0.4)] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)]"
+            >
+              {t('ctaButton')} →
+            </Link>
+          </div>
         </div>
       </section>
     </>

@@ -150,7 +150,10 @@
       "learnMore": "Learn more",
       "ctaDevis": "Get a free quote",
       "ctaBottomTitle": "Ready to start your project?",
-      "ctaBottomSub": "Contact us for a personalised, free quote."
+      "ctaBottomSub": "Contact us for a personalised, free quote.",
+      "priceFrom": "From",
+      "currency": "TND",
+      "empty": "No services available at the moment."
     },
     "map": {
       "badge": "Coverage area",
@@ -199,7 +202,9 @@
       "subtitle": "Practical advice, moving tips and industry news.",
       "ctaText": "View all articles",
       "readMore": "Read article",
-      "minRead": "min read"
+      "minRead": "min read",
+      "empty": "No articles published yet.",
+      "adminHint": "Add articles from the admin panel."
     },
     "ctaFinal": {
       "title": "Ready for your move?",
@@ -218,6 +223,19 @@
     "gardes-meubles": "Furniture Storage",
     "services-emballage": "Packing Services",
     "montage-demontage": "Assembly / Disassembly"
+  },
+  "Contact": {
+    "badge": "Contact",
+    "title": "Get in touch",
+    "subtitle": "Our team is available to answer all your questions.",
+    "labelAddress": "Address",
+    "labelPhone": "Phone",
+    "labelEmail": "Email",
+    "labelHours": "Opening hours",
+    "ctaText": "Want a quick quote?",
+    "ctaButton": "Request a free quote",
+    "breadcrumbHome": "Home",
+    "breadcrumbContact": "Contact"
   },
   "Devis": {
     "metaTitle": "Free quote request",

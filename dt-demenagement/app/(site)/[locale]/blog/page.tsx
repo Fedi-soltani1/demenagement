@@ -172,11 +172,11 @@ export default async function BlogPage({
             </div>
           ) : (
             <div className="text-center py-20">
-              <p className="font-body text-[var(--color-text-muted)] mb-6">
-                Aucun article publié pour le moment.
+              <p className="font-body text-[var(--color-text-muted)] mb-4">
+                {t('empty')}
               </p>
               <p className="font-body text-xs text-[var(--color-text-muted)]/60">
-                {"L'administrateur peut ajouter des articles depuis /admin → Articles."}
+                {t('adminHint')}
               </p>
             </div>
           )}

@@ -7,7 +7,9 @@ import { useTheme } from 'next-themes'
 import { useLocale, useTranslations } from 'next-intl'
 import { PhoneLink } from '@/components/ui/PhoneLink'
 import { MenuToggleIcon } from '@/components/ui/MenuToggleIcon'
-import { COMPANY, SERVICES, VILLES, PAYS, LOCALES, type Locale } from '@/lib/constants'
+import { COMPANY, VILLES, PAYS, LOCALES, type Locale } from '@/lib/constants'
+
+export type NavService = { nom: string; slug: string }
 
 // ─── Icons ────────────────────────────────────────────────────────────────────
 
@@ -166,9 +168,8 @@ const ctaClass =
 
 // ─── Navbar ───────────────────────────────────────────────────────────────────
 
-function Navbar() {
+function Navbar({ services = [] }: { services?: NavService[] }) {
   const t = useTranslations('Navbar')
-  const tServices = useTranslations('Services')
   const pathname = usePathname()
   const locale = useLocale()
 
@@ -292,14 +293,14 @@ function Navbar() {
                     aria-label={t('services')}
                     className="absolute top-full start-0 mt-1 w-64 bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl shadow-2xl py-2"
                   >
-                    {SERVICES.map((service) => (
+                    {services.map((service) => (
                       <Link
                         key={service.slug}
                         href={`/${locale}/services/${service.slug}`}
                         role="menuitem"
                         className="flex items-center px-4 py-2.5 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text-light)] hover:bg-white/5 transition-colors"
                       >
-                        {tServices(service.slug)}
+                        {service.nom}
                       </Link>
                     ))}
                   </div>
@@ -433,13 +434,13 @@ function Navbar() {
                 </button>
                 {mobileExpanded === 'services' && (
                   <div className="ms-4 border-s-2 border-[var(--color-red)]/30 ps-4 pb-2 space-y-0.5">
-                    {SERVICES.map((service) => (
+                    {services.map((service) => (
                       <Link
                         key={service.slug}
                         href={`/${locale}/services/${service.slug}`}
                         className="block py-2 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text-light)] transition-colors"
                       >
-                        {tServices(service.slug)}
+                        {service.nom}
                       </Link>
                     ))}
                   </div>

@@ -1,7 +1,7 @@
 import { NextIntlClientProvider } from 'next-intl'
 import { getMessages, setRequestLocale } from 'next-intl/server'
 import { ThemeProvider } from '@/components/layout/ThemeProvider'
-import { Navbar } from '@/components/layout/Navbar'
+import { NavbarServer } from '@/components/layout/NavbarServer'
 import { Footer } from '@/components/layout/Footer'
 import { CustomCursor } from '@/components/layout/CustomCursor'
 import { PageLoader } from '@/components/layout/PageLoader'
@@ -43,7 +43,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
           />
           <CustomCursor />
           <PageLoader />
-          <Navbar />
+          <NavbarServer />
           <main id="main-content">
             {children}
           </main>

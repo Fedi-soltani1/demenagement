@@ -150,7 +150,10 @@
       "learnMore": "En savoir plus",
       "ctaDevis": "Obtenir un devis gratuit",
       "ctaBottomTitle": "Prêt à démarrer votre projet ?",
-      "ctaBottomSub": "Contactez-nous pour un devis personnalisé et gratuit."
+      "ctaBottomSub": "Contactez-nous pour un devis personnalisé et gratuit.",
+      "priceFrom": "Dès",
+      "currency": "TND",
+      "empty": "Aucun service disponible pour le moment."
     },
     "map": {
       "badge": "Zone d'intervention",
@@ -199,7 +202,9 @@
       "subtitle": "Conseils pratiques, astuces déménagement et actualités du secteur.",
       "ctaText": "Voir tous les articles",
       "readMore": "Lire l'article",
-      "minRead": "min de lecture"
+      "minRead": "min de lecture",
+      "empty": "Aucun article publié pour le moment.",
+      "adminHint": "Ajoutez des articles depuis le panneau d'administration."
     },
     "ctaFinal": {
       "title": "Prêt pour votre déménagement ?",
@@ -218,6 +223,19 @@
     "gardes-meubles": "Gardes Meubles",
     "services-emballage": "Service Emballage",
     "montage-demontage": "Montage / Démontage"
+  },
+  "Contact": {
+    "badge": "Contact",
+    "title": "Contactez-nous",
+    "subtitle": "Notre équipe est disponible pour répondre à toutes vos questions.",
+    "labelAddress": "Adresse",
+    "labelPhone": "Téléphone",
+    "labelEmail": "E-mail",
+    "labelHours": "Horaires",
+    "ctaText": "Vous souhaitez un devis rapide ?",
+    "ctaButton": "Demander un devis gratuit",
+    "breadcrumbHome": "Accueil",
+    "breadcrumbContact": "Contact"
   },
   "Devis": {
     "metaTitle": "Demande de devis gratuit",
