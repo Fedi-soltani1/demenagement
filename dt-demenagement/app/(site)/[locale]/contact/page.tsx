@@ -4,6 +4,7 @@ import { setRequestLocale } from 'next-intl/server'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { LOCALES, COMPANY } from '@/lib/constants'
+import { buildMetadata } from '@/lib/seo'
 import { MapPin, Phone, Mail, Clock } from 'lucide-react'
 
 export const revalidate = 300
@@ -12,8 +13,18 @@ export async function generateStaticParams() {
   return LOCALES.map((locale) => ({ locale }))
 }
 
-export async function generateMetadata(): Promise<Metadata> {
-  return { title: `Contact — ${COMPANY.name}` }
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> {
+  const { locale } = await params
+  return buildMetadata({
+    title:       `Contactez ${COMPANY.name}`,
+    description: `Contactez DT Déménagement Tunisie par téléphone, email ou formulaire. Devis gratuit en 24h. Disponibles 6j/7.`,
+    path:        '/contact',
+    locale,
+  })
 }
 
 type SettingsDoc = {

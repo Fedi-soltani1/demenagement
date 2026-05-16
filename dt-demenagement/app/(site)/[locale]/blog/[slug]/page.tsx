@@ -6,6 +6,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import config from '@payload-config'
 import { COMPANY, LOCALES } from '@/lib/constants'
+import { buildMetadata } from '@/lib/seo'
 import { Breadcrumb } from '@/components/layout/Breadcrumb'
 import { Clock, Calendar, User, ArrowLeft, Share2 } from 'lucide-react'
 
@@ -84,18 +85,15 @@ export async function generateMetadata({ params }: BlogPageProps): Promise<Metad
   const description = article.seo?.metaDescription ?? article.extrait
   const ogImage = article.seo?.ogImage?.url ?? article.imageAlaUne?.url
 
+  const base = buildMetadata({ title, description, path: `/blog/${slug}`, locale, image: ogImage })
   return {
-    title,
-    description,
+    ...base,
     openGraph: {
-      title,
-      description,
-      type: 'article',
+      ...base.openGraph,
+      type:          'article',
       publishedTime: article.datePublication,
-      authors: article.auteur ? [article.auteur] : [],
-      images: ogImage ? [{ url: ogImage }] : [],
+      authors:       article.auteur ? [article.auteur] : [],
     },
-    twitter: { card: 'summary_large_image', title, description },
   }
 }
 

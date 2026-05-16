@@ -4,6 +4,7 @@ import { setRequestLocale } from 'next-intl/server'
 import { getTranslations } from 'next-intl/server'
 import Link from 'next/link'
 import { COMPANY, LOCALES, VILLES, SERVICES } from '@/lib/constants'
+import { buildMetadata } from '@/lib/seo'
 import { PhoneLink } from '@/components/ui/PhoneLink'
 import { Breadcrumb } from '@/components/layout/Breadcrumb'
 import { MapPin, CheckCircle } from 'lucide-react'
@@ -29,14 +30,10 @@ export async function generateMetadata({ params }: VillePageProps): Promise<Meta
   const ville = getVille(slug)
   if (!ville) return { title: 'Ville introuvable' }
 
-  const title = `Déménagement ${ville.nom} — ${COMPANY.name}`
+  const title       = `Déménagement ${ville.nom} — ${COMPANY.name}`
   const description = `DT Déménagement assure tous vos déménagements à ${ville.nom} et dans toute la région ${ville.region}. Devis gratuit en 24h.`
 
-  return {
-    title,
-    description,
-    openGraph: { title, description },
-  }
+  return buildMetadata({ title, description, path: `/villes/${slug}`, locale })
 }
 
 export default async function VillePage({ params }: VillePageProps) {

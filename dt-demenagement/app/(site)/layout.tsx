@@ -57,6 +57,18 @@ export const metadata: Metadata = {
   description:
     'DT Déménagement Tunisie — Solutions de déménagement pour particuliers et entreprises. Tunis et toute la Tunisie. Devis gratuit.',
   metadataBase: new URL('https://demenagement.tn'),
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION ?? '',
+  },
+  openGraph: {
+    siteName: 'DT Déménagement Tunisie',
+    type: 'website',
+    images: [{ url: '/og-default.jpg', width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    site: '@dtdemenagement',
+  },
 }
 
 export default async function SiteLayout({

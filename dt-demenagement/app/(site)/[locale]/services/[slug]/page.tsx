@@ -7,6 +7,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import config from '@payload-config'
 import { COMPANY, LOCALES } from '@/lib/constants'
+import { buildMetadata, serviceSchema } from '@/lib/seo'
 import { PhoneLink } from '@/components/ui/PhoneLink'
 import { Breadcrumb } from '@/components/layout/Breadcrumb'
 import * as LucideIcons from 'lucide-react'
@@ -82,15 +83,13 @@ export async function generateMetadata({ params }: ServicePageProps): Promise<Me
 
   const title       = service.seo?.metaTitle       ?? `${service.nom} — ${COMPANY.name}`
   const description = service.seo?.metaDescription ?? service.description
-  return {
+  return buildMetadata({
     title,
     description,
-    openGraph: {
-      title,
-      description,
-      images: service.seo?.ogImage?.url ? [{ url: service.seo.ogImage.url }] : [],
-    },
-  }
+    path:   `/services/${slug}`,
+    locale,
+    image:  service.seo?.ogImage?.url ?? service.image?.url,
+  })
 }
 
 export default async function ServicePage({ params }: ServicePageProps) {
@@ -107,6 +106,17 @@ export default async function ServicePage({ params }: ServicePageProps) {
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(serviceSchema({
+            name:        service.nom,
+            description: service.description,
+            url:         `${COMPANY.siteUrl}/${locale}/services/${service.slug}`,
+            image:       service.image?.url,
+          })),
+        }}
+      />
       <Breadcrumb
         items={[
           { label: 'Accueil', href: `/${locale}` },

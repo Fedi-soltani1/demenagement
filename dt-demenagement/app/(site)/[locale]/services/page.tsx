@@ -5,6 +5,7 @@ import { setRequestLocale, getTranslations } from 'next-intl/server'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { LOCALES, COMPANY } from '@/lib/constants'
+import { buildMetadata } from '@/lib/seo'
 import * as LucideIcons from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
@@ -21,10 +22,12 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params
   const t = await getTranslations({ locale, namespace: 'Home.services' })
-  return {
-    title: `${t('title')} — ${COMPANY.name}`,
+  return buildMetadata({
+    title:       `${t('title')} — ${COMPANY.name}`,
     description: t('subtitle'),
-  }
+    path:        '/services',
+    locale,
+  })
 }
 
 type ServiceDoc = {

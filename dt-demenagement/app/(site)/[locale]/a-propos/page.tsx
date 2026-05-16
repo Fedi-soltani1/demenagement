@@ -5,6 +5,7 @@ import { setRequestLocale, getTranslations } from 'next-intl/server'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { LOCALES, COMPANY } from '@/lib/constants'
+import { buildMetadata } from '@/lib/seo'
 import { BlockRenderer } from '@/components/blocks/BlockRenderer'
 import type { ServiceData }     from '@/components/blocks/ServicesBlock'
 import type { TestimonialData } from '@/components/blocks/TestimonialsBlock'
@@ -37,10 +38,9 @@ export async function generateMetadata({
     | { seo?: { metaTitle?: string; metaDescription?: string } }
     | undefined
 
-  return {
-    title:       page?.seo?.metaTitle       ?? `À propos — ${COMPANY.name}`,
-    description: page?.seo?.metaDescription ?? undefined,
-  }
+  const title       = page?.seo?.metaTitle       ?? `À propos de ${COMPANY.name}`
+  const description = page?.seo?.metaDescription ?? `Découvrez DT Déménagement Tunisie — notre histoire, notre équipe et notre engagement pour des déménagements réussis.`
+  return buildMetadata({ title, description, path: '/a-propos', locale })
 }
 
 export default async function AProposPage({

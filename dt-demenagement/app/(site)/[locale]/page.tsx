@@ -1,8 +1,10 @@
+import type { Metadata } from 'next'
 import { getPayload } from 'payload'
 import config from '@payload-config'
-import { setRequestLocale } from 'next-intl/server'
-import { LOCALES } from '@/lib/constants'
+import { setRequestLocale, getTranslations } from 'next-intl/server'
+import { COMPANY, LOCALES } from '@/lib/constants'
 import { BlockRenderer } from '@/components/blocks/BlockRenderer'
+import { buildMetadata, localBusinessSchema } from '@/lib/seo'
 
 import type { ServiceData }     from '@/components/blocks/ServicesBlock'
 import type { TestimonialData } from '@/components/blocks/TestimonialsBlock'
@@ -18,6 +20,14 @@ interface HomePageProps {
 
 export function generateStaticParams() {
   return Array.from(LOCALES).map((locale) => ({ locale }))
+}
+
+export async function generateMetadata({ params }: HomePageProps): Promise<Metadata> {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: 'Home.hero' })
+  const title       = `${COMPANY.name} — N°1 Déménagement en Tunisie`
+  const description = t('subtitle') || 'Solutions de déménagement pour particuliers et entreprises. Tunis et toute la Tunisie. Devis gratuit en 24h.'
+  return buildMetadata({ title, description, path: '', locale })
 }
 
 export default async function HomePage({ params }: HomePageProps) {
@@ -95,6 +105,10 @@ export default async function HomePage({ params }: HomePageProps) {
 
   return (
     <main>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema()) }}
+      />
       {blocks.length > 0 ? (
         // Mode page builder : l'admin a configuré les blocs dans Payload
         <BlockRenderer

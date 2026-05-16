@@ -5,6 +5,7 @@ import { getTranslations } from 'next-intl/server'
 import Link from 'next/link'
 import config from '@payload-config'
 import { COMPANY, LOCALES } from '@/lib/constants'
+import { buildMetadata } from '@/lib/seo'
 import { lexicalToText } from '@/lib/lexical-to-text'
 import { Breadcrumb } from '@/components/layout/Breadcrumb'
 import { FAQClient } from '@/components/blocks/FAQClient'
@@ -43,14 +44,12 @@ export async function generateMetadata({ params }: FAQPageProps): Promise<Metada
   const { locale } = await params
   const t = await getTranslations({ locale, namespace: 'FAQ' })
 
-  return {
-    title: `${t('metaTitle')} — ${COMPANY.name}`,
+  return buildMetadata({
+    title:       `${t('metaTitle')} — ${COMPANY.name}`,
     description: t('metaDescription'),
-    openGraph: {
-      title: `${t('metaTitle')} — ${COMPANY.name}`,
-      description: t('metaDescription'),
-    },
-  }
+    path:        '/faq',
+    locale,
+  })
 }
 
 export default async function FAQPage({ params }: FAQPageProps) {
