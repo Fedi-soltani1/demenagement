@@ -17,26 +17,25 @@
 
 ```
 Date        : 2026-05-16
-Session     : Dev 2 (synchronisation Payload ↔ Site)
-Étape       : Connexion blocs homepage aux collections Payload CMS
-Fichiers    : components/blocks/ServicesBlock.tsx (props ServiceData + ICON_MAP)
-              components/blocks/TestimonialsBlock.tsx (props TestimonialData)
-              components/blocks/BlogPreviewBlock.tsx (props BlogArticleData)
-              components/blocks/PartnersBlock.tsx (props PartnerData + logo next/image)
-              app/(site)/[locale]/page.tsx (fetch Payload parallèle + ISR 3600s)
-              next.config.ts (remotePatterns localhost pour media Payload dev)
-Statut      : ✅ Homepage synchronisée avec Payload CMS
-              Les services/témoignages/blog/partenaires créés dans l'admin
-              apparaissent maintenant sur le site (avec fallback mock si vide)
-Prochain    : 1. Remplir les collections dans l'admin Payload
-                 → Ajouter des services (avec nom fr/ar/en, slug, icone)
-                 → Ajouter des témoignages (nom, ville, note, texte)
-                 → Ajouter des partenaires (nom, logo)
-                 → Ajouter des articles blog (statut: publie)
-              2. Tester que les changements apparaissent sur /fr/
-              3. Déployer sur Vercel + Railway
-Reprendre à : "Ouvrir Claude Code dans dt-demenagement/, tester le site /fr/ après
-               avoir ajouté du contenu dans l'admin Payload"
+Session     : Dev 2 (architecture page builder Payload)
+Étape       : Pages collection + BlockRenderer — miroir complet du site
+Fichiers    : components/blocks/BlockRenderer.tsx (NOUVEAU — mappeur central)
+              payload/blocks/MiniFeaturesBlock.ts (NOUVEAU — bloc points forts)
+              payload/blocks/AboutBlock.ts (MIS À JOUR — About+Stats combiné)
+              payload/collections/Pages.ts (MIS À JOUR — +MiniFeaturesBlock)
+              payload.config.ts (MIS À JOUR — globals: [Settings] seulement)
+              app/(site)/[locale]/page.tsx (MIS À JOUR — Pages collection + BlockRenderer)
+              payload/globals/Homepage.ts (SUPPRIMÉ — mauvaise approche)
+              types/css.d.ts (NOUVEAU — fix Leaflet CSS TypeScript)
+Statut      : ✅ Architecture page builder en place — TypeScript compile propre
+              L'admin crée la page 'accueil' dans Pages collection
+              et ajoute les blocs dans l'ordre souhaité
+Prochain    : 1. Démarrer pnpm dev
+              2. Aller sur /admin → Pages → Créer page (slug: accueil)
+              3. Ajouter les blocs dans l'ordre (hero, mini-features, about, ...)
+              4. Remplir les champs → Publier → vérifier sur /fr/
+              5. Déployer sur Vercel + Railway
+Reprendre à : "Créer la page 'accueil' dans l'admin Payload avec tous les blocs"
 ```
 
 ---
@@ -113,30 +112,37 @@ Reprendre à : "Ouvrir Claude Code dans dt-demenagement/, tester le site /fr/ ap
 > Elle lui dit exactement où reprendre sans poser de questions.
 
 ```
-PHASE ACTUELLE    : Post-Phase 6 — MIROIR PAYLOAD COMPLET
-ÉTAPE ACTUELLE    : ✅ TOUT LE SITE EST GÉRÉ PAR PAYLOAD CMS
-STATUT            : ✅ Homepage 100% connectée — Global + Collections
+PHASE ACTUELLE    : Post-Phase 6 — PAGE BUILDER PAYLOAD COMPLET
+ÉTAPE ACTUELLE    : ✅ Architecture Pages collection + BlockRenderer en place
+STATUT            : ✅ Payload est un miroir 100% du site — page builder
 ARCHITECTURE      :
-  Global Homepage → hero, points forts, à propos, pourquoi nous, CTA final
-  Collections     → services, témoignages, blog, partenaires, FAQ, villes, pays
-  Principe        → champ vide dans admin = fallback i18n (site ne casse jamais)
-                    champ rempli = valeur CMS affichée sur le site
-REVALIDATE        : 60 secondes (voir les modifs rapidement en prod)
-DERNIERS FICHIERS : payload/globals/Homepage.ts (NOUVEAU)
-                    payload.config.ts (globals: [Settings, Homepage])
-                    app/(site)/[locale]/page.tsx (fetch global + toutes collections)
-                    components/blocks/HeroBlock.tsx (CmsHero prop)
-                    components/blocks/MiniFeaturesBlock.tsx (CmsPointsForts prop)
-                    components/blocks/StatsAboutBlock.tsx (CmsApropos prop)
-                    components/blocks/WhyUsBlock.tsx (CmsPourquoiNous prop)
-                    components/blocks/CTAFinalBlock.tsx (CmsCtaFinal prop)
-PROCHAINE ACTION  : 1. Démarrer pnpm dev et aller sur /admin
-                    2. Cliquer sur "Page d'accueil" dans le menu Globals
-                    3. Remplir les champs et sauvegarder
-                    4. Recharger /fr/ — les modifications apparaissent
-                    5. Déployer sur Vercel + Railway
+  Pages collection (slug: accueil) → liste de blocs dans le champ "layout"
+  Blocs disponibles (18) :
+    hero, mini-features, services, about (=À propos+Stats combinés),
+    stats, why-us, testimonials, google-reviews, partners, instagram-feed,
+    newsletter, blog-preview, cta, faq, map, gallery, video, custom
+  BlockRenderer.tsx → mappe chaque blockType vers son composant React
+  Fallback → si aucune page 'accueil' dans Payload : affichage i18n complet
+  Fallback champ → champ vide dans admin = valeur i18n (site ne casse jamais)
+  Relations → services/témoignages/partenaires peuvent être sélectionnés
+              manuellement dans chaque bloc OU laisser vide = tous les publiés
+REVALIDATE        : 60 secondes
+DERNIERS FICHIERS : components/blocks/BlockRenderer.tsx (NOUVEAU — mappeur central)
+                    payload/blocks/MiniFeaturesBlock.ts (NOUVEAU — bloc points forts)
+                    payload/blocks/AboutBlock.ts (MIS À JOUR — About+Stats combiné)
+                    payload/collections/Pages.ts (MIS À JOUR — + MiniFeaturesBlock)
+                    payload.config.ts (MIS À JOUR — globals: [Settings] seulement)
+                    app/(site)/[locale]/page.tsx (MIS À JOUR — Pages collection)
+                    payload/globals/Homepage.ts (SUPPRIMÉ — mauvaise approche)
+                    types/css.d.ts (NOUVEAU — fix TS Leaflet CSS)
+PROCHAINE ACTION  : 1. Démarrer pnpm dev
+                    2. Aller sur /admin → Collections → Pages → Créer
+                    3. Titre: "Accueil", Slug: "accueil"
+                    4. Ajouter les blocs dans l'ordre souhaité
+                    5. Remplir les champs de chaque bloc
+                    6. Publier → recharger /fr/ — les modifications apparaissent
 BRANCHE ACTIVE    : main
-BLOQUEURS         : Aucun
+BLOQUEURS         : Aucun — TypeScript compile propre (0 erreur)
 ```
 
 ---
