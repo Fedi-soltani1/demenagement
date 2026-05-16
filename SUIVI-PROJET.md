@@ -17,22 +17,26 @@
 
 ```
 Date        : 2026-05-16
-Session     : Dev 2 (vérification complète + ESLint flat config)
-Fichiers    : app/(site)/[locale]/blog/page.tsx (MIS À JOUR — fetch Payload au lieu d'articles hardcodés)
-              app/sitemap.ts (MIS À JOUR — async + slugs services/blog depuis Payload)
-              components/blocks/BlockRenderer.tsx (MIS À JOUR — +stats, faq, video, gallery, custom)
-              components/blocks/MapBlock.tsx (MIS À JOUR — types Leaflet strict)
-              eslint.config.mjs (MIS À JOUR — FlatCompat pour eslint-config-next legacy)
+Session     : Dev 2 (Google Reviews + vérification complète)
+Fichiers    : app/api/google-reviews/route.ts (NOUVEAU — fetch Google Places API, revalidate 1h)
+              components/blocks/GoogleReviewsBlock.tsx (MIS À JOUR — server component + fetch réel)
+              components/blocks/GoogleReviewsClient.tsx (NOUVEAU — UI animée avec Framer Motion)
+              messages/fr.json + ar.json + en.json (MIS À JOUR — clé cta ajoutée)
 Statut      : ✅ TypeScript 0 erreur — pnpm tsc --noEmit ✅
               ✅ ESLint 0 erreur — pnpm lint ✅
-              ✅ Payload connecté à TOUTES les pages du site
-              ✅ Blog + sitemap + BlockRenderer (18 blocs) tous opérationnels
-PAGES OK    : / | /a-propos | /services | /services/[slug] | /contact
-              /faq | /blog | /blog/[slug] | /zones | /villes/[slug]
-              /devis | /espace-client | /mentions-legales | /confidentialite
-PROCHAIN    : Connexion avis Google (Google Places API → bloc google-reviews)
-Reprendre à : "Implémenter le service Google Reviews — API /api/google-reviews
-               + GoogleReviewsBlock.tsx + champ apiKey dans Settings global"
+              ✅ Google Reviews connecté à Google Places API (revalidate 1h)
+              ✅ Fallback avis hardcodés si API indisponible
+              ✅ Payload miroir 100% du site — 18 blocs opérationnels
+ARCHITECTURE GOOGLE REVIEWS :
+  /api/google-reviews (route.ts) → fetch Google Places API → cache 1h
+  GoogleReviewsBlock (server) → fetch /api/google-reviews au build
+  GoogleReviewsClient (client) → UI animée Framer Motion + photos auteurs
+  Fallback → 6 avis statiques si API Google indisponible
+PROCHAINE ACTION  : Tester en local (pnpm dev)
+                    1. Vérifier /fr/ avec le bloc google-reviews
+                    2. Vérifier /admin — créer page accueil avec blocs
+                    3. Si tests OK → déployer sur Vercel + Railway
+Reprendre à : "Tester le site en local, puis déployer sur Vercel + Railway"
 ```
 
 ---
@@ -147,11 +151,11 @@ PAYLOAD ADMIN     :
   Services           : nom, slug, description, caracteristiques[], avantages[],
                        image, icone, tarifDepuis, publie, seo, ordre
   Pages collection   : page builder — blocs configurables par l'admin
-PROCHAINE ACTION  : Connexion Google Reviews
-                    1. Ajouter champ apiKey dans Settings global (Payload)
-                    2. Créer API route /api/google-reviews (fetch Google Places)
-                    3. Connecter GoogleReviewsBlock.tsx → API route
-                    4. Tester en local avant production
+PROCHAINE ACTION  : Déploiement production
+                    1. Remplir .env sur Vercel (GOOGLE_PLACES_API_KEY + GOOGLE_PLACE_ID)
+                    2. Déployer sur Vercel + Railway (git push → auto-deploy)
+                    3. Créer la page accueil dans /admin → Pages
+                    4. Vérifier les avis Google en prod
 BRANCHE ACTIVE    : main
 BLOQUEURS         : Aucun — TypeScript 0 erreur / ESLint 0 erreur
 ```
