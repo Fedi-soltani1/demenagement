@@ -135,12 +135,28 @@ DERNIERS FICHIERS : components/blocks/BlockRenderer.tsx (NOUVEAU — mappeur cen
                     app/(site)/[locale]/page.tsx (MIS À JOUR — Pages collection)
                     payload/globals/Homepage.ts (SUPPRIMÉ — mauvaise approche)
                     types/css.d.ts (NOUVEAU — fix TS Leaflet CSS)
-PROCHAINE ACTION  : 1. Démarrer pnpm dev
-                    2. Aller sur /admin → Collections → Pages → Créer
-                    3. Titre: "Accueil", Slug: "accueil"
-                    4. Ajouter les blocs dans l'ordre souhaité
-                    5. Remplir les champs de chaque bloc
-                    6. Publier → recharger /fr/ — les modifications apparaissent
+PAGES CONNECTEES  :
+  /                  → Pages(slug=accueil) + BlockRenderer + fallback i18n
+  /a-propos          → Pages(slug=a-propos) + BlockRenderer + fallback statique
+  /services          → Services collection (fetch Payload) + grille avec images
+  /services/[slug]   → Services collection (caracteristiques + avantages depuis Payload)
+  /contact           → Settings global (telephone/email/adresse/horaires depuis Payload)
+  /faq               → FAQ collection (existant)
+  /blog, /blog/[slug]→ Blog collection (existant)
+  /zones             → Villes collection (existant)
+  /villes/[slug]     → Villes collection (existant)
+PAYLOAD ADMIN     :
+  Settings global    : telephone, email, adresse, horaires, reseaux sociaux
+  Services           : nom, slug, description, caracteristiques[], avantages[],
+                       image, icone, tarifDepuis, publie, seo, ordre
+  Pages collection   : page builder — blocs configurables par l'admin
+PROCHAINE ACTION  : 1. Demarrer pnpm dev
+                    2. Aller sur /admin → Settings → remplir telephone/email/adresse
+                    3. Aller sur /admin → Services → ajouter les services
+                       (nom, description, icone, caracteristiques, image)
+                    4. Aller sur /admin → Pages → creer page "Accueil" (slug: accueil)
+                       → ajouter les blocs dans l'ordre
+                    5. Tester /fr/, /fr/services/, /fr/a-propos/, /fr/contact/
 BRANCHE ACTIVE    : main
 BLOQUEURS         : Aucun — TypeScript compile propre (0 erreur)
 ```
