@@ -26,7 +26,7 @@ const TILE_LIGHT = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.p
 function LeafletMap() {
   const mapRef = useRef<HTMLDivElement>(null)
   const mapInstanceRef = useRef<unknown>(null)
-  const tileLayerRef = useRef<unknown>(null)
+  const tileLayerRef = useRef<{ setUrl(url: string): void } | null>(null)
 
   useEffect(() => {
     if (!mapRef.current || mapInstanceRef.current) return

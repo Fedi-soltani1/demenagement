@@ -17,25 +17,22 @@
 
 ```
 Date        : 2026-05-16
-Session     : Dev 2 (architecture page builder Payload)
-Étape       : Pages collection + BlockRenderer — miroir complet du site
-Fichiers    : components/blocks/BlockRenderer.tsx (NOUVEAU — mappeur central)
-              payload/blocks/MiniFeaturesBlock.ts (NOUVEAU — bloc points forts)
-              payload/blocks/AboutBlock.ts (MIS À JOUR — About+Stats combiné)
-              payload/collections/Pages.ts (MIS À JOUR — +MiniFeaturesBlock)
-              payload.config.ts (MIS À JOUR — globals: [Settings] seulement)
-              app/(site)/[locale]/page.tsx (MIS À JOUR — Pages collection + BlockRenderer)
-              payload/globals/Homepage.ts (SUPPRIMÉ — mauvaise approche)
-              types/css.d.ts (NOUVEAU — fix Leaflet CSS TypeScript)
-Statut      : ✅ Architecture page builder en place — TypeScript compile propre
-              L'admin crée la page 'accueil' dans Pages collection
-              et ajoute les blocs dans l'ordre souhaité
-Prochain    : 1. Démarrer pnpm dev
-              2. Aller sur /admin → Pages → Créer page (slug: accueil)
-              3. Ajouter les blocs dans l'ordre (hero, mini-features, about, ...)
-              4. Remplir les champs → Publier → vérifier sur /fr/
-              5. Déployer sur Vercel + Railway
-Reprendre à : "Créer la page 'accueil' dans l'admin Payload avec tous les blocs"
+Session     : Dev 2 (vérification complète + ESLint flat config)
+Fichiers    : app/(site)/[locale]/blog/page.tsx (MIS À JOUR — fetch Payload au lieu d'articles hardcodés)
+              app/sitemap.ts (MIS À JOUR — async + slugs services/blog depuis Payload)
+              components/blocks/BlockRenderer.tsx (MIS À JOUR — +stats, faq, video, gallery, custom)
+              components/blocks/MapBlock.tsx (MIS À JOUR — types Leaflet strict)
+              eslint.config.mjs (MIS À JOUR — FlatCompat pour eslint-config-next legacy)
+Statut      : ✅ TypeScript 0 erreur — pnpm tsc --noEmit ✅
+              ✅ ESLint 0 erreur — pnpm lint ✅
+              ✅ Payload connecté à TOUTES les pages du site
+              ✅ Blog + sitemap + BlockRenderer (18 blocs) tous opérationnels
+PAGES OK    : / | /a-propos | /services | /services/[slug] | /contact
+              /faq | /blog | /blog/[slug] | /zones | /villes/[slug]
+              /devis | /espace-client | /mentions-legales | /confidentialite
+PROCHAIN    : Connexion avis Google (Google Places API → bloc google-reviews)
+Reprendre à : "Implémenter le service Google Reviews — API /api/google-reviews
+               + GoogleReviewsBlock.tsx + champ apiKey dans Settings global"
 ```
 
 ---
@@ -150,15 +147,13 @@ PAYLOAD ADMIN     :
   Services           : nom, slug, description, caracteristiques[], avantages[],
                        image, icone, tarifDepuis, publie, seo, ordre
   Pages collection   : page builder — blocs configurables par l'admin
-PROCHAINE ACTION  : 1. Demarrer pnpm dev
-                    2. Aller sur /admin → Settings → remplir telephone/email/adresse
-                    3. Aller sur /admin → Services → ajouter les services
-                       (nom, description, icone, caracteristiques, image)
-                    4. Aller sur /admin → Pages → creer page "Accueil" (slug: accueil)
-                       → ajouter les blocs dans l'ordre
-                    5. Tester /fr/, /fr/services/, /fr/a-propos/, /fr/contact/
+PROCHAINE ACTION  : Connexion Google Reviews
+                    1. Ajouter champ apiKey dans Settings global (Payload)
+                    2. Créer API route /api/google-reviews (fetch Google Places)
+                    3. Connecter GoogleReviewsBlock.tsx → API route
+                    4. Tester en local avant production
 BRANCHE ACTIVE    : main
-BLOQUEURS         : Aucun — TypeScript compile propre (0 erreur)
+BLOQUEURS         : Aucun — TypeScript 0 erreur / ESLint 0 erreur
 ```
 
 ---
