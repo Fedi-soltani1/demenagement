@@ -1,4 +1,5 @@
 import React from 'react'
+import Image from 'next/image'
 
 import { HeroBlock,          type CmsHero }          from '@/components/blocks/HeroBlock'
 import { MiniFeaturesBlock,  type CmsPointsForts }    from '@/components/blocks/MiniFeaturesBlock'
@@ -301,6 +302,155 @@ export function BlockRenderer({
 
           case 'cta':
             return <CTAFinalBlock key={key} cms={adaptCta(block)} />
+
+          case 'stats': {
+            // Bloc stats autonome → StatsAboutBlock avec seulement les chiffres
+            type StatRaw = { valeur?: number | null; suffixe?: string | null; libelle?: string | null }
+            const statsArr = arr<StatRaw>(block.stats)
+            const statsCms: CmsApropos = {}
+            if (statsArr[0]) { statsCms.stat1Valeur = num(statsArr[0].valeur); statsCms.stat1Suffixe = str(statsArr[0].suffixe); statsCms.stat1Label = str(statsArr[0].libelle) }
+            if (statsArr[1]) { statsCms.stat2Valeur = num(statsArr[1].valeur); statsCms.stat2Suffixe = str(statsArr[1].suffixe); statsCms.stat2Label = str(statsArr[1].libelle) }
+            if (statsArr[2]) { statsCms.stat3Valeur = num(statsArr[2].valeur); statsCms.stat3Suffixe = str(statsArr[2].suffixe); statsCms.stat3Label = str(statsArr[2].libelle) }
+            if (statsArr[3]) { statsCms.stat4Valeur = num(statsArr[3].valeur); statsCms.stat4Suffixe = str(statsArr[3].suffixe); statsCms.stat4Label = str(statsArr[3].libelle) }
+            return <StatsAboutBlock key={key} cms={statsCms} />
+          }
+
+          case 'faq': {
+            // Bloc FAQ inline — rend un simple accordéon avec les questions du bloc
+            type FAQRaw = { id?: string; question?: string | null; reponse?: unknown }
+            const faqItems = arr<FAQRaw>(block.questions)
+            if (!faqItems.length) return null
+            return (
+              <section key={key} className="py-section px-container bg-[var(--color-bg-dark2)]">
+                <div className="max-w-3xl mx-auto">
+                  {str(block.titre) && (
+                    <h2 className="font-heading font-bold text-[var(--color-text-light)] mb-10 text-center"
+                        style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)' }}>
+                      {str(block.titre)}
+                    </h2>
+                  )}
+                  <dl className="space-y-4">
+                    {faqItems.map((q, qi) => (
+                      <div key={q.id ?? qi} className="rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-card)] p-6">
+                        <dt className="font-heading font-semibold text-[var(--color-text-light)] mb-3">{q.question}</dt>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
+              </section>
+            )
+          }
+
+          case 'video': {
+            const urlRaw = str(block.urlVideo)
+            if (!urlRaw) return null
+            // Convertit https://youtube.com/watch?v=ID → https://youtube.com/embed/ID
+            const embedUrl = urlRaw.includes('watch?v=')
+              ? urlRaw.replace('watch?v=', 'embed/')
+              : urlRaw
+            return (
+              <section key={key} className="py-section px-container bg-[var(--color-bg-dark)]">
+                <div className="max-w-4xl mx-auto">
+                  {str(block.titre) && (
+                    <h2 className="font-heading font-bold text-[var(--color-text-light)] mb-8 text-center"
+                        style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)' }}>
+                      {str(block.titre)}
+                    </h2>
+                  )}
+                  <div className="relative aspect-video rounded-2xl overflow-hidden bg-black">
+                    <iframe
+                      src={embedUrl}
+                      className="absolute inset-0 w-full h-full"
+                      allowFullScreen
+                      title={str(block.titre) ?? 'Vidéo'}
+                      loading="lazy"
+                    />
+                  </div>
+                  {str(block.sousTitre) && (
+                    <p className="font-body text-center text-[var(--color-text-muted)] text-sm mt-4">
+                      {str(block.sousTitre)}
+                    </p>
+                  )}
+                </div>
+              </section>
+            )
+          }
+
+          case 'gallery': {
+            type ImgRaw = { image?: { url?: string | null } | null; legende?: string | null }
+            const images = arr<ImgRaw>(block.images).filter((i) => i.image?.url)
+            if (!images.length) return null
+            const cols = str(block.colonnes) ?? '3'
+            const gridCols = cols === '2' ? 'grid-cols-2' : cols === '4' ? 'grid-cols-2 md:grid-cols-4' : 'grid-cols-2 md:grid-cols-3'
+            return (
+              <section key={key} className="py-section px-container bg-[var(--color-bg-dark2)]">
+                <div className="max-w-7xl mx-auto">
+                  {str(block.titre) && (
+                    <h2 className="font-heading font-bold text-[var(--color-text-light)] mb-10 text-center"
+                        style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)' }}>
+                      {str(block.titre)}
+                    </h2>
+                  )}
+                  <div className={`grid ${gridCols} gap-4`}>
+                    {images.map((img, gi) => (
+                      <div key={gi} className="relative aspect-square rounded-xl overflow-hidden">
+                        <Image
+                          src={img.image!.url!}
+                          alt={img.legende ?? ''}
+                          fill
+                          className="object-cover hover:scale-105 transition-transform duration-500"
+                          sizes="(max-width: 768px) 50vw, 33vw"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </section>
+            )
+          }
+
+          case 'custom': {
+            const bgMap: Record<string, string> = {
+              noir:   'bg-[var(--color-bg-dark)]',
+              fonce:  'bg-[var(--color-bg-dark2)]',
+              rouge:  'bg-[var(--color-red)]',
+              blanc:  'bg-[var(--color-text-light)]',
+            }
+            const bgClass  = bgMap[str(block.couleurFond) ?? 'noir'] ?? 'bg-[var(--color-bg-dark)]'
+            const textClass = str(block.couleurFond) === 'blanc' ? 'text-[var(--color-bg-dark)]' : 'text-[var(--color-text-light)]'
+            const mutedClass = str(block.couleurFond) === 'blanc' ? 'text-[var(--color-bg-dark)]/70' : 'text-[var(--color-text-muted)]'
+            const btnHref = str((block.cta as Record<string, unknown> | null | undefined)?.lien)
+            const btnTxt  = str((block.cta as Record<string, unknown> | null | undefined)?.texte)
+            const imgUrl  = mediaUrl(block.imagePrincipale)
+            return (
+              <section key={key} className={`py-section px-container ${bgClass}`}>
+                <div className="max-w-4xl mx-auto text-center">
+                  {str(block.titre) && (
+                    <h2 className={`font-heading font-bold mb-4 ${textClass}`}
+                        style={{ fontSize: 'clamp(1.5rem, 3vw, 2.5rem)' }}>
+                      {str(block.titre)}
+                    </h2>
+                  )}
+                  {str(block.sousTitre) && (
+                    <p className={`font-body text-lg mb-6 ${mutedClass}`}>{str(block.sousTitre)}</p>
+                  )}
+                  {imgUrl && (
+                    <div className="relative aspect-video rounded-2xl overflow-hidden mb-8 mx-auto max-w-2xl">
+                      <Image src={imgUrl} alt={str(block.titre) ?? ''} fill className="object-cover" />
+                    </div>
+                  )}
+                  {btnHref && btnTxt && (
+                    <a
+                      href={btnHref}
+                      className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[var(--color-red)] text-white font-body font-bold text-sm uppercase tracking-wider hover:bg-[var(--color-red-dark)] transition-colors duration-200"
+                    >
+                      {btnTxt}
+                    </a>
+                  )}
+                </div>
+              </section>
+            )
+          }
 
           default:
             return null
