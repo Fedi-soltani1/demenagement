@@ -176,7 +176,7 @@ export default async function BlogPage({
                 Aucun article publié pour le moment.
               </p>
               <p className="font-body text-xs text-[var(--color-text-muted)]/60">
-                L'administrateur peut ajouter des articles depuis /admin → Articles.
+                {"L'administrateur peut ajouter des articles depuis /admin → Articles."}
               </p>
             </div>
           )}

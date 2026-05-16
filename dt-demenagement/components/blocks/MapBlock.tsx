@@ -26,8 +26,7 @@ const TILE_LIGHT = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.p
 function LeafletMap() {
   const mapRef = useRef<HTMLDivElement>(null)
   const mapInstanceRef = useRef<unknown>(null)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const tileLayerRef = useRef<any>(null)
+  const tileLayerRef = useRef<unknown>(null)
 
   useEffect(() => {
     if (!mapRef.current || mapInstanceRef.current) return
