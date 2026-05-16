@@ -16,14 +16,15 @@
 ## 🤖 DERNIÈRE MISE À JOUR PAR CLAUDE CODE
 
 ```
-Date        : 2026-05-13
-Session     : Dev 1 + Dev 2
-Étape       : Étapes 25→30 — TOUTES LES ÉTAPES TERMINÉES
-Fichiers    : Espace client, Devis, Analytics, Newsletter, Sitemap, Robots, Sentry
-Statut      : ✅ PROJET COMPLET — 30/30 étapes terminées
-Prochain    : Configurer les variables d'environnement (.env.local),
-              lancer pnpm dev, tester en local, puis déployer sur Vercel + Railway
-Reprendre à : "Ouvrir Claude Code, configurer .env.local, lancer pnpm dev"
+Date        : 2026-05-16
+Session     : Dev 2 (correction critique)
+Étape       : Fix admin Payload CMS — restructure layouts + activation middleware
+Fichiers    : app/(site)/layout.tsx (nouveau), app/(payload)/layout.tsx (corrigé),
+              middleware.ts (renommé depuis proxy.ts), next.config.ts (withNextIntl restauré)
+Statut      : ✅ Admin Payload fonctionnel — HTTP 200 sur /admin/login
+Prochain    : Tester /admin/login dans le navigateur avec admin@dt-demenagement.tn / Admin@2024!
+              Puis : déployer sur Vercel + Railway
+Reprendre à : "Ouvrir Claude Code dans dt-demenagement/, vérifier le bon fonctionnement de /admin"
 ```
 
 ---
@@ -100,12 +101,15 @@ Reprendre à : "Ouvrir Claude Code, configurer .env.local, lancer pnpm dev"
 > Elle lui dit exactement où reprendre sans poser de questions.
 
 ```
-PHASE ACTUELLE    : Phase 5 — Pages
-ÉTAPE ACTUELLE    : ✅ TOUTES LES 30 ÉTAPES TERMINÉES
-STATUT            : ✅ PROJET COMPLET
-DERNIER FICHIER   : dt-demenagement/sentry.edge.config.ts
-PROCHAINE ACTION  : Configurer .env.local, lancer pnpm dev, tester,
-                    puis déployer sur Vercel (frontend) + Railway (PostgreSQL)
+PHASE ACTUELLE    : Post-Phase 6 — Corrections techniques
+ÉTAPE ACTUELLE    : ✅ FIX ADMIN PAYLOAD TERMINÉ
+STATUT            : ✅ Admin Payload opérationnel — /admin répond HTTP 200
+DERNIER FICHIER   : dt-demenagement/app/(site)/layout.tsx
+                    dt-demenagement/app/(payload)/layout.tsx
+                    dt-demenagement/middleware.ts
+PROCHAINE ACTION  : Tester /admin/login, se connecter avec admin@dt-demenagement.tn / Admin@2024!
+                    Puis tester les routes publiques /fr/, /fr/services etc.
+                    Puis déployer sur Vercel + Railway
 BRANCHE ACTIVE    : main
 BLOQUEURS         : Aucun
 ```
