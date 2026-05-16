@@ -3,21 +3,48 @@
 import React from 'react'
 import { useTranslations } from 'next-intl'
 import { motion } from 'framer-motion'
-import { Zap, Headphones, ShieldCheck, Users } from 'lucide-react'
+import { ShineBorderEffect } from '@/components/ui/ShineBorder'
+import { Zap, Headphones, ShieldCheck, Users, type LucideIcon } from 'lucide-react'
 
-const ITEMS = [
+export type CmsPourquoiNous = {
+  badge?: string | null
+  titre?: string | null
+  sousTitre?: string | null
+  items?: { icone?: string | null; titre: string; description: string }[] | null
+}
+
+const ICON_MAP: Record<string, LucideIcon> = {
+  zap: Zap, headphones: Headphones, 'shield-check': ShieldCheck, users: Users,
+  shield: ShieldCheck,
+}
+
+const FALLBACK = [
   { icon: Zap,         keyTitle: 'item1Title', keyDesc: 'item1Desc' },
   { icon: Headphones,  keyTitle: 'item2Title', keyDesc: 'item2Desc' },
   { icon: ShieldCheck, keyTitle: 'item3Title', keyDesc: 'item3Desc' },
   { icon: Users,       keyTitle: 'item4Title', keyDesc: 'item4Desc' },
 ] as const
 
-export function WhyUsBlock() {
+export function WhyUsBlock({ cms }: { cms?: CmsPourquoiNous }) {
   const t = useTranslations('Home.whyUs')
+
+  const badge     = cms?.badge    ?? t('badge')
+  const titre     = cms?.titre    ?? t('title')
+  const sousTitre = cms?.sousTitre ?? t('subtitle')
+
+  const items = cms?.items?.length
+    ? cms.items.map((item, i) => ({
+        Icon: (item.icone && ICON_MAP[item.icone]) ? ICON_MAP[item.icone]! : (FALLBACK[i]?.icon ?? Zap),
+        titre: item.titre,
+        desc: item.description,
+      }))
+    : FALLBACK.map(({ icon: Icon, keyTitle, keyDesc }) => ({
+        Icon, titre: t(keyTitle), desc: t(keyDesc),
+      }))
 
   return (
     <section
-      className="py-section px-container bg-[var(--color-bg-dark)]"
+      className="py-section px-container bg-[var(--color-bg-dark2)]"
       aria-labelledby="why-us-title"
     >
       <div className="max-w-7xl mx-auto">
@@ -30,26 +57,26 @@ export function WhyUsBlock() {
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         >
           <span className="inline-block mb-4 px-4 py-1.5 rounded-full border border-[var(--color-red)]/30 bg-[var(--color-red)]/8 text-[var(--color-red)] text-xs font-body font-semibold uppercase tracking-widest">
-            {t('badge')}
+            {badge}
           </span>
           <h2
             id="why-us-title"
             className="font-heading font-bold text-[var(--color-text-light)] mb-4"
             style={{ fontSize: 'clamp(1.8rem, 3.5vw, 3rem)' }}
           >
-            {t('title')}
+            {titre}
           </h2>
           <p className="font-body text-[var(--color-text-muted)] leading-relaxed">
-            {t('subtitle')}
+            {sousTitre}
           </p>
         </motion.div>
 
         {/* Grille 4 cards glassmorphism */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-grid">
-          {ITEMS.map(({ icon: Icon, keyTitle, keyDesc }, i) => (
+          {items.map(({ Icon, titre: itemTitre, desc }, i) => (
             <motion.article
-              key={keyTitle}
-              className="group relative rounded-2xl border border-white/8 bg-white/[0.03] backdrop-blur-md p-card overflow-hidden cursor-default"
+              key={i}
+              className="group relative rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-card)] backdrop-blur-md p-card overflow-hidden cursor-default"
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-60px' }}
@@ -75,11 +102,13 @@ export function WhyUsBlock() {
               </div>
 
               <h3 className="font-heading font-semibold text-[var(--color-text-light)] mb-3 text-lg">
-                {t(keyTitle)}
+                {itemTitre}
               </h3>
               <p className="font-body text-[var(--color-text-muted)] text-sm leading-relaxed">
-                {t(keyDesc)}
+                {desc}
               </p>
+
+              <ShineBorderEffect duration={12} />
             </motion.article>
           ))}
         </div>

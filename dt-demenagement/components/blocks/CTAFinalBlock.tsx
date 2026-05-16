@@ -8,9 +8,25 @@ import { ArrowRight, Truck } from 'lucide-react'
 import { PhoneLink } from '@/components/ui/PhoneLink'
 import { COMPANY } from '@/lib/constants'
 
-export function CTAFinalBlock() {
+export type CmsCtaFinal = {
+  titre?: string | null
+  sousTitre?: string | null
+  bouton1Texte?: string | null
+  bouton2Texte?: string | null
+  garanties?: { texte: string }[] | null
+}
+
+export function CTAFinalBlock({ cms }: { cms?: CmsCtaFinal }) {
   const t = useTranslations('Home.ctaFinal')
   const locale = useLocale()
+
+  const titre      = cms?.titre       ?? t('title')
+  const sousTitre  = cms?.sousTitre   ?? t('subtitle')
+  const btn1       = cms?.bouton1Texte ?? t('ctaPrimary')
+  const btn2       = cms?.bouton2Texte ?? t('ctaSecondary')
+  const garanties  = cms?.garanties?.length
+    ? cms.garanties.map((g) => g.texte)
+    : [t('guarantee1'), t('guarantee2'), t('guarantee3')]
 
   return (
     <section
@@ -67,11 +83,11 @@ export function CTAFinalBlock() {
             className="font-heading font-bold text-white mb-6 leading-tight"
             style={{ fontSize: 'clamp(2rem, 4.5vw, 3.5rem)' }}
           >
-            {t('title')}
+            {titre}
           </h2>
 
           <p className="font-body text-white/80 text-lg leading-relaxed mb-10 max-w-2xl mx-auto">
-            {t('subtitle')}
+            {sousTitre}
           </p>
 
           {/* Boutons */}
@@ -93,7 +109,7 @@ export function CTAFinalBlock() {
                 aria-hidden="true"
               />
               <span className="relative flex items-center gap-3">
-                {t('ctaPrimary')}
+                {btn1}
                 <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" aria-hidden="true" />
               </span>
             </Link>
@@ -101,6 +117,7 @@ export function CTAFinalBlock() {
             {/* Bouton téléphone */}
             <PhoneLink
               numero={COMPANY.phone1}
+              display={btn2}
               className="inline-flex items-center gap-3 px-8 py-4 rounded-full border-2 border-white/40 text-white font-body font-semibold text-sm hover:bg-white/10 hover:border-white/70 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-red)]"
               showIcon
             />
@@ -114,10 +131,10 @@ export function CTAFinalBlock() {
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.35 }}
           >
-            {(['guarantee1', 'guarantee2', 'guarantee3'] as const).map((key) => (
-              <span key={key} className="flex items-center gap-2 font-body text-sm text-white/70">
+            {garanties.map((g) => (
+              <span key={g} className="flex items-center gap-2 font-body text-sm text-white/70">
                 <span className="w-1.5 h-1.5 rounded-full bg-white/50 flex-shrink-0" aria-hidden="true" />
-                {t(key)}
+                {g}
               </span>
             ))}
           </motion.div>

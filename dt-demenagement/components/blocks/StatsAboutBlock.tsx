@@ -8,17 +8,45 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Play, X, ArrowRight } from 'lucide-react'
 import { CounterAnimation } from '@/components/ui/CounterAnimation'
 
-export function StatsAboutBlock() {
+export type CmsApropos = {
+  badge?: string | null
+  titre?: string | null
+  texte?: string | null
+  image?: { url?: string | null } | null
+  videoUrl?: string | null
+  ctaTexte?: string | null
+  stat1Valeur?: number | null
+  stat1Suffixe?: string | null
+  stat1Label?: string | null
+  stat2Valeur?: number | null
+  stat2Suffixe?: string | null
+  stat2Label?: string | null
+  stat3Valeur?: number | null
+  stat3Suffixe?: string | null
+  stat3Label?: string | null
+  stat4Valeur?: number | null
+  stat4Suffixe?: string | null
+  stat4Label?: string | null
+}
+
+export function StatsAboutBlock({ cms }: { cms?: CmsApropos }) {
   const t = useTranslations('Home.about')
   const locale = useLocale()
   const [videoOpen, setVideoOpen] = useState(false)
 
+  const badge    = cms?.badge    ?? t('badge')
+  const titre    = cms?.titre    ?? t('title')
+  const texte    = cms?.texte    ?? t('text')
+  const ctaTexte = cms?.ctaTexte ?? t('ctaText')
+  const imageUrl = cms?.image?.url ?? 'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=800&q=80'
+  const videoUrl = cms?.videoUrl ?? null
+
   const STATS = [
-    { valueKey: 'stat1Value', suffixKey: 'stat1Suffix', labelKey: 'stat1Label' },
-    { valueKey: 'stat2Value', suffixKey: 'stat2Suffix', labelKey: 'stat2Label' },
-    { valueKey: 'stat3Value', suffixKey: 'stat3Suffix', labelKey: 'stat3Label' },
-    { valueKey: 'stat4Value', suffixKey: 'stat4Suffix', labelKey: 'stat4Label' },
-  ] as const
+    { target: cms?.stat1Valeur ?? parseInt(t('stat1Value'), 10), suffix: cms?.stat1Suffixe ?? t('stat1Suffix'), label: cms?.stat1Label ?? t('stat1Label') },
+    { target: cms?.stat2Valeur ?? parseInt(t('stat2Value'), 10), suffix: cms?.stat2Suffixe ?? t('stat2Suffix'), label: cms?.stat2Label ?? t('stat2Label') },
+    { target: cms?.stat3Valeur ?? parseInt(t('stat3Value'), 10), suffix: cms?.stat3Suffixe ?? t('stat3Suffix'), label: cms?.stat3Label ?? t('stat3Label') },
+    { target: cms?.stat4Valeur ?? parseInt(t('stat4Value'), 10), suffix: cms?.stat4Suffixe ?? t('stat4Suffix'), label: cms?.stat4Label ?? t('stat4Label') },
+  ]
 
   return (
     <section
@@ -38,7 +66,7 @@ export function StatsAboutBlock() {
           {/* Image principale — déborde légèrement de la grille */}
           <div className="relative rounded-2xl overflow-hidden -ms-4 lg:-ms-12 aspect-[4/3]">
             <Image
-              src="/images/about-dt-demenagement.webp"
+              src={imageUrl}
               alt="Équipe DT Déménagement au travail"
               fill
               className="object-cover"
@@ -48,7 +76,8 @@ export function StatsAboutBlock() {
             <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" aria-hidden="true" />
           </div>
 
-          {/* Bouton play vidéo */}
+          {/* Bouton play vidéo — visible seulement si une URL est configurée */}
+          {videoUrl && (
           <button
             onClick={() => setVideoOpen(true)}
             className="absolute bottom-6 start-6 flex items-center gap-3 px-5 py-3 rounded-full bg-[var(--color-red)] text-white font-body font-semibold text-sm shadow-lg hover:bg-[var(--color-red-dark)] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
@@ -59,6 +88,7 @@ export function StatsAboutBlock() {
             </span>
             {t('videoLabel')}
           </button>
+          )}
 
           {/* Ligne rouge verticale décorative */}
           <div
@@ -75,7 +105,7 @@ export function StatsAboutBlock() {
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
         >
           <span className="inline-block mb-4 px-4 py-1.5 rounded-full border border-[var(--color-red)]/30 bg-[var(--color-red)]/8 text-[var(--color-red)] text-xs font-body font-semibold uppercase tracking-widest">
-            {t('badge')}
+            {badge}
           </span>
 
           <h2
@@ -83,28 +113,28 @@ export function StatsAboutBlock() {
             className="font-heading font-bold text-[var(--color-text-light)] mb-6 leading-tight"
             style={{ fontSize: 'clamp(1.8rem, 3vw, 2.8rem)' }}
           >
-            {t('title')}
+            {titre}
           </h2>
 
           <p className="font-body text-[var(--color-text-muted)] leading-relaxed mb-10 text-base">
-            {t('text')}
+            {texte}
           </p>
 
           {/* Grille stats avec CounterAnimation */}
           <div className="grid grid-cols-2 gap-6 mb-10">
-            {STATS.map(({ valueKey, suffixKey, labelKey }) => (
-              <div key={labelKey} className="border-s-2 border-[var(--color-red)] ps-4">
+            {STATS.map(({ target, suffix, label }) => (
+              <div key={label} className="border-s-2 border-[var(--color-red)] ps-4">
                 <div className="flex items-baseline gap-0.5">
                   <CounterAnimation
-                    target={parseInt(t(valueKey), 10)}
+                    target={isNaN(target) ? 0 : target}
                     className="font-mono text-3xl font-bold text-[var(--color-gold)]"
                   />
                   <span className="font-mono text-xl font-bold text-[var(--color-gold)]">
-                    {t(suffixKey)}
+                    {suffix}
                   </span>
                 </div>
                 <span className="font-body text-xs text-[var(--color-text-muted)] uppercase tracking-wide">
-                  {t(labelKey)}
+                  {label}
                 </span>
               </div>
             ))}
@@ -114,7 +144,7 @@ export function StatsAboutBlock() {
             href={`/${locale}/a-propos`}
             className="group inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[var(--color-red)] text-white font-body font-semibold text-sm uppercase tracking-wider transition-all duration-300 hover:bg-[var(--color-red-dark)] hover:shadow-[0_0_30px_rgba(181,32,39,0.4)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)]"
           >
-            {t('ctaText')}
+            {ctaTexte}
             <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" aria-hidden="true" />
           </Link>
         </motion.div>
@@ -141,9 +171,8 @@ export function StatsAboutBlock() {
               transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
               onClick={(e) => e.stopPropagation()}
             >
-              {/* ⚠️ Configurer l'URL YouTube dans .env ou Settings CMS */}
               <iframe
-                src="about:blank"
+                src={videoUrl ?? 'about:blank'}
                 className="w-full h-full"
                 allowFullScreen
                 title={t('videoLabel')}

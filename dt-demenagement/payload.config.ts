@@ -1,5 +1,6 @@
 import path from 'path'
 import { fileURLToPath } from 'url'
+import sharp from 'sharp'
 import { buildConfig } from 'payload'
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
@@ -21,6 +22,7 @@ import Clients from './payload/collections/Clients'
 import Messages from './payload/collections/Messages'
 import Demenagements from './payload/collections/Demenagements'
 import Settings from './payload/collections/Settings'
+import Homepage from './payload/globals/Homepage'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -32,8 +34,8 @@ export default buildConfig({
     pool: {
       connectionString: process.env.DATABASE_URL ?? '',
     },
-    // ⚠️ Configurer DATABASE_URL dans .env.local avant de lancer les migrations
-    push: false,
+    // ⚠️ push: true en local uniquement — désactiver avant déploiement production
+    push: true,
     migrationDir: path.resolve(dirname, 'payload/migrations'),
   }),
 
@@ -75,8 +77,13 @@ export default buildConfig({
     Demenagements,
   ],
 
-  // 1 global (singleton)
-  globals: [Settings],
+  // 2 globals (singletons)
+  globals: [Settings, Homepage],
+
+  sharp,
+
+  // ⚠️ Email adapter à configurer en Phase 5 avec @payloadcms/email-resend
+  // Sans adapter : emails écrits dans la console (normal en dev)
 
   typescript: {
     outputFile: path.resolve(dirname, 'types/payload-types.ts'),

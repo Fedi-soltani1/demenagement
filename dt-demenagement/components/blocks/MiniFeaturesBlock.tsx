@@ -3,16 +3,37 @@
 import React from 'react'
 import { useTranslations } from 'next-intl'
 import { motion } from 'framer-motion'
-import { Users, Truck, Package } from 'lucide-react'
+import { Users, Truck, Package, Shield, Star, Zap, type LucideIcon } from 'lucide-react'
 
-const FEATURES = [
+const ICON_MAP: Record<string, LucideIcon> = {
+  users: Users, truck: Truck, package: Package,
+  shield: Shield, star: Star, zap: Zap,
+}
+
+export type CmsPointsForts = {
+  items?: { icone?: string | null; titre: string; description: string }[] | null
+}
+
+const FALLBACK = [
   { icon: Users,   keyTitle: 'item1Title', keyDesc: 'item1Desc' },
   { icon: Truck,   keyTitle: 'item2Title', keyDesc: 'item2Desc' },
   { icon: Package, keyTitle: 'item3Title', keyDesc: 'item3Desc' },
 ] as const
 
-export function MiniFeaturesBlock() {
+export function MiniFeaturesBlock({ cms }: { cms?: CmsPointsForts }) {
   const t = useTranslations('Home.miniFeatures')
+
+  const items = cms?.items?.length
+    ? cms.items.map((item, i) => ({
+        Icon: (item.icone && ICON_MAP[item.icone]) ? ICON_MAP[item.icone]! : (FALLBACK[i]?.icon ?? Package),
+        titre: item.titre,
+        desc: item.description,
+      }))
+    : FALLBACK.map(({ icon: Icon, keyTitle, keyDesc }) => ({
+        Icon,
+        titre: t(keyTitle),
+        desc: t(keyDesc),
+      }))
 
   return (
     <section
@@ -20,9 +41,9 @@ export function MiniFeaturesBlock() {
       aria-label="Points forts"
     >
       <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-[var(--color-border)]">
-        {FEATURES.map(({ icon: Icon, keyTitle, keyDesc }, i) => (
+        {items.map(({ Icon, titre, desc }, i) => (
           <motion.div
-            key={keyTitle}
+            key={i}
             className="group relative flex items-start gap-5 px-container py-10 overflow-hidden"
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -43,10 +64,7 @@ export function MiniFeaturesBlock() {
 
             {/* Icône */}
             <div className="flex-shrink-0 w-11 h-11 rounded-xl bg-[var(--color-red)]/10 border border-[var(--color-red)]/20 flex items-center justify-center transition-colors duration-300 group-hover:bg-[var(--color-red)]/20">
-              <Icon
-                className="w-5 h-5 text-[var(--color-red)]"
-                aria-hidden="true"
-              />
+              <Icon className="w-5 h-5 text-[var(--color-red)]" aria-hidden="true" />
             </div>
 
             {/* Texte */}
@@ -54,10 +72,10 @@ export function MiniFeaturesBlock() {
               <h3 className="font-heading font-semibold text-[var(--color-text-light)] mb-1.5"
                 style={{ fontSize: 'clamp(1rem, 1.2vw, 1.1rem)' }}
               >
-                {t(keyTitle)}
+                {titre}
               </h3>
               <p className="font-body text-[var(--color-text-muted)] text-sm leading-relaxed">
-                {t(keyDesc)}
+                {desc}
               </p>
             </div>
           </motion.div>
