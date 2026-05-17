@@ -16,27 +16,30 @@
 ## 🤖 DERNIÈRE MISE À JOUR PAR CLAUDE CODE
 
 ```
-Date        : 2026-05-16
-Session     : Dev 2 (Google Reviews + vérification complète)
-Fichiers    : app/api/google-reviews/route.ts (NOUVEAU — fetch Google Places API, revalidate 1h)
-              components/blocks/GoogleReviewsBlock.tsx (MIS À JOUR — server component + fetch réel)
-              components/blocks/GoogleReviewsClient.tsx (NOUVEAU — UI animée avec Framer Motion)
-              messages/fr.json + ar.json + en.json (MIS À JOUR — clé cta ajoutée)
+Date        : 2026-05-17
+Session     : Dev 2 (Animations pages secondaires)
+Fichiers    : components/ui/FadeIn.tsx (NOUVEAU — wrapper whileInView réutilisable)
+              components/ui/ServicesGrid.tsx (NOUVEAU — grille services animée stagger)
+              components/ui/BlogGrid.tsx (NOUVEAU — grille articles animée stagger)
+              app/(site)/[locale]/services/page.tsx (MIS À JOUR — FadeIn hero + CTA)
+              app/(site)/[locale]/blog/page.tsx (MIS À JOUR — FadeIn hero)
+              app/(site)/[locale]/faq/page.tsx (MIS À JOUR — FadeIn hero + CTA)
+              app/(site)/[locale]/zones/page.tsx (MIS À JOUR — FadeIn hero + CTA)
+              app/(site)/[locale]/a-propos/page.tsx (MIS À JOUR — FadeIn hero + split left/right)
+              app/(site)/[locale]/devis/page.tsx (MIS À JOUR — FadeIn hero + form)
+              app/(site)/[locale]/contact/page.tsx (MIS À JOUR — FadeIn hero + cartes + CTA)
 Statut      : ✅ TypeScript 0 erreur — pnpm tsc --noEmit ✅
-              ✅ ESLint 0 erreur — pnpm lint ✅
-              ✅ Google Reviews connecté à Google Places API (revalidate 1h)
-              ✅ Fallback avis hardcodés si API indisponible
-              ✅ Payload miroir 100% du site — 18 blocs opérationnels
-ARCHITECTURE GOOGLE REVIEWS :
-  /api/google-reviews (route.ts) → fetch Google Places API → cache 1h
-  GoogleReviewsBlock (server) → fetch /api/google-reviews au build
-  GoogleReviewsClient (client) → UI animée Framer Motion + photos auteurs
-  Fallback → 6 avis statiques si API Google indisponible
-PROCHAINE ACTION  : Tester en local (pnpm dev)
-                    1. Vérifier /fr/ avec le bloc google-reviews
-                    2. Vérifier /admin — créer page accueil avec blocs
-                    3. Si tests OK → déployer sur Vercel + Railway
-Reprendre à : "Tester le site en local, puis déployer sur Vercel + Railway"
+              ✅ Commité et poussé sur main (c5e6e80)
+              ✅ Animations sur les 7 pages secondaires complètes
+ARCHITECTURE ANIMATIONS :
+  FadeIn — wrapper 'use client' motion.div, whileInView once, 4 directions
+  ServicesGrid/BlogGrid — grilles 'use client' avec stagger 80ms/carte via custom
+  Pages server — passent labels i18n + data comme props aux grilles client
+PROCHAINE ACTION  : Déployer sur Vercel + Railway
+                    1. pnpm dev — vérifier les animations en local
+                    2. git push (déjà fait) → Vercel auto-déploie
+                    3. Configurer GOOGLE_PLACES_API_KEY dans Vercel env
+Reprendre à : "Déployer sur Vercel, configurer les variables d'environnement"
 ```
 
 ---
