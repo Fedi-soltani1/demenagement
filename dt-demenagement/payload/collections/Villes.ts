@@ -14,8 +14,10 @@ const Villes: CollectionConfig = {
   },
 
   admin: {
+    group: '📍 Zones d\'intervention',
     useAsTitle: 'nom',
     defaultColumns: ['nom', 'region', 'publie'],
+    description: 'Les 24 villes tunisiennes couvertes. Modifier le texte SEO ou l\'image de chaque ville.',
   },
 
   fields: [

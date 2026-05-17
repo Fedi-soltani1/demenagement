@@ -10,7 +10,7 @@ const variantClasses: Record<BadgeVariant, string> = {
   red:     'bg-[rgba(181,32,39,0.12)] border border-[rgba(181,32,39,0.3)] text-[var(--color-red)]',
   gold:    'bg-[rgba(201,168,76,0.12)] border border-[rgba(201,168,76,0.3)] text-[var(--color-gold)]',
   muted:   'bg-[var(--color-bg-hover)] border border-[var(--color-border)] text-[var(--color-text-muted)]',
-  outline: 'bg-transparent border border-[var(--color-border)] text-[var(--color-text)]',
+  outline: 'bg-transparent border border-[var(--color-border)] text-[var(--text)]',
 }
 
 function Badge({

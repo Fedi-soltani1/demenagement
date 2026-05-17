@@ -18,13 +18,13 @@ const variantClasses: Record<Variant, string> = {
     'bg-[var(--color-red)] text-white hover:bg-[var(--color-red-dark)] ' +
     'hover:shadow-[0_0_20px_rgba(181,32,39,0.4)] active:scale-[0.98]',
   secondary:
-    'bg-[var(--color-bg-card)] text-[var(--color-text)] border border-[var(--color-border)] ' +
+    'bg-[var(--color-bg-card)] text-[var(--text)] border border-[var(--color-border)] ' +
     'hover:border-[var(--color-red)] hover:text-[var(--color-red)]',
   outline:
     'bg-transparent text-white border border-white/30 ' +
     'hover:border-white hover:bg-white/5',
   ghost:
-    'bg-transparent text-[var(--color-text-muted)] hover:text-[var(--color-text)] ' +
+    'bg-transparent text-[var(--color-text-muted)] hover:text-[var(--text)] ' +
     'hover:bg-[var(--color-bg-hover)]',
   danger:
     'bg-red-800 text-white hover:bg-red-900 active:scale-[0.98]',

@@ -14,8 +14,10 @@ const Pays: CollectionConfig = {
   },
 
   admin: {
+    group: '📍 Zones d\'intervention',
     useAsTitle: 'nom',
     defaultColumns: ['nom', 'drapeau', 'publie'],
+    description: 'Les 9 pays européens desservis. Modifier les infos pratiques et le texte SEO par pays.',
   },
 
   fields: [

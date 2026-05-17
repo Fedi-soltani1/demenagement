@@ -13,6 +13,11 @@ const Media: CollectionConfig = {
     delete: isAdmin,
   },
 
+  admin: {
+    group: '🖼️ Médias',
+    description: 'Toutes les images et fichiers du site. Toujours remplir le champ "Alt" pour le SEO.',
+  },
+
   upload: {
     staticDir: 'public/media',
     mimeTypes: ['image/*', 'application/pdf'],

@@ -3,62 +3,65 @@ import { isAdmin } from '../access/isAdmin'
 
 const Newsletter: CollectionConfig = {
   slug: 'newsletter',
-  labels: { singular: 'Abonné Newsletter', plural: 'Abonnés Newsletter' },
+  labels: { singular: 'Abonné newsletter', plural: 'Abonnés newsletter' },
 
   access: {
-    // Données privées — admin uniquement
     read: isAdmin,
-    create: () => true, // L'API publique peut créer des abonnés
+    create: () => true,
     update: isAdmin,
     delete: isAdmin,
   },
 
   admin: {
+    group: '📬 Demandes clients',
     useAsTitle: 'email',
-    defaultColumns: ['email', 'statut', 'source', 'createdAt'],
-    description: 'Abonnés à la newsletter — double opt-in requis',
+    defaultColumns: ['email', 'statut', 'createdAt'],
+    description: 'Liste des emails inscrits à la newsletter. Statut "Confirmé" = email vérifié, prêt pour les campagnes.',
   },
 
   fields: [
     {
       name: 'email',
+      label: 'Adresse email',
       type: 'email',
       required: true,
       unique: true,
     },
     {
       name: 'statut',
+      label: 'Statut de l\'inscription',
       type: 'select',
       required: true,
       defaultValue: 'pending',
       options: [
-        { label: 'En attente de confirmation', value: 'pending' },
-        { label: 'Confirmé',                   value: 'confirmed' },
-        { label: 'Désabonné',                  value: 'unsubscribed' },
+        { label: '⏳ En attente — email de confirmation pas encore cliqué', value: 'pending' },
+        { label: '✅ Confirmé — actif, peut recevoir des emails',            value: 'confirmed' },
+        { label: '🚫 Désabonné — ne plus envoyer',                          value: 'unsubscribed' },
       ],
     },
     {
       name: 'source',
+      label: 'Page d\'inscription',
       type: 'text',
-      admin: { description: 'URL de la page d\'inscription' },
-    },
-    {
-      name: 'token',
-      type: 'text',
-      admin: {
-        description: 'Token de confirmation (effacé après confirmation)',
-        readOnly: true,
-      },
-    },
-    {
-      name: 'tokenExpiry',
-      type: 'date',
-      admin: { readOnly: true },
+      admin: { description: 'URL de la page où le visiteur s\'est inscrit (rempli automatiquement).', readOnly: true },
     },
     {
       name: 'confirmedAt',
+      label: 'Date de confirmation',
       type: 'date',
-      admin: { readOnly: true },
+      admin: { readOnly: true, description: 'Date à laquelle le lien de confirmation a été cliqué.' },
+    },
+    {
+      name: 'token',
+      label: 'Token de confirmation',
+      type: 'text',
+      admin: { readOnly: true, hidden: true },
+    },
+    {
+      name: 'tokenExpiry',
+      label: 'Expiration du token',
+      type: 'date',
+      admin: { readOnly: true, hidden: true },
     },
   ],
 }

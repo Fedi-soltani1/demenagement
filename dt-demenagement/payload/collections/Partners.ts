@@ -14,37 +14,45 @@ const Partners: CollectionConfig = {
   },
 
   admin: {
+    group: '⭐ Avis & Réputation',
     useAsTitle: 'nom',
     defaultColumns: ['nom', 'ordre', 'publie'],
+    description: 'Logos des partenaires affichés dans le slider sur la page d\'accueil. Uploader le logo PNG ou SVG de chaque partenaire.',
   },
 
   fields: [
     {
       name: 'nom',
+      label: 'Nom du partenaire',
       type: 'text',
       required: true,
+      admin: { description: 'Ex: Qatar Airways, Banque Zitouna, UK Embassy…' },
     },
     {
       name: 'logo',
+      label: 'Logo du partenaire (PNG ou SVG, fond transparent)',
       type: 'upload',
       relationTo: 'media',
-      required: true,
+      admin: { description: 'Format recommandé : PNG transparent, largeur min 200px. Sans logo, le nom s\'affiche en texte.' },
     },
     {
       name: 'lien',
+      label: 'Site web du partenaire (optionnel)',
       type: 'text',
-      admin: { description: 'URL du site web du partenaire (optionnel)' },
+      admin: { description: 'Ex: https://www.qatarairways.com — le logo deviendra un lien cliquable.' },
     },
     {
       name: 'ordre',
+      label: 'Ordre d\'affichage dans le slider (1 = en premier)',
       type: 'number',
       defaultValue: 0,
-      admin: { description: 'Ordre d\'affichage (du plus petit au plus grand)' },
     },
     {
       name: 'publie',
+      label: 'Afficher dans le slider',
       type: 'checkbox',
       defaultValue: true,
+      admin: { description: 'Décocher pour masquer ce partenaire sans le supprimer.' },
     },
   ],
 }

@@ -173,6 +173,75 @@ const FAQ_ITEMS = [
   },
 ] as const
 
+const PARTNERS = [
+  { nom: 'UK Embassy',           lien: 'https://www.gov.uk',           ordre: 1  },
+  { nom: 'Qatar Airways',        lien: 'https://www.qatarairways.com', ordre: 2  },
+  { nom: 'Union Européenne',     lien: 'https://european-union.europa.eu', ordre: 3 },
+  { nom: 'Tunisair',             lien: 'https://www.tunisair.com',     ordre: 4  },
+  { nom: 'Banque Zitouna',       lien: 'https://www.banquezitouna.com', ordre: 5 },
+  { nom: 'ICRC',                 lien: 'https://www.icrc.org',         ordre: 6  },
+  { nom: 'ODDO BHF',             lien: 'https://www.oddo-bhf.com',     ordre: 7  },
+  { nom: 'Expertise France',     lien: 'https://www.expertisefrance.fr', ordre: 8 },
+  { nom: 'JCC',                  lien: null,                           ordre: 9  },
+  { nom: 'Ministère Environnement', lien: null,                        ordre: 10 },
+] as const
+
+const CATEGORIES = [
+  { nom: 'Conseils déménagement', slug: 'conseils-demenagement', couleur: '#b52027' },
+  { nom: 'International',         slug: 'international',         couleur: '#c9a84c' },
+  { nom: 'Entreprises',           slug: 'entreprises',           couleur: '#2563eb' },
+  { nom: 'Guides pratiques',      slug: 'guides-pratiques',      couleur: '#16a34a' },
+  { nom: 'Actualités',            slug: 'actualites',            couleur: '#7c3aed' },
+] as const
+
+const BLOG_ARTICLES = [
+  {
+    titre: 'Comment bien préparer son déménagement : le guide complet',
+    slug: 'preparer-demenagement-guide-complet',
+    extrait: 'Découvrez nos conseils d\'experts pour organiser votre déménagement de A à Z sans stress. Checklist, timing et astuces de pros.',
+    contenu: 'Préparer un déménagement est une étape cruciale qui demande organisation et méthode. Voici les étapes clés : commencer 6 à 8 semaines avant le jour J, trier et désencombrer, réserver votre déménageur, informer les organismes (banque, administration, poste), emballer méthodiquement en étiquetant chaque carton. Notre équipe DT Déménagement est là pour vous accompagner à chaque étape.',
+    categorieSlug: 'conseils-demenagement',
+    tempsLecture: 8,
+    datePublication: '2026-04-15T08:00:00.000Z',
+  },
+  {
+    titre: 'Déménager de Tunisie vers la France : tout ce qu\'il faut savoir',
+    slug: 'demenager-tunisie-france-guide',
+    extrait: 'Formalités douanières, transport, assurance, délais — guide pratique complet pour votre déménagement international de Tunisie vers la France.',
+    contenu: 'Un déménagement international entre la Tunisie et la France requiert une préparation rigoureuse. Il faut prévoir : la liste détaillée des biens (inventaire douanier), les documents nécessaires (titre de séjour, contrat de travail ou preuve d\'études), le choix entre groupage et camion dédié, l\'assurance transport. DT Déménagement gère l\'ensemble des formalités et livraisons à domicile dans toute la France. Délai moyen : 7 à 15 jours.',
+    categorieSlug: 'international',
+    tempsLecture: 12,
+    datePublication: '2026-03-22T08:00:00.000Z',
+  },
+  {
+    titre: '10 erreurs à éviter lors d\'un déménagement d\'entreprise',
+    slug: 'erreurs-demenagement-entreprise',
+    extrait: 'Les professionnels DT partagent les 10 pièges les plus courants lors d\'un déménagement d\'entreprise et comment les éviter pour minimiser l\'arrêt d\'activité.',
+    contenu: 'Un déménagement d\'entreprise mal planifié peut coûter cher. Les erreurs les plus fréquentes : ne pas commencer la planification assez tôt (prévoyez 3 à 6 mois), ne pas impliquer les équipes IT pour les serveurs et câblages, oublier de notifier les clients et fournisseurs, négliger l\'étiquetage du matériel, ne pas assurer les équipements. DT Déménagement propose un service clé en main pour les transferts d\'entreprises avec un planning sur mesure.',
+    categorieSlug: 'entreprises',
+    tempsLecture: 6,
+    datePublication: '2026-02-10T08:00:00.000Z',
+  },
+  {
+    titre: 'Comment emballer vos objets fragiles comme un pro',
+    slug: 'emballer-objets-fragiles',
+    extrait: 'Vaisselle, œuvres d\'art, électronique, miroirs — nos experts vous dévoilent les techniques professionnelles pour emballer vos objets fragiles sans risque.',
+    contenu: 'L\'emballage des objets fragiles est un art. Voici les règles d\'or : utiliser du papier bulle en double couche pour la vaisselle, emballer chaque pièce individuellement, garnir le fond des cartons avec de la mousse, ne jamais laisser d\'espace vide (combler avec du papier froissé), étiqueter "FRAGILE" sur les 4 faces et le dessus. Pour les œuvres d\'art et miroirs, nous recommandons nos caisses sur mesure. Demandez notre service emballage complet à partir de 30 TND.',
+    categorieSlug: 'conseils-demenagement',
+    tempsLecture: 5,
+    datePublication: '2026-01-20T08:00:00.000Z',
+  },
+  {
+    titre: 'Déménager à Tunis : les quartiers et nos conseils pratiques',
+    slug: 'demenager-tunis-quartiers-conseils',
+    extrait: 'Cité El Khadra, La Marsa, Ennasr, El Menzah — guide complet pour bien choisir votre quartier à Tunis et organiser votre déménagement dans la capitale.',
+    contenu: 'Tunis est une ville aux multiples visages. Chaque quartier a ses caractéristiques : La Marsa et Sidi Bou Saïd pour le bord de mer et la tranquillité, Ennasr et El Menzah pour les familles avec enfants et les commodités modernes, La Soukra pour les grandes villas, le centre-ville pour la proximité des transports. Notre équipe intervient dans tous les quartiers du Grand Tunis 7j/7. Devis gratuit sous 2h.',
+    categorieSlug: 'guides-pratiques',
+    tempsLecture: 7,
+    datePublication: '2026-05-01T08:00:00.000Z',
+  },
+] as const
+
 const TESTIMONIALS = [
   {
     nom: 'Sami Ben Ali',
@@ -219,7 +288,7 @@ export async function seed(payload: Payload): Promise<void> {
   payload.logger.info('🌱 ═══════════════════════════════════════')
 
   // ── 1. Admin ──────────────────────────────────────────────────────────────
-  payload.logger.info('\n👤 [1/7] Admin par défaut...')
+  payload.logger.info('\n👤 [1/9] Admin par défaut...')
   const adminsExisting = await payload.find({ collection: 'admins', limit: 1 })
   if (adminsExisting.docs.length === 0) {
     await payload.create({
@@ -239,7 +308,7 @@ export async function seed(payload: Payload): Promise<void> {
   }
 
   // ── 2. Settings Global ────────────────────────────────────────────────────
-  payload.logger.info('\n⚙️  [2/7] Settings global...')
+  payload.logger.info('\n⚙️  [2/9] Settings global...')
   await payload.updateGlobal({
     slug: 'settings',
     data: {
@@ -260,7 +329,7 @@ export async function seed(payload: Payload): Promise<void> {
   payload.logger.info('  ✅ Settings mis à jour (téléphone, email, horaires, réseaux sociaux)')
 
   // ── 3. Villes ─────────────────────────────────────────────────────────────
-  payload.logger.info(`\n📍 [3/7] Villes (${VILLES.length})...`)
+  payload.logger.info(`\n📍 [3/9] Villes (${VILLES.length})...`)
   for (const ville of VILLES) {
     const existing = await payload.find({ collection: 'villes', where: { slug: { equals: ville.slug } }, limit: 1 })
     if (existing.docs.length === 0) {
@@ -281,7 +350,7 @@ export async function seed(payload: Payload): Promise<void> {
   }
 
   // ── 4. Pays ───────────────────────────────────────────────────────────────
-  payload.logger.info(`\n🌍 [4/7] Pays (${PAYS.length})...`)
+  payload.logger.info(`\n🌍 [4/9] Pays (${PAYS.length})...`)
   for (const pays of PAYS) {
     const existing = await payload.find({ collection: 'pays', where: { slug: { equals: pays.slug } }, limit: 1 })
     if (existing.docs.length === 0) {
@@ -302,7 +371,7 @@ export async function seed(payload: Payload): Promise<void> {
   }
 
   // ── 5. Services ───────────────────────────────────────────────────────────
-  payload.logger.info(`\n🔧 [5/7] Services (${SERVICES.length})...`)
+  payload.logger.info(`\n🔧 [5/9] Services (${SERVICES.length})...`)
   for (const service of SERVICES) {
     const existing = await payload.find({ collection: 'services', where: { slug: { equals: service.slug } }, limit: 1 })
     if (existing.docs.length === 0) {
@@ -325,7 +394,7 @@ export async function seed(payload: Payload): Promise<void> {
   }
 
   // ── 6. FAQ ────────────────────────────────────────────────────────────────
-  payload.logger.info(`\n❓ [6/7] FAQ (${FAQ_ITEMS.length} questions)...`)
+  payload.logger.info(`\n❓ [6/9] FAQ (${FAQ_ITEMS.length} questions)...`)
   for (const item of FAQ_ITEMS) {
     const existing = await payload.find({
       collection: 'faq',
@@ -349,8 +418,72 @@ export async function seed(payload: Payload): Promise<void> {
     }
   }
 
-  // ── 7. Témoignages ────────────────────────────────────────────────────────
-  payload.logger.info(`\n⭐ [7/7] Témoignages (${TESTIMONIALS.length})...`)
+  // ── 7. Partenaires ───────────────────────────────────────────────────────
+  payload.logger.info(`\n🤝 [7/10] Partenaires (${PARTNERS.length})...`)
+  for (const partner of PARTNERS) {
+    const existing = await payload.find({ collection: 'partners', where: { nom: { equals: partner.nom } }, limit: 1 })
+    if (existing.docs.length === 0) {
+      await payload.create({
+        collection: 'partners',
+        data: {
+          nom: partner.nom,
+          lien: partner.lien ?? undefined,
+          ordre: partner.ordre,
+          publie: true,
+        },
+      })
+      payload.logger.info(`  ✅ ${partner.nom}`)
+    } else {
+      payload.logger.info(`  ⏭️  ${partner.nom} (déjà existant)`)
+    }
+  }
+
+  // ── 8. Catégories blog ────────────────────────────────────────────────────
+  payload.logger.info(`\n🏷️  [8/10] Catégories (${CATEGORIES.length})...`)
+  const categoryIds: Record<string, string> = {}
+  for (const cat of CATEGORIES) {
+    const existing = await payload.find({ collection: 'categories', where: { slug: { equals: cat.slug } }, limit: 1 })
+    if (existing.docs.length === 0) {
+      const created = await payload.create({
+        collection: 'categories',
+        data: { nom: cat.nom, slug: cat.slug, couleur: cat.couleur },
+      })
+      categoryIds[cat.slug] = created.id as string
+      payload.logger.info(`  ✅ ${cat.nom}`)
+    } else {
+      categoryIds[cat.slug] = (existing.docs[0]?.id ?? '') as string
+      payload.logger.info(`  ⏭️  ${cat.nom} (déjà existante)`)
+    }
+  }
+
+  // ── 8. Articles de blog ───────────────────────────────────────────────────
+  payload.logger.info(`\n📝 [9/10] Articles de blog (${BLOG_ARTICLES.length})...`)
+  for (const article of BLOG_ARTICLES) {
+    const existing = await payload.find({ collection: 'blog', where: { slug: { equals: article.slug } }, limit: 1 })
+    if (existing.docs.length === 0) {
+      const catId = categoryIds[article.categorieSlug]
+      await payload.create({
+        collection: 'blog',
+        data: {
+          titre: article.titre,
+          slug: article.slug,
+          extrait: article.extrait,
+          contenu: lexicalParagraph(article.contenu),
+          auteur: 'Équipe DT Déménagement',
+          categories: catId ? [catId] : [],
+          tempsLecture: article.tempsLecture,
+          statut: 'publie',
+          datePublication: article.datePublication,
+        },
+      })
+      payload.logger.info(`  ✅ ${article.titre.substring(0, 55)}...`)
+    } else {
+      payload.logger.info(`  ⏭️  Déjà existant : ${article.slug}`)
+    }
+  }
+
+  // ── 9. Témoignages ────────────────────────────────────────────────────────
+  payload.logger.info(`\n⭐ [10/10] Témoignages (${TESTIMONIALS.length})...`)
   for (const temoignage of TESTIMONIALS) {
     const existing = await payload.find({
       collection: 'testimonials',
@@ -459,10 +592,9 @@ export async function seed(payload: Payload): Promise<void> {
           {
             blockType: 'cta',
             titre: 'Prêt à déménager ?',
-            texte: 'Contactez-nous pour un devis gratuit et sans engagement. Réponse garantie sous 2h.',
-            ctaTexte: 'Obtenir mon devis gratuit',
-            ctaLien: '/fr/devis',
-            variante: 'dark',
+            sousTitre: 'Contactez-nous pour un devis gratuit et sans engagement. Réponse garantie sous 2h.',
+            boutonPrimaire: { texte: 'Obtenir mon devis gratuit', lien: '/fr/devis' },
+            couleurFond: 'rouge',
           },
         ],
       },

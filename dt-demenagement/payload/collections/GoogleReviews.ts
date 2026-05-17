@@ -6,63 +6,73 @@ const GoogleReviews: CollectionConfig = {
   labels: { singular: 'Avis Google', plural: 'Avis Google' },
 
   access: {
-    // Lecture publique — affichage sur le site
     read: () => true,
-    // Création/modification uniquement par le cron job (admin)
     create: isAdmin,
     update: isAdmin,
     delete: isAdmin,
   },
 
   admin: {
+    group: '⭐ Avis & Réputation',
     useAsTitle: 'nomAuteur',
-    defaultColumns: ['nomAuteur', 'note', 'dateOriginal', 'syncedAt'],
-    description: 'Avis synchronisés automatiquement depuis Google Places — ne pas modifier manuellement',
+    defaultColumns: ['nomAuteur', 'note', 'dateOriginal'],
+    description: '⚠️ Ces avis sont synchronisés automatiquement depuis Google — ne pas modifier manuellement. Ils se mettent à jour via un script automatique.',
   },
 
   fields: [
     {
       name: 'nomAuteur',
+      label: 'Nom de l\'auteur (Google)',
       type: 'text',
       required: true,
-    },
-    {
-      name: 'photoUrl',
-      type: 'text',
-      admin: { description: 'URL photo Google (externe)' },
+      admin: { readOnly: true },
     },
     {
       name: 'note',
+      label: 'Note Google (sur 5)',
       type: 'select',
       required: true,
+      admin: { readOnly: true },
       options: [
-        { label: '1', value: '1' },
-        { label: '2', value: '2' },
-        { label: '3', value: '3' },
-        { label: '4', value: '4' },
-        { label: '5', value: '5' },
+        { label: '⭐ 1', value: '1' },
+        { label: '⭐⭐ 2', value: '2' },
+        { label: '⭐⭐⭐ 3', value: '3' },
+        { label: '⭐⭐⭐⭐ 4', value: '4' },
+        { label: '⭐⭐⭐⭐⭐ 5', value: '5' },
       ],
     },
     {
       name: 'texte',
+      label: 'Texte de l\'avis',
       type: 'textarea',
+      admin: { readOnly: true },
     },
     {
       name: 'dateOriginal',
+      label: 'Date de l\'avis (sur Google)',
       type: 'date',
       required: true,
+      admin: { readOnly: true },
+    },
+    {
+      name: 'photoUrl',
+      label: 'Photo profil Google',
+      type: 'text',
+      admin: { readOnly: true, hidden: true },
     },
     {
       name: 'syncedAt',
+      label: 'Dernière synchronisation',
       type: 'date',
       required: true,
-      admin: { description: 'Date de la dernière synchronisation depuis Google' },
+      admin: { readOnly: true, hidden: true },
     },
     {
       name: 'googleReviewId',
+      label: 'ID Google (technique)',
       type: 'text',
       unique: true,
-      admin: { description: 'ID unique Google pour éviter les doublons' },
+      admin: { readOnly: true, hidden: true },
     },
   ],
 }

@@ -16,7 +16,7 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
         {label ? (
           <label
             htmlFor={textareaId}
-            className="text-sm font-medium text-[var(--color-text)] font-[var(--font-body)]"
+            className="text-sm font-medium text-[var(--text)] font-[var(--font-body)]"
           >
             {label}
             {props.required ? (
@@ -36,7 +36,7 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           className={[
             'w-full px-4 py-3 rounded-[var(--radius-btn)]',
             'bg-[var(--color-bg-card)] border',
-            'font-[var(--font-body)] text-sm text-[var(--color-text)]',
+            'font-[var(--font-body)] text-sm text-[var(--text)]',
             'placeholder:text-[var(--color-text-muted)]',
             'transition-colors duration-200 resize-vertical',
             'focus:outline-none focus:ring-2 focus:ring-[var(--color-red)] focus:border-transparent',

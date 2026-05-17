@@ -4,7 +4,7 @@ import { isEditor } from '../access/isEditor'
 
 const Categories: CollectionConfig = {
   slug: 'categories',
-  labels: { singular: 'Catégorie', plural: 'Catégories' },
+  labels: { singular: 'Catégorie blog', plural: 'Catégories blog' },
 
   access: {
     read: () => true,
@@ -14,33 +14,39 @@ const Categories: CollectionConfig = {
   },
 
   admin: {
+    group: '📝 Contenu du site',
     useAsTitle: 'nom',
     defaultColumns: ['nom', 'slug'],
+    description: 'Catégories pour classer les articles du blog. Exemples : Conseils déménagement, International, Entreprises.',
   },
 
   fields: [
     {
       name: 'nom',
+      label: 'Nom de la catégorie (affiché sur le site)',
       type: 'text',
       required: true,
       localized: true,
     },
     {
       name: 'slug',
+      label: 'Identifiant URL (unique, sans espaces ni accents)',
       type: 'text',
       required: true,
       unique: true,
-      admin: { description: 'Identifiant URL (ex: conseils-demenagement)' },
+      admin: { description: 'Ex: conseils-demenagement, international, entreprises — ne pas modifier après création.' },
     },
     {
       name: 'description',
+      label: 'Description de la catégorie (optionnelle)',
       type: 'textarea',
       localized: true,
     },
     {
       name: 'couleur',
+      label: 'Couleur d\'affichage (optionnelle)',
       type: 'text',
-      admin: { description: 'Couleur hex optionnelle pour l\'affichage (ex: #b52027)' },
+      admin: { description: 'Code couleur hex (ex: #b52027). Laissez vide pour la couleur rouge par défaut.' },
     },
   ],
 }

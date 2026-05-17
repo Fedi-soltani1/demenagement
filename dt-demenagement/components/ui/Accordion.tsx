@@ -47,7 +47,7 @@ function Accordion({ items, allowMultiple = false, className = '' }: AccordionPr
               onClick={() => toggle(item.id)}
               className="flex w-full items-center justify-between py-5 text-start gap-4 group"
             >
-              <span className="font-medium text-[var(--color-text)] font-[var(--font-body)] group-hover:text-[var(--color-red)] transition-colors">
+              <span className="font-medium text-[var(--text)] font-[var(--font-body)] group-hover:text-[var(--color-red)] transition-colors">
                 {item.question}
               </span>
               <span

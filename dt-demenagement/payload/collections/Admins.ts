@@ -1,8 +1,5 @@
 import type { CollectionConfig } from 'payload'
 
-// Collection Admins — utilisée par le panneau Payload CMS
-// Distincte de la collection Clients (espace client NextAuth)
-
 const Admins: CollectionConfig = {
   slug: 'admins',
   labels: { singular: 'Administrateur', plural: 'Administrateurs' },
@@ -17,43 +14,38 @@ const Admins: CollectionConfig = {
   },
 
   admin: {
+    group: '👥 Utilisateurs',
     useAsTitle: 'email',
     defaultColumns: ['email', 'nom', 'prenom', 'role'],
-    description: 'Comptes administrateurs du CMS — ne pas confondre avec les clients',
+    description: 'Comptes qui ont accès à ce panneau d\'administration. Seul le Super Admin peut créer ou supprimer des comptes.',
   },
 
   fields: [
     {
       name: 'nom',
+      label: 'Nom de famille',
       type: 'text',
       required: true,
     },
     {
       name: 'prenom',
+      label: 'Prénom',
       type: 'text',
       required: true,
     },
     {
       name: 'role',
+      label: 'Rôle et niveau d\'accès',
       type: 'select',
       required: true,
       defaultValue: 'editeur',
+      admin: { description: 'Définit ce que cet utilisateur peut faire dans l\'admin.' },
       options: [
-        {
-          label: 'Super Admin — Accès total',
-          value: 'super-admin',
-        },
-        {
-          label: 'Éditeur — Contenu du site (pages, blog, FAQ, médias)',
-          value: 'editeur',
-        },
-        {
-          label: 'Commercial — Dossiers & messagerie clients',
-          value: 'commercial',
-        },
+        { label: '👑 Super Admin — accès total (créer des admins, supprimer)',   value: 'super-admin' },
+        { label: '✏️ Éditeur — modifier le contenu (pages, blog, FAQ, médias)', value: 'editeur' },
+        { label: '💼 Commercial — voir et gérer les dossiers clients',           value: 'commercial' },
       ],
       access: {
-        // Seul un super-admin peut changer le rôle d'un autre utilisateur
         update: ({ req: { user } }) =>
           Boolean(user && (user as { role?: string }).role === 'super-admin'),
       },

@@ -146,7 +146,7 @@ export function BlogPreviewBlock({ articles = [] }: { articles?: BlogArticleData
               {/* Contenu */}
               <div className="flex flex-col flex-1 p-6">
                 <div className="flex items-center gap-3 mb-3 text-xs font-body text-[var(--color-text-muted)]">
-                  <time dateTime={article.datePublication}>
+                  <time dateTime={article.datePublication} suppressHydrationWarning>
                     {new Date(article.datePublication).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
                   </time>
                   <span aria-hidden="true">·</span>

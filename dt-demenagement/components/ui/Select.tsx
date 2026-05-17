@@ -27,7 +27,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
         {label ? (
           <label
             htmlFor={selectId}
-            className="text-sm font-medium text-[var(--color-text)] font-[var(--font-body)]"
+            className="text-sm font-medium text-[var(--text)] font-[var(--font-body)]"
           >
             {label}
             {props.required ? (
@@ -47,7 +47,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
             className={[
               'w-full px-4 py-3 pe-10 rounded-[var(--radius-btn)]',
               'bg-[var(--color-bg-card)] border appearance-none',
-              'font-[var(--font-body)] text-sm text-[var(--color-text)]',
+              'font-[var(--font-body)] text-sm text-[var(--text)]',
               'transition-colors duration-200',
               'focus:outline-none focus:ring-2 focus:ring-[var(--color-red)] focus:border-transparent',
               error

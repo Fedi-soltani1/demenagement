@@ -14,8 +14,10 @@ const Services: CollectionConfig = {
   },
 
   admin: {
+    group: '📝 Contenu du site',
     useAsTitle: 'nom',
-    defaultColumns: ['nom', 'slug', 'publie', 'ordre'],
+    defaultColumns: ['nom', 'tarifDepuis', 'publie', 'ordre'],
+    description: 'Services proposés par DT Déménagement. Modifier le nom, la description, le tarif et l\'icône.',
     preview: (doc) => `${process.env.NEXT_PUBLIC_SITE_URL}/fr/services/${doc.slug as string}`,
   },
 

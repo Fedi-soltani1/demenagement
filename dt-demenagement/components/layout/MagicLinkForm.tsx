@@ -68,7 +68,7 @@ export function MagicLinkForm({
           </svg>
         </div>
 
-        <h2 className="font-display text-2xl font-bold text-[var(--color-text)] mb-3">
+        <h2 className="font-display text-2xl font-bold text-[var(--text)] mb-3">
           {t('verifyTitle')}
         </h2>
         <p className="text-[var(--color-text-muted)] leading-relaxed mb-3">
@@ -100,7 +100,7 @@ export function MagicLinkForm({
         <span className="font-display text-white text-lg font-bold select-none">DT</span>
       </div>
 
-      <h1 className="font-display text-2xl font-bold text-[var(--color-text)] mb-2">
+      <h1 className="font-display text-2xl font-bold text-[var(--text)] mb-2">
         {t('title')}
       </h1>
       <p className="text-[var(--color-text-muted)] text-sm mb-8 leading-relaxed">

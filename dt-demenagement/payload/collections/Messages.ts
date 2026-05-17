@@ -14,9 +14,11 @@ const Messages: CollectionConfig = {
   },
 
   admin: {
+    group: '📬 Demandes clients',
     useAsTitle: 'contenu',
     defaultColumns: ['demenagement', 'auteur', 'lu', 'createdAt'],
-    description: 'Messagerie interne entre clients et l\'équipe DT',
+    description: 'Messagerie interne liée à un dossier — disponible quand l\'espace client sera activé.',
+    hidden: true,
   },
 
   fields: [

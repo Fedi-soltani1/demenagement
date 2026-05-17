@@ -42,7 +42,7 @@ const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
           <div className="flex flex-col gap-0.5">
             <label
               htmlFor={checkboxId}
-              className="text-sm text-[var(--color-text)] font-[var(--font-body)] cursor-pointer leading-snug"
+              className="text-sm text-[var(--text)] font-[var(--font-body)] cursor-pointer leading-snug"
             >
               {label}
               {props.required ? (
