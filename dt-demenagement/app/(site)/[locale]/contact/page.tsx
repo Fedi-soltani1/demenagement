@@ -6,6 +6,7 @@ import config from '@payload-config'
 import { LOCALES, COMPANY } from '@/lib/constants'
 import { buildMetadata } from '@/lib/seo'
 import { MapPin, Phone, Mail, Clock } from 'lucide-react'
+import { FadeIn } from '@/components/ui/FadeIn'
 
 export const revalidate = 300
 
@@ -85,7 +86,7 @@ export default async function ContactPage({
           style={{ background: 'radial-gradient(ellipse 80% 80% at 80% 50%, #b52027 0%, transparent 70%)' }}
           aria-hidden="true"
         />
-        <div className="relative z-10">
+        <FadeIn className="relative z-10">
           <span className="inline-block mb-4 px-4 py-1.5 rounded-full border border-[var(--color-red)]/30 bg-[var(--color-red)]/8 text-[var(--color-red)] text-xs font-body font-semibold uppercase tracking-widest">
             {t('badge')}
           </span>
@@ -98,17 +99,16 @@ export default async function ContactPage({
           <p className="font-body text-[var(--color-text-muted)] text-lg max-w-xl mx-auto">
             {t('subtitle')}
           </p>
-        </div>
+        </FadeIn>
       </section>
 
       {/* Cartes contact */}
       <section className="py-section px-container bg-[var(--color-bg-dark2)]">
         <div className="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-6">
           {cards.map(({ Icon, title, content }, i) => (
+            <FadeIn key={title} delay={i * 0.08}>
             <div
-              key={title}
-              className="flex items-start gap-4 p-card rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-card)] hover:border-[var(--color-red)]/30 transition-colors duration-300"
-              style={{ animationDelay: `${i * 80}ms` }}
+              className="flex items-start gap-4 p-card rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-card)] hover:border-[var(--color-red)]/30 transition-colors duration-300 h-full"
             >
               <div className="w-12 h-12 rounded-xl bg-[var(--color-red)]/10 border border-[var(--color-red)]/20 flex items-center justify-center flex-shrink-0">
                 <Icon className="w-5 h-5 text-[var(--color-red)]" aria-hidden="true" />
@@ -118,11 +118,12 @@ export default async function ContactPage({
                 <p className="font-body text-[var(--color-text-muted)] text-sm whitespace-pre-line leading-relaxed">{content}</p>
               </div>
             </div>
+            </FadeIn>
           ))}
         </div>
 
         {/* CTA Devis */}
-        <div className="max-w-4xl mx-auto mt-14 text-center">
+        <FadeIn delay={0.2} className="max-w-4xl mx-auto mt-14 text-center">
           <div className="inline-block px-10 py-8 rounded-2xl border border-[var(--color-red)]/20 bg-[var(--color-red)]/5">
             <p className="font-body text-[var(--color-text-muted)] mb-5 text-base">
               {t('ctaText')}
@@ -134,7 +135,7 @@ export default async function ContactPage({
               {t('ctaButton')} →
             </Link>
           </div>
-        </div>
+        </FadeIn>
       </section>
     </>
   )

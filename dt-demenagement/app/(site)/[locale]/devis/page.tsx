@@ -5,6 +5,7 @@ import { COMPANY, LOCALES } from '@/lib/constants'
 import { Breadcrumb } from '@/components/layout/Breadcrumb'
 import { DevisForm } from '@/components/devis/DevisForm'
 import { User, Building2, Phone, Clock, Shield } from 'lucide-react'
+import { FadeIn } from '@/components/ui/FadeIn'
 
 interface PageProps {
   params: Promise<{ locale: string }>
@@ -57,7 +58,7 @@ export default async function DevisPage({ params, searchParams }: PageProps) {
           }}
           aria-hidden="true"
         />
-        <div className="max-w-4xl mx-auto relative z-10 text-center">
+        <FadeIn className="max-w-4xl mx-auto relative z-10 text-center">
           <div className="inline-block mb-4 px-4 py-1.5 rounded-full border border-[var(--color-red)]/30 bg-[var(--color-red)]/8 text-[var(--color-red)] text-xs font-body font-semibold uppercase tracking-widest">
             {t('badge')}
           </div>
@@ -84,12 +85,12 @@ export default async function DevisPage({ params, searchParams }: PageProps) {
               </div>
             ))}
           </div>
-        </div>
+        </FadeIn>
       </section>
 
       {/* Form */}
       <section className="py-12 px-container bg-[var(--color-bg-dark2)]">
-        <div className="max-w-2xl mx-auto">
+        <FadeIn delay={0.1} className="max-w-2xl mx-auto">
 
           {/* Sélecteur particulier / entreprise */}
           <div className="flex gap-3 mb-8 p-1 rounded-xl bg-white/[0.03] border border-white/8">
@@ -125,7 +126,7 @@ export default async function DevisPage({ params, searchParams }: PageProps) {
               {COMPANY.phone1}
             </a>
           </p>
-        </div>
+        </FadeIn>
       </section>
     </>
   )

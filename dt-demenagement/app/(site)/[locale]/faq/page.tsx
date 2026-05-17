@@ -11,6 +11,7 @@ import { Breadcrumb } from '@/components/layout/Breadcrumb'
 import { FAQClient } from '@/components/blocks/FAQClient'
 import type { FAQItem, FAQCategory } from '@/components/blocks/FAQClient'
 import { PhoneLink } from '@/components/ui/PhoneLink'
+import { FadeIn } from '@/components/ui/FadeIn'
 
 // ISR — le contenu FAQ évolue peu
 export const revalidate = 86400
@@ -115,7 +116,7 @@ export default async function FAQPage({ params }: FAQPageProps) {
           aria-hidden="true"
         />
 
-        <div className="max-w-3xl mx-auto text-center relative z-10">
+        <FadeIn className="max-w-3xl mx-auto text-center relative z-10">
           <div className="inline-block mb-4 px-4 py-1.5 rounded-full border border-[var(--color-red)]/30 bg-[var(--color-red)]/8 text-[var(--color-red)] text-xs font-body font-semibold uppercase tracking-widest">
             {t('badge')}
           </div>
@@ -128,7 +129,7 @@ export default async function FAQPage({ params }: FAQPageProps) {
           <p className="font-body text-[var(--color-text-muted)] text-lg leading-relaxed">
             {t('subtitle')}
           </p>
-        </div>
+        </FadeIn>
       </section>
 
       {/* FAQ interactive */}
@@ -161,7 +162,7 @@ export default async function FAQPage({ params }: FAQPageProps) {
 
       {/* CTA : question non répondue ? */}
       <section className="py-16 px-container bg-[var(--color-bg-dark)] border-t border-white/5">
-        <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
+        <FadeIn className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
           <div>
             <p className="font-heading font-semibold text-[var(--color-text-light)] text-xl mb-1">
               {t('ctaTitle')}
@@ -183,7 +184,7 @@ export default async function FAQPage({ params }: FAQPageProps) {
               showIcon
             />
           </div>
-        </div>
+        </FadeIn>
       </section>
 
       {/* Schema.org FAQPage JSON-LD */}

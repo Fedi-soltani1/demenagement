@@ -9,6 +9,7 @@ import { COMPANY, LOCALES, VILLES, PAYS } from '@/lib/constants'
 import { Breadcrumb } from '@/components/layout/Breadcrumb'
 import type { MapVille, MapPays } from '@/components/blocks/ZonesMap'
 import { MapPin, Globe, ArrowRight } from 'lucide-react'
+import { FadeIn } from '@/components/ui/FadeIn'
 
 // ISR — les zones changent très rarement
 export const revalidate = 604800
@@ -212,7 +213,7 @@ export default async function ZonesPage({ params }: ZonesPageProps) {
           aria-hidden="true"
         />
 
-        <div className="max-w-4xl mx-auto relative z-10">
+        <FadeIn className="max-w-4xl mx-auto relative z-10">
           <div className="inline-block mb-4 px-4 py-1.5 rounded-full border border-[var(--color-red)]/30 bg-[var(--color-red)]/8 text-[var(--color-red)] text-xs font-body font-semibold uppercase tracking-widest">
             {t('badge')}
           </div>
@@ -247,7 +248,7 @@ export default async function ZonesPage({ params }: ZonesPageProps) {
               </div>
             </div>
           </div>
-        </div>
+        </FadeIn>
       </section>
 
       {/* Carte interactive */}
@@ -335,7 +336,7 @@ export default async function ZonesPage({ params }: ZonesPageProps) {
 
       {/* CTA */}
       <section className="py-16 px-container bg-[var(--color-bg-dark)] border-t border-white/5">
-        <div className="max-w-4xl mx-auto text-center">
+        <FadeIn className="max-w-4xl mx-auto text-center">
           <h2 className="font-heading font-bold text-[var(--color-text-light)] mb-4 text-2xl">
             {t('ctaTitle')}
           </h2>
@@ -347,7 +348,7 @@ export default async function ZonesPage({ params }: ZonesPageProps) {
             {t('ctaButton')}
             <ArrowRight className="w-4 h-4" aria-hidden="true" />
           </Link>
-        </div>
+        </FadeIn>
       </section>
 
       {/* Schema.org AreaServed JSON-LD */}

@@ -11,6 +11,7 @@ import type { ServiceData }     from '@/components/blocks/ServicesBlock'
 import type { TestimonialData } from '@/components/blocks/TestimonialsBlock'
 import type { BlogArticleData } from '@/components/blocks/BlogPreviewBlock'
 import type { PartnerData }     from '@/components/blocks/PartnersBlock'
+import { FadeIn } from '@/components/ui/FadeIn'
 
 export const revalidate = 3600
 
@@ -111,7 +112,7 @@ export default async function AProposPage({
           }}
           aria-hidden="true"
         />
-        <div className="relative z-10">
+        <FadeIn className="relative z-10">
           <span className="inline-block mb-4 px-4 py-1.5 rounded-full border border-[var(--color-red)]/30 bg-[var(--color-red)]/8 text-[var(--color-red)] text-xs font-body font-semibold uppercase tracking-widest">
             {t('badge')}
           </span>
@@ -124,13 +125,13 @@ export default async function AProposPage({
           <p className="font-body text-[var(--color-text-muted)] text-lg max-w-2xl mx-auto">
             {t('text')}
           </p>
-        </div>
+        </FadeIn>
       </section>
 
       {/* Image + stats */}
       <section className="py-section px-container bg-[var(--color-bg-dark2)]">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          <div className="relative rounded-2xl overflow-hidden aspect-[4/3]">
+          <FadeIn direction="right" className="relative rounded-2xl overflow-hidden aspect-[4/3]">
             <Image
               src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=800&q=80"
               alt="Équipe DT Déménagement"
@@ -139,9 +140,9 @@ export default async function AProposPage({
               sizes="(max-width: 1024px) 100vw, 50vw"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-          </div>
+          </FadeIn>
 
-          <div>
+          <FadeIn direction="left" delay={0.1}>
             <div className="grid grid-cols-2 gap-6 mb-10">
               {[
                 { value: '15+', label: t('stat1Label') },
@@ -164,7 +165,7 @@ export default async function AProposPage({
             >
               {t('ctaText')} →
             </Link>
-          </div>
+          </FadeIn>
         </div>
       </section>
     </>
