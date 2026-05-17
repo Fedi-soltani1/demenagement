@@ -16,30 +16,71 @@
 ## 🤖 DERNIÈRE MISE À JOUR PAR CLAUDE CODE
 
 ```
-Date        : 2026-05-17
-Session     : Dev 2 (Animations pages secondaires)
-Fichiers    : components/ui/FadeIn.tsx (NOUVEAU — wrapper whileInView réutilisable)
-              components/ui/ServicesGrid.tsx (NOUVEAU — grille services animée stagger)
-              components/ui/BlogGrid.tsx (NOUVEAU — grille articles animée stagger)
-              app/(site)/[locale]/services/page.tsx (MIS À JOUR — FadeIn hero + CTA)
-              app/(site)/[locale]/blog/page.tsx (MIS À JOUR — FadeIn hero)
-              app/(site)/[locale]/faq/page.tsx (MIS À JOUR — FadeIn hero + CTA)
-              app/(site)/[locale]/zones/page.tsx (MIS À JOUR — FadeIn hero + CTA)
-              app/(site)/[locale]/a-propos/page.tsx (MIS À JOUR — FadeIn hero + split left/right)
-              app/(site)/[locale]/devis/page.tsx (MIS À JOUR — FadeIn hero + form)
-              app/(site)/[locale]/contact/page.tsx (MIS À JOUR — FadeIn hero + cartes + CTA)
-Statut      : ✅ TypeScript 0 erreur — pnpm tsc --noEmit ✅
-              ✅ Commité et poussé sur main (c5e6e80)
-              ✅ Animations sur les 7 pages secondaires complètes
-ARCHITECTURE ANIMATIONS :
-  FadeIn — wrapper 'use client' motion.div, whileInView once, 4 directions
-  ServicesGrid/BlogGrid — grilles 'use client' avec stagger 80ms/carte via custom
-  Pages server — passent labels i18n + data comme props aux grilles client
-PROCHAINE ACTION  : Déployer sur Vercel + Railway
-                    1. pnpm dev — vérifier les animations en local
-                    2. git push (déjà fait) → Vercel auto-déploie
-                    3. Configurer GOOGLE_PLACES_API_KEY dans Vercel env
-Reprendre à : "Déployer sur Vercel, configurer les variables d'environnement"
+Date        : 2026-05-17 — FIN DE SESSION
+Session     : Dev 2 (Admin Payload — UX française complète sur tous les blocs)
+Commits     : 9da7252 — feat: labels français 18 blocs Payload CMS
+              799852c — revert: supprimer page /seed (non voulue)
+              → Poussé sur main ✅
+
+─── CE QUI A ÉTÉ FAIT AUJOURD'HUI ──────────────────────────────────────────
+
+1. BLOCS PAYLOAD — 18/18 RÉÉCRITS EN FRANÇAIS
+   Tous les fichiers payload/blocks/*.ts ont maintenant :
+   - labels.singular avec emoji clair (ex: '🦸 Section Hero', '📊 Section Chiffres clés')
+   - admin.description explicative sous le titre du bloc
+   - label: sur chaque champ (fini les 'titre', 'texte' sans contexte)
+   - admin.description avec exemples concrets sur chaque champ
+   Blocs : HeroBlock, ServicesBlock, StatsBlock, WhyUsBlock, TestimonialsBlock,
+           GoogleReviewsBlock, PartnersBlock, BlogPreviewBlock, CTABlock,
+           FAQBlock, MapBlock, GalleryBlock, VideoBlock, InstagramFeedBlock,
+           NewsletterBlock, CustomBlock, MiniFeaturesBlock, AboutBlock
+
+2. SESSIONS PRÉCÉDENTES (rappel de ce qui était déjà fait) :
+   - Collections Payload : toutes en français avec groupes sidebar
+     (👥 Utilisateurs, 📝 Contenu, ⭐ Avis, 📬 Demandes, 📍 Zones, 🖼️ Médias)
+   - Seed complet : admin + settings + 24 villes + 9 pays + 6 services +
+     11 FAQ + 10 partenaires + 5 catégories + 5 articles blog + 5 témoignages +
+     page accueil avec 8 blocs
+   - Fix Navbar.faq (clé i18n manquante)
+   - Fix mode clair FAQ (var(--text) au lieu de var(--color-text))
+   - Informations client (nom, prénom, téléphone) ajoutées dans Demenagements
+   - Messages collection : cachée (admin.hidden: true)
+
+3. SEED — COMMENT L'UTILISER :
+   URL directe (navigateur) : http://localhost:3000/api/seed?secret=seed123
+   Condition : pnpm dev doit tourner sur :3000
+   Secret dans .env.local : SEED_SECRET=seed123 ✅ déjà configuré
+   Attention logos partenaires : uploadés manuellement dans /admin → Partenaires
+   (le seed crée les noms uniquement, pas les fichiers logo)
+
+─── ÉTAT FINAL DU PROJET ────────────────────────────────────────────────────
+
+PAYLOAD ADMIN : 100% en français, complet et prêt à utiliser
+  - 16 collections + 1 global Settings
+  - 18 blocs de page builder
+  - Seed : toutes les données de démarrage
+  - Accès : /admin → admin@demenagement.tn / ChangeMe2026!
+
+FRONTEND : 100% fonctionnel
+  - 13 pages Next.js
+  - 3 langues (fr/ar/en) + RTL arabe
+  - Page builder connecté à Payload (fallback i18n si aucune page admin)
+  - Espace client NextAuth v5
+
+PROCHAINE ACTION : Déploiement production
+  1. Créer compte Railway → nouvelle instance PostgreSQL
+  2. Créer compte Vercel → connecter le dépôt GitHub
+  3. Copier toutes les variables .env.local dans Vercel + Railway
+  4. git push → Vercel auto-déploie
+  5. Ouvrir https://[ton-domaine]/api/seed?secret=[SEED_SECRET_PROD] → initialiser
+  6. Aller dans /admin → Paramètres → vérifier téléphone/email/réseaux sociaux
+  7. Aller dans /admin → Partenaires → uploader les logos PNG
+  8. Aller dans /admin → Pages → vérifier la page accueil
+  9. Configurer DNS sur demenagement.tn → pointer vers Vercel
+
+BRANCHE ACTIVE    : main
+BLOQUEURS         : Aucun — code complet, pas d'erreur TypeScript
+Reprendre à : "Déploiement production Vercel + Railway"
 ```
 
 ---
