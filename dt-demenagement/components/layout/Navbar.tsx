@@ -224,6 +224,7 @@ function Navbar({ services = [] }: { services?: NavService[] }) {
 
   const navLinks = [
     { key: 'blog',    path: '/blog' },
+    { key: 'faq',     path: '/faq' },
     { key: 'about',   path: '/a-propos' },
     { key: 'contact', path: '/contact' },
   ] as const
