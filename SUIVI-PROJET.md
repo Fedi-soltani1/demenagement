@@ -20,7 +20,8 @@ Date        : 2026-05-17 — FIN DE SESSION
 Session     : Dev 2 (Admin Payload — UX française complète sur tous les blocs)
 Commits     : 9da7252 — feat: labels français 18 blocs Payload CMS
               799852c — revert: supprimer page /seed (non voulue)
-              → Poussé sur main ✅
+              8a11728 — feat: admin Payload UX française complète — collections + seed + fixes UI
+              → Poussé sur main ✅ — repo 100% propre, zéro fichier en attente
 
 ─── CE QUI A ÉTÉ FAIT AUJOURD'HUI ──────────────────────────────────────────
 
