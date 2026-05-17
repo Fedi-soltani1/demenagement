@@ -2,37 +2,45 @@ import type { Block } from 'payload'
 
 export const BlogPreviewBlock: Block = {
   slug: 'blog-preview',
-  labels: { singular: 'Bloc Aperçu Blog', plural: 'Blocs Aperçu Blog' },
+  labels: { singular: '📰 Section Aperçu Blog (derniers articles)', plural: 'Sections Aperçu Blog' },
+  admin: { description: 'Affiche une sélection d\'articles du blog. Idéal pour la page d\'accueil pour diriger les visiteurs vers le contenu.' },
   fields: [
     {
       name: 'titre',
+      label: 'Titre de la section',
       type: 'text',
       required: true,
       localized: true,
+      admin: { description: 'Ex: Conseils et actualités déménagement' },
     },
     {
       name: 'sousTitre',
+      label: 'Sous-titre (optionnel)',
       type: 'textarea',
       localized: true,
+      admin: { description: 'Ex: Retrouvez nos guides pratiques pour préparer votre déménagement sereinement.' },
     },
     {
       name: 'articles',
+      label: 'Articles à afficher (sélection manuelle)',
       type: 'relationship',
       relationTo: 'blog',
       hasMany: true,
-      admin: { description: 'Laisser vide pour afficher les 3 articles les plus récents' },
+      admin: { description: 'Laisser vide pour afficher automatiquement les articles les plus récents. Sinon, sélectionner les articles dans l\'ordre souhaité.' },
     },
     {
       name: 'nombreArticles',
+      label: 'Nombre d\'articles à afficher (si automatique)',
       type: 'number',
       defaultValue: 3,
-      admin: { description: 'Nombre d\'articles à afficher (si sélection automatique)' },
+      admin: { description: 'S\'applique uniquement si aucun article n\'est sélectionné manuellement. Recommandé : 3.' },
     },
     {
       name: 'ctaTexte',
+      label: 'Texte du bouton "Voir tous les articles" (optionnel)',
       type: 'text',
       localized: true,
-      admin: { description: 'Texte du bouton "Voir tous les articles"' },
+      admin: { description: 'Ex: Voir tous nos articles. Laisser vide pour masquer le bouton.' },
     },
   ],
 }

@@ -2,34 +2,43 @@ import type { Block } from 'payload'
 
 export const VideoBlock: Block = {
   slug: 'video',
-  labels: { singular: 'Bloc Vidéo', plural: 'Blocs Vidéo' },
+  labels: { singular: '🎬 Section Vidéo', plural: 'Sections Vidéo' },
+  admin: { description: 'Intègre une vidéo YouTube ou Vimeo dans la page. Affiche une image de prévisualisation avant la lecture pour ne pas ralentir le chargement.' },
   fields: [
     {
       name: 'titre',
+      label: 'Titre au-dessus de la vidéo (optionnel)',
       type: 'text',
       localized: true,
+      admin: { description: 'Ex: Découvrez comment nous travaillons. Laisser vide pour afficher uniquement la vidéo.' },
     },
     {
       name: 'urlVideo',
+      label: 'URL de la vidéo (YouTube ou Vimeo)',
       type: 'text',
       required: true,
-      admin: { description: 'URL YouTube ou Vimeo (ex: https://youtube.com/watch?v=...)' },
+      admin: { description: 'Ex YouTube : https://youtube.com/watch?v=XXXXX ou https://youtu.be/XXXXX — Ex Vimeo : https://vimeo.com/XXXXX' },
     },
     {
       name: 'poster',
+      label: 'Image de prévisualisation (miniature)',
       type: 'upload',
       relationTo: 'media',
-      admin: { description: 'Image affichée avant la lecture de la vidéo' },
-    },
-    {
-      name: 'autoplay',
-      type: 'checkbox',
-      defaultValue: false,
+      admin: { description: 'Photo affichée avant que le visiteur clique pour lire. Si vide, la miniature YouTube est utilisée automatiquement.' },
     },
     {
       name: 'sousTitre',
+      label: 'Sous-titre sous la vidéo (optionnel)',
       type: 'text',
       localized: true,
+      admin: { description: 'Ex: Reportage France 24 sur DT Déménagement — 2025' },
+    },
+    {
+      name: 'autoplay',
+      label: 'Lecture automatique (déconseillée)',
+      type: 'checkbox',
+      defaultValue: false,
+      admin: { description: '⚠️ La lecture automatique est bloquée par la plupart des navigateurs et peut gêner les visiteurs. Laisser décoché.' },
     },
   ],
 }
