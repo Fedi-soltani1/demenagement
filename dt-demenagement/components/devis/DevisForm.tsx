@@ -301,55 +301,8 @@ export function DevisForm({ type, locale }: { type: TypeDevis; locale: string })
         </span>
       </div>
 
-      {/* Stepper pills */}
-      <div className="flex items-center gap-1.5 mb-3 overflow-x-auto pb-1" role="list" aria-label="Étapes du formulaire">
-        {STEPS.map((s, i) => {
-          const { Icon } = s
-          return (
-            <React.Fragment key={i}>
-              <button
-                type="button"
-                role="listitem"
-                onClick={() => i < step && gotoStep(i)}
-                disabled={i >= step}
-                aria-current={i === step ? 'step' : undefined}
-                aria-label={`${s.title}${i < step ? ' — complétée' : ''}`}
-                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg font-body text-xs font-medium whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)] ${
-                  i === step
-                    ? 'bg-[var(--color-red)]/10 border border-[var(--color-red)]/30 text-[var(--color-red)]'
-                    : i < step
-                    ? 'bg-emerald-400/8 border border-emerald-400/20 text-emerald-400 cursor-pointer'
-                    : 'bg-white/[0.02] border border-white/8 text-[var(--color-text-muted)] cursor-default'
-                }`}
-              >
-                <Icon className="w-3.5 h-3.5" aria-hidden="true" />
-                <span className="hidden md:inline">{s.title}</span>
-                <span className="md:hidden">{i + 1}</span>
-              </button>
-              {i < STEPS.length - 1 && (
-                <div className="flex-shrink-0 w-3 h-px bg-white/10" aria-hidden="true" />
-              )}
-            </React.Fragment>
-          )
-        })}
-      </div>
-
-      {/* Progress bar */}
-      <div
-        className="w-full h-1 bg-white/8 rounded-full mb-8 overflow-hidden"
-        role="progressbar"
-        aria-valuenow={step + 1}
-        aria-valuemin={1}
-        aria-valuemax={STEPS.length}
-        aria-label={`Étape ${step + 1} sur ${STEPS.length}`}
-      >
-        <motion.div
-          className="h-full bg-[var(--color-red)] rounded-full"
-          animate={{ width: `${(step / (STEPS.length - 1)) * 100}%` }}
-          transition={{ duration: 0.4, ease: 'easeOut' }}
-          style={{ willChange: 'width' }}
-        />
-      </div>
+      {/* Unified step header — animated title + track */}
+      <StepHeader step={step} direction={direction} steps={STEPS} gotoStep={gotoStep} />
 
       {/* Step content — animated */}
       <div className="min-h-[340px]">
@@ -364,9 +317,6 @@ export function DevisForm({ type, locale }: { type: TypeDevis; locale: string })
             transition={{ duration: 0.22, ease: 'easeOut' }}
             style={{ willChange: 'transform, opacity' }}
           >
-            {/* Step hero header — shown on steps 0-4 only (not recap) */}
-            {step < 5 && <StepHero step={step} total={STEPS.length} />}
-
             {/* Step 0 — Coordonnées */}
             {step === 0 && (
               <div className="space-y-4">
@@ -545,27 +495,97 @@ export function DevisForm({ type, locale }: { type: TypeDevis; locale: string })
 
 // ── Sub-components ────────────────────────────────────────────────────────────
 
-function StepHero({ step, total }: { step: number; total: number }) {
-  const meta = STEP_META[step]
+function StepHeader({
+  step, direction, steps, gotoStep,
+}: {
+  step: number
+  direction: number
+  steps: typeof STEP_META
+  gotoStep: (n: number) => void
+}) {
+  const meta = steps[step]
   if (!meta) return null
   const { Icon } = meta
+
   return (
-    <div className="flex items-start gap-4 mb-7 pb-6 border-b border-white/8">
-      <div className="w-10 h-10 rounded-xl bg-[var(--color-red)]/10 border border-[var(--color-red)]/20 flex items-center justify-center flex-shrink-0 text-[var(--color-red)]" aria-hidden="true">
-        <Icon className="w-5 h-5" />
-      </div>
-      <div className="flex-1 min-w-0">
-        <div className="flex items-start justify-between gap-2">
-          <h2 className="font-heading font-bold text-[var(--color-text-light)] text-xl leading-tight">
-            {meta.title}
-          </h2>
-          <span className="font-body text-xs text-[var(--color-text-muted)] uppercase tracking-wide flex-shrink-0 mt-0.5">
-            {step + 1}/{total}
+    <div className="mb-8 pb-6 border-b border-white/6">
+      {/* Animated title + icon */}
+      <AnimatePresence mode="wait" custom={direction} initial={false}>
+        <motion.div
+          key={step}
+          custom={direction}
+          initial={{ opacity: 0, x: direction > 0 ? 10 : -10 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: direction > 0 ? -10 : 10 }}
+          transition={{ duration: 0.2, ease: 'easeOut' }}
+          className="flex items-start justify-between gap-4 mb-5"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-[var(--color-red)]/10 border border-[var(--color-red)]/20 flex items-center justify-center flex-shrink-0">
+              <Icon className="w-4 h-4 text-[var(--color-red)]" aria-hidden="true" />
+            </div>
+            <div>
+              <h2 className="font-heading font-bold text-[var(--color-text-light)] text-lg leading-tight">
+                {meta.title}
+              </h2>
+              <p className="font-body text-sm text-[var(--color-text-muted)] mt-0.5 leading-relaxed">
+                {meta.subtitle}
+              </p>
+            </div>
+          </div>
+          <span className="font-mono text-[11px] text-[var(--color-text-muted)] tabular-nums flex-shrink-0 mt-0.5">
+            {step + 1} / {steps.length}
           </span>
-        </div>
-        <p className="font-body text-sm text-[var(--color-text-muted)] mt-1 leading-relaxed">
-          {meta.subtitle}
-        </p>
+        </motion.div>
+      </AnimatePresence>
+
+      {/* Step track — dots + filled connectors */}
+      <div
+        className="flex items-center"
+        role="progressbar"
+        aria-valuenow={step + 1}
+        aria-valuemin={1}
+        aria-valuemax={steps.length}
+        aria-label={`Étape ${step + 1} sur ${steps.length}`}
+      >
+        {steps.map((s, i) => {
+          const { Icon: SIcon } = s
+          const done    = i < step
+          const current = i === step
+          return (
+            <React.Fragment key={i}>
+              <button
+                type="button"
+                onClick={() => { if (done) gotoStep(i) }}
+                disabled={!done}
+                aria-current={current ? 'step' : undefined}
+                aria-label={`${s.title}${done ? ' — complétée' : current ? ' — en cours' : ''}`}
+                title={s.title}
+                className={`relative z-10 flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)] focus-visible:ring-offset-1 focus-visible:ring-offset-black ${
+                  current
+                    ? 'bg-[var(--color-red)] border border-[var(--color-red)]/60 text-white shadow-[0_0_12px_rgba(181,32,39,0.35)]'
+                    : done
+                    ? 'bg-emerald-400/10 border border-emerald-400/25 text-emerald-400 cursor-pointer hover:bg-emerald-400/20 hover:scale-105'
+                    : 'bg-white/[0.03] border border-white/8 text-white/20 cursor-default'
+                }`}
+              >
+                {done
+                  ? <CheckCircle className="w-3.5 h-3.5" aria-hidden="true" />
+                  : <SIcon className="w-3 h-3" aria-hidden="true" />
+                }
+              </button>
+              {i < steps.length - 1 && (
+                <div className="flex-1 h-px mx-1.5 relative overflow-hidden rounded-full bg-white/8">
+                  <motion.div
+                    className="absolute inset-0 origin-left bg-emerald-400/50 rounded-full"
+                    animate={{ scaleX: done ? 1 : 0 }}
+                    transition={{ duration: 0.35, ease: 'easeOut' }}
+                  />
+                </div>
+              )}
+            </React.Fragment>
+          )
+        })}
       </div>
     </div>
   )
