@@ -170,6 +170,32 @@ const Demenagements: CollectionConfig = {
       admin: { description: 'Estimation donnée par le client. 1 studio ≈ 15 m³ / 3 pièces ≈ 35 m³.' },
     },
 
+    // ── Photos envoyées par le client ─────────────────────────────────────────
+    {
+      name: 'photosDepart',
+      label: '📸 Photos accès — départ',
+      type: 'upload',
+      relationTo: 'media',
+      hasMany: true,
+      admin: { description: 'Photos de l\'escalier, couloir, parking au départ — envoyées par le client via le formulaire.' },
+    },
+    {
+      name: 'photosArrivee',
+      label: '📸 Photos accès — arrivée',
+      type: 'upload',
+      relationTo: 'media',
+      hasMany: true,
+      admin: { description: 'Photos de l\'escalier, couloir, parking à l\'arrivée — envoyées par le client.' },
+    },
+    {
+      name: 'photosMeubles',
+      label: '📸 Photos meubles & objets',
+      type: 'upload',
+      relationTo: 'media',
+      hasMany: true,
+      admin: { description: 'Photos des meubles et objets à déménager — aidant à estimer le volume et la complexité.' },
+    },
+
     // ── Équipe assignée ───────────────────────────────────────────────────────
     {
       name: 'demenageur',

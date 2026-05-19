@@ -3,44 +3,44 @@ import { z } from 'zod'
 // Validation des variables d'environnement au démarrage.
 // Si une variable est manquante, l'application plante immédiatement — pas en runtime.
 const envSchema = z.object({
-  // Base de données
+  // Base de données — obligatoire
   DATABASE_URL: z.string().min(1),
 
-  // Payload CMS
+  // Payload CMS — obligatoire
   PAYLOAD_SECRET: z.string().min(32),
 
-  // NextAuth v5
+  // NextAuth v5 — obligatoire
   AUTH_SECRET: z.string().min(32),
   NEXT_PUBLIC_SERVER_URL: z.string().min(1),
 
-  // Emails (Resend)
-  RESEND_API_KEY: z.string().min(1),
-  EMAIL_FROM: z.string().min(1),
-  EMAIL_DEVIS_TO: z.string().min(1),
+  // Emails (Resend) — optionnel en dev local
+  RESEND_API_KEY: z.string().optional().default(''),
+  EMAIL_FROM: z.string().optional().default(''),
+  EMAIL_DEVIS_TO: z.string().optional().default(''),
 
-  // Cloudinary
-  CLOUDINARY_CLOUD_NAME: z.string().min(1),
-  CLOUDINARY_API_KEY: z.string().min(1),
-  CLOUDINARY_API_SECRET: z.string().min(1),
+  // Cloudinary — optionnel en dev local
+  CLOUDINARY_CLOUD_NAME: z.string().optional().default(''),
+  CLOUDINARY_API_KEY: z.string().optional().default(''),
+  CLOUDINARY_API_SECRET: z.string().optional().default(''),
 
-  // Google Places (avis)
-  GOOGLE_PLACES_API_KEY: z.string().min(1),
-  GOOGLE_PLACE_ID: z.string().min(1),
+  // Google Places (avis) — optionnel en dev local
+  GOOGLE_PLACES_API_KEY: z.string().optional().default(''),
+  GOOGLE_PLACE_ID: z.string().optional().default(''),
 
-  // Instagram
-  INSTAGRAM_ACCESS_TOKEN: z.string().min(1),
-  INSTAGRAM_USER_ID: z.string().min(1),
+  // Instagram — optionnel en dev local
+  INSTAGRAM_ACCESS_TOKEN: z.string().optional().default(''),
+  INSTAGRAM_USER_ID: z.string().optional().default(''),
 
-  // Brevo (newsletter)
-  BREVO_API_KEY: z.string().min(1),
-  BREVO_LIST_ID: z.string().min(1),
+  // Brevo (newsletter) — optionnel en dev local
+  BREVO_API_KEY: z.string().optional().default(''),
+  BREVO_LIST_ID: z.string().optional().default('1'),
 
-  // Upstash (anti-spam)
-  UPSTASH_REDIS_REST_URL: z.string().min(1),
-  UPSTASH_REDIS_REST_TOKEN: z.string().min(1),
+  // Upstash (anti-spam) — optionnel en dev local
+  UPSTASH_REDIS_REST_URL: z.string().optional().default(''),
+  UPSTASH_REDIS_REST_TOKEN: z.string().optional().default(''),
 
-  // Sentry
-  SENTRY_DSN: z.string().min(1),
+  // Sentry — optionnel en dev local
+  SENTRY_DSN: z.string().optional().default(''),
 
   // Cron
   CRON_SECRET: z.string().min(1),

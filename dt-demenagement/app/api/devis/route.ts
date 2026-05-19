@@ -31,6 +31,11 @@ const devisSchema = z.object({
   dateSouhaitee:  z.string().optional(),
   volumeEstime:   z.number().min(0).max(500).optional(),
   commentaire:    z.string().max(1000).optional(),
+
+  // IDs Payload Media — uploadés via /api/devis/upload
+  photosDepart:   z.array(z.string()).max(3).optional(),
+  photosArrivee:  z.array(z.string()).max(3).optional(),
+  photosMeubles:  z.array(z.string()).max(5).optional(),
 })
 
 export async function POST(request: Request) {
@@ -84,9 +89,28 @@ export async function POST(request: Request) {
       servicesInclus:   d.services,
       volumeM3:         d.volumeEstime,
       dateDemenagement: d.dateSouhaitee ? new Date(d.dateSouhaitee).toISOString() : undefined,
+      photosDepart:     d.photosDepart  ?? [],
+      photosArrivee:    d.photosArrivee ?? [],
+      photosMeubles:    d.photosMeubles ?? [],
     },
     overrideAccess: true,
   })
+
+  // Résoudre les URLs publiques des photos pour l'email
+  const resolvePhotoUrls = async (ids: string[]): Promise<string[]> => {
+    if (!ids.length) return []
+    const results = await Promise.allSettled(
+      ids.map((id) => payload.findByID({ collection: 'media', id, overrideAccess: true }))
+    )
+    return results.flatMap((r) =>
+      r.status === 'fulfilled' && typeof r.value.url === 'string' ? [r.value.url] : []
+    )
+  }
+  const photoUrls = {
+    depart:  await resolvePhotoUrls(d.photosDepart  ?? []),
+    arrivee: await resolvePhotoUrls(d.photosArrivee ?? []),
+    meubles: await resolvePhotoUrls(d.photosMeubles ?? []),
+  }
 
   // Email de confirmation via fetch API Resend (sans dépendance SDK)
   // ⚠️ Configuré quand RESEND_API_KEY est disponible
@@ -100,7 +124,7 @@ export async function POST(request: Request) {
     }
     await Promise.all([
       sendEmail(d.email, `Votre demande de devis DT Déménagement — ${numeroDossier}`, buildClientEmail(d.prenom, numeroDossier)),
-      sendEmail(env.EMAIL_DEVIS_TO, `Nouveau devis ${numeroDossier} — ${d.type} — ${d.prenom} ${d.nom}`, buildInternalEmail(d, numeroDossier)),
+      sendEmail(env.EMAIL_DEVIS_TO, `Nouveau devis ${numeroDossier} — ${d.type} — ${d.prenom} ${d.nom}`, buildInternalEmail(d, numeroDossier, photoUrls)),
     ])
   } catch {
     // Email non bloquant — le dossier est créé dans tous les cas
@@ -126,7 +150,22 @@ function buildClientEmail(prenom: string, numeroDossier: string): string {
   `
 }
 
-function buildInternalEmail(d: z.infer<typeof devisSchema>, numeroDossier: string): string {
+function buildInternalEmail(
+  d: z.infer<typeof devisSchema>,
+  numeroDossier: string,
+  photos: { depart: string[]; arrivee: string[]; meubles: string[] },
+): string {
+  const photoGrid = (urls: string[], label: string) => {
+    if (!urls.length) return ''
+    return `
+      <tr>
+        <td style="padding:6px;font-weight:bold;vertical-align:top">${label}</td>
+        <td style="padding:6px">
+          ${urls.map((u) => `<img src="${u}" alt="photo" style="width:120px;height:90px;object-fit:cover;border-radius:6px;margin:2px;" />`).join('')}
+        </td>
+      </tr>`
+  }
+
   return `
     <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:32px">
       <h2>Nouveau devis — ${numeroDossier}</h2>
@@ -141,6 +180,9 @@ function buildInternalEmail(d: z.infer<typeof devisSchema>, numeroDossier: strin
         ${d.dateSouhaitee ? `<tr><td style="padding:6px;font-weight:bold">Date</td><td>${d.dateSouhaitee}</td></tr>` : ''}
         ${d.volumeEstime  ? `<tr><td style="padding:6px;font-weight:bold">Volume</td><td>${d.volumeEstime} m³</td></tr>` : ''}
         ${d.commentaire   ? `<tr><td style="padding:6px;font-weight:bold">Commentaire</td><td>${d.commentaire}</td></tr>` : ''}
+        ${photoGrid(photos.meubles, 'Photos meubles')}
+        ${photoGrid(photos.depart,  'Photos accès départ')}
+        ${photoGrid(photos.arrivee, 'Photos accès arrivée')}
       </table>
     </div>
   `

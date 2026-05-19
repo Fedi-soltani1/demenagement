@@ -42,3 +42,6 @@ next-env.d.ts
 
 *storybook.log
 storybook-static
+
+# Uploaded media files (managed by Payload CMS, not committed to git)
+/public/media/

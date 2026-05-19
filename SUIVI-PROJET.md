@@ -16,43 +16,55 @@
 ## 🤖 DERNIÈRE MISE À JOUR PAR CLAUDE CODE
 
 ```
-Date        : 2026-05-17 — FIN DE SESSION
-Session     : Dev 2 (Admin Payload — UX française complète sur tous les blocs)
-Commits     : 9da7252 — feat: labels français 18 blocs Payload CMS
-              799852c — revert: supprimer page /seed (non voulue)
-              8a11728 — feat: admin Payload UX française complète — collections + seed + fixes UI
-              → Poussé sur main ✅ — repo 100% propre, zéro fichier en attente
+Date        : 2026-05-19 — FIN DE SESSION
+Session     : Dev 2 (Devis — upload photos + polish UI formulaire 6 étapes)
+Commit      : feat: devis — photo upload + UI polish complet (en cours de commit)
 
 ─── CE QUI A ÉTÉ FAIT AUJOURD'HUI ──────────────────────────────────────────
 
-1. BLOCS PAYLOAD — 18/18 RÉÉCRITS EN FRANÇAIS
-   Tous les fichiers payload/blocks/*.ts ont maintenant :
-   - labels.singular avec emoji clair (ex: '🦸 Section Hero', '📊 Section Chiffres clés')
-   - admin.description explicative sous le titre du bloc
-   - label: sur chaque champ (fini les 'titre', 'texte' sans contexte)
-   - admin.description avec exemples concrets sur chaque champ
-   Blocs : HeroBlock, ServicesBlock, StatsBlock, WhyUsBlock, TestimonialsBlock,
-           GoogleReviewsBlock, PartnersBlock, BlogPreviewBlock, CTABlock,
-           FAQBlock, MapBlock, GalleryBlock, VideoBlock, InstagramFeedBlock,
-           NewsletterBlock, CustomBlock, MiniFeaturesBlock, AboutBlock
+1. UPLOAD PHOTOS — NOUVEAU SYSTÈME COMPLET
+   - app/api/devis/upload/route.ts : endpoint POST multipart/form-data
+     → valide type (jpeg/png/webp/heic) + taille (max 5 Mo)
+     → compresse côté client via canvas (0.8 qualité, max 1920px)
+     → enregistre dans Payload Media collection → retourne { id, url }
+   - components/devis/PhotoUploadZone.tsx : zone drag-and-drop réutilisable
+     → capture="environment" sur mobile (ouvre la caméra)
+     → upload optimiste avec état par photo (uploading/done/error)
+     → résout le problème stale closure via photosRef + onChangeRef
+   - components/devis/steps/StepPhotos.tsx : étape 4 (2 zones d'upload)
+     → Meubles & objets (max 5 photos) + Accès & conditions (max 3 par adresse)
+     → lien "Passer cette étape" pour continuer sans photos
+   - components/devis/steps/StepRecapitulatif.tsx : étape 5 (récapitulatif)
+     → résumé par section avec bouton [Modifier] → gotoStep(n)
+     → bouton "Envoyer ma demande" uniquement sur cette étape
 
-2. SESSIONS PRÉCÉDENTES (rappel de ce qui était déjà fait) :
-   - Collections Payload : toutes en français avec groupes sidebar
-     (👥 Utilisateurs, 📝 Contenu, ⭐ Avis, 📬 Demandes, 📍 Zones, 🖼️ Médias)
-   - Seed complet : admin + settings + 24 villes + 9 pays + 6 services +
-     11 FAQ + 10 partenaires + 5 catégories + 5 articles blog + 5 témoignages +
-     page accueil avec 8 blocs
-   - Fix Navbar.faq (clé i18n manquante)
-   - Fix mode clair FAQ (var(--text) au lieu de var(--color-text))
-   - Informations client (nom, prénom, téléphone) ajoutées dans Demenagements
-   - Messages collection : cachée (admin.hidden: true)
+2. BACKEND — MISES À JOUR
+   - payload/collections/Demenagements.ts : +3 champs upload (photosDepart,
+     photosArrivee, photosMeubles) → relationTo: 'media', hasMany: true
+   - app/api/devis/route.ts : +photosDepart/Arrivee/Meubles dans schéma Zod,
+     +resolvePhotoUrls(), +thumbnails <img> dans email interne
+   - lib/env.ts : variables externes (Resend, Cloudinary, etc.) rendues
+     optionnelles en dev (default: '') pour lancer sans tout configurer
 
-3. SEED — COMMENT L'UTILISER :
-   URL directe (navigateur) : http://localhost:3000/api/seed?secret=seed123
-   Condition : pnpm dev doit tourner sur :3000
-   Secret dans .env.local : SEED_SECRET=seed123 ✅ déjà configuré
-   Attention logos partenaires : uploadés manuellement dans /admin → Partenaires
-   (le seed crée les noms uniquement, pas les fichiers logo)
+3. UI POLISH — FORMULAIRE 6 ÉTAPES (spec : docs/superpowers/specs/2026-05-19-devis-ui-polish-design.md)
+   - components/devis/DevisForm.tsx : réécriture complète avec :
+     → StepHero : header contextuel par étape (icône Lucide + titre + sous-titre + compteur)
+     → FloorGrid : grille 3×2 boutons pour l'étage (remplace <select> natif)
+     → TogglePill : toggle Non/Oui pour ascenseur (remplace checkbox)
+     → Progress bar : barre h-1 animée avec motion.div
+     → Transitions : AnimatePresence + stepVariants (slide 250ms avec direction)
+     → Service cards : icônes Lucide par service (Truck, Building2, etc.)
+     → Field : blur validation avec ✓ vert et messages d'erreur inline
+     → localStorage : sauvegarde draft TTL 7 jours + bannière "Reprendre"
+     → gotoStep : navigation directe vers n'importe quelle étape depuis récap
+
+4. FIX — 18 BLOCS PAYLOAD
+   - Suppression de admin: { description: } au niveau bloc (type error Payload v3)
+   - payload/blocks/*.ts : 18 fichiers corrigés
+
+5. VÉRIFICATION
+   - TypeScript : 0 erreur (pnpm tsc --noEmit ✅)
+   - ESLint : 0 avertissement (pnpm lint ✅)
 
 ─── ÉTAT FINAL DU PROJET ────────────────────────────────────────────────────
 
@@ -158,49 +170,31 @@ Reprendre à : "Déploiement production Vercel + Railway"
 > Elle lui dit exactement où reprendre sans poser de questions.
 
 ```
-PHASE ACTUELLE    : Post-Phase 6 — PAGE BUILDER PAYLOAD COMPLET
-ÉTAPE ACTUELLE    : ✅ Architecture Pages collection + BlockRenderer en place
-STATUT            : ✅ Payload est un miroir 100% du site — page builder
-ARCHITECTURE      :
-  Pages collection (slug: accueil) → liste de blocs dans le champ "layout"
-  Blocs disponibles (18) :
-    hero, mini-features, services, about (=À propos+Stats combinés),
-    stats, why-us, testimonials, google-reviews, partners, instagram-feed,
-    newsletter, blog-preview, cta, faq, map, gallery, video, custom
-  BlockRenderer.tsx → mappe chaque blockType vers son composant React
-  Fallback → si aucune page 'accueil' dans Payload : affichage i18n complet
-  Fallback champ → champ vide dans admin = valeur i18n (site ne casse jamais)
-  Relations → services/témoignages/partenaires peuvent être sélectionnés
-              manuellement dans chaque bloc OU laisser vide = tous les publiés
-REVALIDATE        : 60 secondes
-DERNIERS FICHIERS : components/blocks/BlockRenderer.tsx (NOUVEAU — mappeur central)
-                    payload/blocks/MiniFeaturesBlock.ts (NOUVEAU — bloc points forts)
-                    payload/blocks/AboutBlock.ts (MIS À JOUR — About+Stats combiné)
-                    payload/collections/Pages.ts (MIS À JOUR — + MiniFeaturesBlock)
-                    payload.config.ts (MIS À JOUR — globals: [Settings] seulement)
-                    app/(site)/[locale]/page.tsx (MIS À JOUR — Pages collection)
-                    payload/globals/Homepage.ts (SUPPRIMÉ — mauvaise approche)
-                    types/css.d.ts (NOUVEAU — fix TS Leaflet CSS)
-PAGES CONNECTEES  :
-  /                  → Pages(slug=accueil) + BlockRenderer + fallback i18n
-  /a-propos          → Pages(slug=a-propos) + BlockRenderer + fallback statique
-  /services          → Services collection (fetch Payload) + grille avec images
-  /services/[slug]   → Services collection (caracteristiques + avantages depuis Payload)
-  /contact           → Settings global (telephone/email/adresse/horaires depuis Payload)
-  /faq               → FAQ collection (existant)
-  /blog, /blog/[slug]→ Blog collection (existant)
-  /zones             → Villes collection (existant)
-  /villes/[slug]     → Villes collection (existant)
-PAYLOAD ADMIN     :
-  Settings global    : telephone, email, adresse, horaires, reseaux sociaux
-  Services           : nom, slug, description, caracteristiques[], avantages[],
-                       image, icone, tarifDepuis, publie, seo, ordre
-  Pages collection   : page builder — blocs configurables par l'admin
+PHASE ACTUELLE    : Post-Phase 6 — DEVIS COMPLET + UI POLISH
+ÉTAPE ACTUELLE    : ✅ Formulaire devis 6 étapes finalisé avec photos + UX polish
+STATUT            : ✅ Code complet — TypeScript 0 erreur — ESLint 0 warning
+DERNIERS FICHIERS : dt-demenagement/app/api/devis/upload/route.ts (NOUVEAU)
+                    dt-demenagement/components/devis/PhotoUploadZone.tsx (NOUVEAU)
+                    dt-demenagement/components/devis/steps/StepPhotos.tsx (NOUVEAU)
+                    dt-demenagement/components/devis/steps/StepRecapitulatif.tsx (NOUVEAU)
+                    dt-demenagement/components/devis/DevisForm.tsx (RÉÉCRIT — UI polish complet)
+                    dt-demenagement/payload/collections/Demenagements.ts (+ 3 champs photos)
+                    dt-demenagement/app/api/devis/route.ts (+ photo IDs + email thumbnails)
+                    dt-demenagement/lib/env.ts (variables externes optionnelles en dev)
+                    dt-demenagement/payload/blocks/*.ts (18 fichiers — fix type Payload v3)
+                    dt-demenagement/docs/superpowers/specs/2026-05-19-devis-ui-polish-design.md (NOUVEAU)
+FORMULAIRE DEVIS  :
+  Étape 0 — Coordonnées (prénom, nom, email, téléphone)
+  Étape 1 — Adresse de départ (adresse, ville, étage grille, ascenseur toggle)
+  Étape 2 — Adresse d'arrivée (idem)
+  Étape 3 — Services & date (cartes icônes Lucide, date, volume, commentaire)
+  Étape 4 — Photos optionnel (meubles max 5, accès max 3 par adresse)
+  Étape 5 — Récapitulatif (résumé + [Modifier] par section + bouton Envoyer)
 PROCHAINE ACTION  : Déploiement production
-                    1. Remplir .env sur Vercel (GOOGLE_PLACES_API_KEY + GOOGLE_PLACE_ID)
+                    1. Remplir .env sur Vercel (toutes les variables requises)
                     2. Déployer sur Vercel + Railway (git push → auto-deploy)
                     3. Créer la page accueil dans /admin → Pages
-                    4. Vérifier les avis Google en prod
+                    4. Configurer DNS sur demenagement.tn → Vercel
 BRANCHE ACTIVE    : main
 BLOQUEURS         : Aucun — TypeScript 0 erreur / ESLint 0 erreur
 ```
