@@ -79,8 +79,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (!email) return
 
       try {
-        const { getPayload } = await import('payload')
-        const { default: config } = await import('@payload-config')
+        // webpackIgnore empêche webpack de bundler payload/undici dans le bundle middleware
+        const { getPayload } = await import(/* webpackIgnore: true */ 'payload')
+        const { default: config } = await import(/* webpackIgnore: true */ '@payload-config')
         const payload = await getPayload({ config })
 
         const existing = await payload.find({
