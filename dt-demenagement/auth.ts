@@ -4,8 +4,6 @@ import Resend from 'next-auth/providers/resend'
 import { DrizzleAdapter } from '@auth/drizzle-adapter'
 import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
-import { getPayload } from 'payload'
-import config from '@payload-config'
 import { env } from '@/lib/env'
 import { DEFAULT_LOCALE } from '@/lib/constants'
 import {
@@ -81,6 +79,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (!email) return
 
       try {
+        const { getPayload } = await import('payload')
+        const { default: config } = await import('@payload-config')
         const payload = await getPayload({ config })
 
         const existing = await payload.find({
