@@ -254,6 +254,18 @@ const Demenagements: CollectionConfig = {
       },
       admin: { description: 'Remarques internes sur ce client ou ce dossier — jamais affichées au client.' },
     },
+
+    // ── Messagerie client ─────────────────────────────────────────────────────
+    {
+      name:  'messagerie',
+      type:  'ui',
+      label: '💬 Messagerie',
+      admin: {
+        components: {
+          Field: '@/components/payload/MessageChatField',
+        },
+      },
+    },
   ],
 }
 

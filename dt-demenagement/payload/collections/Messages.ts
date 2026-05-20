@@ -17,8 +17,15 @@ const Messages: CollectionConfig = {
     group: '📬 Demandes clients',
     useAsTitle: 'contenu',
     defaultColumns: ['demenagement', 'auteur', 'lu', 'createdAt'],
-    description: 'Messagerie interne liée à un dossier — disponible quand l\'espace client sera activé.',
+    description: 'Vue conversation : sélectionnez un dossier à gauche pour lire et répondre aux messages.',
     hidden: false,
+    components: {
+      views: {
+        list: {
+          Component: '@/components/payload/MessagesInbox',
+        },
+      },
+    },
   },
 
   fields: [
