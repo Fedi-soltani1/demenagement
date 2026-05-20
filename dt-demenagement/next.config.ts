@@ -29,6 +29,16 @@ const securityHeaders = [
 ]
 
 const nextConfig: NextConfig = {
+  // Packages Node.js purs — jamais bundlés par webpack pour le browser
+  serverExternalPackages: [
+    'postgres',
+    'pg',
+    'pg-native',
+    'drizzle-orm',
+    '@auth/drizzle-adapter',
+    '@payloadcms/db-postgres',
+  ],
+
   // Alias Turbopack — nécessaire pour que Payload résolve @payload-config
   turbopack: {
     resolveAlias: {
