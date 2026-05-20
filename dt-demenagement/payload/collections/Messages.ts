@@ -18,7 +18,7 @@ const Messages: CollectionConfig = {
     useAsTitle: 'contenu',
     defaultColumns: ['demenagement', 'auteur', 'lu', 'createdAt'],
     description: 'Messagerie interne liée à un dossier — disponible quand l\'espace client sera activé.',
-    hidden: true,
+    hidden: false,
   },
 
   fields: [
