@@ -111,10 +111,6 @@ export async function POST(request: Request) {
         prenom:    d.prenom,
         nom:       d.nom,
         telephone: d.telephone,
-        adresse: {
-          ville: d.adresseDepart.ville,
-          rue:   d.adresseDepart.adresse,
-        },
       },
       overrideAccess: true,
     })
@@ -126,10 +122,6 @@ export async function POST(request: Request) {
         prenom:    d.prenom,
         nom:       d.nom,
         telephone: d.telephone,
-        adresse: {
-          ville: d.adresseDepart.ville,
-          rue:   d.adresseDepart.adresse,
-        },
       },
       overrideAccess: true,
     })
