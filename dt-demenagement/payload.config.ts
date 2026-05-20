@@ -34,8 +34,7 @@ export default buildConfig({
       connectionString: process.env.DATABASE_URL ?? '',
       ssl: { rejectUnauthorized: false },
     },
-    // ⚠️ push: true en local uniquement — désactiver avant déploiement production
-    push: true,
+    push: false,
     migrationDir: path.resolve(dirname, 'payload/migrations'),
   }),
 
