@@ -362,6 +362,16 @@ COMMITS DE CETTE SESSION :
   50eb952 feat: activer collection Messages dans l'admin Payload
   9552dc5 fix: renommer /api/messages → /api/client/message — évite conflit avec REST API Payload
 
+FONCTIONNALITÉ TERMINÉE — DevisModal 3-screen flow (2026-05-20) :
+  ✅ Screen 1 : contact (Nom & Prénom, Téléphone, Email optionnel)
+  ✅ Screen 2 : choix (devis en ligne → /devis pré-rempli | visite → RDV form)
+  ✅ Screen 3 : formulaire RDV (Type, Nom, Prénom, Tél, WhatsApp, Adresse, Date, Heure)
+  ✅ Payload collection RendezVous + API POST /api/rdv
+  ✅ DevisForm pré-rempli via URL params (initialContact prop)
+  ✅ Email optionnel dans DevisForm + API /api/devis
+  ⚠️ TABLE NEON : CREATE TABLE rendez_vous à exécuter manuellement (push:false)
+     SQL dans docs/superpowers/plans/2026-05-20-devis-modal-rdv-flow.md Task 4
+
 PROCHAINE ACTION  : Déploiement production
   1. Vérifier domaine demenagement.tn sur resend.com/domains
      → Changer EMAIL_FROM=noreply@demenagement.tn
