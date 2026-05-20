@@ -22,6 +22,7 @@ import Newsletter from './payload/collections/Newsletter'
 import Clients from './payload/collections/Clients'
 import Messages from './payload/collections/Messages'
 import Demenagements from './payload/collections/Demenagements'
+import RendezVous from './payload/collections/RendezVous'
 import Settings from './payload/collections/Settings'
 
 const filename = fileURLToPath(import.meta.url)
@@ -75,6 +76,7 @@ export default buildConfig({
     Clients,
     Messages,
     Demenagements,
+    RendezVous,
   ],
 
   // 1 global (singleton)
