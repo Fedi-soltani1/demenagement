@@ -32,6 +32,7 @@ export default buildConfig({
   db: postgresAdapter({
     pool: {
       connectionString: process.env.DATABASE_URL ?? '',
+      ssl: { rejectUnauthorized: false },
     },
     // ⚠️ push: true en local uniquement — désactiver avant déploiement production
     push: true,
