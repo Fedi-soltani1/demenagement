@@ -8,8 +8,8 @@ import { env } from '@/lib/env'
 // ⚠️ TODO: Brancher Upstash Redis quand UPSTASH_REDIS_REST_URL est configuré
 
 const adresseSchema = z.object({
-  adresse:    z.string().min(3).max(200),
-  ville:      z.string().min(2).max(100),
+  adresse:    z.string().min(1).max(200),
+  ville:      z.string().min(1).max(100),
   etage:      z.enum(['RDC', '1', '2', '3', '4', '5+']).optional(),
   ascenseur:  z.boolean().optional(),
 })
@@ -95,6 +95,45 @@ export async function POST(request: Request) {
     },
     overrideAccess: true,
   })
+
+  // Upsert fiche client avec les données complètes du formulaire
+  const existingClient = await payload.find({
+    collection: 'clients',
+    where: { email: { equals: d.email } },
+    limit: 1,
+    overrideAccess: true,
+  })
+  if (existingClient.totalDocs === 0) {
+    await payload.create({
+      collection: 'clients',
+      data: {
+        email:     d.email,
+        prenom:    d.prenom,
+        nom:       d.nom,
+        telephone: d.telephone,
+        adresse: {
+          ville: d.adresseDepart.ville,
+          rue:   d.adresseDepart.adresse,
+        },
+      },
+      overrideAccess: true,
+    })
+  } else {
+    await payload.update({
+      collection: 'clients',
+      id: existingClient.docs[0]!.id,
+      data: {
+        prenom:    d.prenom,
+        nom:       d.nom,
+        telephone: d.telephone,
+        adresse: {
+          ville: d.adresseDepart.ville,
+          rue:   d.adresseDepart.adresse,
+        },
+      },
+      overrideAccess: true,
+    })
+  }
 
   // Résoudre les URLs publiques des photos pour l'email
   const resolvePhotoUrls = async (ids: string[]): Promise<string[]> => {
