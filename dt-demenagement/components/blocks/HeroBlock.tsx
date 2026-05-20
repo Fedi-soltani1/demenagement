@@ -8,6 +8,7 @@ import { ArrowRight } from 'lucide-react'
 import { PhoneLink } from '@/components/ui/PhoneLink'
 import { ShineBorderEffect } from '@/components/ui/ShineBorder'
 import { COMPANY } from '@/lib/constants'
+import { useDevisModal } from '@/components/layout/DevisModal'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -183,6 +184,7 @@ export type CmsHero = {
 export function HeroBlock({ cms }: { cms?: CmsHero }) {
   const t      = useTranslations('Home.hero')
   const locale = useLocale()
+  const { open: openDevisModal } = useDevisModal()
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   useWaveCanvas(canvasRef)
@@ -287,8 +289,9 @@ export function HeroBlock({ cms }: { cms?: CmsHero }) {
           variants={itemVariants}
           className="mb-8 flex flex-col items-center justify-center gap-4 sm:flex-row"
         >
-          <Link
-            href={`/${locale}/devis`}
+          <button
+            type="button"
+            onClick={openDevisModal}
             className="group relative overflow-hidden rounded-full px-8 py-4 bg-[var(--color-red)] text-white font-body font-semibold text-sm uppercase tracking-wider transition-all duration-300 hover:shadow-[0_0_40px_rgba(181,32,39,0.5)] active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-bg-dark)] inline-flex items-center gap-2"
           >
             <span className="relative z-10 inline-flex items-center gap-2">
@@ -299,7 +302,7 @@ export function HeroBlock({ cms }: { cms?: CmsHero }) {
               className="absolute inset-0 bg-[var(--color-red-dark)] translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"
               aria-hidden="true"
             />
-          </Link>
+          </button>
 
           <PhoneLink
             numero={COMPANY.phone1}

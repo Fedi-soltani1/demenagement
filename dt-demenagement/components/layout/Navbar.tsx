@@ -8,6 +8,7 @@ import { useLocale, useTranslations } from 'next-intl'
 import { PhoneLink } from '@/components/ui/PhoneLink'
 import { MenuToggleIcon } from '@/components/ui/MenuToggleIcon'
 import { COMPANY, VILLES, PAYS, LOCALES, type Locale } from '@/lib/constants'
+import { useDevisModal } from '@/components/layout/DevisModal'
 
 export type NavService = { nom: string; slug: string }
 
@@ -172,6 +173,8 @@ function Navbar({ services = [] }: { services?: NavService[] }) {
   const t = useTranslations('Navbar')
   const pathname = usePathname()
   const locale = useLocale()
+
+  const { open: openDevisModal } = useDevisModal()
 
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileOpen, setIsMobileOpen] = useState(false)
@@ -392,9 +395,13 @@ function Navbar({ services = [] }: { services?: NavService[] }) {
               <PhoneLink numero={COMPANY.phone1} source="navbar" />
               <LocaleSwitcher ariaLabel={t('changeLocale')} />
               <ThemeToggle labelDark={t('switchToDark')} labelLight={t('switchToLight')} />
-              <Link href={`/${locale}/devis`} className={ctaClass}>
+              <button
+                type="button"
+                onClick={openDevisModal}
+                className={ctaClass}
+              >
                 {t('devis')}
-              </Link>
+              </button>
             </div>
 
             {/* ── Mobile hamburger ── */}
@@ -517,9 +524,13 @@ function Navbar({ services = [] }: { services?: NavService[] }) {
                 <PhoneLink numero={COMPANY.phone1} source="navbar-mobile" />
                 <PhoneLink numero={COMPANY.phone2} source="navbar-mobile" />
               </div>
-              <Link href={`/${locale}/devis`} className={[ctaClass, 'w-full justify-center py-3 text-base'].join(' ')}>
+              <button
+                type="button"
+                onClick={() => { setIsMobileOpen(false); openDevisModal() }}
+                className={[ctaClass, 'w-full justify-center py-3 text-base'].join(' ')}
+              >
                 {t('devis')}
-              </Link>
+              </button>
               <div className="flex items-center justify-between pt-1">
                 <LocaleSwitcher ariaLabel={t('changeLocale')} />
                 <ThemeToggle labelDark={t('switchToDark')} labelLight={t('switchToLight')} />
