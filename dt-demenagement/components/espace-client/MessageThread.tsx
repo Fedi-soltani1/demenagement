@@ -44,7 +44,7 @@ export function MessageThread({ messages: initialMessages, dossierId, clientEmai
 
     startTransition(async () => {
       try {
-        const res = await fetch('/api/messages', {
+        const res = await fetch('/api/client/message', {
           method:  'POST',
           headers: { 'Content-Type': 'application/json' },
           body:    JSON.stringify({ dossierId, contenu: trimmed, clientEmail }),

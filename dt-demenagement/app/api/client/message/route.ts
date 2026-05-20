@@ -11,13 +11,11 @@ const schema = z.object({
 })
 
 export async function POST(request: Request) {
-  // 1. Authentification
   const session = await auth()
   if (!session?.user?.email) {
     return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
   }
 
-  // 2. Validation
   let body: unknown
   try { body = await request.json() } catch {
     return NextResponse.json({ error: 'Corps invalide' }, { status: 400 })
@@ -30,7 +28,6 @@ export async function POST(request: Request) {
 
   const { dossierId, contenu, clientEmail } = result.data
 
-  // 3. Vérifier que le dossier appartient au client connecté
   if (clientEmail !== session.user.email) {
     return NextResponse.json({ error: 'Non autorisé' }, { status: 403 })
   }
@@ -39,7 +36,7 @@ export async function POST(request: Request) {
 
   const dossierCheck = await payload.find({
     collection: 'demenagements',
-    where:      { id: { equals: dossierId }, clientId: { equals: session.user.email } },
+    where:      { id: { equals: Number(dossierId) }, clientId: { equals: session.user.email } },
     limit:      1,
     overrideAccess: true,
   })
@@ -47,11 +44,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Dossier introuvable' }, { status: 404 })
   }
 
-  // 4. Créer le message
   const message = await payload.create({
     collection: 'messages',
     data: {
-      demenagement: dossierId,
+      demenagement: Number(dossierId),
       auteur:       'client',
       contenu,
       lu:           false,
