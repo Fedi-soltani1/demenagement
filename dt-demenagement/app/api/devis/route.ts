@@ -89,9 +89,9 @@ export async function POST(request: Request) {
       servicesInclus:   d.services,
       volumeM3:         d.volumeEstime,
       dateDemenagement: d.dateSouhaitee ? new Date(d.dateSouhaitee).toISOString() : undefined,
-      photosDepart:     d.photosDepart  ?? [],
-      photosArrivee:    d.photosArrivee ?? [],
-      photosMeubles:    d.photosMeubles ?? [],
+      // photosDepart/Arrivee/Meubles omis — tables de relation pas encore créées en DB
+      // (push: false actif à cause du bug drizzle-kit 0.31.7)
+      // À réactiver quand la migration SQL aura créé les tables (voir SUIVI-PROJET.md)
     },
     overrideAccess: true,
   })
