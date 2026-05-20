@@ -53,6 +53,27 @@ export default async function EspaceClientPage({ params }: PageProps) {
   const t = await getTranslations({ locale, namespace: 'EspaceClient' })
   const payload = await getPayload({ config })
 
+  // Créer la fiche client Payload si elle n'existe pas encore
+  const existingClient = await payload.find({
+    collection: 'clients',
+    where: { email: { equals: session.user.email } },
+    limit: 1,
+    overrideAccess: true,
+  })
+  if (existingClient.totalDocs === 0) {
+    const prefix = session.user.email.split('@')[0] ?? session.user.email
+    const parts  = prefix.replace(/[._-]+/g, ' ').trim().split(' ')
+    await payload.create({
+      collection: 'clients',
+      data: {
+        email:  session.user.email,
+        prenom: parts[0] ?? '—',
+        nom:    parts.slice(1).join(' ') || '—',
+      },
+      overrideAccess: true,
+    })
+  }
+
   const result = await payload.find({
     collection: 'demenagements',
     where:      { clientId: { equals: session.user.email } },

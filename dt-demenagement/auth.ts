@@ -73,41 +73,4 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
   },
 
-  events: {
-    async signIn({ user }) {
-      const email = user.email
-      if (!email) return
-
-      try {
-        // webpackIgnore + chemin réel (pas l'alias @payload-config non résolu hors webpack)
-        const { getPayload } = await import(/* webpackIgnore: true */ 'payload')
-        const { default: config } = await import(/* webpackIgnore: true */ './payload.config')
-        const payload = await getPayload({ config })
-
-        const existing = await payload.find({
-          collection: 'clients',
-          where: { email: { equals: email } },
-          limit: 1,
-          overrideAccess: true,
-        })
-
-        if (existing.totalDocs === 0) {
-          // Dériver prenom/nom depuis le préfixe email — le client peut les modifier ensuite
-          const prefix = email.split('@')[0] ?? email
-          const parts   = prefix.replace(/[._-]+/g, ' ').trim().split(' ')
-          const prenom  = parts[0] ?? '—'
-          const nom     = parts.slice(1).join(' ') || '—'
-
-          await payload.create({
-            collection: 'clients',
-            data: { email, prenom, nom },
-            overrideAccess: true,
-          })
-        }
-      } catch (err) {
-        // Non bloquant — la connexion réussit même si la création échoue
-        console.error('[auth] Erreur création client Payload :', err)
-      }
-    },
-  },
 })
