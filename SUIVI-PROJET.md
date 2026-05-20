@@ -13,9 +13,63 @@
 
 ---
 
+## 🚨 BUG ACTIF — LIRE AVANT DE TOUCHER payload.config.ts
+
+```
+BUG         : drizzle-orm 0.45.2 — push: true casse le démarrage sur Neon PostgreSQL
+SYMPTÔME    : Erreur "there is no parameter $1" au démarrage de pnpm dev
+              → spinner infini "Pulling schema from database..."
+              → payloadInitError sur toutes les requêtes
+CAUSE       : drizzle-kit/api.js ligne 166295 — la fonction db2.query() ignore
+              le tableau params[] et envoie le SQL avec $1/$2 sans valeurs liées.
+              Touche les tables avec clés primaires composites (auth_ tables DrizzleAdapter)
+FIX APPLIQUÉ: push: false dans payload.config.ts (commit e5da38e — 2026-05-20)
+CONSÉQUENCE : Les nouvelles colonnes ajoutées dans les collections Payload NE SONT PAS
+              créées automatiquement en base. Il faut les ajouter manuellement.
+
+─── NOUVELLES COLONNES EN ATTENTE DE MIGRATION ──────────────────────────────
+  Commit 38d60c9 (Oussama Sboui, 2026-05-19) ajoute dans Demenagements.ts :
+  - photosDepart  (upload, hasMany: true, relationTo: 'media')
+  - photosArrivee (upload, hasMany: true, relationTo: 'media')
+  - photosMeubles (upload, hasMany: true, relationTo: 'media')
+  Ces colonnes N'EXISTENT PAS encore en base Neon.
+
+─── POUR AJOUTER CES COLONNES (à faire par Dev 2) ───────────────────────────
+  Option A — Attendre un fix Payload/drizzle-kit (ouvrir issue sur GitHub)
+  Option B — Exécuter le SQL manuellement sur Neon :
+    1. Aller sur console.neon.tech → ouvrir la DB → SQL Editor
+    2. Exécuter :
+       CREATE TABLE IF NOT EXISTS demenagements_photos_depart_rels (
+         id SERIAL PRIMARY KEY,
+         parent_id INTEGER NOT NULL REFERENCES demenagements(id) ON DELETE CASCADE,
+         media_id INTEGER NOT NULL REFERENCES media(id) ON DELETE CASCADE
+       );
+       CREATE TABLE IF NOT EXISTS demenagements_photos_arrivee_rels (
+         id SERIAL PRIMARY KEY,
+         parent_id INTEGER NOT NULL REFERENCES demenagements(id) ON DELETE CASCADE,
+         media_id INTEGER NOT NULL REFERENCES media(id) ON DELETE CASCADE
+       );
+       CREATE TABLE IF NOT EXISTS demenagements_photos_meubles_rels (
+         id SERIAL PRIMARY KEY,
+         parent_id INTEGER NOT NULL REFERENCES demenagements(id) ON DELETE CASCADE,
+         media_id INTEGER NOT NULL REFERENCES media(id) ON DELETE CASCADE
+       );
+  Option C — Patcher drizzle-kit/api.js manuellement (voir commit e5da38e pour contexte)
+
+─── NE PAS REMETTRE push: true AVANT QUE LE BUG SOIT CORRIGÉ ───────────────
+  Si tu remets push: true → le serveur plante au démarrage (même erreur)
+  Surveiller : https://github.com/drizzle-team/drizzle-kit-mirror/issues
+```
+
+---
+
 ## 🤖 DERNIÈRE MISE À JOUR PAR CLAUDE CODE
 
 ```
+Date        : 2026-05-20 — SESSION EN COURS
+Session     : Dev 1 (Analyse pull Oussama + fix bug drizzle push)
+Commit      : e5da38e — fix: disable db push (drizzle params[] crash)
+
 Date        : 2026-05-19 — FIN DE SESSION
 Session     : Dev 2 (Devis — upload photos + polish UI formulaire 6 étapes)
 Commit      : feat: devis — photo upload + UI polish complet (en cours de commit)
