@@ -9,7 +9,13 @@ import { FadeIn } from '@/components/ui/FadeIn'
 
 interface PageProps {
   params: Promise<{ locale: string }>
-  searchParams: Promise<{ type?: string }>
+  searchParams: Promise<{
+    type?:      string
+    prenom?:    string
+    nom?:       string
+    telephone?: string
+    email?:     string
+  }>
 }
 
 export async function generateStaticParams() {
@@ -31,7 +37,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function DevisPage({ params, searchParams }: PageProps) {
   const { locale } = await params
-  const { type } = await searchParams
+  const { type, prenom, nom, telephone, email } = await searchParams
   setRequestLocale(locale)
 
   const t = await getTranslations({ locale, namespace: 'Devis' })
@@ -116,7 +122,11 @@ export default async function DevisPage({ params, searchParams }: PageProps) {
 
           {/* Formulaire */}
           <div className="p-6 sm:p-8 rounded-2xl border border-white/8 bg-[var(--color-bg-dark)]">
-            <DevisForm type={activeType} locale={locale} />
+            <DevisForm
+              type={activeType}
+              locale={locale}
+              initialContact={{ prenom, nom, telephone, email }}
+            />
           </div>
 
           {/* Contact direct */}

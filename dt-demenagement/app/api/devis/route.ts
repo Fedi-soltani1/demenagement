@@ -21,7 +21,7 @@ const devisSchema = z.object({
   type:       z.enum(['particulier', 'entreprise']),
   prenom:     z.string().min(2).max(50),
   nom:        z.string().min(2).max(50),
-  email:      z.string().email(),
+  email:      z.string().optional(),
   telephone:  z.string().regex(/^\+?[0-9\s\-()]{8,20}$/),
 
   adresseDepart:  adresseSchema,
@@ -96,35 +96,37 @@ export async function POST(request: Request) {
     overrideAccess: true,
   })
 
-  // Upsert fiche client avec les données complètes du formulaire
-  const existingClient = await payload.find({
-    collection: 'clients',
-    where: { email: { equals: d.email } },
-    limit: 1,
-    overrideAccess: true,
-  })
-  if (existingClient.totalDocs === 0) {
-    await payload.create({
+  // Upsert fiche client — uniquement si l'email est fourni
+  if (d.email) {
+    const existingClient = await payload.find({
       collection: 'clients',
-      data: {
-        email:     d.email,
-        prenom:    d.prenom,
-        nom:       d.nom,
-        telephone: d.telephone,
-      },
+      where: { email: { equals: d.email } },
+      limit: 1,
       overrideAccess: true,
     })
-  } else {
-    await payload.update({
-      collection: 'clients',
-      id: existingClient.docs[0]!.id,
-      data: {
-        prenom:    d.prenom,
-        nom:       d.nom,
-        telephone: d.telephone,
-      },
-      overrideAccess: true,
-    })
+    if (existingClient.totalDocs === 0) {
+      await payload.create({
+        collection: 'clients',
+        data: {
+          email:     d.email,
+          prenom:    d.prenom,
+          nom:       d.nom,
+          telephone: d.telephone,
+        },
+        overrideAccess: true,
+      })
+    } else {
+      await payload.update({
+        collection: 'clients',
+        id: existingClient.docs[0]!.id,
+        data: {
+          prenom:    d.prenom,
+          nom:       d.nom,
+          telephone: d.telephone,
+        },
+        overrideAccess: true,
+      })
+    }
   }
 
   // Résoudre les URLs publiques des photos pour l'email
@@ -153,10 +155,15 @@ export async function POST(request: Request) {
         body:    JSON.stringify({ from: env.EMAIL_FROM, to, subject, html }),
       })
     }
-    await Promise.all([
-      sendEmail(d.email, `Votre demande de devis DT Déménagement — ${numeroDossier}`, buildClientEmail(d.prenom, numeroDossier)),
+    const emailPromises = [
       sendEmail(env.EMAIL_DEVIS_TO, `Nouveau devis ${numeroDossier} — ${d.type} — ${d.prenom} ${d.nom}`, buildInternalEmail(d, numeroDossier, photoUrls)),
-    ])
+    ]
+    if (d.email) {
+      emailPromises.push(
+        sendEmail(d.email, `Votre demande de devis DT Déménagement — ${numeroDossier}`, buildClientEmail(d.prenom, numeroDossier))
+      )
+    }
+    await Promise.all(emailPromises)
   } catch {
     // Email non bloquant — le dossier est créé dans tous les cas
   }

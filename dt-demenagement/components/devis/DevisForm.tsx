@@ -123,10 +123,31 @@ const stepVariants = {
 
 // ── Main component ────────────────────────────────────────────────────────────
 
-export function DevisForm({ type, locale }: { type: TypeDevis; locale: string }) {
+interface InitialContact {
+  prenom?:    string
+  nom?:       string
+  telephone?: string
+  email?:     string
+}
+
+export function DevisForm({
+  type,
+  locale,
+  initialContact,
+}: {
+  type:            TypeDevis
+  locale:          string
+  initialContact?: InitialContact
+}) {
   const [step,       setStep]       = useState(0)
   const [direction,  setDirection]  = useState(1)
-  const [form,       setForm]       = useState<FormData>(INITIAL)
+  const [form, setForm] = useState<FormData>(() => ({
+    ...INITIAL,
+    prenom:    initialContact?.prenom    ?? '',
+    nom:       initialContact?.nom       ?? '',
+    telephone: initialContact?.telephone ?? '',
+    email:     initialContact?.email     ?? '',
+  }))
   const [fieldErrs,  setFieldErrs]  = useState<FieldErrors>({})
   const [success,    setSuccess]    = useState(false)
   const [dossier,    setDossier]    = useState('')
@@ -164,7 +185,7 @@ export function DevisForm({ type, locale }: { type: TypeDevis; locale: string })
   }
 
   function isStepValid(): boolean {
-    if (step === 0) return !!(form.prenom.trim() && form.nom.trim() && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email) && form.telephone)
+    if (step === 0) return !!(form.prenom.trim() && form.nom.trim() && form.telephone.trim())
     if (step === 1) return !!(form.departAdresse.trim() && form.departVille.trim())
     if (step === 2) return !!(form.arriveeAdresse.trim() && form.arriveeVille.trim())
     if (step === 3) return form.services.length > 0
