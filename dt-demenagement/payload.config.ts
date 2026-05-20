@@ -4,6 +4,7 @@ import sharp from 'sharp'
 import { buildConfig } from 'payload'
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import { resendAdapter } from '@payloadcms/email-resend'
 
 import Admins from './payload/collections/Admins'
 import Media from './payload/collections/Media'
@@ -81,8 +82,11 @@ export default buildConfig({
 
   sharp,
 
-  // ⚠️ Email adapter à configurer en Phase 5 avec @payloadcms/email-resend
-  // Sans adapter : emails écrits dans la console (normal en dev)
+  email: resendAdapter({
+    defaultFromAddress: process.env.EMAIL_FROM ?? 'onboarding@resend.dev',
+    defaultFromName: 'DT Déménagement Tunisie',
+    apiKey: process.env.RESEND_API_KEY ?? '',
+  }),
 
   typescript: {
     outputFile: path.resolve(dirname, 'types/payload-types.ts'),
