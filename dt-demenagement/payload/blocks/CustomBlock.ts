@@ -3,7 +3,6 @@ import type { Block } from 'payload'
 export const CustomBlock: Block = {
   slug: 'custom',
   labels: { singular: '✏️ Section Libre (contenu personnalisé)', plural: 'Sections Libres' },
-  admin: { description: 'Bloc flexible pour créer n\'importe quel type de section : texte riche, image + texte, contenu promotionnel, etc. À utiliser quand aucun autre bloc ne convient.' },
   fields: [
     {
       name: 'titre',

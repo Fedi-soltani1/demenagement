@@ -3,7 +3,6 @@ import type { Block } from 'payload'
 export const PartnersBlock: Block = {
   slug: 'partners',
   labels: { singular: '🤝 Section Partenaires & Certifications', plural: 'Sections Partenaires' },
-  admin: { description: 'Affiche les logos des partenaires, ambassades, compagnies aériennes et certifications. Les données viennent de la collection "Partenaires".' },
   fields: [
     {
       name: 'titre',

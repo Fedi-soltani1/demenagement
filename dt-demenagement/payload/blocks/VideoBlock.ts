@@ -3,7 +3,6 @@ import type { Block } from 'payload'
 export const VideoBlock: Block = {
   slug: 'video',
   labels: { singular: '🎬 Section Vidéo', plural: 'Sections Vidéo' },
-  admin: { description: 'Intègre une vidéo YouTube ou Vimeo dans la page. Affiche une image de prévisualisation avant la lecture pour ne pas ralentir le chargement.' },
   fields: [
     {
       name: 'titre',

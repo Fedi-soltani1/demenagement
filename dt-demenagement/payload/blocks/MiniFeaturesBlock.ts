@@ -3,7 +3,6 @@ import type { Block } from 'payload'
 export const MiniFeaturesBlock: Block = {
   slug: 'mini-features',
   labels: { singular: '⚡ Section Points forts (bande rapide)', plural: 'Sections Points forts' },
-  admin: { description: 'Bande horizontale avec des icônes et des courtes descriptions. Placée généralement juste après le hero pour résumer les 3-4 avantages clés de DT Déménagement.' },
   fields: [
     {
       name: 'items',

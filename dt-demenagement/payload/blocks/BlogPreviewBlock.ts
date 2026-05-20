@@ -3,7 +3,6 @@ import type { Block } from 'payload'
 export const BlogPreviewBlock: Block = {
   slug: 'blog-preview',
   labels: { singular: '📰 Section Aperçu Blog (derniers articles)', plural: 'Sections Aperçu Blog' },
-  admin: { description: 'Affiche une sélection d\'articles du blog. Idéal pour la page d\'accueil pour diriger les visiteurs vers le contenu.' },
   fields: [
     {
       name: 'titre',

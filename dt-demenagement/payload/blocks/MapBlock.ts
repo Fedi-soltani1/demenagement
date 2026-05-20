@@ -3,7 +3,6 @@ import type { Block } from 'payload'
 export const MapBlock: Block = {
   slug: 'map',
   labels: { singular: '🗺️ Section Carte des zones d\'intervention', plural: 'Sections Carte' },
-  admin: { description: 'Carte interactive affichant les villes et pays où DT Déménagement intervient. Les données viennent des collections "Villes" et "Pays".' },
   fields: [
     {
       name: 'titre',

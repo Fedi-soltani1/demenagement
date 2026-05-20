@@ -3,7 +3,6 @@ import type { Block } from 'payload'
 export const InstagramFeedBlock: Block = {
   slug: 'instagram-feed',
   labels: { singular: '📸 Section Fil Instagram', plural: 'Sections Fil Instagram' },
-  admin: { description: 'Affiche les dernières publications Instagram de DT Déménagement. Les posts sont récupérés automatiquement depuis le compte Instagram configuré.' },
   fields: [
     {
       name: 'titre',

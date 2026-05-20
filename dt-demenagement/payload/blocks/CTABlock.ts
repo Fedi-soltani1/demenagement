@@ -3,7 +3,6 @@ import type { Block } from 'payload'
 export const CTABlock: Block = {
   slug: 'cta',
   labels: { singular: '📣 Section Appel à l\'action (bannière incitative)', plural: 'Sections Appel à l\'action' },
-  admin: { description: 'Grande bannière avec titre accrocheur et bouton(s) pour inciter le visiteur à agir (demande de devis, contact, etc.).' },
   fields: [
     {
       name: 'titre',

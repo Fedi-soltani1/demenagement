@@ -3,7 +3,6 @@ import type { Block } from 'payload'
 export const HeroBlock: Block = {
   slug: 'hero',
   labels: { singular: '🦸 Section Hero (grande bannière d\'accueil)', plural: 'Sections Hero' },
-  admin: { description: 'La grande section en haut de page avec le titre principal et les boutons.' },
   fields: [
     {
       name: 'badge',

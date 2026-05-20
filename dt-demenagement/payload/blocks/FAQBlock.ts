@@ -3,7 +3,6 @@ import type { Block } from 'payload'
 export const FAQBlock: Block = {
   slug: 'faq',
   labels: { singular: '❓ Section FAQ (questions fréquentes)', plural: 'Sections FAQ' },
-  admin: { description: 'Affiche une liste de questions-réponses en accordéon. Les questions viennent de la collection "FAQ" dans l\'admin.' },
   fields: [
     {
       name: 'titre',

@@ -3,7 +3,6 @@ import type { Block } from 'payload'
 export const AboutBlock: Block = {
   slug: 'about',
   labels: { singular: '🏢 Section À propos de DT Déménagement', plural: 'Sections À propos' },
-  admin: { description: 'Présentation de l\'entreprise avec texte, photo, vidéo optionnelle et statistiques. Typiquement utilisée sur la page "À propos" et parfois sur la page d\'accueil.' },
   fields: [
     {
       name: 'badge',

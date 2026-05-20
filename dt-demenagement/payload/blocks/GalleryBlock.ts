@@ -3,7 +3,6 @@ import type { Block } from 'payload'
 export const GalleryBlock: Block = {
   slug: 'gallery',
   labels: { singular: '🖼️ Section Galerie photos', plural: 'Sections Galerie photos' },
-  admin: { description: 'Grille de photos avec zoom au clic (lightbox). Idéal pour montrer des chantiers, des camions, des équipes en action.' },
   fields: [
     {
       name: 'titre',

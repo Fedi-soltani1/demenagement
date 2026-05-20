@@ -3,7 +3,6 @@ import type { Block } from 'payload'
 export const TestimonialsBlock: Block = {
   slug: 'testimonials',
   labels: { singular: '💬 Section Témoignages clients', plural: 'Sections Témoignages clients' },
-  admin: { description: 'Affiche des avis et témoignages de clients satisfaits. Les témoignages viennent de la collection "Témoignages" dans l\'admin.' },
   fields: [
     {
       name: 'titre',

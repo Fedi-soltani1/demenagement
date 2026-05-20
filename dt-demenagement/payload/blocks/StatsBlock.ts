@@ -3,7 +3,6 @@ import type { Block } from 'payload'
 export const StatsBlock: Block = {
   slug: 'stats',
   labels: { singular: '📊 Section Chiffres clés (compteurs animés)', plural: 'Sections Chiffres clés' },
-  admin: { description: 'Affiche des statistiques avec animation de comptage au scroll (ex: 5 000+ déménagements, 15 ans d\'expérience).' },
   fields: [
     {
       name: 'titre',

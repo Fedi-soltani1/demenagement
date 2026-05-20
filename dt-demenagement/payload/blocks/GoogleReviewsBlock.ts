@@ -3,7 +3,6 @@ import type { Block } from 'payload'
 export const GoogleReviewsBlock: Block = {
   slug: 'google-reviews',
   labels: { singular: '⭐ Section Avis Google', plural: 'Sections Avis Google' },
-  admin: { description: 'Affiche les vrais avis Google synchronisés automatiquement. Les avis viennent de la collection "Avis Google" (mise à jour automatique).' },
   fields: [
     {
       name: 'titre',

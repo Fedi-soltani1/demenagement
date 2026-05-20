@@ -3,7 +3,6 @@ import type { Block } from 'payload'
 export const ServicesBlock: Block = {
   slug: 'services',
   labels: { singular: '🛠️ Section Services (liste de prestations)', plural: 'Sections Services' },
-  admin: { description: 'Affiche une sélection de services (déménagement local, international, stockage…) avec icônes et descriptions.' },
   fields: [
     {
       name: 'titre',

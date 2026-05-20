@@ -3,7 +3,6 @@ import type { Block } from 'payload'
 export const WhyUsBlock: Block = {
   slug: 'why-us',
   labels: { singular: '✅ Section Pourquoi nous choisir', plural: 'Sections Pourquoi nous choisir' },
-  admin: { description: 'Présente les avantages concurrentiels de DT Déménagement (garanties, équipe, expérience…) sous forme d\'icônes + textes.' },
   fields: [
     {
       name: 'titre',

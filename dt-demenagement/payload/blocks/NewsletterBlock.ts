@@ -3,7 +3,6 @@ import type { Block } from 'payload'
 export const NewsletterBlock: Block = {
   slug: 'newsletter',
   labels: { singular: '📧 Section Newsletter (inscription email)', plural: 'Sections Newsletter' },
-  admin: { description: 'Formulaire d\'inscription à la newsletter. Les emails collectés sont enregistrés dans la collection "Newsletter" et envoyés via Resend.' },
   fields: [
     {
       name: 'titre',
