@@ -66,7 +66,11 @@ CONSÉQUENCE : Les nouvelles colonnes ajoutées dans les collections Payload NE 
 ## 🤖 DERNIÈRE MISE À JOUR PAR CLAUDE CODE
 
 ```
-Date        : 2026-05-20 — SESSION EN COURS
+Date        : 2026-05-20 — FIN DE SESSION
+Session     : Dev 2 (Auth + Messagerie + Bugs fixes)
+Commit      : 9552dc5 — fix: renommer /api/messages → /api/client/message
+
+Date        : 2026-05-20 — SESSION PRÉCÉDENTE
 Session     : Dev 1 (Analyse pull Oussama + fix bug drizzle push)
 Commit      : e5da38e — fix: disable db push (drizzle params[] crash)
 
@@ -74,7 +78,86 @@ Date        : 2026-05-19 — FIN DE SESSION
 Session     : Dev 2 (Devis — upload photos + polish UI formulaire 6 étapes)
 Commit      : feat: devis — photo upload + UI polish complet (en cours de commit)
 
-─── CE QUI A ÉTÉ FAIT AUJOURD'HUI ──────────────────────────────────────────
+─── SESSION 2026-05-20 (soir) — AUTH + MESSAGERIE + BUGS ───────────────────
+
+1. RESEND EMAIL ADAPTER — PAYLOAD CMS
+   - payload.config.ts : ajout resendAdapter(@payloadcms/email-resend)
+     → defaultFromAddress: process.env.EMAIL_FROM
+     → defaultFromName: 'DT Déménagement Tunisie'
+   - .env.local : RESEND_API_KEY=re_gzCrbskT_..., EMAIL_FROM=onboarding@resend.dev
+     ⚠️ Mode test Resend — envoie uniquement vers fedi.soltani1@esprit.tn
+     → Changer EMAIL_FROM en noreply@demenagement.tn après vérification domaine
+
+2. NEXTAUTH — FIX JWT STRATEGY (Edge runtime compatibility)
+   - auth.ts : ajout session: { strategy: 'jwt' }
+     RAISON : postgres-js utilise des sockets TCP incompatibles avec Edge runtime
+     Sans cette option → SessionTokenError dans le middleware
+   - session callback : session({ session, token }) — utilise token.sub au lieu
+     de user.id (en mode JWT, user n'est pas disponible dans le callback session)
+   - sendVerificationRequest : fallback console.log en dev (affiche le lien magic
+     dans le terminal) → permet de tester avec n'importe quelle adresse email
+     sans domaine Resend vérifié
+
+3. VALIDATION FORMULAIRE DEVIS — FIX ADRESSES
+   - app/api/devis/route.ts : adresseSchema.adresse et .ville : min(3) → min(1)
+     RAISON : Zod rejetait des adresses légitimes courtes (ex: "aa", "SF")
+     Le client peut ne pas saisir une adresse complète
+
+4. AUTO-CRÉATION CLIENT PAYLOAD À LA CONNEXION
+   - Logique dans app/(site)/[locale]/espace-client/page.tsx (Server Component)
+     RAISON : Plusieurs tentatives via NextAuth events échouées :
+       • Tentative 1 : events.signIn avec import dynamique + @payload-config
+         → @payload-config est un alias webpack, non résolu hors webpack
+         → Erreur : Cannot find module '.next/server/.../payload.config'
+       • Tentative 2 : webpackIgnore: true + ./payload.config (chemin relatif)
+         → Résolu depuis .next/server/app/api/auth/[...nextauth]/
+         → Même erreur de résolution
+     Solution finale : déplacer la logique dans le Server Component espace-client
+       → importe directement getPayload + config (Node.js pur, pas d'Edge)
+       → Vérifie si un client existe pour session.user.email
+       → Si non : crée avec prenom/nom déduits du préfixe email
+         Ex: fedi.soltani1@esprit.tn → prenom: 'fedi', nom: 'soltani1'
+       → Non bloquant : la page s'affiche même si la création échoue
+
+5. UPSERT CLIENT LORS DE LA SOUMISSION DEVIS
+   - app/api/devis/route.ts : après création du dossier, upsert client
+     → Si client inexistant : create(email, prenom, nom, telephone)
+     → Si client existant : update(prenom, nom, telephone)
+     → PAS d'adresse (à la demande du client)
+     Avantage : la fiche client est enrichie avec les vraies données du formulaire
+
+6. FIX BUILD — UnhandledSchemeError node:console
+   CAUSE : postgres-js utilise node:console, node:net, node:tls (Node built-ins)
+   Webpack tentait de les bundler pour le browser → erreur build
+   CORRECTIF 1 : next.config.ts — serverExternalPackages:
+     ['postgres', 'pg', 'pg-native', 'drizzle-orm', '@auth/drizzle-adapter',
+      '@payloadcms/db-postgres']
+     → webpack ne bundle plus ces packages pour le serveur
+   CORRECTIF 2 : webpackIgnore: true sur les dynamic imports dans auth.ts
+     → webpack ne trace plus le graphe de dépendances de payload/undici
+   RÉSULTAT : build propre, aucune erreur node: URI
+
+7. UPGRADE NEXT.JS 15.3.4 → 15.3.9
+   RAISON : @payloadcms/next@3.84.1 exige next >=15.3.9 <15.4.0
+   15.3.4 était dans un gap NON SUPPORTÉ → overlay "newer version available"
+   + possible incompatibilités silencieuses
+   Commande : pnpm add next@15.3.9
+
+8. ACTIVATION COLLECTION MESSAGES DANS PAYLOAD ADMIN
+   - payload/collections/Messages.ts : hidden: true → hidden: false
+   Collection visible sous groupe '📬 Demandes clients' dans /admin
+
+9. FIX MESSAGERIE — CONFLIT ROUTE /api/messages vs Payload REST API
+   CAUSE : Le slug 'messages' de la collection Payload expose son propre REST
+   endpoint à /api/messages. Notre route custom était interceptée → 400 Bad Request
+   (les query params depth=0&fallback-locale=null confirmaient l'interception Payload)
+   FIX :
+   - Suppression : app/api/messages/route.ts (SUPPRIMÉ)
+   - Création    : app/api/client/message/route.ts (NOUVEAU chemin sans conflit)
+   - Correction  : Number(dossierId) pour les IDs PostgreSQL (string → number)
+   - Mise à jour : MessageThread.tsx — URL /api/messages → /api/client/message
+
+─── CE QUI A ÉTÉ FAIT AVANT (SESSION MATIN 2026-05-20) ─────────────────────
 
 1. UPLOAD PHOTOS — NOUVEAU SYSTÈME COMPLET
    - app/api/devis/upload/route.ts : endpoint POST multipart/form-data
@@ -224,33 +307,72 @@ Reprendre à : "Déploiement production Vercel + Railway"
 > Elle lui dit exactement où reprendre sans poser de questions.
 
 ```
-PHASE ACTUELLE    : Post-Phase 6 — DEVIS COMPLET + UI POLISH
-ÉTAPE ACTUELLE    : ✅ Formulaire devis 6 étapes finalisé avec photos + UX polish
-STATUT            : ✅ Code complet — TypeScript 0 erreur — ESLint 0 warning
-DERNIERS FICHIERS : dt-demenagement/app/api/devis/upload/route.ts (NOUVEAU)
-                    dt-demenagement/components/devis/PhotoUploadZone.tsx (NOUVEAU)
-                    dt-demenagement/components/devis/steps/StepPhotos.tsx (NOUVEAU)
-                    dt-demenagement/components/devis/steps/StepRecapitulatif.tsx (NOUVEAU)
-                    dt-demenagement/components/devis/DevisForm.tsx (RÉÉCRIT — UI polish complet)
-                    dt-demenagement/payload/collections/Demenagements.ts (+ 3 champs photos)
-                    dt-demenagement/app/api/devis/route.ts (+ photo IDs + email thumbnails)
-                    dt-demenagement/lib/env.ts (variables externes optionnelles en dev)
-                    dt-demenagement/payload/blocks/*.ts (18 fichiers — fix type Payload v3)
-                    dt-demenagement/docs/superpowers/specs/2026-05-19-devis-ui-polish-design.md (NOUVEAU)
-FORMULAIRE DEVIS  :
-  Étape 0 — Coordonnées (prénom, nom, email, téléphone)
-  Étape 1 — Adresse de départ (adresse, ville, étage grille, ascenseur toggle)
-  Étape 2 — Adresse d'arrivée (idem)
-  Étape 3 — Services & date (cartes icônes Lucide, date, volume, commentaire)
-  Étape 4 — Photos optionnel (meubles max 5, accès max 3 par adresse)
-  Étape 5 — Récapitulatif (résumé + [Modifier] par section + bouton Envoyer)
+PHASE ACTUELLE    : Post-Phase 6 — AUTH + MESSAGERIE OPÉRATIONNELS
+ÉTAPE ACTUELLE    : ✅ Espace client complet — Magic Link + Clients Payload + Messagerie
+STATUT            : ✅ Code complet — TypeScript 0 erreur — Serveur sur http://localhost:3000
+DERNIERS FICHIERS MODIFIÉS (session 2026-05-20 soir) :
+  dt-demenagement/auth.ts
+    → session: { strategy: 'jwt' }
+    → sendVerificationRequest: console.log en dev
+    → session callback: token.sub (pas user.id en mode JWT)
+  dt-demenagement/payload.config.ts
+    → resendAdapter ajouté
+    → push: false (fix drizzle params bug — voir section BUG ACTIF)
+  dt-demenagement/next.config.ts
+    → serverExternalPackages: [postgres, pg, drizzle-orm, @auth/drizzle-adapter…]
+    → next version: 15.3.4 → 15.3.9 (peer dep @payloadcms/next@3.84.1)
+  dt-demenagement/app/(site)/[locale]/espace-client/page.tsx
+    → auto-upsert Client Payload à chaque visite (si inexistant)
+  dt-demenagement/app/api/devis/route.ts
+    → upsert client(email,prenom,nom,telephone) à chaque soumission devis
+    → validation adresse : min(3) → min(1)
+  dt-demenagement/payload/collections/Messages.ts
+    → hidden: true → false (collection visible dans /admin)
+  dt-demenagement/app/api/client/message/route.ts (NOUVEAU — ex /api/messages)
+    → renommé pour éviter conflit avec REST API Payload
+    → Number(dossierId) pour IDs PostgreSQL
+  dt-demenagement/components/espace-client/MessageThread.tsx
+    → URL /api/messages → /api/client/message
+
+FONCTIONNALITÉS OPÉRATIONNELLES :
+  ✅ Magic Link auth (lien affiché dans terminal en dev)
+  ✅ Auto-création fiche Client Payload à la première visite espace-client
+  ✅ Enrichissement Client lors soumission devis (prenom/nom/telephone)
+  ✅ Messagerie client ↔ admin dans page dossier
+  ✅ Admin répond via /admin → Messages → Créer
+  ✅ Build propre — aucune erreur node:console webpack
+
+PACKAGES MODIFIÉS (versions) :
+  next              : 15.3.4  → 15.3.9   (peer dep @payloadcms/next@3.84.1 exige ≥15.3.9)
+  payload           : ^3.84.1 → inchangé  (déjà à la bonne version)
+  @payloadcms/next  : ^3.84.1 → inchangé
+  next-auth         : 5.0.0-beta.31 → inchangé (stratégie JWT activée)
+  drizzle-orm       : 0.45.2  → inchangé  (bug params[] toujours présent — push:false)
+  pnpm-lock.yaml    : mis à jour automatiquement par pnpm add next@15.3.9
+
+COMMITS DE CETTE SESSION :
+  b5321b7 feat: auto-créer fiche Client Payload à la première connexion Magic Link
+  558f17b fix: dynamic import payload dans auth events pour éviter UnhandledSchemeError
+  df53167 fix: serverExternalPackages pour postgres/drizzle — corrige UnhandledSchemeError
+  83ae328 fix: webpackIgnore sur imports payload dans auth + upgrade next 15.3.4→15.3.9
+  7040d2a fix: remplacer @payload-config par ./payload.config dans dynamic import
+  866755b fix: déplacer création client Payload dans espace-client page (Server Component)
+  59f65d1 feat: upsert client Payload lors de la soumission du devis
+  bc23d92 fix: supprimer adresse du client upsert — email/prenom/nom/telephone uniquement
+  50eb952 feat: activer collection Messages dans l'admin Payload
+  9552dc5 fix: renommer /api/messages → /api/client/message — évite conflit avec REST API Payload
+
 PROCHAINE ACTION  : Déploiement production
-                    1. Remplir .env sur Vercel (toutes les variables requises)
-                    2. Déployer sur Vercel + Railway (git push → auto-deploy)
-                    3. Créer la page accueil dans /admin → Pages
-                    4. Configurer DNS sur demenagement.tn → Vercel
+  1. Vérifier domaine demenagement.tn sur resend.com/domains
+     → Changer EMAIL_FROM=noreply@demenagement.tn
+     → Changer EMAIL_DEVIS_TO=contact@demenagement.tn
+  2. Remplir toutes les variables .env sur Vercel
+  3. Déployer sur Vercel (git push → auto-deploy)
+  4. Configurer DNS demenagement.tn → Vercel
+  5. Ouvrir /api/seed?secret=[SEED_SECRET] → initialiser données
 BRANCHE ACTIVE    : main
-BLOQUEURS         : Aucun — TypeScript 0 erreur / ESLint 0 erreur
+BLOQUEURS         : Resend en mode test (envoie uniquement vers fedi.soltani1@esprit.tn)
+                    → vérifier domaine demenagement.tn sur resend.com pour lever ce blocage
 ```
 
 ---
