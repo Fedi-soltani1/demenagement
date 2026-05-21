@@ -8,6 +8,7 @@ interface Message {
   auteur: 'client' | 'admin'
   contenu: string
   createdAt: string
+  luParClient?: boolean
 }
 
 interface MessageThreadLabels {
@@ -36,6 +37,16 @@ export function MessageThread({ messages: initialMessages, dossierId, clientEmai
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
+
+  // Mark admin messages as read by client on mount
+  useEffect(() => {
+    void fetch('/api/client/messages/mark-read', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ dossierId: Number(dossierId) }),
+    }).catch(() => { /* non-blocking */ })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dossierId])
 
   async function handleSend() {
     const trimmed = content.trim()

@@ -56,6 +56,15 @@ const Messages: CollectionConfig = {
       defaultValue: false,
     },
     {
+      name: 'luParClient',
+      type: 'checkbox',
+      defaultValue: false,
+      admin: {
+        description: 'Coché automatiquement quand le client a ouvert la conversation dans son espace',
+        readOnly: true,
+      },
+    },
+    {
       name: 'clientId',
       type: 'text',
       admin: {

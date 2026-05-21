@@ -113,6 +113,7 @@ export async function POST(request: NextRequest): Promise<Response> {
       contenu: `📤 Devis ${dossier.numeroDossier ?? ''} envoyé par email à ${clientEmail}.\nMontant : ${prixStr} — Validité : ${validiteStr}`,
       lu: true,
     },
+    overrideAccess: true,
   }).catch(() => { /* non-blocking — email already sent */ })
 
   return Response.json({ success: true })
