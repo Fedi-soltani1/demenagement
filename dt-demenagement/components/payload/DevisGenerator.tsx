@@ -262,30 +262,29 @@ export default function DevisGenerator() {
           <p style={{ margin: '12px 0 0', fontSize: '11px', color: '#ccc' }}>
             💡 Le PDF utilise les données sauvegardées. Sauvegardez avant de générer.
           </p>
+
+          {/* ── Email confirmation inline panel ── */}
+          {confirmEmail && dossier && (
+            <div style={{ marginTop: '12px', background: '#f0f6ff', border: '1px solid #c0d8f8', borderRadius: '8px', padding: '16px' }}>
+              <p style={{ margin: '0 0 10px', fontSize: '13px', color: '#1a1a1a', fontWeight: 600 }}>📧 Confirmer l'envoi du devis</p>
+              <p style={{ margin: '0 0 10px', fontSize: '12px', color: '#555', lineHeight: 1.6 }}>
+                Le PDF sera envoyé à <strong style={{ color: '#1a5cbf' }}>{dossier.clientId}</strong> ({dossier.nomComplet})
+                {dossier.prixTotalTTC != null && <span> — Montant : <strong style={{ color: '#b52027' }}>{Number(dossier.prixTotalTTC).toLocaleString('fr-TN')} DT TTC</strong></span>}.
+              </p>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button type="button" onClick={() => setConfirmEmail(false)}
+                  style={{ padding: '8px 16px', background: '#e0e0e0', border: 'none', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', fontWeight: 500 }}>
+                  Annuler
+                </button>
+                <button type="button" onClick={handleSendEmail}
+                  style={{ padding: '8px 18px', background: '#1a5cbf', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', fontWeight: 700 }}>
+                  ✉️ Envoyer maintenant
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
-
-      {/* ── Email confirmation inline panel ── */}
-      {confirmEmail && dossier && (
-        <div style={{ marginTop: '12px', background: '#f0f6ff', border: '1px solid #c0d8f8', borderRadius: '8px', padding: '16px' }}>
-          <p style={{ margin: '0 0 10px', fontSize: '13px', color: '#1a1a1a', fontWeight: 600 }}>📧 Confirmer l'envoi du devis</p>
-          <p style={{ margin: '0 0 10px', fontSize: '12px', color: '#555', lineHeight: 1.6 }}>
-            Le PDF sera envoyé à <strong style={{ color: '#1a5cbf' }}>{dossier.clientId}</strong> ({dossier.nomComplet})
-            {dossier.prixTotalTTC != null && <> — Montant : <strong style={{ color: '#b52027' }}>{Number(dossier.prixTotalTTC).toLocaleString('fr-TN')} DT TTC</strong></>}.
-          </p>
-          <div style={{ display: 'flex', gap: '8px' }}>
-            <button type="button" onClick={() => setConfirmEmail(false)}
-              style={{ padding: '8px 16px', background: '#e0e0e0', border: 'none', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', fontWeight: 500 }}>
-              Annuler
-            </button>
-            <button type="button" onClick={handleSendEmail}
-              style={{ padding: '8px 18px', background: '#1a5cbf', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', fontWeight: 700 }}>
-              ✉️ Envoyer maintenant
-            </button>
-          </div>
-        </div>
-      )}
-    </div>
   )
 }
 
