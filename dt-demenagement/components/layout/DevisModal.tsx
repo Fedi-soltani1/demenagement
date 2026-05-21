@@ -41,7 +41,7 @@ interface ContactData {
 }
 
 interface RdvData {
-  type:       'client' | 'entreprise' | 'administration'
+  type:       'client' | 'entreprise'
   nom:        string
   prenom:     string
   telephone:  string
@@ -481,7 +481,6 @@ export function DevisModalProvider({ children }: { children: ReactNode }) {
                         >
                           <option value="client">{t('typeClient')}</option>
                           <option value="entreprise">{t('typeEntreprise')}</option>
-                          <option value="administration">{t('typeAdministration')}</option>
                         </select>
                       </FieldWrapper>
 

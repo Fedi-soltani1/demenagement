@@ -37,6 +37,7 @@ const nextConfig: NextConfig = {
     'drizzle-orm',
     '@auth/drizzle-adapter',
     '@payloadcms/db-postgres',
+    '@react-pdf/renderer',
   ],
 
   // Alias Turbopack — nécessaire pour que Payload résolve @payload-config

@@ -255,6 +255,53 @@ const Demenagements: CollectionConfig = {
       admin: { description: 'Remarques internes sur ce client ou ce dossier — jamais affichées au client.' },
     },
 
+    // ── Devis ─────────────────────────────────────────────────────────────────
+    {
+      name: 'prixTotalTTC',
+      label: '💰 Prix total TTC (en DT)',
+      type: 'number',
+      admin: {
+        description: 'Montant total du devis en dinars tunisiens (TTC). Laisser vide si pas encore calculé.',
+      },
+    },
+    {
+      name: 'devisValiditeJours',
+      label: '⏳ Validité du devis (jours)',
+      type: 'number',
+      defaultValue: 30,
+      admin: { description: 'Durée de validité en jours (défaut : 30 jours).' },
+    },
+    {
+      name: 'devisNotes',
+      label: '📝 Notes / conditions du devis',
+      type: 'textarea',
+      admin: {
+        description: 'Conditions particulières, prestations incluses, remarques à afficher dans le PDF.',
+      },
+    },
+    {
+      name: 'devisStatut',
+      label: '📋 Statut du devis',
+      type: 'select',
+      defaultValue: 'brouillon',
+      options: [
+        { label: '📝 Brouillon — pas encore envoyé', value: 'brouillon' },
+        { label: '📤 Envoyé au client',               value: 'envoye' },
+        { label: '✅ Accepté par le client',           value: 'accepte' },
+        { label: '❌ Refusé par le client',            value: 'refuse' },
+      ],
+    },
+    {
+      name: 'devisGenerateur',
+      type: 'ui',
+      label: '🚀 Générer et envoyer le devis',
+      admin: {
+        components: {
+          Field: '@/components/payload/DevisGenerator',
+        },
+      },
+    },
+
     // ── Messagerie client ─────────────────────────────────────────────────────
     {
       name:  'messagerie',
