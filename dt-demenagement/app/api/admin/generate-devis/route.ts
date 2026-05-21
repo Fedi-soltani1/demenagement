@@ -7,7 +7,16 @@ import type { DocumentProps } from '@react-pdf/renderer'
 import { z } from 'zod'
 import { DevisPDF } from '@/components/pdf/DevisPDF'
 
-const schema = z.object({ dossierId: z.number() })
+const overridesSchema = z.object({
+  prixTotalTTC:       z.number().optional(),
+  devisValiditeJours: z.number().optional(),
+  devisNotes:         z.string().optional(),
+})
+
+const schema = z.object({
+  dossierId: z.number(),
+  overrides: overridesSchema.optional(),
+})
 
 export async function POST(request: NextRequest): Promise<Response> {
   const payload = await getPayload({ config })
@@ -22,16 +31,24 @@ export async function POST(request: NextRequest): Promise<Response> {
     return Response.json({ error: 'Données invalides' }, { status: 422 })
   }
 
-  const dossier = await payload.findByID({
+  const raw = await payload.findByID({
     collection: 'demenagements',
     id: parsed.data.dossierId,
   })
 
-  if (!dossier) {
+  if (!raw) {
     return Response.json({ error: 'Dossier introuvable' }, { status: 404 })
   }
 
-  const element = createElement(DevisPDF, { dossier }) as ReactElement<DocumentProps>
+  // Merge live overrides from the admin form (unsaved field values)
+  const dossier = {
+    ...raw,
+    ...Object.fromEntries(
+      Object.entries(parsed.data.overrides ?? {}).filter(([, v]) => v !== undefined && v !== null)
+    ),
+  }
+
+  const element   = createElement(DevisPDF, { dossier }) as ReactElement<DocumentProps>
   const pdfBuffer = await renderToBuffer(element)
   const filename  = `Devis-${(dossier.numeroDossier as string | undefined) ?? parsed.data.dossierId}.pdf`
 
