@@ -3,6 +3,8 @@ import { z } from 'zod'
 import { auth } from '@/auth'
 import { getPayload } from 'payload'
 import config from '@payload-config'
+import { Resend } from 'resend'
+import { env } from '@/lib/env'
 
 const schema = z.object({
   dossierId:   z.string().min(1),
@@ -55,6 +57,36 @@ export async function POST(request: Request) {
     },
     overrideAccess: true,
   })
+
+  // Send email notification to admin (non-blocking)
+  if (env.RESEND_API_KEY && env.EMAIL_DEVIS_TO) {
+    const dossier = dossierCheck.docs[0]
+    const resend  = new Resend(env.RESEND_API_KEY)
+    const adminUrl = `${env.NEXT_PUBLIC_SERVER_URL}/admin/collections/demenagements/${dossierId}`
+    await resend.emails.send({
+      from:    env.EMAIL_FROM || 'DT Déménagement <contact@demenagement.tn>',
+      to:      env.EMAIL_DEVIS_TO,
+      subject: `💬 Nouveau message client — Dossier ${(dossier as Record<string, unknown>).numeroDossier ?? dossierId}`,
+      html: `
+        <div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;">
+          <div style="background:#0f0f0f;padding:16px 24px;">
+            <h2 style="color:#fff;margin:0;font-size:16px;">DT Déménagement — Nouveau message client</h2>
+          </div>
+          <div style="padding:20px 24px;background:#f9f9f9;border-left:4px solid #b52027;">
+            <p style="margin:0 0 6px;font-size:12px;color:#999;text-transform:uppercase;letter-spacing:1px;">Message de</p>
+            <p style="margin:0 0 16px;font-size:15px;color:#111;font-weight:bold;">${clientEmail}</p>
+            <p style="margin:0 0 6px;font-size:12px;color:#999;text-transform:uppercase;letter-spacing:1px;">Contenu</p>
+            <div style="background:#fff;border:1px solid #e0e0e0;border-radius:6px;padding:14px;font-size:14px;color:#333;white-space:pre-wrap;">${contenu.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>
+          </div>
+          <div style="padding:16px 24px;background:#fff;">
+            <a href="${adminUrl}" style="display:inline-block;background:#b52027;color:#fff;padding:10px 20px;border-radius:6px;text-decoration:none;font-weight:bold;font-size:13px;">
+              Ouvrir le dossier dans l'admin →
+            </a>
+          </div>
+        </div>
+      `,
+    }).catch(() => { /* non-blocking */ })
+  }
 
   return NextResponse.json({ message }, { status: 201 })
 }

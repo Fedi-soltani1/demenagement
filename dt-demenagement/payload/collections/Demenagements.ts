@@ -20,6 +20,19 @@ const Demenagements: CollectionConfig = {
     description: 'Chaque ligne = une demande de devis reçue. Ouvrir un dossier et changer le "Statut du dossier" pour que le client voie l\'avancement en temps réel.',
   },
 
+  hooks: {
+    beforeChange: [
+      ({ data }: { data: Record<string, unknown> }) => {
+        const lines = data.lignesDevis as { quantite?: number; prixUnitaire?: number }[] | undefined
+        if (lines && lines.length > 0) {
+          const total = lines.reduce((sum, l) => sum + ((l.quantite ?? 1) * (l.prixUnitaire ?? 0)), 0)
+          if (total > 0) return { ...data, prixTotalTTC: Math.round(total * 100) / 100 }
+        }
+        return data
+      },
+    ],
+  },
+
   fields: [
     // ── Informations dossier ─────────────────────────────────────────────────
     {
@@ -257,11 +270,40 @@ const Demenagements: CollectionConfig = {
 
     // ── Devis ─────────────────────────────────────────────────────────────────
     {
+      name: 'lignesDevis',
+      type: 'array',
+      label: '📊 Lignes du devis (détail tarification)',
+      admin: {
+        description: 'Ajoutez les postes de prix. Le total TTC sera calculé automatiquement à la sauvegarde.',
+      },
+      fields: [
+        {
+          name: 'designation',
+          label: 'Désignation / Prestation',
+          type: 'text',
+          required: true,
+        },
+        {
+          name: 'quantite',
+          label: 'Qté',
+          type: 'number',
+          defaultValue: 1,
+          admin: { width: '20%' },
+        },
+        {
+          name: 'prixUnitaire',
+          label: 'Prix unitaire (DT)',
+          type: 'number',
+          admin: { width: '30%' },
+        },
+      ],
+    },
+    {
       name: 'prixTotalTTC',
       label: '💰 Prix total TTC (en DT)',
       type: 'number',
       admin: {
-        description: 'Montant total du devis en dinars tunisiens (TTC). Laisser vide si pas encore calculé.',
+        description: 'Calculé automatiquement depuis les lignes si présentes. Sinon, saisir manuellement.',
       },
     },
     {
@@ -290,6 +332,11 @@ const Demenagements: CollectionConfig = {
         { label: '✅ Accepté par le client',           value: 'accepte' },
         { label: '❌ Refusé par le client',            value: 'refuse' },
       ],
+      admin: {
+        components: {
+          Cell: '@/components/payload/DevisStatutCell',
+        },
+      },
     },
     {
       name: 'devisGenerateur',

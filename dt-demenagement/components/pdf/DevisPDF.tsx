@@ -116,6 +116,28 @@ const s = StyleSheet.create({
   servDot:  { width: 5, height: 5, borderRadius: 3, backgroundColor: GOLD, marginRight: 7 },
   servTxt:  { fontSize: 8, color: DARK },
 
+  // ── Line items table ─────────────────────────────────────────────────────
+  linesTable: { borderWidth: 1, borderColor: BORDER, borderRadius: 3, marginBottom: 8 },
+  linesHead: {
+    backgroundColor: LIGHT, flexDirection: 'row',
+    paddingVertical: 5, paddingHorizontal: 9,
+    borderBottomWidth: 1, borderBottomColor: BORDER,
+  },
+  linesHeadTxt: { fontSize: 6.5, fontFamily: 'Helvetica-Bold', color: MUTED, letterSpacing: 0.4 },
+  lineRow: {
+    flexDirection: 'row', paddingVertical: 5, paddingHorizontal: 9,
+    borderBottomWidth: 1, borderBottomColor: BORDER,
+  },
+  lineRowLast: { flexDirection: 'row', paddingVertical: 5, paddingHorizontal: 9 },
+  lineCell:  { fontSize: 8, color: DARK },
+  lineCellR: { fontSize: 8, color: DARK, textAlign: 'right' },
+  lineTotalRow: {
+    backgroundColor: DARK, flexDirection: 'row',
+    paddingVertical: 6, paddingHorizontal: 9,
+  },
+  lineTotalLbl: { fontSize: 7, fontFamily: 'Helvetica-Bold', color: 'rgba(255,255,255,0.45)', letterSpacing: 1 },
+  lineTotalAmt: { fontSize: 8.5, fontFamily: 'Helvetica-Bold', color: GOLD, textAlign: 'right' },
+
   // ── Price ─────────────────────────────────────────────────────────────────
   priceTop: {
     backgroundColor: DARK, borderTopLeftRadius: 4, borderTopRightRadius: 4,
@@ -175,6 +197,12 @@ const s = StyleSheet.create({
 
 type Adresse = { adresse?: string; ville?: string; etage?: string; ascenseur?: boolean }
 
+export type LigneDevis = {
+  designation?: string
+  quantite?:    number
+  prixUnitaire?: number
+}
+
 export type Dossier = {
   numeroDossier?:      string
   nomComplet?:         string
@@ -186,6 +214,7 @@ export type Dossier = {
   adresseArrivee?:     Adresse
   servicesInclus?:     string[]
   volumeM3?:           number
+  lignesDevis?:        LigneDevis[]
   prixTotalTTC?:       number
   devisValiditeJours?: number
   devisNotes?:         string
@@ -394,6 +423,39 @@ export function DevisPDF({ dossier }: { dossier: Dossier }) {
               <View style={s.secDot} />
               <Text style={s.secTitle}>TARIFICATION</Text>
             </View>
+
+            {/* Line items table — shown when lines are present */}
+            {dossier.lignesDevis && dossier.lignesDevis.length > 0 && (
+              <View style={s.linesTable}>
+                <View style={s.linesHead}>
+                  <Text style={[s.linesHeadTxt, { flex: 4 }]}>DÉSIGNATION / PRESTATION</Text>
+                  <Text style={[s.linesHeadTxt, { flex: 1, textAlign: 'center' }]}>QTÉ</Text>
+                  <Text style={[s.linesHeadTxt, { flex: 1.5, textAlign: 'right' }]}>P.U. (DT)</Text>
+                  <Text style={[s.linesHeadTxt, { flex: 1.5, textAlign: 'right' }]}>TOTAL (DT)</Text>
+                </View>
+                {dossier.lignesDevis.map((l, i) => {
+                  const qty   = l.quantite    ?? 1
+                  const pu    = l.prixUnitaire ?? 0
+                  const total = qty * pu
+                  const isLast = i === (dossier.lignesDevis!.length - 1)
+                  return (
+                    <View key={i} style={isLast ? s.lineRowLast : s.lineRow}>
+                      <Text style={[s.lineCell, { flex: 4 }]}>{l.designation ?? '—'}</Text>
+                      <Text style={[s.lineCell, { flex: 1, textAlign: 'center' }]}>{qty}</Text>
+                      <Text style={[s.lineCellR, { flex: 1.5 }]}>{fmtNum(pu)}</Text>
+                      <Text style={[s.lineCellR, { flex: 1.5 }]}>{fmtNum(total)}</Text>
+                    </View>
+                  )
+                })}
+                <View style={s.lineTotalRow}>
+                  <Text style={[s.lineTotalLbl, { flex: 1 }]}>TOTAL TTC</Text>
+                  <Text style={s.lineTotalAmt}>
+                    {prix != null ? `${fmtNum(prix)} DT` : '—'}
+                  </Text>
+                </View>
+              </View>
+            )}
+
             <View style={s.priceTop}>
               <Text style={s.priceTopLbl}>MONTANT TOTAL TTC</Text>
               <Text style={s.priceTopBadge}>Validité : {validite} jours</Text>

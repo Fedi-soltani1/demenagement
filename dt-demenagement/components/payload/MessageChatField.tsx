@@ -11,6 +11,14 @@ interface Message {
   lu:        boolean
 }
 
+const TEMPLATES = [
+  'Bonjour, votre dossier est en cours de traitement.',
+  'Nous avons bien reçu votre demande et vous recontacterons très prochainement.',
+  'Votre devis est prêt. Vous le trouverez en pièce jointe de l\'email que nous venons de vous envoyer.',
+  'Pourriez-vous confirmer la date souhaitée pour votre déménagement ?',
+  'N\'hésitez pas à nous appeler au +216 52 880 311 pour toute question.',
+]
+
 export default function MessageChatField() {
   const { id } = useDocumentInfo()
 
@@ -20,6 +28,15 @@ export default function MessageChatField() {
   const [loading,   setLoading]   = useState(true)
   const [isPending, startTransition] = useTransition()
   const listRef = useRef<HTMLDivElement>(null)
+
+  const markAsRead = async (dossierId: number) => {
+    await fetch('/api/admin/messages/read', {
+      method:      'POST',
+      headers:     { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body:        JSON.stringify({ dossierId }),
+    }).catch(() => { /* silent */ })
+  }
 
   const fetchMessages = async () => {
     if (!id) return
@@ -34,7 +51,9 @@ export default function MessageChatField() {
   }
 
   useEffect(() => {
-    void fetchMessages()
+    void fetchMessages().then(() => {
+      if (id) void markAsRead(Number(id))
+    })
     const timer = setInterval(() => void fetchMessages(), 10_000)
     return () => clearInterval(timer)
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -124,6 +143,20 @@ export default function MessageChatField() {
             )
           })
         )}
+      </div>
+
+      {/* Quick-reply templates */}
+      <div style={styles.templatesRow}>
+        {TEMPLATES.map((tpl, i) => (
+          <button
+            key={i}
+            type="button"
+            onClick={() => setContent(tpl)}
+            style={styles.templatePill}
+          >
+            {tpl.length > 42 ? tpl.slice(0, 42) + '…' : tpl}
+          </button>
+        ))}
       </div>
 
       {/* Reply */}
@@ -246,9 +279,28 @@ const styles = {
     color:      '#22c55e',
   } as React.CSSProperties,
 
-  replyRow: {
-    padding:         '12px 16px',
+  templatesRow: {
+    padding:         '8px 16px 4px',
+    backgroundColor: '#161616',
+    display:         'flex',
+    flexWrap:        'wrap' as const,
+    gap:             '6px',
     borderTop:       '1px solid #2a2a2a',
+  } as React.CSSProperties,
+
+  templatePill: {
+    padding:         '4px 10px',
+    borderRadius:    '999px',
+    border:          '1px solid #3a3a3a',
+    backgroundColor: '#222',
+    color:           '#aaa',
+    fontSize:        '11px',
+    cursor:          'pointer',
+    whiteSpace:      'nowrap' as const,
+  } as React.CSSProperties,
+
+  replyRow: {
+    padding:         '8px 16px 12px',
     backgroundColor: '#161616',
     display:         'flex',
     gap:             '10px',

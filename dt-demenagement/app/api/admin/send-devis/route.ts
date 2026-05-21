@@ -9,10 +9,17 @@ import { z } from 'zod'
 import { DevisPDF } from '@/components/pdf/DevisPDF'
 import { env } from '@/lib/env'
 
+const ligneSchema = z.object({
+  designation:  z.string().optional(),
+  quantite:     z.number().optional(),
+  prixUnitaire: z.number().optional(),
+})
+
 const overridesSchema = z.object({
   prixTotalTTC:       z.number().optional(),
   devisValiditeJours: z.number().optional(),
   devisNotes:         z.string().optional(),
+  lignesDevis:        z.array(ligneSchema).optional(),
 })
 
 const schema = z.object({
@@ -91,6 +98,22 @@ export async function POST(request: NextRequest): Promise<Response> {
     id: parsed.data.dossierId,
     data: { devisStatut: 'envoye' },
   })
+
+  // Auto-post a system message in the dossier chat to trace the event
+  const prixStr = dossier.prixTotalTTC != null
+    ? `${Math.round(dossier.prixTotalTTC).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} DT TTC`
+    : 'montant à confirmer'
+  const validiteStr = `${dossier.devisValiditeJours ?? 30} jours`
+  await payload.create({
+    collection: 'messages',
+    data: {
+      demenagement: parsed.data.dossierId,
+      auteur: 'admin',
+      clientId: clientEmail,
+      contenu: `📤 Devis ${dossier.numeroDossier ?? ''} envoyé par email à ${clientEmail}.\nMontant : ${prixStr} — Validité : ${validiteStr}`,
+      lu: true,
+    },
+  }).catch(() => { /* non-blocking — email already sent */ })
 
   return Response.json({ success: true })
 }

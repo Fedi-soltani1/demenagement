@@ -4,11 +4,18 @@ import { useDocumentInfo, useFormFields } from '@payloadcms/ui'
 import { useEffect, useState, useCallback } from 'react'
 import type { CSSProperties } from 'react'
 
+type LigneDevis = {
+  designation?: string
+  quantite?:    number
+  prixUnitaire?: number
+}
+
 type DossierSummary = {
   numeroDossier?: string
   nomComplet?: string
   clientId?: string
   telephone?: string
+  lignesDevis?: LigneDevis[]
   prixTotalTTC?: number
   devisValiditeJours?: number
   devisNotes?: string
@@ -48,7 +55,7 @@ export default function DevisGenerator() {
   const { id } = useDocumentInfo()
 
   // Live form field values — updates in real-time as admin types (no save required)
-  const liveFields = useFormFields(([fields]) => ({
+  const liveFields = useFormFields(([fields]: [Record<string, { value?: unknown }>]) => ({
     prixTotalTTC:       fields.prixTotalTTC?.value       as number | undefined,
     devisValiditeJours: fields.devisValiditeJours?.value as number | undefined,
     devisNotes:         fields.devisNotes?.value         as string | undefined,
@@ -100,6 +107,8 @@ export default function DevisGenerator() {
     if (liveFields?.prixTotalTTC !== undefined)       o.prixTotalTTC       = liveFields.prixTotalTTC
     if (liveFields?.devisValiditeJours !== undefined) o.devisValiditeJours = liveFields.devisValiditeJours
     if (liveFields?.devisNotes !== undefined)         o.devisNotes         = liveFields.devisNotes
+    // Always pass lignesDevis from DB (live form doesn't expose array live values in useFormFields)
+    if (dossier?.lignesDevis)                         o.lignesDevis        = dossier.lignesDevis
     return o
   }
 
@@ -209,6 +218,41 @@ export default function DevisGenerator() {
               <InfoRow label="Email"   value={dossier.clientId} copyable />
               <InfoRow label="Tél"     value={dossier.telephone} />
             </div>
+          </div>
+        )}
+
+        {/* Line items breakdown */}
+        {dossier?.lignesDevis && dossier.lignesDevis.length > 0 && (
+          <div style={{ marginBottom: '14px', border: '1px solid #e0e0e0', borderRadius: '6px', overflow: 'hidden' }}>
+            <div style={{ background: '#1a1a1a', padding: '7px 12px', fontSize: '10px', fontWeight: 700, color: '#aaa', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+              Lignes du devis
+            </div>
+            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr style={{ background: '#f5f5f5', borderBottom: '1px solid #e0e0e0' }}>
+                  <th style={thStyle('left', '55%')}>Désignation</th>
+                  <th style={thStyle('center', '10%')}>Qté</th>
+                  <th style={thStyle('right', '17%')}>P.U. (DT)</th>
+                  <th style={thStyle('right', '18%')}>Total (DT)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {dossier.lignesDevis.map((l, i) => {
+                  const qty   = l.quantite    ?? 1
+                  const pu    = l.prixUnitaire ?? 0
+                  const total = qty * pu
+                  const odd   = i % 2 === 1
+                  return (
+                    <tr key={i} style={{ background: odd ? '#fafafa' : '#fff', borderBottom: '1px solid #f0f0f0' }}>
+                      <td style={tdStyle('left')}>{l.designation ?? '—'}</td>
+                      <td style={tdStyle('center')}>{qty}</td>
+                      <td style={tdStyle('right')}>{fmtAmt(pu)}</td>
+                      <td style={tdStyle('right')}>{fmtAmt(total)}</td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
           </div>
         )}
 
@@ -342,4 +386,16 @@ function alertStyle(bg: string, border: string, color: string): CSSProperties {
     color,
     marginBottom: '14px',
   }
+}
+
+function thStyle(align: 'left' | 'center' | 'right', width: string): CSSProperties {
+  return { padding: '5px 10px', fontSize: '10px', fontWeight: 700, color: '#999', textAlign: align, width, textTransform: 'uppercase', letterSpacing: '0.3px' }
+}
+
+function tdStyle(align: 'left' | 'center' | 'right'): CSSProperties {
+  return { padding: '6px 10px', fontSize: '11px', color: '#333', textAlign: align }
+}
+
+function fmtAmt(n: number): string {
+  return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
 }

@@ -5,12 +5,19 @@ import { renderToBuffer } from '@react-pdf/renderer'
 import { createElement, type ReactElement } from 'react'
 import type { DocumentProps } from '@react-pdf/renderer'
 import { z } from 'zod'
-import { DevisPDF } from '@/components/pdf/DevisPDF'
+import { DevisPDF, type Dossier } from '@/components/pdf/DevisPDF'
+
+const ligneSchema = z.object({
+  designation:  z.string().optional(),
+  quantite:     z.number().optional(),
+  prixUnitaire: z.number().optional(),
+})
 
 const overridesSchema = z.object({
   prixTotalTTC:       z.number().optional(),
   devisValiditeJours: z.number().optional(),
   devisNotes:         z.string().optional(),
+  lignesDevis:        z.array(ligneSchema).optional(),
 })
 
 const schema = z.object({
@@ -48,7 +55,7 @@ export async function POST(request: NextRequest): Promise<Response> {
     ),
   }
 
-  const element   = createElement(DevisPDF, { dossier }) as ReactElement<DocumentProps>
+  const element   = createElement(DevisPDF, { dossier: dossier as unknown as Dossier }) as ReactElement<DocumentProps>
   const pdfBuffer = await renderToBuffer(element)
   const filename  = `Devis-${(dossier.numeroDossier as string | undefined) ?? parsed.data.dossierId}.pdf`
 
