@@ -2,7 +2,8 @@ import { NextRequest } from 'next/server'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { renderToBuffer } from '@react-pdf/renderer'
-import { createElement } from 'react'
+import { createElement, type ReactElement } from 'react'
+import type { DocumentProps } from '@react-pdf/renderer'
 import { z } from 'zod'
 import { DevisPDF } from '@/components/pdf/DevisPDF'
 
@@ -30,11 +31,11 @@ export async function POST(request: NextRequest): Promise<Response> {
     return Response.json({ error: 'Dossier introuvable' }, { status: 404 })
   }
 
-  const pdfBuffer = await renderToBuffer(createElement(DevisPDF, { dossier }))
+  const element = createElement(DevisPDF, { dossier }) as ReactElement<DocumentProps>
+  const pdfBuffer = await renderToBuffer(element)
+  const filename  = `Devis-${(dossier.numeroDossier as string | undefined) ?? parsed.data.dossierId}.pdf`
 
-  const filename = `Devis-${dossier.numeroDossier ?? parsed.data.dossierId}.pdf`
-
-  return new Response(pdfBuffer, {
+  return new Response(new Uint8Array(pdfBuffer), {
     status: 200,
     headers: {
       'Content-Type': 'application/pdf',
