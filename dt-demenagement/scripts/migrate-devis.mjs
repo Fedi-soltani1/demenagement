@@ -6,7 +6,7 @@ const sql = postgres('postgresql://neondb_owner:npg_kqitWg4csvF6@ep-spring-lab-a
 try {
   await sql`
     ALTER TABLE demenagements
-      ADD COLUMN IF NOT EXISTS prix_total_ttc NUMERIC,
+      ADD COLUMN IF NOT EXISTS prix_total_t_t_c NUMERIC,
       ADD COLUMN IF NOT EXISTS devis_validite_jours INTEGER DEFAULT 30,
       ADD COLUMN IF NOT EXISTS devis_notes TEXT,
       ADD COLUMN IF NOT EXISTS devis_statut VARCHAR(50) DEFAULT 'brouillon'
