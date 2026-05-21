@@ -47,14 +47,14 @@ function whatsappUrl(telephone: string | undefined, dossier: DossierSummary): st
 export default function DevisGenerator() {
   const { id } = useDocumentInfo()
   const [dossier, setDossier] = useState<DossierSummary | null>(null)
-  const [fetching, setFetching] = useState(false)
+  const [fetching, setFetching] = useState(true)
   const [action, setAction] = useState<Action>('idle')
   const [result, setResult] = useState<Result>(null)
   const [confirmEmail, setConfirmEmail] = useState(false)
 
-  const fetchDossier = useCallback(async () => {
+  const fetchDossier = useCallback(async (showSkeleton = false) => {
     if (!id) return
-    setFetching(true)
+    if (showSkeleton) setFetching(true)
     try {
       const res = await fetch(`/api/demenagements/${id}?depth=0`, { credentials: 'include' })
       if (res.ok) setDossier(await res.json())
@@ -63,7 +63,7 @@ export default function DevisGenerator() {
     }
   }, [id])
 
-  useEffect(() => { fetchDossier() }, [fetchDossier])
+  useEffect(() => { fetchDossier(true) }, [fetchDossier])
 
   if (!id) {
     return (
@@ -133,7 +133,7 @@ export default function DevisGenerator() {
       const j: { error?: string } = await res.json().catch(() => ({}))
       if (!res.ok) throw new Error(j.error ?? `Erreur ${res.status}`)
       setResult({ type: 'success', msg: `Devis envoyé par email à ${dossier?.clientId ?? 'le client'}.` })
-      fetchDossier()
+      fetchDossier(false)
     } catch (e) {
       setResult({ type: 'error', msg: e instanceof Error ? e.message : "Erreur lors de l'envoi." })
     } finally {
@@ -157,23 +157,32 @@ export default function DevisGenerator() {
   }
 
   return (
-    <div style={{ background: '#fff', border: '1px solid #ddd', borderRadius: '8px', overflow: 'hidden', marginBottom: '8px' }}>
+    <div style={{ background: '#fff', border: '1px solid #ddd', borderRadius: '8px', marginBottom: '8px' }}>
 
         {/* ── Header bar ── */}
-        <div style={{ background: '#1a1a1a', padding: '11px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ background: '#1a1a1a', padding: '11px 16px', borderRadius: '8px 8px 0 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span style={{ color: '#fff', fontWeight: 700, fontSize: '13px' }}>📋 Génération du devis</span>
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
             <span style={{ fontSize: '11px', background: statutInfo.bg, color: statutInfo.color, padding: '3px 9px', borderRadius: '12px', fontWeight: 600 }}>
               {statutInfo.label}
             </span>
-            <button type="button" onClick={fetchDossier} disabled={fetching}
+            <button type="button" onClick={() => fetchDossier(false)} disabled={fetching}
               style={{ background: 'none', border: '1px solid #555', color: '#bbb', borderRadius: '4px', padding: '3px 9px', fontSize: '11px', cursor: 'pointer' }}>
               {fetching ? '...' : '↻ Actualiser'}
             </button>
           </div>
         </div>
 
-        <div style={{ padding: '16px' }}>
+        <div style={{ padding: '16px', minHeight: '180px' }}>
+
+          {/* ── Loading skeleton ── */}
+          {fetching && !dossier && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <div style={{ height: '72px', background: '#f0f0f0', borderRadius: '6px', animation: 'pulse 1.5s infinite' }} />
+              <div style={{ height: '52px', background: '#f0f0f0', borderRadius: '6px', animation: 'pulse 1.5s infinite' }} />
+              <div style={{ height: '38px', background: '#f0f0f0', borderRadius: '6px', width: '60%', animation: 'pulse 1.5s infinite' }} />
+            </div>
+          )}
 
           {/* ── Client summary card ── */}
           {dossier && (
