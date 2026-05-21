@@ -19,7 +19,7 @@ export default function MessageChatField() {
   const [error,     setError]     = useState('')
   const [loading,   setLoading]   = useState(true)
   const [isPending, startTransition] = useTransition()
-  const bottomRef = useRef<HTMLDivElement>(null)
+  const listRef = useRef<HTMLDivElement>(null)
 
   const fetchMessages = async () => {
     if (!id) return
@@ -41,7 +41,10 @@ export default function MessageChatField() {
   }, [id])
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+    // Scroll only within the chat list — never the Payload admin page
+    if (listRef.current) {
+      listRef.current.scrollTop = listRef.current.scrollHeight
+    }
   }, [messages])
 
   function handleSend() {
@@ -91,7 +94,7 @@ export default function MessageChatField() {
       </div>
 
       {/* Messages */}
-      <div style={styles.messageList}>
+      <div ref={listRef} style={styles.messageList}>
         {loading ? (
           <div style={styles.empty}>Chargement...</div>
         ) : messages.length === 0 ? (
@@ -121,7 +124,6 @@ export default function MessageChatField() {
             )
           })
         )}
-        <div ref={bottomRef} />
       </div>
 
       {/* Reply */}
