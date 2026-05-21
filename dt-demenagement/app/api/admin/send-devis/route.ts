@@ -10,15 +10,15 @@ import { DevisPDF } from '@/components/pdf/DevisPDF'
 import { env } from '@/lib/env'
 
 const ligneSchema = z.object({
-  designation:  z.string().optional(),
-  quantite:     z.number().optional(),
-  prixUnitaire: z.number().optional(),
-})
+  designation:  z.string().nullish(),
+  quantite:     z.number().nullish(),
+  prixUnitaire: z.number().nullish(),
+}).passthrough()
 
 const overridesSchema = z.object({
-  prixTotalTTC:       z.number().optional(),
-  devisValiditeJours: z.number().optional(),
-  devisNotes:         z.string().optional(),
+  prixTotalTTC:       z.number().nullish(),
+  devisValiditeJours: z.number().nullish(),
+  devisNotes:         z.string().nullish(),
   lignesDevis:        z.array(ligneSchema).optional(),
 })
 

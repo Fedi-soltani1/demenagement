@@ -104,23 +104,24 @@ export default function DevisGenerator() {
   // Overrides passed to the PDF API so it uses current (unsaved) values
   function buildOverrides() {
     const o: Record<string, unknown> = {}
-    if (liveFields?.prixTotalTTC !== undefined)       o.prixTotalTTC       = liveFields.prixTotalTTC
-    if (liveFields?.devisValiditeJours !== undefined) o.devisValiditeJours = liveFields.devisValiditeJours
-    if (liveFields?.devisNotes !== undefined)         o.devisNotes         = liveFields.devisNotes
+    if (liveFields?.prixTotalTTC != null)       o.prixTotalTTC       = liveFields.prixTotalTTC
+    if (liveFields?.devisValiditeJours != null) o.devisValiditeJours = liveFields.devisValiditeJours
+    if (liveFields?.devisNotes != null)         o.devisNotes         = liveFields.devisNotes
     // Always pass lignesDevis from DB (live form doesn't expose array live values in useFormFields)
-    if (dossier?.lignesDevis)                         o.lignesDevis        = dossier.lignesDevis
+    if (dossier?.lignesDevis?.length)           o.lignesDevis        = dossier.lignesDevis
     return o
   }
 
   async function getPdfBlob(): Promise<Blob> {
+    const overrides = buildOverrides()
     const res = await fetch('/api/admin/generate-devis', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
-      body: JSON.stringify({ dossierId, overrides: buildOverrides() }),
+      body: JSON.stringify({ dossierId, overrides }),
     })
     if (!res.ok) {
-      const j: { error?: string } = await res.json().catch(() => ({}))
+      const j: { error?: string; details?: unknown } = await res.json().catch(() => ({}))
       throw new Error(j.error ?? `Erreur ${res.status}`)
     }
     return res.blob()

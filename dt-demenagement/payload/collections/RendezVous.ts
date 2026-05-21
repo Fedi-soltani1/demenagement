@@ -41,8 +41,9 @@ const RendezVous: CollectionConfig = {
       required: true,
       defaultValue: 'client',
       options: [
-        { label: 'Client',     value: 'client' },
-        { label: 'Entreprise', value: 'entreprise' },
+        { label: 'Client',         value: 'client' },
+        { label: 'Entreprise',     value: 'entreprise' },
+        { label: 'Administration', value: 'administration' },
       ],
     },
     { name: 'nom',       label: 'Nom',       type: 'text',  required: true },

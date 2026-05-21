@@ -8,15 +8,15 @@ import { z } from 'zod'
 import { DevisPDF, type Dossier } from '@/components/pdf/DevisPDF'
 
 const ligneSchema = z.object({
-  designation:  z.string().optional(),
-  quantite:     z.number().optional(),
-  prixUnitaire: z.number().optional(),
-})
+  designation:  z.string().nullish(),
+  quantite:     z.number().nullish(),
+  prixUnitaire: z.number().nullish(),
+}).passthrough()
 
 const overridesSchema = z.object({
-  prixTotalTTC:       z.number().optional(),
-  devisValiditeJours: z.number().optional(),
-  devisNotes:         z.string().optional(),
+  prixTotalTTC:       z.number().nullish(),
+  devisValiditeJours: z.number().nullish(),
+  devisNotes:         z.string().nullish(),
   lignesDevis:        z.array(ligneSchema).optional(),
 })
 
@@ -35,7 +35,7 @@ export async function POST(request: NextRequest): Promise<Response> {
   const body: unknown = await request.json()
   const parsed = schema.safeParse(body)
   if (!parsed.success) {
-    return Response.json({ error: 'Données invalides' }, { status: 422 })
+    return Response.json({ error: 'Données invalides', details: parsed.error.flatten() }, { status: 422 })
   }
 
   const raw = await payload.findByID({

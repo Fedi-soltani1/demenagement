@@ -7,7 +7,7 @@ const TEL_RE = /^\+?[0-9\s\-()\s]{8,20}$/
 
 const rdvSchema = z.object({
   website:    z.string().max(0, 'Bot').optional(),
-  type:       z.enum(['client', 'entreprise']),
+  type:       z.enum(['client', 'entreprise', 'administration']),
   nom:        z.string().min(2).max(100),
   prenom:     z.string().min(2).max(100),
   telephone:  z.string().regex(TEL_RE),
