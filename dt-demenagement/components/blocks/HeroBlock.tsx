@@ -188,7 +188,7 @@ export function HeroBlock({ cms }: { cms?: CmsHero }) {
   const locale = useLocale()
   const { open: openDevisModal } = useDevisModal()
 
-  const showCanvas = cms?.afficher3D !== false || !cms?.imageHero
+  const showCanvas = cms?.afficher3D !== false
   const canvasRef  = useRef<HTMLCanvasElement | null>(null)
   useWaveCanvas(canvasRef)
 
