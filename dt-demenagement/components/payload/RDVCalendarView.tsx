@@ -98,9 +98,9 @@ export default function RDVCalendarView() {
   while (cells.length % 7 !== 0) cells.push(null)
 
   function dayKey(d: number) { return `${year}-${pad2(month + 1)}-${pad2(d)}` }
-  function rdvsForDay(d: number) { return rdvs.filter((r) => r.dateVisite === dayKey(d)) }
+  function rdvsForDay(d: number) { return rdvs.filter((r) => (r.dateVisite ?? '').slice(0, 10) === dayKey(d)) }
 
-  const selectedRdvs = selected ? rdvs.filter((r) => r.dateVisite === selected).sort((a, b) => (a.heure ?? '').localeCompare(b.heure ?? '')) : []
+  const selectedRdvs = selected ? rdvs.filter((r) => (r.dateVisite ?? '').slice(0, 10) === selected).sort((a, b) => (a.heure ?? '').localeCompare(b.heure ?? '')) : []
 
   const countNouveaux = rdvs.filter((r) => r.statut === 'nouveau').length
   const countConfirmes = rdvs.filter((r) => r.statut === 'confirme').length

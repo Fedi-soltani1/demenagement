@@ -7,7 +7,7 @@ const Clients: CollectionConfig = {
   labels: { singular: 'Client', plural: 'Clients' },
 
   access: {
-    read: isAdminOrSelf,
+    read:   ({ req: { user } }) => Boolean(user),
     create: () => true,
     update: isAdminOrSelf,
     delete: isAdmin,

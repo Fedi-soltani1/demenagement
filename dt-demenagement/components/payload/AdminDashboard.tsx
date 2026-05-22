@@ -96,7 +96,7 @@ function MiniCalendar() {
   while (cells.length % 7 !== 0) cells.push(null)
 
   function dayKey(d: number) { return `${year}-${pad2(month + 1)}-${pad2(d)}` }
-  function rdvsForDay(d: number) { return rdvs.filter((r) => r.dateVisite === dayKey(d)) }
+  function rdvsForDay(d: number) { return rdvs.filter((r) => (r.dateVisite ?? '').slice(0, 10) === dayKey(d)) }
 
   return (
     <div>
