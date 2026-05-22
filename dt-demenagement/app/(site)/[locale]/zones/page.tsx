@@ -3,29 +3,16 @@ import type { Metadata } from 'next'
 import { setRequestLocale } from 'next-intl/server'
 import { getTranslations } from 'next-intl/server'
 import Link from 'next/link'
-import dynamic from 'next/dynamic'
 import config from '@payload-config'
 import { COMPANY, LOCALES, VILLES, PAYS } from '@/lib/constants'
 import { Breadcrumb } from '@/components/layout/Breadcrumb'
+import { ZonesMapClient } from '@/components/blocks/ZonesMapClient'
 import type { MapVille, MapPays } from '@/components/blocks/ZonesMap'
 import { MapPin, Globe, ArrowRight } from 'lucide-react'
 import { FadeIn } from '@/components/ui/FadeIn'
 
 // ISR — les zones changent très rarement
 export const revalidate = 604800
-
-// Leaflet chargé uniquement côté client
-const ZonesMap = dynamic(
-  () => import('@/components/blocks/ZonesMap').then((m) => ({ default: m.ZonesMap })),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="w-full h-[520px] lg:h-[640px] rounded-2xl bg-[var(--color-bg-dark2)] animate-pulse flex items-center justify-center">
-        <span className="font-body text-[var(--color-text-muted)] text-sm">Chargement de la carte…</span>
-      </div>
-    ),
-  }
-)
 
 interface ZonesPageProps {
   params: Promise<{ locale: string }>
@@ -254,7 +241,7 @@ export default async function ZonesPage({ params }: ZonesPageProps) {
       {/* Carte interactive */}
       <section className="py-section px-container bg-[var(--color-bg-dark2)]" aria-label={t('mapLabel')}>
         <div className="max-w-7xl mx-auto">
-          <ZonesMap villes={mapVilles} pays={mapPays} locale={locale} />
+          <ZonesMapClient villes={mapVilles} pays={mapPays} locale={locale} />
           <p className="mt-3 font-body text-xs text-[var(--color-text-muted)] text-center">
             {t('mapHint')}
           </p>

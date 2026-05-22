@@ -1,12 +1,13 @@
 /*
  * DT Déménagement Tunisie — Admin CSS overrides
  * Forces light theme and replaces Payload's blue accent with DT red (#b52027)
- *
- * Payload v3 uses these CSS custom properties throughout the admin UI.
  * RGB values: #b52027 = 181, 32, 39
  */
 
-/* ── Force light theme variables ───────────────────────────────── */
+/* ═══════════════════════════════════════════════════════
+   THEME TOKENS — force light everywhere
+   ═══════════════════════════════════════════════════════ */
+
 :root,
 [data-theme='light'],
 [data-theme='dark'] {
@@ -33,7 +34,7 @@
   --color-base-950:   4,   5,   7;
   --color-base-1000:  2,   3,   4;
 
-  /* Replace Payload blue accent → DT red */
+  /* Replace Payload blue → DT red */
   --color-blue-50:  255, 240, 241;
   --color-blue-100: 254, 220, 222;
   --color-blue-200: 251, 180, 183;
@@ -54,7 +55,6 @@
   --color-blue-950:   8,   0,   1;
   --color-blue-1000:  4,   0,   0;
 
-  /* Ensure page background and text use light values */
   --theme-elevation-0:    rgb(var(--color-base-0));
   --theme-elevation-50:   rgb(var(--color-base-50));
   --theme-elevation-100:  rgb(var(--color-base-100));
@@ -70,73 +70,721 @@
   --theme-bg:             rgb(var(--color-base-50));
 }
 
-/* ── Sidebar ────────────────────────────────────────────────────── */
-.nav__wrap {
-  background: #ffffff !important;
-  border-right: 1px solid #e8e8e8 !important;
+/* ═══════════════════════════════════════════════════════
+   GLOBAL LAYOUT
+   ═══════════════════════════════════════════════════════ */
+
+body,
+.payload-admin {
+  background: #f7f8fa !important;
+  color: #1a1a1a !important;
 }
 
-/* Active nav item highlight */
-.nav__link--active,
+/* ═══════════════════════════════════════════════════════
+   TOP HEADER BAR
+   ═══════════════════════════════════════════════════════ */
+
+.app-header,
+header.app-header {
+  background: #ffffff !important;
+  border-bottom: 1px solid #e8eaed !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06) !important;
+  height: 56px !important;
+}
+
+/* ═══════════════════════════════════════════════════════
+   SIDEBAR / NAV
+   ═══════════════════════════════════════════════════════ */
+
+.nav__wrap,
+aside.nav__wrap {
+  background: #ffffff !important;
+  border-right: 1px solid #e8eaed !important;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Nav group labels */
+.nav__group-label,
+.nav__group > span,
+nav .group-label {
+  color: #b52027 !important;
+  font-size: 9.5px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.8px !important;
+  text-transform: uppercase !important;
+  padding: 16px 16px 4px !important;
+  opacity: 1 !important;
+}
+
+/* Nav links */
+.nav__link {
+  border-radius: 6px !important;
+  margin: 1px 8px !important;
+  padding: 7px 10px !important;
+  font-size: 12.5px !important;
+  font-weight: 500 !important;
+  color: #4a4a4a !important;
+  transition: background 0.12s, color 0.12s !important;
+}
+
 .nav__link:hover {
   background: rgba(181, 32, 39, 0.07) !important;
   color: #b52027 !important;
 }
 
-/* ── Top header bar ──────────────────────────────────────────────── */
-.app-header {
-  background: #ffffff !important;
-  border-bottom: 1px solid #e8e8e8 !important;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.06) !important;
+.nav__link--active,
+.nav__link[aria-current='page'] {
+  background: rgba(181, 32, 39, 0.1) !important;
+  color: #b52027 !important;
+  font-weight: 700 !important;
 }
 
-/* ── Buttons — primary ───────────────────────────────────────────── */
+.nav__link--active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 20%;
+  bottom: 20%;
+  width: 3px;
+  background: #b52027;
+  border-radius: 0 3px 3px 0;
+}
+
+/* ═══════════════════════════════════════════════════════
+   MAIN CONTENT AREA
+   ═══════════════════════════════════════════════════════ */
+
+.template-default,
+.gutter--left,
+.gutter--right {
+  background: #f7f8fa !important;
+}
+
+/* Page wrapper padding */
+.collection-list__wrap,
+.collection-edit__wrap,
+.dashboard__wrap {
+  padding: 24px !important;
+}
+
+/* ═══════════════════════════════════════════════════════
+   PAGE HEADERS / BREADCRUMBS
+   ═══════════════════════════════════════════════════════ */
+
+.view-description {
+  background: #ffffff !important;
+  border-bottom: 1px solid #e8eaed !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+}
+
+.eyebrow {
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  color: #b52027 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.6px !important;
+}
+
+.render-title h1,
+h1.render-title {
+  font-size: 20px !important;
+  font-weight: 800 !important;
+  color: #1a1a1a !important;
+}
+
+/* Breadcrumb */
+.breadcrumbs {
+  font-size: 11px !important;
+  color: #999 !important;
+}
+
+.breadcrumbs a {
+  color: #b52027 !important;
+  text-decoration: none !important;
+}
+
+.breadcrumbs a:hover {
+  text-decoration: underline !important;
+}
+
+/* ═══════════════════════════════════════════════════════
+   LIST VIEW — TABLE
+   ═══════════════════════════════════════════════════════ */
+
+.table {
+  background: #ffffff !important;
+  border-radius: 10px !important;
+  overflow: hidden !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.07), 0 0 0 1px rgba(0, 0, 0, 0.04) !important;
+}
+
+.table table {
+  border-collapse: collapse !important;
+  width: 100% !important;
+  font-size: 12.5px !important;
+}
+
+/* Table header row */
+.table thead tr th,
+.table .table__header-cell {
+  background: #f8f9fb !important;
+  color: #9aa0ab !important;
+  font-size: 10px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.6px !important;
+  text-transform: uppercase !important;
+  padding: 10px 14px !important;
+  border-bottom: 2px solid #eef0f3 !important;
+  white-space: nowrap !important;
+}
+
+/* Table body rows */
+.table tbody tr td,
+.table .table__cell {
+  padding: 11px 14px !important;
+  color: #2d3142 !important;
+  border-bottom: 1px solid #f0f2f5 !important;
+  vertical-align: middle !important;
+  font-size: 12.5px !important;
+}
+
+/* Row hover */
+.table tbody tr:hover td,
+.table .row:hover td {
+  background: #fdf5f5 !important;
+}
+
+/* Last row no border */
+.table tbody tr:last-child td {
+  border-bottom: none !important;
+}
+
+/* Sort indicator */
+.table .sort-column__asc,
+.table .sort-column__desc {
+  color: #b52027 !important;
+}
+
+/* ═══════════════════════════════════════════════════════
+   LIST CONTROLS (search / filter bar)
+   ═══════════════════════════════════════════════════════ */
+
+.list-controls {
+  background: #ffffff !important;
+  border-radius: 10px !important;
+  margin-bottom: 12px !important;
+  padding: 12px 16px !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(0, 0, 0, 0.04) !important;
+}
+
+.list-controls__wrap {
+  gap: 10px !important;
+}
+
+/* Search input */
+.search-filter__input,
+.list-controls input[type='text'] {
+  border: 1px solid #e0e3e8 !important;
+  border-radius: 7px !important;
+  font-size: 12.5px !important;
+  background: #f7f8fa !important;
+  color: #1a1a1a !important;
+  padding: 7px 12px !important;
+  transition: border-color 0.15s !important;
+}
+
+.search-filter__input:focus,
+.list-controls input[type='text']:focus {
+  border-color: #b52027 !important;
+  background: #ffffff !important;
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(181, 32, 39, 0.08) !important;
+}
+
+/* Filter button */
+.list-controls .btn {
+  font-size: 12px !important;
+}
+
+/* ═══════════════════════════════════════════════════════
+   PAGINATION
+   ═══════════════════════════════════════════════════════ */
+
+.pagination {
+  margin-top: 14px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+}
+
+.pagination__page,
+.pagination .btn {
+  border-radius: 6px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  min-width: 32px !important;
+  height: 32px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: 1px solid #e8eaed !important;
+  background: #fff !important;
+  color: #555 !important;
+  transition: all 0.12s !important;
+}
+
+.pagination__page--active,
+.pagination .btn--active {
+  background: #b52027 !important;
+  border-color: #b52027 !important;
+  color: #fff !important;
+}
+
+.pagination__page:hover:not(.pagination__page--active) {
+  background: rgba(181, 32, 39, 0.06) !important;
+  border-color: #b52027 !important;
+  color: #b52027 !important;
+}
+
+/* Per-page selector */
+.per-page {
+  font-size: 11px !important;
+  color: #888 !important;
+}
+
+/* ═══════════════════════════════════════════════════════
+   BUTTONS
+   ═══════════════════════════════════════════════════════ */
+
+.btn {
+  border-radius: 7px !important;
+  font-size: 12.5px !important;
+  font-weight: 600 !important;
+  transition: all 0.15s !important;
+  cursor: pointer !important;
+}
+
 .btn--style-primary {
   background: #b52027 !important;
   border-color: #b52027 !important;
   color: #ffffff !important;
-}
-.btn--style-primary:hover {
-  background: #8a1820 !important;
-  border-color: #8a1820 !important;
+  box-shadow: 0 1px 3px rgba(181, 32, 39, 0.3) !important;
 }
 
-/* ── Pill / badge default blue → red ────────────────────────────── */
+.btn--style-primary:hover {
+  background: #9a1b21 !important;
+  border-color: #9a1b21 !important;
+  box-shadow: 0 2px 6px rgba(181, 32, 39, 0.4) !important;
+}
+
+.btn--style-secondary {
+  background: #ffffff !important;
+  border: 1px solid #e0e3e8 !important;
+  color: #3a3a4a !important;
+}
+
+.btn--style-secondary:hover {
+  border-color: #b52027 !important;
+  color: #b52027 !important;
+  background: rgba(181, 32, 39, 0.03) !important;
+}
+
+.btn--style-pill {
+  border-radius: 20px !important;
+}
+
+/* Save / publish bar */
+.doc-controls {
+  background: #ffffff !important;
+  border-top: 1px solid #e8eaed !important;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05) !important;
+  padding: 12px 24px !important;
+}
+
+/* ═══════════════════════════════════════════════════════
+   DOCUMENT EDIT FORM
+   ═══════════════════════════════════════════════════════ */
+
+/* Field wrapper */
+.field-type {
+  margin-bottom: 20px !important;
+}
+
+/* Labels */
+.label-wrap label,
+.field-label,
+label.field-label {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  color: #5a6070 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.4px !important;
+  margin-bottom: 6px !important;
+}
+
+/* Required star */
+.required {
+  color: #b52027 !important;
+}
+
+/* Inputs, textareas, selects */
+.field-type input[type='text'],
+.field-type input[type='email'],
+.field-type input[type='tel'],
+.field-type input[type='number'],
+.field-type input[type='password'],
+.field-type input[type='url'],
+.field-type input[type='date'],
+.field-type input[type='time'],
+.field-type textarea,
+.rs__control,
+.ReactSelect__control {
+  border: 1px solid #dde1e8 !important;
+  border-radius: 8px !important;
+  font-size: 13px !important;
+  background: #ffffff !important;
+  color: #1a1a1a !important;
+  padding: 8px 12px !important;
+  transition: border-color 0.15s, box-shadow 0.15s !important;
+  width: 100% !important;
+}
+
+.field-type input:focus,
+.field-type textarea:focus {
+  border-color: #b52027 !important;
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(181, 32, 39, 0.1) !important;
+}
+
+/* Select / react-select */
+.rs__control--is-focused,
+.ReactSelect__control--is-focused {
+  border-color: #b52027 !important;
+  box-shadow: 0 0 0 3px rgba(181, 32, 39, 0.1) !important;
+}
+
+.rs__option--is-selected,
+.ReactSelect__option--is-selected {
+  background: #b52027 !important;
+  color: #fff !important;
+}
+
+.rs__option--is-focused:not(.rs__option--is-selected),
+.ReactSelect__option--is-focused:not(.ReactSelect__option--is-selected) {
+  background: rgba(181, 32, 39, 0.06) !important;
+  color: #b52027 !important;
+}
+
+/* Textarea */
+.field-type textarea {
+  min-height: 100px !important;
+  resize: vertical !important;
+  line-height: 1.6 !important;
+}
+
+/* Section/row/group headers in form */
+.row-label,
+.collapsible__header,
+.section-title__wrap {
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  color: #888 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.6px !important;
+  padding: 8px 0 !important;
+  border-bottom: 1px solid #f0f0f0 !important;
+  margin-bottom: 16px !important;
+}
+
+/* Collapsible / group fields */
+.collapsible {
+  border: 1px solid #ebebeb !important;
+  border-radius: 10px !important;
+  overflow: hidden !important;
+  margin-bottom: 16px !important;
+}
+
+.collapsible__header {
+  background: #f8f9fb !important;
+  padding: 12px 16px !important;
+  cursor: pointer !important;
+  border-bottom: none !important;
+  margin-bottom: 0 !important;
+}
+
+.collapsible__content {
+  padding: 16px !important;
+  background: #fff !important;
+}
+
+/* ═══════════════════════════════════════════════════════
+   RELATIONSHIP FIELDS
+   ═══════════════════════════════════════════════════════ */
+
+.relationship-wrap {
+  border: 1px solid #dde1e8 !important;
+  border-radius: 8px !important;
+  background: #fafbfc !important;
+}
+
+.relationship__value {
+  font-size: 13px !important;
+}
+
+/* ═══════════════════════════════════════════════════════
+   ARRAY / BLOCK FIELDS
+   ═══════════════════════════════════════════════════════ */
+
+.array-field__row,
+.blocks-field__block {
+  border: 1px solid #ebebeb !important;
+  border-radius: 8px !important;
+  background: #ffffff !important;
+  margin-bottom: 8px !important;
+}
+
+.array-field__row-header,
+.blocks-field__block-header {
+  background: #f8f9fb !important;
+  border-radius: 7px 7px 0 0 !important;
+  padding: 8px 14px !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  color: #666 !important;
+}
+
+.add-row__button,
+.blocks-field__add-button {
+  font-size: 12px !important;
+  color: #b52027 !important;
+  border: 1px dashed rgba(181, 32, 39, 0.3) !important;
+  border-radius: 8px !important;
+  padding: 8px !important;
+  background: rgba(181, 32, 39, 0.02) !important;
+}
+
+.add-row__button:hover,
+.blocks-field__add-button:hover {
+  background: rgba(181, 32, 39, 0.06) !important;
+  border-color: #b52027 !important;
+}
+
+/* ═══════════════════════════════════════════════════════
+   TABS (locale switcher, etc.)
+   ═══════════════════════════════════════════════════════ */
+
+.tabs-header__list {
+  border-bottom: 2px solid #eef0f3 !important;
+  background: transparent !important;
+}
+
+.tabs-header__tab-button {
+  font-size: 12.5px !important;
+  font-weight: 600 !important;
+  color: #888 !important;
+  padding: 8px 16px !important;
+  border-bottom: 2px solid transparent !important;
+  transition: color 0.15s, border-color 0.15s !important;
+}
+
+.tabs-header__tab-button--active,
+.tabs-header__tab-button[aria-selected='true'] {
+  color: #b52027 !important;
+  border-bottom-color: #b52027 !important;
+  font-weight: 700 !important;
+}
+
+/* ═══════════════════════════════════════════════════════
+   STATUS PILLS / BADGES
+   ═══════════════════════════════════════════════════════ */
+
+.pill,
+.status-pill {
+  border-radius: 20px !important;
+  font-size: 10.5px !important;
+  font-weight: 700 !important;
+  padding: 2px 9px !important;
+  display: inline-block !important;
+}
+
 .pill--style-dark {
   background: rgba(181, 32, 39, 0.12) !important;
   color: #b52027 !important;
 }
 
-/* ── Table: row hover ────────────────────────────────────────────── */
-.table .row:hover td {
-  background: rgba(181, 32, 39, 0.03) !important;
+/* ═══════════════════════════════════════════════════════
+   TOASTS / NOTIFICATIONS
+   ═══════════════════════════════════════════════════════ */
+
+.payload-toast-container .toast--success,
+.toast--success {
+  background: #f0fdf4 !important;
+  border-left: 4px solid #16a34a !important;
+  color: #15803d !important;
 }
 
-/* ── Checkbox / toggle accent ────────────────────────────────────── */
-input[type='checkbox']:checked {
-  accent-color: #b52027;
+.payload-toast-container .toast--error,
+.toast--error {
+  background: #fef2f2 !important;
+  border-left: 4px solid #b52027 !important;
+  color: #b52027 !important;
 }
 
-/* ── Focus ring ──────────────────────────────────────────────────── */
+.payload-toast-container .toast--info,
+.toast--info {
+  background: #fdf8f8 !important;
+  border-left: 4px solid #b52027 !important;
+  color: #b52027 !important;
+}
+
+/* ═══════════════════════════════════════════════════════
+   MODALS
+   ═══════════════════════════════════════════════════════ */
+
+.modal {
+  border-radius: 14px !important;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15) !important;
+}
+
+.modal__header {
+  border-bottom: 1px solid #eef0f3 !important;
+  padding: 18px 24px !important;
+}
+
+.modal__header h2,
+.modal__header h3 {
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  color: #1a1a1a !important;
+}
+
+.modal__content {
+  padding: 20px 24px !important;
+}
+
+.modal__footer {
+  border-top: 1px solid #eef0f3 !important;
+  padding: 14px 24px !important;
+  background: #f8f9fb !important;
+  border-radius: 0 0 14px 14px !important;
+}
+
+/* Backdrop */
+.modal-item {
+  background: rgba(10, 10, 20, 0.45) !important;
+}
+
+/* ═══════════════════════════════════════════════════════
+   CHECKBOX / RADIO / TOGGLE
+   ═══════════════════════════════════════════════════════ */
+
+input[type='checkbox']:checked,
+input[type='radio']:checked {
+  accent-color: #b52027 !important;
+}
+
+.checkbox-input__custom:checked,
+.checkbox-input__custom[data-checked='true'] {
+  background: #b52027 !important;
+  border-color: #b52027 !important;
+}
+
+/* ═══════════════════════════════════════════════════════
+   FOCUS RINGS
+   ═══════════════════════════════════════════════════════ */
+
 *:focus-visible {
-  outline-color: #b52027 !important;
+  outline: 2px solid rgba(181, 32, 39, 0.5) !important;
+  outline-offset: 2px !important;
 }
 
-/* ── Links inside admin ───────────────────────────────────────────── */
-.payload-admin a:not(.btn):not(.nav__link) {
-  color: #b52027;
+/* ═══════════════════════════════════════════════════════
+   LINKS
+   ═══════════════════════════════════════════════════════ */
+
+.payload-admin a:not(.btn):not(.nav__link):not(.document-header__back-button) {
+  color: #b52027 !important;
 }
 
-/* ── Dashboard welcome card / after-login banner ─────────────────── */
+/* ═══════════════════════════════════════════════════════
+   EMPTY STATE
+   ═══════════════════════════════════════════════════════ */
+
+.no-results {
+  background: #ffffff !important;
+  border-radius: 10px !important;
+  padding: 48px !important;
+  text-align: center !important;
+  border: 1px solid #eef0f3 !important;
+}
+
+/* ═══════════════════════════════════════════════════════
+   LOGIN PAGE
+   ═══════════════════════════════════════════════════════ */
+
+.login {
+  background: #f7f8fa !important;
+}
+
+.login__wrap {
+  background: #ffffff !important;
+  border-radius: 14px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+  padding: 36px 40px !important;
+}
+
+.login h1 {
+  font-size: 22px !important;
+  font-weight: 900 !important;
+  color: #1a1a1a !important;
+}
+
+/* ═══════════════════════════════════════════════════════
+   DASHBOARD WELCOME (Payload's default dashboard card)
+   ═══════════════════════════════════════════════════════ */
+
 .dashboard__welcome-block {
   background: linear-gradient(135deg, #b52027 0%, #8a1820 100%) !important;
+  border-radius: 12px !important;
 }
 
-/* ── Collection group headings ────────────────────────────────────── */
-.nav__group-label {
+/* ═══════════════════════════════════════════════════════
+   SIDEBAR — collection group labels (Payload renders them
+   as <p> or <span> siblings of the nav list)
+   ═══════════════════════════════════════════════════════ */
+
+.nav__group-label,
+.nav__group > span,
+nav .group-label {
   color: #b52027 !important;
-  font-weight: 700 !important;
-  font-size: 10px !important;
-  letter-spacing: 0.6px !important;
+  font-size: 9.5px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.8px !important;
   text-transform: uppercase !important;
+  padding: 16px 16px 4px !important;
+  opacity: 1 !important;
+  display: block !important;
+}
+
+/* ═══════════════════════════════════════════════════════
+   CUSTOM SCROLLBAR (webkit)
+   ═══════════════════════════════════════════════════════ */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f0f0f0;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d0d0d8;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #b52027;
 }
