@@ -55,7 +55,7 @@ function whatsappUrl(telephone: string | undefined, dossier: DossierSummary): st
 export default function DevisGenerator() {
   const { id } = useDocumentInfo()
 
-  const liveFields = useFormFields(([fields]: [Record<string, { value?: unknown }>]) => ({
+  const liveFields = useFormFields(([fields]: [Record<string, { value?: unknown }>, unknown]) => ({
     prixTotalTTC:       fields.prixTotalTTC?.value       as number | undefined,
     devisValiditeJours: fields.devisValiditeJours?.value as number | undefined,
     devisNotes:         fields.devisNotes?.value         as string | undefined,
