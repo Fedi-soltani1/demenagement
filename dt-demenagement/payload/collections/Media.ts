@@ -20,7 +20,7 @@ const Media: CollectionConfig = {
 
   upload: {
     staticDir: 'public/media',
-    mimeTypes: ['image/*', 'application/pdf'],
+    mimeTypes: ['image/*', 'application/pdf', 'video/*'],
     imageSizes: [
       { name: 'thumbnail', width: 300, height: 200, position: 'centre' },
       { name: 'card', width: 800, height: 600, position: 'centre' },
