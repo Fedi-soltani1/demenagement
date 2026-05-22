@@ -160,65 +160,100 @@ header.app-header {
 
 /* ═══════════════════════════════════════════
    SIDEBAR / NAV
+   Payload v3 actual class names:
+   aside.nav          → sidebar outer container
+   .nav__scroll       → scrollable inner wrapper
+   nav.nav__wrap      → nav items wrapper
+   .nav-group         → group container (dash, not underscore)
+   .nav-group__toggle → clickable group label/header
+   .nav-group__label  → group label text
+   .nav-group__indicator → chevron icon wrapper
+   .nav-group__content → collapsible items area
+   .nav__link         → nav link (a or div)
+   .nav__link-indicator → active left bar (real div, not ::before)
+   .nav__link-label   → link text span
+   .nav__controls     → bottom area (logout + settings)
    ═══════════════════════════════════════════ */
 
-.nav__wrap,
-aside.nav__wrap {
+/* ── Sidebar outer container ── */
+aside.nav {
   background: var(--dt-nav-bg) !important;
   border-right: 1px solid var(--dt-border) !important;
   box-shadow: 1px 0 0 var(--dt-border) !important;
-  display: flex !important;
-  flex-direction: column !important;
-  overflow: hidden !important;
 }
 
-/* ── Logo / brand header ── */
-.nav__header {
-  padding: 14px 16px 12px !important;
-  border-bottom: 1px solid var(--dt-border) !important;
-  flex-shrink: 0 !important;
-}
-
-/* ── Scrollable nav area ── */
-.nav__scroll,
-.nav__groups {
-  flex: 1 !important;
-  overflow-y: auto !important;
+/* ── Nav items wrapper ── */
+nav.nav__wrap {
+  background: var(--dt-nav-bg) !important;
   padding: 6px 0 8px !important;
 }
 
-/* ── Group separators ── */
-.nav__group {
-  margin-top: 0 !important;
-  padding-top: 0 !important;
-  border-top: none !important;
+/* ── Group container — reset Payload's margin-bottom ── */
+.nav-group {
+  width: 100% !important;
+  margin-bottom: 0 !important;
 }
 
-.nav__group + .nav__group {
-  margin-top: 2px !important;
+/* Thin separator BETWEEN groups (not before first, not after last) */
+.nav-group + .nav-group {
+  border-top: 1px solid var(--dt-border2) !important;
+  margin-top: 4px !important;
+  padding-top: 2px !important;
 }
 
-/* ── Group labels ── */
-.nav__group-label,
-.nav__group > span,
-nav .group-label {
+/* ── Group toggle button (contains label + chevron) ── */
+.nav-group__toggle {
   display: flex !important;
   align-items: center !important;
+  justify-content: space-between !important;
+  padding: 10px 18px 5px !important;
+  width: 100% !important;
+  background: none !important;
+  border: none !important;
+  cursor: pointer !important;
+  text-align: left !important;
   gap: 6px !important;
+  color: var(--dt-muted) !important;
+  margin-bottom: 0 !important;
+}
+
+.nav-group__toggle:hover {
+  background: none !important;
+  color: var(--dt-text) !important;
+}
+
+/* ── Group label text ── */
+.nav-group__label {
   font-size: 9.5px !important;
   font-weight: 800 !important;
   letter-spacing: 1.1px !important;
   text-transform: uppercase !important;
   color: var(--dt-muted) !important;
-  padding: 14px 18px 5px !important;
-  opacity: 1 !important;
-  user-select: none !important;
+  flex: 1 !important;
 }
 
-/* First group (🚚 Opérations) — highlight in red */
-.nav__group:first-of-type .nav__group-label,
-.nav__group:first-of-type > span {
+/* First group — Opérations — label in red */
+.nav-group:first-child .nav-group__label {
   color: var(--dt-red) !important;
+}
+
+.nav-group:first-child .nav-group__toggle {
+  color: var(--dt-red) !important;
+}
+
+/* ── Chevron indicator ── */
+.nav-group__indicator {
+  color: var(--dt-muted2) !important;
+  flex-shrink: 0 !important;
+}
+
+.nav-group__indicator svg .stroke {
+  stroke: var(--dt-muted2) !important;
+}
+
+/* ── Group collapsible content ── */
+.nav-group__content {
+  padding-bottom: 2px !important;
 }
 
 /* ── Nav links ── */
@@ -229,13 +264,13 @@ nav .group-label {
   border-radius: 8px !important;
   margin: 1px 8px !important;
   padding: 8px 11px !important;
-  font-size: 13.5px !important;
-  font-weight: 600 !important;
-  color: var(--dt-text) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: var(--dt-text2) !important;
   text-decoration: none !important;
   transition: background 0.13s, color 0.13s !important;
   position: relative !important;
-  overflow: hidden !important;
+  overflow: visible !important;
 }
 
 .nav__link:hover {
@@ -243,17 +278,17 @@ nav .group-label {
   color: var(--dt-text) !important;
 }
 
-.nav__link--active,
-.nav__link[aria-current='page'] {
+/* Active: Payload renders a <div> for the exact current page,
+   and <a> with .nav__link-indicator for parent-active routes */
+div.nav__link,
+.nav__link:has(.nav__link-indicator) {
   background: rgba(181,32,39,0.10) !important;
   color: var(--dt-red) !important;
   font-weight: 700 !important;
 }
 
-/* Left accent bar on active link */
-.nav__link--active::before,
-.nav__link[aria-current='page']::before {
-  content: '' !important;
+/* Active left-bar indicator (real div element, not ::before) */
+.nav__link-indicator {
   position: absolute !important;
   left: 0 !important;
   top: 5px !important;
@@ -263,18 +298,16 @@ nav .group-label {
   border-radius: 0 3px 3px 0 !important;
 }
 
-/* ── Bottom account / controls area ── */
-.nav__account,
+/* ── Bottom controls (logout + settings gear) ── */
 .nav__controls {
   border-top: 1px solid var(--dt-border) !important;
   padding: 10px 10px 14px !important;
   flex-shrink: 0 !important;
   background: var(--dt-surface2) !important;
+  margin-top: 4px !important;
 }
 
-.nav__account a,
 .nav__controls a,
-.nav__account button,
 .nav__controls button {
   display: flex !important;
   align-items: center !important;
@@ -293,12 +326,23 @@ nav .group-label {
   text-align: start !important;
 }
 
-.nav__account a:hover,
 .nav__controls a:hover,
-.nav__account button:hover,
 .nav__controls button:hover {
   background: rgba(181,32,39,0.07) !important;
   color: var(--dt-red) !important;
+}
+
+/* SVG icons in nav controls */
+.nav__controls svg .stroke,
+.nav__controls svg path.stroke {
+  stroke: currentColor !important;
+}
+
+/* ── Nav header (hamburger at bottom, hidden on desktop) ── */
+.nav__header {
+  border-top: 1px solid var(--dt-border) !important;
+  padding: 10px 14px !important;
+  flex-shrink: 0 !important;
 }
 
 /* ═══════════════════════════════════════════
@@ -956,56 +1000,86 @@ input[type='radio']:checked {
 }
 
 /* Nav dark */
-[data-theme='dark'] .nav__wrap,
-[data-theme='dark'] aside.nav__wrap {
+[data-theme='dark'] aside.nav {
   background: #161820 !important;
   border-right: 1px solid #262a38 !important;
   box-shadow: 2px 0 8px rgba(0,0,0,0.3) !important;
 }
 
-[data-theme='dark'] .nav__header {
-  border-bottom: 1px solid #1e2130 !important;
+[data-theme='dark'] nav.nav__wrap {
+  background: #161820 !important;
 }
 
-[data-theme='dark'] .nav__group {
+/* Separator only BETWEEN groups — no border above first or below last */
+[data-theme='dark'] .nav-group + .nav-group {
   border-top: 1px solid #1e2130 !important;
 }
 
+[data-theme='dark'] .nav-group__toggle {
+  color: #6c7289 !important;
+}
+
+[data-theme='dark'] .nav-group__toggle:hover {
+  color: #a0aac0 !important;
+}
+
+[data-theme='dark'] .nav-group__label {
+  color: #6c7289 !important;
+}
+
+[data-theme='dark'] .nav-group:first-child .nav-group__label,
+[data-theme='dark'] .nav-group:first-child .nav-group__toggle {
+  color: #cc2a33 !important;
+}
+
+/* Make chevron visible in dark mode */
+[data-theme='dark'] .nav-group__indicator svg .stroke {
+  stroke: #3e4255 !important;
+}
+
+[data-theme='dark'] .nav-group__toggle:hover .nav-group__indicator svg .stroke {
+  stroke: #6c7289 !important;
+}
+
 [data-theme='dark'] .nav__link {
-  color: #d0d8ef !important;
+  color: #c0c8df !important;
 }
 
 [data-theme='dark'] .nav__link:hover {
-  background: rgba(204,42,51,0.12) !important;
+  background: rgba(204,42,51,0.10) !important;
   color: #e2e6f0 !important;
 }
 
-[data-theme='dark'] .nav__link--active,
-[data-theme='dark'] .nav__link[aria-current='page'] {
-  background: rgba(204,42,51,0.18) !important;
+[data-theme='dark'] div.nav__link,
+[data-theme='dark'] .nav__link:has(.nav__link-indicator) {
+  background: rgba(204,42,51,0.15) !important;
   color: #e03540 !important;
   font-weight: 700 !important;
 }
 
-[data-theme='dark'] .nav__account,
+[data-theme='dark'] .nav__header {
+  border-top: 1px solid #1e2130 !important;
+}
+
 [data-theme='dark'] .nav__controls {
   border-top: 1px solid #262a38 !important;
-  background: #1a1d2a !important;
+  background: #13151e !important;
 }
 
-[data-theme='dark'] .nav__account a,
 [data-theme='dark'] .nav__controls a,
-[data-theme='dark'] .nav__account button,
 [data-theme='dark'] .nav__controls button {
-  color: #c0c8df !important;
+  color: #8892b0 !important;
 }
 
-[data-theme='dark'] .nav__account a:hover,
 [data-theme='dark'] .nav__controls a:hover,
-[data-theme='dark'] .nav__account button:hover,
 [data-theme='dark'] .nav__controls button:hover {
   background: rgba(204,42,51,0.12) !important;
   color: #e03540 !important;
+}
+
+[data-theme='dark'] .nav__controls svg .stroke,
+[data-theme='dark'] .nav__controls svg path.stroke {
+  stroke: currentColor !important;
 }
 
 /* View description dark */

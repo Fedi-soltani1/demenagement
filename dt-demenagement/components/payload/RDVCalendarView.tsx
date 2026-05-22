@@ -156,7 +156,7 @@ export default function RDVCalendarView() {
           {/* Month navigation */}
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            padding: '16px 20px', borderBottom: '1px solid var(--dt-border2)',
+            padding: '16px 20px', borderBottom: '1px solid var(--dt-border)',
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <button type="button" onClick={prevMonth} style={navBtnStyle}>‹</button>
@@ -192,7 +192,7 @@ export default function RDVCalendarView() {
           </div>
 
           {/* Day headers */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', background: 'var(--dt-surface2)', borderBottom: '1px solid var(--dt-border2)' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', background: 'var(--dt-surface2)', borderBottom: '1px solid var(--dt-border)' }}>
             {JOURS.map((j, i) => (
               <div key={j} style={{
                 padding: '10px 0', textAlign: 'center',
@@ -213,8 +213,8 @@ export default function RDVCalendarView() {
                   <div key={`e-${idx}`} style={{
                     minHeight: '88px',
                     background: 'var(--dt-surface2)',
-                    borderRight: '1px solid var(--dt-border2)',
-                    borderBottom: '1px solid var(--dt-border2)',
+                    borderRight: '1px solid var(--dt-border)',
+                    borderBottom: '1px solid var(--dt-border)',
                   }} />
                 )
               }
@@ -233,8 +233,8 @@ export default function RDVCalendarView() {
                   style={{
                     minHeight: '88px',
                     padding: '8px 8px 6px',
-                    borderRight: '1px solid var(--dt-border2)',
-                    borderBottom: '1px solid var(--dt-border2)',
+                    borderRight: '1px solid var(--dt-border)',
+                    borderBottom: '1px solid var(--dt-border)',
                     cursor: 'pointer',
                     background: isSelected ? 'rgba(181,32,39,0.06)' : isToday ? 'rgba(245,158,11,0.05)' : isWeekend ? 'var(--dt-surface2)' : 'var(--dt-surface)',
                     outline: isSelected ? '2px solid var(--dt-red)' : isToday ? '2px solid #f59e0b' : 'none',
@@ -388,7 +388,7 @@ export default function RDVCalendarView() {
             </div>
 
             {/* Footer: stats for the month */}
-            <div style={{ padding: '10px 16px', borderTop: '1px solid var(--dt-border2)', display: 'flex', gap: '16px', background: 'var(--dt-surface2)' }}>
+            <div style={{ padding: '10px 16px', borderTop: '1px solid var(--dt-border)', display: 'flex', gap: '16px', background: 'var(--dt-surface2)' }}>
               {[
                 { count: countNouveaux,  label: 'Nouveaux', dot: STATUT.nouveau!.dot },
                 { count: countConfirmes, label: 'Confirmés', dot: STATUT.confirme!.dot },
