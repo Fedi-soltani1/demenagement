@@ -214,15 +214,15 @@ export function HeroBlock({ cms }: { cms?: CmsHero }) {
       className="relative isolate flex min-h-[100svh] w-full items-center justify-center overflow-hidden bg-[var(--color-bg-dark)]"
       aria-label="Section principale"
     >
-      {/* Background : canvas ondes animées OU image de fond CMS */}
-      {showCanvas ? (
-        <canvas
-          ref={canvasRef}
-          className="absolute inset-0 h-full w-full"
-          aria-hidden="true"
-          style={{ display: 'block' }}
-        />
-      ) : cms?.imageHero ? (
+      {/* Canvas toujours dans le DOM — masqué si image de fond active */}
+      <canvas
+        ref={canvasRef}
+        className="absolute inset-0 h-full w-full"
+        aria-hidden="true"
+        style={{ display: showCanvas ? 'block' : 'none' }}
+      />
+      {/* Image de fond CMS — visible uniquement si afficher3D=false */}
+      {!showCanvas && cms?.imageHero && (
         <Image
           src={cms.imageHero}
           alt=""
@@ -231,7 +231,7 @@ export function HeroBlock({ cms }: { cms?: CmsHero }) {
           className="object-cover"
           aria-hidden="true"
         />
-      ) : null}
+      )}
 
       {/* Halos ambiance — superposés sur le canvas */}
       <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
