@@ -57,8 +57,8 @@ export default buildConfig({
         Logo: '@/components/payload/AdminLogo',
         Icon: '@/components/payload/AdminIcon',
       },
-      afterDashboard: ['@/components/payload/AdminDashboard'],
-      afterNavLinks:  ['@/components/payload/CalendarNavLink'],
+      afterDashboard:  ['@/components/payload/AdminDashboard'],
+      beforeNavLinks:  ['@/components/payload/CalendarNavLink'],
       views: {
         rdvCalendar: {
           Component: '@/components/payload/RDVCalendarView',

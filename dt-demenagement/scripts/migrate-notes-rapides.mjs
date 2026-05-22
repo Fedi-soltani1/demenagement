@@ -1,25 +1,36 @@
-// scripts/migrate-notes-rapides.mjs
-// Adds notes_rapides column to the demenagements table.
-// Run: node scripts/migrate-notes-rapides.mjs
-import pg from 'pg'
-import * as dotenv from 'dotenv'
-dotenv.config({ path: '.env.local' })
+import postgres from 'postgres'
+import { readFileSync } from 'fs'
+import { resolve } from 'path'
 
-const { Pool } = pg
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false },
-})
-
+const envPath = resolve(process.cwd(), '.env.local')
 try {
-  await pool.query(`
+  const lines = readFileSync(envPath, 'utf8').split('\n')
+  for (const line of lines) {
+    const trimmed = line.trim()
+    if (!trimmed || trimmed.startsWith('#')) continue
+    const idx = trimmed.indexOf('=')
+    if (idx === -1) continue
+    const key = trimmed.slice(0, idx).trim()
+    const val = trimmed.slice(idx + 1).trim().replace(/^["']|["']$/g, '')
+    if (!(key in process.env)) process.env[key] = val
+  }
+} catch { /* rely on process.env */ }
+
+const sql = postgres(process.env.DATABASE_URL)
+
+async function migrate() {
+  console.log('📦 Adding notes_rapides column to demenagements table...')
+
+  await sql`
     ALTER TABLE demenagements
-    ADD COLUMN IF NOT EXISTS notes_rapides TEXT;
-  `)
-  console.log('✅  Column notes_rapides added to demenagements (or already existed).')
-} catch (err) {
-  console.error('❌  Migration failed:', err)
-  process.exit(1)
-} finally {
-  await pool.end()
+    ADD COLUMN IF NOT EXISTS notes_rapides TEXT
+  `
+
+  console.log('✅ Migration terminée — colonne notes_rapides ajoutée.')
+  await sql.end()
 }
+
+migrate().catch((err) => {
+  console.error('❌ Migration échouée :', err)
+  process.exit(1)
+})

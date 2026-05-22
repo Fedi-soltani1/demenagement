@@ -1,31 +1,26 @@
-'use client'
-
+// No 'use client' — plain server component, no hooks that can fail in nav context
 import React from 'react'
-import { usePathname } from 'next/navigation'
 
 export default function CalendarNavLink() {
-  const pathname  = usePathname()
-  const isActive  = pathname === '/admin/rdv-calendar'
-
   return (
-    <div style={{ padding: '0 16px 4px' }}>
+    <div style={{ padding: '2px 12px 8px' }}>
       <a
         href="/admin/rdv-calendar"
         style={{
-          display:      'flex',
-          alignItems:   'center',
-          gap:          '8px',
-          padding:      '8px 12px',
-          borderRadius: '6px',
-          fontSize:     '13px',
-          fontWeight:   isActive ? 700 : 500,
-          color:        isActive ? '#b52027' : '#333',
-          background:   isActive ? 'rgba(181,32,39,0.07)' : 'transparent',
+          display:        'flex',
+          alignItems:     'center',
+          gap:            '10px',
+          padding:        '9px 12px',
+          borderRadius:   '6px',
+          fontSize:       '13px',
+          fontWeight:     600,
+          color:          '#b52027',
+          background:     'rgba(181,32,39,0.06)',
           textDecoration: 'none',
-          transition:   'background 0.15s, color 0.15s',
+          border:         '1px solid rgba(181,32,39,0.15)',
         }}
       >
-        <span style={{ fontSize: '15px' }}>📅</span>
+        <span style={{ fontSize: '16px' }}>📅</span>
         Calendrier RDV
       </a>
     </div>
