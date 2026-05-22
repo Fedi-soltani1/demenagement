@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import dynamic from 'next/dynamic'
 
 // ── Theme constants ────────────────────────────────────────────────────────────
@@ -20,7 +20,8 @@ const T = {
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 interface DossierRow {
-  id: number; numeroDossier?: string; nomComplet?: string
+  id: number  // Payload auto-increment — always numeric for this collection
+  numeroDossier?: string; nomComplet?: string
   telephone?: string; statut?: string; devisStatut?: string; createdAt: string
 }
 interface TodayRDV { id: number; nom?: string; prenom?: string; telephone?: string; heure?: string; statut?: string }
@@ -50,7 +51,7 @@ const AdminCharts = dynamic(() => import('./AdminCharts'), {
 })
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
-function pad2(n: number) { return String(n).padStart(2, '0') }
+function pad2(n: number): string { return String(n).padStart(2, '0') }
 const MOIS        = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre']
 const JOURS_SHORT = ['L','M','M','J','V','S','D']
 
@@ -78,7 +79,7 @@ function Pill({ statut, map }: { statut: string; map: Record<string, { label: st
   )
 }
 
-function relTime(iso: string) {
+function relTime(iso: string): string {
   const h = (Date.now() - new Date(iso).getTime()) / 3600000
   if (h < 1) return `${Math.floor(h * 60)}min`
   if (h < 24) return `${Math.floor(h)}h`
@@ -137,7 +138,7 @@ function KPICard({ icon, label, value, sub, accent, loading, href }: {
 }
 
 // ── Mini Calendar ──────────────────────────────────────────────────────────────
-interface MiniRDV { dateVisite?: string; statut?: string }
+interface MiniRDV { id: number; dateVisite?: string; statut?: string }
 
 function MiniCalendar() {
   const [rdvs, setRdvs] = useState<MiniRDV[]>([])
@@ -150,9 +151,9 @@ function MiniCalendar() {
     const firstDay = `${year}-${pad2(month + 1)}-01`
     const lastDay  = `${year}-${pad2(month + 1)}-${pad2(new Date(year, month + 1, 0).getDate())}`
     fetch(`/api/rendez-vous?where[dateVisite][greater_than_or_equal]=${firstDay}&where[dateVisite][less_than_or_equal]=${lastDay}&limit=100`, { credentials: 'include' })
-      .then(r => r.ok ? r.json() : Promise.reject())
+      .then(r => r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`)))
       .then((d: { docs: MiniRDV[] }) => setRdvs(d.docs ?? []))
-      .catch(() => {})
+      .catch(() => { /* RDV unavailable — calendar renders empty */ })
   }, [year, month])
 
   const daysInMonth = new Date(year, month + 1, 0).getDate()
@@ -170,6 +171,7 @@ function MiniCalendar() {
         <a href="/admin/rdv-calendar" style={{ fontSize: '11px', color: T.red, textDecoration: 'none', fontWeight: 600 }}>Vue complète →</a>
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', marginBottom: '2px' }}>
+        {/* Jours non uniques ('M' × 2) → index obligatoire comme key */}
         {JOURS_SHORT.map((j, i) => (
           <div key={`h-${i}`} style={{ textAlign: 'center', fontSize: '10px', fontWeight: 700, color: i >= 5 ? T.red : T.muted, paddingBottom: '4px' }}>{j}</div>
         ))}
@@ -191,8 +193,8 @@ function MiniCalendar() {
                 <span style={{ fontSize: '11px', fontWeight: isToday ? 800 : 400, color: isToday ? '#fff' : isWknd ? T.red : T.text, lineHeight: 1 }}>{day}</span>
                 {dayRdvs.length > 0 && !isToday && (
                   <div style={{ display: 'flex', gap: '2px', marginTop: '2px' }}>
-                    {dayRdvs.slice(0, 3).map((r, i) => (
-                      <div key={i} style={{ width: '4px', height: '4px', borderRadius: '50%', background: r.statut === 'confirme' ? '#22c55e' : r.statut === 'annule' ? '#ef4444' : '#f59e0b' }} />
+                    {dayRdvs.slice(0, 3).map(r => (
+                      <div key={r.id} style={{ width: '4px', height: '4px', borderRadius: '50%', background: r.statut === 'confirme' ? '#22c55e' : r.statut === 'annule' ? '#ef4444' : '#f59e0b' }} />
                     ))}
                   </div>
                 )}
@@ -259,6 +261,10 @@ function QuickLink({ icon, label, sub, href, badge, badgeColor }: {
   )
 }
 
+// ── Shared layout style constants (reference T which is module-level) ──────────
+const cardStyle: React.CSSProperties = { background: T.card, borderRadius: '12px', padding: '20px', border: `1px solid ${T.border}`, boxShadow: '0 1px 3px rgba(0,0,0,0.3)' }
+const hdrStyle:  React.CSSProperties = { fontSize: '12px', fontWeight: 700, color: T.muted, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '14px' }
+
 // ── Main Component ─────────────────────────────────────────────────────────────
 export default function AdminDashboard() {
   const [stats,   setStats]   = useState<Stats | null>(null)
@@ -279,28 +285,26 @@ export default function AdminDashboard() {
         })
       }
     }
+    // Payload v3 renders its own header elements asynchronously — 3 passes catch all timing stages
     const t1 = setTimeout(hide, 0)
     const t2 = setTimeout(hide, 150)
     const t3 = setTimeout(hide, 500)
     return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3) }
   }, [])
 
-  const load = () => {
+  const load = useCallback(() => {
     setLoading(true); setError(false)
     fetch('/api/admin/dashboard-stats', { credentials: 'include' })
-      .then(r => r.ok ? r.json() : Promise.reject())
+      .then(r => r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`)))
       .then((d: Stats) => { setStats(d); setLoading(false) })
       .catch(() => { setError(true); setLoading(false) })
-  }
+  }, [])
 
-  useEffect(load, [])
+  useEffect(load, [load])
 
   const pipelineMax = stats
     ? Math.max(stats.dossiers.devis_recu, stats.dossiers.confirme, stats.dossiers.en_preparation, stats.dossiers.en_cours, stats.dossiers.livre, stats.dossiers.annule, 1)
     : 1
-
-  const card: React.CSSProperties = { background: T.card, borderRadius: '12px', padding: '20px', border: `1px solid ${T.border}`, boxShadow: '0 1px 3px rgba(0,0,0,0.3)' }
-  const hdr:  React.CSSProperties = { fontSize: '12px', fontWeight: 700, color: T.muted, textTransform: 'uppercase' as const, letterSpacing: '0.5px', marginBottom: '14px' }
 
   return (
     <div className="dt-admin-dashboard" style={{ fontFamily: 'system-ui, -apple-system, sans-serif', paddingBottom: '48px', background: T.bg }}>
@@ -332,14 +336,14 @@ export default function AdminDashboard() {
           ? <AdminCharts monthly={stats.monthly} pipeline={stats.dossiers} />
           : (
             <div style={{ display: 'grid', gridTemplateColumns: '65fr 35fr', gap: '16px' }}>
-              {[0, 1].map(i => <div key={i} style={{ ...card, height: '240px' }} />)}
+              {[0, 1].map(i => <div key={i} style={{ ...cardStyle, height: '240px' }} />)}
             </div>
           )
         }
       </div>
 
       {/* ── Aujourd'hui strip ── */}
-      <div style={{ ...card, display: 'flex', alignItems: 'center', gap: '32px', flexWrap: 'wrap' as const, marginBottom: '20px', borderRadius: '10px', padding: '14px 20px' }}>
+      <div style={{ ...cardStyle, display: 'flex', alignItems: 'center', gap: '32px', flexWrap: 'wrap' as const, marginBottom: '20px', borderRadius: '10px', padding: '14px 20px' }}>
         <div style={{ fontSize: '12px', fontWeight: 700, color: T.red, textTransform: 'uppercase' as const, letterSpacing: '0.5px', flexShrink: 0 }}>Aujourd&apos;hui</div>
         <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' as const }}>
           {loading ? <><Skel w="80px" /><Skel w="80px" /><Skel w="80px" /></> : (
@@ -358,7 +362,7 @@ export default function AdminDashboard() {
               </div>
               {(stats?.urgent.dossiers ?? 0) > 0 && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <span>⚠️</span><span style={{ fontSize: '13px', color: T.danger, fontWeight: 600 }}>{stats!.urgent.dossiers} devis urgents</span>
+                  <span>⚠️</span><span style={{ fontSize: '13px', color: T.danger, fontWeight: 600 }}>{stats?.urgent.dossiers} devis urgents</span>
                 </div>
               )}
             </>
@@ -368,12 +372,12 @@ export default function AdminDashboard() {
 
       {/* ── Row: Calendar + Quick Links ── */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: '16px', marginBottom: '16px' }}>
-        <div className="dt-card" style={card}>
-          <div style={hdr}>Calendrier des RDV</div>
+        <div className="dt-card" style={cardStyle}>
+          <div style={hdrStyle}>Calendrier des RDV</div>
           <MiniCalendar />
         </div>
-        <div className="dt-card" style={card}>
-          <div style={hdr}>Accès rapide</div>
+        <div className="dt-card" style={cardStyle}>
+          <div style={hdrStyle}>Accès rapide</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
             <QuickLink icon="📋" label="Dossiers"    sub={loading ? '…' : `${stats?.dossiers.total ?? 0} total`}                                href="/admin/collections/demenagements" badge={stats?.dossiers.devis_recu}   />
             <QuickLink icon="📅" label="Rendez-vous" sub={loading ? '…' : `${(stats?.rdv.nouveaux ?? 0) + (stats?.rdv.confirmes ?? 0)} actifs`} href="/admin/collections/rendez-vous"  badge={stats?.rdv.nouveaux}          />
@@ -386,8 +390,8 @@ export default function AdminDashboard() {
 
       {/* ── Row: Pipeline + RDV stats ── */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
-        <div className="dt-card" style={card}>
-          <div style={{ ...hdr, marginBottom: '16px' }}>Pipeline dossiers</div>
+        <div className="dt-card" style={cardStyle}>
+          <div style={{ ...hdrStyle, marginBottom: '16px' }}>Pipeline dossiers</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             <PipelineBar loading={loading} icon="📥" label="Devis reçu"     value={stats?.dossiers.devis_recu     ?? 0} max={pipelineMax} color="#f59e0b" />
             <PipelineBar loading={loading} icon="✅" label="Confirmé"        value={stats?.dossiers.confirme       ?? 0} max={pipelineMax} color="#10b981" />
@@ -397,8 +401,8 @@ export default function AdminDashboard() {
             <PipelineBar loading={loading} icon="❌" label="Annulé"          value={stats?.dossiers.annule         ?? 0} max={pipelineMax} color="#ef4444" />
           </div>
         </div>
-        <div className="dt-card" style={card}>
-          <div style={{ ...hdr, marginBottom: '16px' }}>Rendez-vous visites</div>
+        <div className="dt-card" style={cardStyle}>
+          <div style={{ ...hdrStyle, marginBottom: '16px' }}>Rendez-vous visites</div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
             {loading ? <><Skel h="60px" r="8px" /><Skel h="60px" r="8px" /></> : (
               <>
@@ -416,7 +420,7 @@ export default function AdminDashboard() {
           {!loading && (stats?.aujourd_hui.rdvList ?? []).length > 0 && (
             <div>
               <div style={{ fontSize: '11px', color: T.muted, fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.5px', marginBottom: '8px' }}>Aujourd&apos;hui</div>
-              {stats!.aujourd_hui.rdvList.slice(0, 4).map(r => (
+              {stats?.aujourd_hui.rdvList.slice(0, 4).map(r => (
                 <div key={r.id} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', padding: '3px 0' }}>
                   <span style={{ color: T.text }}>{r.prenom} {r.nom}</span>
                   <span style={{ color: T.muted }}>{r.heure ?? '—'}</span>
@@ -428,7 +432,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* ── Recent dossiers table ── */}
-      <div className="dt-card" style={card}>
+      <div className="dt-card" style={cardStyle}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
           <div style={{ fontSize: '12px', fontWeight: 700, color: T.muted, textTransform: 'uppercase' as const, letterSpacing: '0.5px' }}>Derniers dossiers reçus</div>
           <a href="/admin/collections/demenagements" style={{ fontSize: '11px', color: T.red, textDecoration: 'none', fontWeight: 700, padding: '5px 12px', border: `1px solid ${T.red}30`, borderRadius: '6px' }}>Voir tous →</a>
@@ -441,8 +445,8 @@ export default function AdminDashboard() {
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr>
-                {['Dossier','Client','Statut','Devis','Reçu',''].map(h => (
-                  <th key={h} style={{ textAlign: 'left', fontSize: '10px', fontWeight: 700, color: T.muted, textTransform: 'uppercase' as const, letterSpacing: '0.5px', paddingBottom: '10px', borderBottom: `1px solid ${T.border}` }}>{h}</th>
+                {['Dossier','Client','Statut','Devis','Reçu',''].map((h, i) => (
+                  <th key={i} style={{ textAlign: 'left', fontSize: '10px', fontWeight: 700, color: T.muted, textTransform: 'uppercase' as const, letterSpacing: '0.5px', paddingBottom: '10px', borderBottom: `1px solid ${T.border}` }}>{h}</th>
                 ))}
               </tr>
             </thead>
