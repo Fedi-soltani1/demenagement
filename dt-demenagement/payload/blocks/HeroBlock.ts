@@ -47,11 +47,18 @@ export const HeroBlock: Block = {
       ],
     },
     {
+      name: 'videoFichier',
+      label: 'Vidéo de fond — fichier MP4 (recommandé)',
+      type: 'upload',
+      relationTo: 'media',
+      admin: { description: 'Vidéo MP4 uploadée directement. Prioritaire sur YouTube et l\'image. Muette, en boucle, plein écran.' },
+    },
+    {
       name: 'videoYoutube',
-      label: 'Vidéo YouTube de fond (optionnelle)',
+      label: 'Vidéo YouTube de fond (si pas de fichier MP4)',
       type: 'text',
       admin: {
-        description: 'Coller le lien YouTube (ex: https://www.youtube.com/watch?v=ABC123). Prioritaire sur l\'image si les deux sont renseignés. Muette, en boucle, sans contrôles.',
+        description: 'Lien YouTube (ex: https://www.youtube.com/watch?v=ABC123). Utilisé uniquement si aucun fichier MP4 n\'est uploadé.',
       },
     },
     {

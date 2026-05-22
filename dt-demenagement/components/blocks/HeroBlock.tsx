@@ -190,6 +190,7 @@ export type CmsHero = {
   stat3Valeur?: string | null
   stat3Label?: string | null
   pills?: { texte: string }[] | null
+  videoFichier?: string | null
   videoYoutube?: string | null
   imageHero?: string | null
   afficher3D?: boolean | null
@@ -202,9 +203,10 @@ export function HeroBlock({ cms }: { cms?: CmsHero }) {
   const locale = useLocale()
   const { open: openDevisModal } = useDevisModal()
 
-  const showCanvas  = cms?.afficher3D !== false
-  const youtubeId   = !showCanvas && cms?.videoYoutube ? extractYoutubeId(cms.videoYoutube) : null
-  const canvasRef   = useRef<HTMLCanvasElement | null>(null)
+  const showCanvas      = cms?.afficher3D !== false
+  const videoFichierUrl = !showCanvas ? (cms?.videoFichier ?? null) : null
+  const youtubeId       = !showCanvas && !videoFichierUrl && cms?.videoYoutube ? extractYoutubeId(cms.videoYoutube) : null
+  const canvasRef       = useRef<HTMLCanvasElement | null>(null)
   useWaveCanvas(canvasRef)
 
   // CMS override avec fallback i18n
@@ -236,7 +238,19 @@ export function HeroBlock({ cms }: { cms?: CmsHero }) {
         aria-hidden="true"
         style={{ display: showCanvas ? 'block' : 'none' }}
       />
-      {/* Vidéo YouTube de fond — prioritaire sur l'image si afficher3D=false */}
+      {/* Fichier MP4 de fond — prioritaire sur YouTube et image */}
+      {videoFichierUrl && (
+        <video
+          src={videoFichierUrl}
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="absolute inset-0 h-full w-full object-cover pointer-events-none"
+          aria-hidden="true"
+        />
+      )}
+      {/* Vidéo YouTube de fond — si pas de fichier MP4 */}
       {youtubeId && (
         <iframe
           src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&mute=1&loop=1&playlist=${youtubeId}&controls=0&showinfo=0&rel=0&disablekb=1`}
@@ -248,8 +262,8 @@ export function HeroBlock({ cms }: { cms?: CmsHero }) {
           title=""
         />
       )}
-      {/* Image de fond CMS — visible si afficher3D=false et pas de vidéo YouTube */}
-      {!showCanvas && !youtubeId && cms?.imageHero && (
+      {/* Image de fond CMS — si pas de vidéo */}
+      {!showCanvas && !videoFichierUrl && !youtubeId && cms?.imageHero && (
         <Image
           src={cms.imageHero}
           alt=""
