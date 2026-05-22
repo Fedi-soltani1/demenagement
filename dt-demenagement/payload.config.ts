@@ -56,6 +56,7 @@ export default buildConfig({
         Logo: '@/components/payload/AdminLogo',
         Icon: '@/components/payload/AdminIcon',
       },
+      header:          ['@/components/payload/ThemeToggle'],
       afterDashboard:  ['@/components/payload/AdminDashboard'],
       beforeNavLinks:  ['@/components/payload/CalendarNavLink'],
       views: {

@@ -123,9 +123,21 @@ header.app-header {
   gap: 12px !important;
 }
 
-/* Breadcrumbs in header */
-.step-nav,
-.app-header .step-nav {
+/* Hide Payload's "DT / Dashboard" breadcrumb from the top bar — it clutters the header */
+.app-header .step-nav,
+header.app-header .step-nav {
+  display: none !important;
+}
+
+/* Spacer so right-side items are pushed to the right */
+.app-header__content,
+.app-header > div {
+  flex: 1 !important;
+}
+
+/* Breadcrumb below header (page view header) — keep visible */
+.view-description .step-nav,
+.collection-edit__header .step-nav {
   display: flex !important;
   align-items: center !important;
   gap: 4px !important;
@@ -150,7 +162,6 @@ header.app-header {
   color: var(--dt-red) !important;
 }
 
-/* Last breadcrumb = current page — highlighted */
 .step-nav__step:last-child a,
 .step-nav__step:last-child span {
   color: var(--dt-red) !important;
@@ -1237,3 +1248,178 @@ input[type='radio']:checked {
 [data-theme='dark'] ::-webkit-scrollbar-track { background: #1a1c24; }
 [data-theme='dark'] ::-webkit-scrollbar-thumb { background: #2e3148; }
 [data-theme='dark'] ::-webkit-scrollbar-thumb:hover { background: #cc2a33; }
+
+/* ═══════════════════════════════════════════
+   POPUPS / DROPDOWNS (table actions, column selector, filters)
+   ═══════════════════════════════════════════ */
+
+/* Popup container — must float above table rows */
+.popup__content,
+.popup-button-list__list,
+[class*='popup__content'] {
+  background: var(--dt-surface) !important;
+  border: 1px solid var(--dt-border) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12), 0 2px 6px rgba(0,0,0,0.06) !important;
+  z-index: 200 !important;
+  overflow: hidden !important;
+  min-width: 160px !important;
+}
+
+/* Popup list items */
+.popup-button-list__button,
+.popup__list-item,
+.popup-button-list__list button {
+  font-size: 12.5px !important;
+  font-weight: 500 !important;
+  color: var(--dt-text2) !important;
+  padding: 8px 14px !important;
+  width: 100% !important;
+  text-align: left !important;
+  background: none !important;
+  border: none !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  transition: background 0.1s, color 0.1s !important;
+  white-space: nowrap !important;
+}
+
+.popup-button-list__button:hover,
+.popup__list-item:hover,
+.popup-button-list__list button:hover {
+  background: rgba(181,32,39,0.06) !important;
+  color: var(--dt-red) !important;
+}
+
+/* Popup separator */
+.popup__divider,
+.popup-button-list__divider {
+  border-top: 1px solid var(--dt-border2) !important;
+  margin: 4px 0 !important;
+}
+
+/* Table row actions (3-dot menu) */
+.cell-actions,
+.row-actions {
+  position: relative !important;
+  z-index: 10 !important;
+}
+
+/* Ensure popups inside table cells display above sibling rows */
+.table tbody tr td .popup__content,
+.table tbody tr .popup__content {
+  z-index: 300 !important;
+}
+
+/* Tooltip */
+.tooltip-content,
+[class*='tooltip'] {
+  background: #1a1a1a !important;
+  color: #f0f0f0 !important;
+  border-radius: 5px !important;
+  font-size: 11px !important;
+  padding: 4px 8px !important;
+  z-index: 500 !important;
+}
+
+/* Select / ReactSelect dropdown menu */
+.rs__menu,
+.ReactSelect__menu {
+  background: var(--dt-surface) !important;
+  border: 1px solid var(--dt-border) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12) !important;
+  z-index: 300 !important;
+  overflow: hidden !important;
+}
+
+.rs__menu-list,
+.ReactSelect__menu-list {
+  padding: 4px !important;
+}
+
+.rs__option,
+.ReactSelect__option {
+  border-radius: 5px !important;
+  font-size: 12.5px !important;
+  color: var(--dt-text2) !important;
+  padding: 7px 10px !important;
+  cursor: pointer !important;
+}
+
+.rs__option:hover,
+.ReactSelect__option:hover {
+  background: rgba(181,32,39,0.06) !important;
+  color: var(--dt-red) !important;
+}
+
+/* Where filter / columns dropdown */
+.where-builder,
+.column-selector {
+  background: var(--dt-surface) !important;
+  border: 1px solid var(--dt-border) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.10) !important;
+  z-index: 200 !important;
+}
+
+/* Dark mode popups */
+[data-theme='dark'] .popup__content,
+[data-theme='dark'] .popup-button-list__list,
+[data-theme='dark'] [class*='popup__content'] {
+  background: #1e2130 !important;
+  border-color: #262a38 !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5) !important;
+}
+
+[data-theme='dark'] .popup-button-list__button,
+[data-theme='dark'] .popup__list-item,
+[data-theme='dark'] .popup-button-list__list button {
+  color: #a0aac0 !important;
+}
+
+[data-theme='dark'] .popup-button-list__button:hover,
+[data-theme='dark'] .popup__list-item:hover,
+[data-theme='dark'] .popup-button-list__list button:hover {
+  background: rgba(204,42,51,0.12) !important;
+  color: #e03540 !important;
+}
+
+[data-theme='dark'] .rs__menu,
+[data-theme='dark'] .ReactSelect__menu {
+  background: #1e2130 !important;
+  border-color: #262a38 !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5) !important;
+}
+
+[data-theme='dark'] .rs__option,
+[data-theme='dark'] .ReactSelect__option {
+  color: #a0aac0 !important;
+}
+
+[data-theme='dark'] .rs__option:hover,
+[data-theme='dark'] .ReactSelect__option:hover {
+  background: rgba(204,42,51,0.12) !important;
+  color: #e03540 !important;
+}
+
+[data-theme='dark'] .where-builder,
+[data-theme='dark'] .column-selector {
+  background: #1e2130 !important;
+  border-color: #262a38 !important;
+}
+
+/* ── Theme toggle button in top bar ── */
+.app-header [data-component='ThemeToggle'],
+.app-header button[title*='mode'] {
+  flex-shrink: 0 !important;
+}
+
+/* Hide Payload's own duplicate theme selector from sidebar (we have it in header) */
+.nav__controls .theme-selector,
+.nav__controls [class*='theme'] select {
+  display: none !important;
+}
+
