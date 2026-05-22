@@ -247,6 +247,27 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true)
   const [error,   setError]   = useState(false)
 
+  // Hide Payload's default dashboard content (collection cards + globals list).
+  // afterDashboard renders as the last child inside .dashboard — everything
+  // before it is Payload's own default content which we don't want to show.
+  useEffect(() => {
+    const hide = () => {
+      const dashboard = document.querySelector('.dashboard')
+      if (!dashboard) return false
+      const children = Array.from(dashboard.children) as HTMLElement[]
+      if (children.length < 2) return false
+      // Our wrapper is always the last child; hide everything before it
+      children.slice(0, -1).forEach((el) => { el.style.display = 'none' })
+      return true
+    }
+    // Try immediately, then retry in case Payload renders asynchronously
+    if (!hide()) {
+      const t1 = setTimeout(hide, 100)
+      const t2 = setTimeout(hide, 400)
+      return () => { clearTimeout(t1); clearTimeout(t2) }
+    }
+  }, [])
+
   useEffect(() => {
     fetch('/api/admin/dashboard-stats', { credentials: 'include' })
       .then((r) => r.ok ? r.json() : Promise.reject())

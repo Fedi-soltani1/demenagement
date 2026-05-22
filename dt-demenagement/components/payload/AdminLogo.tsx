@@ -10,8 +10,8 @@ export default function AdminLogo() {
         <span style={{ color: '#fff', fontWeight: 900, fontSize: '14px', letterSpacing: '-0.5px' }}>DT</span>
       </div>
       <div style={{ lineHeight: 1.2 }}>
-        <div style={{ color: '#f8f5f0', fontWeight: 700, fontSize: '13px' }}>DT Déménagement</div>
-        <div style={{ color: '#c9a84c', fontSize: '10px', letterSpacing: '0.05em' }}>TUNISIE — ADMIN</div>
+        <div style={{ color: '#1a1a1a', fontWeight: 700, fontSize: '13px' }}>DT Déménagement</div>
+        <div style={{ color: '#b52027', fontSize: '10px', letterSpacing: '0.05em', fontWeight: 600 }}>TUNISIE · ADMIN</div>
       </div>
     </div>
   )
