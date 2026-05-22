@@ -28,16 +28,6 @@ const MOIS  = [
 
 function pad2(n: number) { return String(n).padStart(2, '0') }
 
-// ─── Nav button ──────────────────────────────────────────────────────────────
-
-const navBtnStyle: React.CSSProperties = {
-  width: '36px', height: '36px', borderRadius: '8px',
-  border: '1px solid #e2e5ea', background: '#fff',
-  fontSize: '16px', cursor: 'pointer', padding: 0,
-  display: 'flex', alignItems: 'center', justifyContent: 'center',
-  color: '#555', transition: 'all 0.12s',
-}
-
 // ─── Status pill ─────────────────────────────────────────────────────────────
 
 function StatusPill({ statut }: { statut?: string }) {
@@ -67,7 +57,6 @@ export default function RDVCalendarView() {
 
   const fetchMonth = useCallback(() => {
     // dateVisite is a text field (YYYY-MM-DD) — use "like" with year-month prefix
-    // (greater_than_or_equal / less_than_or_equal are not reliable on text fields in Payload)
     const yearMonth = `${year}-${pad2(month + 1)}`
     setLoading(true)
     fetch(
@@ -89,7 +78,6 @@ export default function RDVCalendarView() {
     if (month === 11) { setMonth(0); setYear((y) => y + 1) } else setMonth((m) => m + 1)
   }
 
-  // Calendar grid — Monday first
   const daysInMonth = new Date(year, month + 1, 0).getDate()
   const startDow    = (new Date(year, month, 1).getDay() + 6) % 7
   const cells: (number | null)[] = [
@@ -103,9 +91,17 @@ export default function RDVCalendarView() {
 
   const selectedRdvs = selected ? rdvs.filter((r) => (r.dateVisite ?? '').slice(0, 10) === selected).sort((a, b) => (a.heure ?? '').localeCompare(b.heure ?? '')) : []
 
-  const countNouveaux = rdvs.filter((r) => r.statut === 'nouveau').length
+  const countNouveaux  = rdvs.filter((r) => r.statut === 'nouveau').length
   const countConfirmes = rdvs.filter((r) => r.statut === 'confirme').length
   const countAnnules   = rdvs.filter((r) => r.statut === 'annule').length
+
+  const navBtnStyle: React.CSSProperties = {
+    width: '36px', height: '36px', borderRadius: '8px',
+    border: '1px solid var(--dt-border)', background: 'var(--dt-surface)',
+    fontSize: '16px', cursor: 'pointer', padding: 0,
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    color: 'var(--dt-text2)', transition: 'all 0.12s',
+  }
 
   return (
     <div style={{
@@ -120,15 +116,15 @@ export default function RDVCalendarView() {
       {/* ── Page header ── */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
-          <h1 style={{ fontSize: '20px', fontWeight: 900, color: '#1a1a1a', margin: '0 0 2px' }}>
+          <h1 style={{ fontSize: '20px', fontWeight: 900, color: 'var(--dt-text)', margin: '0 0 2px' }}>
             Calendrier des rendez-vous visites
           </h1>
-          <p style={{ fontSize: '12px', color: '#aaa', margin: 0 }}>
+          <p style={{ fontSize: '12px', color: 'var(--dt-muted)', margin: 0 }}>
             Cliquez sur un jour pour afficher le détail des RDV.
           </p>
         </div>
         <a href="/admin/collections/rendez-vous"
-          style={{ fontSize: '12px', fontWeight: 700, color: '#b52027', textDecoration: 'none', padding: '7px 14px', border: '1px solid rgba(181,32,39,0.3)', borderRadius: '7px', background: '#fff' }}>
+          style={{ fontSize: '12px', fontWeight: 700, color: 'var(--dt-red)', textDecoration: 'none', padding: '7px 14px', border: '1px solid rgba(181,32,39,0.3)', borderRadius: '7px', background: 'var(--dt-surface)' }}>
           Vue liste →
         </a>
       </div>
@@ -136,9 +132,9 @@ export default function RDVCalendarView() {
       {/* ── KPI strip ── */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
         {[
-          { v: rdvs.length,    label: `RDV en ${MOIS[month]}`, color: '#b52027', bg: '#fff',      border: '#e2e5ea' },
-          { v: countConfirmes, label: 'Confirmés',              color: '#065f46', bg: '#f0fdf4',  border: '#86efac' },
-          { v: countNouveaux,  label: 'À confirmer',            color: '#92400e', bg: '#fffbeb',  border: '#fcd34d' },
+          { v: rdvs.length,    label: `RDV en ${MOIS[month]}`, color: 'var(--dt-red)',  bg: 'var(--dt-surface)',  border: 'var(--dt-border)' },
+          { v: countConfirmes, label: 'Confirmés',              color: '#065f46',        bg: '#f0fdf4',           border: '#86efac'          },
+          { v: countNouveaux,  label: 'À confirmer',            color: '#92400e',        bg: '#fffbeb',           border: '#fcd34d'          },
         ].map((s) => (
           <div key={s.label} style={{
             background: s.bg, borderRadius: '10px', padding: '14px 18px',
@@ -146,7 +142,7 @@ export default function RDVCalendarView() {
             display: 'flex', alignItems: 'center', gap: '14px',
           }}>
             <div style={{ fontSize: '26px', fontWeight: 900, color: s.color, lineHeight: 1 }}>{s.v}</div>
-            <div style={{ fontSize: '12px', color: '#555', fontWeight: 500 }}>{s.label}</div>
+            <div style={{ fontSize: '12px', color: 'var(--dt-text2)', fontWeight: 500 }}>{s.label}</div>
           </div>
         ))}
       </div>
@@ -155,16 +151,16 @@ export default function RDVCalendarView() {
       <div style={{ display: 'grid', gridTemplateColumns: selected ? '1fr 340px' : '1fr', gap: '16px', alignItems: 'start' }}>
 
         {/* ── Calendar panel ── */}
-        <div style={{ background: '#fff', borderRadius: '12px', border: '1px solid #e8eaed', overflow: 'hidden' }}>
+        <div style={{ background: 'var(--dt-surface)', borderRadius: '12px', border: '1px solid var(--dt-border)', overflow: 'hidden' }}>
 
           {/* Month navigation */}
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            padding: '16px 20px', borderBottom: '1px solid #f0f2f5',
+            padding: '16px 20px', borderBottom: '1px solid var(--dt-border2)',
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <button type="button" onClick={prevMonth} style={navBtnStyle}>‹</button>
-              <span style={{ fontSize: '16px', fontWeight: 800, color: '#1a1a1a', minWidth: '160px', textAlign: 'center' }}>
+              <span style={{ fontSize: '16px', fontWeight: 800, color: 'var(--dt-text)', minWidth: '160px', textAlign: 'center' }}>
                 {MOIS[month]} {year}
               </span>
               <button type="button" onClick={nextMonth} style={navBtnStyle}>›</button>
@@ -176,19 +172,19 @@ export default function RDVCalendarView() {
                 {Object.entries(STATUT).map(([k, v]) => (
                   <div key={k} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
                     <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: v.dot }} />
-                    <span style={{ fontSize: '11px', color: '#666' }}>{v.label}</span>
+                    <span style={{ fontSize: '11px', color: 'var(--dt-text2)' }}>{v.label}</span>
                   </div>
                 ))}
               </div>
 
-              {/* Today + loading */}
+              {/* Loading indicator */}
               {loading && (
-                <div style={{ width: '16px', height: '16px', border: '2px solid #f0f0f0', borderTopColor: '#b52027', borderRadius: '50%', animation: 'rdv-spin 0.7s linear infinite' }} />
+                <div style={{ width: '16px', height: '16px', border: '2px solid var(--dt-border)', borderTopColor: 'var(--dt-red)', borderRadius: '50%', animation: 'rdv-spin 0.7s linear infinite' }} />
               )}
               <button
                 type="button"
                 onClick={() => { setYear(now.getFullYear()); setMonth(now.getMonth()); setSelected(todayKey) }}
-                style={{ fontSize: '11px', fontWeight: 700, color: '#b52027', border: '1px solid rgba(181,32,39,0.25)', background: 'rgba(181,32,39,0.05)', borderRadius: '6px', padding: '5px 10px', cursor: 'pointer' }}
+                style={{ fontSize: '11px', fontWeight: 700, color: 'var(--dt-red)', border: '1px solid rgba(181,32,39,0.25)', background: 'rgba(181,32,39,0.05)', borderRadius: '6px', padding: '5px 10px', cursor: 'pointer' }}
               >
                 Aujourd&apos;hui
               </button>
@@ -196,12 +192,12 @@ export default function RDVCalendarView() {
           </div>
 
           {/* Day headers */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', background: '#f8f9fb', borderBottom: '1px solid #f0f2f5' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', background: 'var(--dt-surface2)', borderBottom: '1px solid var(--dt-border2)' }}>
             {JOURS.map((j, i) => (
               <div key={j} style={{
                 padding: '10px 0', textAlign: 'center',
                 fontSize: '10.5px', fontWeight: 800,
-                color: i >= 5 ? '#b52027' : '#9aa0ab',
+                color: i >= 5 ? 'var(--dt-red)' : 'var(--dt-muted)',
                 letterSpacing: '0.5px', textTransform: 'uppercase' as const,
               }}>
                 {j}
@@ -216,9 +212,9 @@ export default function RDVCalendarView() {
                 return (
                   <div key={`e-${idx}`} style={{
                     minHeight: '88px',
-                    background: idx % 7 >= 5 ? '#fafbfc' : '#f8f9fb',
-                    borderRight: '1px solid #f0f2f5',
-                    borderBottom: '1px solid #f0f2f5',
+                    background: 'var(--dt-surface2)',
+                    borderRight: '1px solid var(--dt-border2)',
+                    borderBottom: '1px solid var(--dt-border2)',
                   }} />
                 )
               }
@@ -237,11 +233,11 @@ export default function RDVCalendarView() {
                   style={{
                     minHeight: '88px',
                     padding: '8px 8px 6px',
-                    borderRight: '1px solid #f0f2f5',
-                    borderBottom: '1px solid #f0f2f5',
+                    borderRight: '1px solid var(--dt-border2)',
+                    borderBottom: '1px solid var(--dt-border2)',
                     cursor: 'pointer',
-                    background: isSelected ? '#fff5f5' : isToday ? '#fffdf7' : isWeekend ? '#fafbfc' : '#fff',
-                    outline: isSelected ? '2px solid #b52027' : isToday ? '2px solid #f59e0b' : 'none',
+                    background: isSelected ? 'rgba(181,32,39,0.06)' : isToday ? 'rgba(245,158,11,0.05)' : isWeekend ? 'var(--dt-surface2)' : 'var(--dt-surface)',
+                    outline: isSelected ? '2px solid var(--dt-red)' : isToday ? '2px solid #f59e0b' : 'none',
                     outlineOffset: '-2px',
                     transition: 'background 0.1s',
                   }}
@@ -251,8 +247,8 @@ export default function RDVCalendarView() {
                     display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                     width: '24px', height: '24px', borderRadius: '50%',
                     fontSize: '12px', fontWeight: isToday ? 900 : 500,
-                    background: isToday ? '#b52027' : 'transparent',
-                    color: isToday ? '#fff' : isWeekend ? '#b52027' : '#2d3142',
+                    background: isToday ? 'var(--dt-red)' : 'transparent',
+                    color: isToday ? '#fff' : isWeekend ? 'var(--dt-red)' : 'var(--dt-text)',
                     marginBottom: '4px',
                   }}>
                     {day}
@@ -276,7 +272,7 @@ export default function RDVCalendarView() {
                       )
                     })}
                     {dayRdvs.length > 2 && (
-                      <div style={{ fontSize: '9px', color: '#888', fontWeight: 600, paddingLeft: '2px' }}>
+                      <div style={{ fontSize: '9px', color: 'var(--dt-muted)', fontWeight: 600, paddingLeft: '2px' }}>
                         +{dayRdvs.length - 2} de plus
                       </div>
                     )}
@@ -299,14 +295,14 @@ export default function RDVCalendarView() {
 
         {/* ── Day detail panel ── */}
         {selected && (
-          <div style={{ background: '#fff', borderRadius: '12px', border: '1px solid #e8eaed', overflow: 'hidden', position: 'sticky' as const, top: '24px' }}>
-            {/* Header */}
+          <div style={{ background: 'var(--dt-surface)', borderRadius: '12px', border: '1px solid var(--dt-border)', overflow: 'hidden', position: 'sticky' as const, top: '24px' }}>
+            {/* Header — intentionally dark for contrast */}
             <div style={{ padding: '14px 18px', background: '#1a1a1a', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <div>
                 <div style={{ fontSize: '13px', fontWeight: 800, color: '#fff' }}>
                   {new Date(selected + 'T12:00:00').toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}
                 </div>
-                <div style={{ fontSize: '11px', color: '#888', marginTop: '1px' }}>
+                <div style={{ fontSize: '11px', color: '#aaa', marginTop: '1px' }}>
                   {selectedRdvs.length} rendez-vous
                 </div>
               </div>
@@ -325,11 +321,11 @@ export default function RDVCalendarView() {
             {/* RDV list */}
             <div style={{ padding: '12px', display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '60vh', overflowY: 'auto' as const }}>
               {selectedRdvs.length === 0 ? (
-                <div style={{ padding: '32px 16px', textAlign: 'center' as const, color: '#bbb' }}>
+                <div style={{ padding: '32px 16px', textAlign: 'center' as const, color: 'var(--dt-muted3)' }}>
                   <div style={{ fontSize: '28px', marginBottom: '8px' }}>📅</div>
                   <div style={{ fontSize: '12px' }}>Aucun rendez-vous ce jour.</div>
                   <a href="/admin/collections/rendez-vous/create"
-                    style={{ display: 'inline-block', marginTop: '10px', fontSize: '12px', color: '#b52027', textDecoration: 'none', fontWeight: 600 }}>
+                    style={{ display: 'inline-block', marginTop: '10px', fontSize: '12px', color: 'var(--dt-red)', textDecoration: 'none', fontWeight: 600 }}>
                     Créer un RDV →
                   </a>
                 </div>
@@ -347,16 +343,16 @@ export default function RDVCalendarView() {
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                           {r.heure && (
-                            <span style={{ fontSize: '16px', fontWeight: 900, color: '#1a1a1a', minWidth: '42px' }}>
+                            <span style={{ fontSize: '16px', fontWeight: 900, color: sm.color, minWidth: '42px' }}>
                               {r.heure}
                             </span>
                           )}
                           <div>
-                            <div style={{ fontSize: '13px', fontWeight: 700, color: '#1a1a1a' }}>
+                            <div style={{ fontSize: '13px', fontWeight: 700, color: sm.color }}>
                               {r.prenom} {r.nom}
                             </div>
                             {r.telephone && (
-                              <div style={{ fontSize: '10.5px', color: '#777', fontFamily: 'monospace' }}>{r.telephone}</div>
+                              <div style={{ fontSize: '10.5px', color: sm.color, opacity: 0.7, fontFamily: 'monospace' }}>{r.telephone}</div>
                             )}
                           </div>
                         </div>
@@ -368,8 +364,8 @@ export default function RDVCalendarView() {
                         {r.telephone && (
                           <a href={`tel:${r.telephone}`} style={{
                             flex: 1, textAlign: 'center' as const, fontSize: '11px', fontWeight: 600,
-                            padding: '5px', borderRadius: '6px', background: '#fff',
-                            border: '1px solid #e2e5ea', color: '#333', textDecoration: 'none',
+                            padding: '5px', borderRadius: '6px', background: 'var(--dt-surface)',
+                            border: '1px solid var(--dt-border)', color: 'var(--dt-text)', textDecoration: 'none',
                           }}>📞</a>
                         )}
                         {wa && (
@@ -381,8 +377,8 @@ export default function RDVCalendarView() {
                         )}
                         <a href={`/admin/collections/rendez-vous/${r.id}`} style={{
                           flex: 2, textAlign: 'center' as const, fontSize: '11px', fontWeight: 700,
-                          padding: '5px', borderRadius: '6px', background: '#b52027',
-                          border: '1px solid #b52027', color: '#fff', textDecoration: 'none',
+                          padding: '5px', borderRadius: '6px', background: 'var(--dt-red)',
+                          border: `1px solid var(--dt-red)`, color: '#fff', textDecoration: 'none',
                         }}>Ouvrir →</a>
                       </div>
                     </div>
@@ -392,7 +388,7 @@ export default function RDVCalendarView() {
             </div>
 
             {/* Footer: stats for the month */}
-            <div style={{ padding: '10px 16px', borderTop: '1px solid #f0f2f5', display: 'flex', gap: '16px', background: '#f8f9fb' }}>
+            <div style={{ padding: '10px 16px', borderTop: '1px solid var(--dt-border2)', display: 'flex', gap: '16px', background: 'var(--dt-surface2)' }}>
               {[
                 { count: countNouveaux,  label: 'Nouveaux', dot: STATUT.nouveau!.dot },
                 { count: countConfirmes, label: 'Confirmés', dot: STATUT.confirme!.dot },
@@ -400,7 +396,7 @@ export default function RDVCalendarView() {
               ].map((s) => (
                 <div key={s.label} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
                   <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: s.dot }} />
-                  <span style={{ fontSize: '10.5px', color: '#555' }}>{s.count} {s.label}</span>
+                  <span style={{ fontSize: '10.5px', color: 'var(--dt-text2)' }}>{s.count} {s.label}</span>
                 </div>
               ))}
             </div>

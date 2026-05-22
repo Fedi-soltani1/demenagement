@@ -107,7 +107,7 @@ export async function GET(request: NextRequest): Promise<Response> {
       statut:    r.statut,
     }))
 
-    return Response.json({
+    return new Response(JSON.stringify({
       dossiers: {
         devis_recu:     devis_recu.totalDocs,
         confirme:       confirme.totalDocs,
@@ -123,6 +123,11 @@ export async function GET(request: NextRequest): Promise<Response> {
       recentRDV:      recentRDVDocs,
       urgent:         { dossiers: urgentDossiers, messages: urgentMessages },
       aujourd_hui:    { rdv: todayRDV.totalDocs, rdvList: todayRDVDocs, demenagements: todayDemenagements },
+    }), {
+      headers: {
+        'Content-Type': 'application/json',
+        'Cache-Control': 'private, max-age=30, stale-while-revalidate=60',
+      },
     })
   } catch (err) {
     console.error('[dashboard-stats]', err)

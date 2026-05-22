@@ -18,11 +18,13 @@ export default function ThemeToggle() {
       title={isDark ? 'Passer en mode clair' : 'Passer en mode sombre'}
       aria-label={isDark ? 'Activer le mode clair' : 'Activer le mode sombre'}
       style={{
+        marginLeft: 'auto',
         width: '34px',
         height: '34px',
         borderRadius: '8px',
-        border: `1px solid ${isDark ? '#262a38' : '#dde1e8'}`,
-        background: isDark ? '#1e2130' : '#f5f6f8',
+        border: '1px solid var(--dt-border)',
+        background: 'var(--dt-surface2)',
+        color: 'var(--dt-text)',
         cursor: 'pointer',
         display: 'inline-flex',
         alignItems: 'center',
