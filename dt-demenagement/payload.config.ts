@@ -44,7 +44,6 @@ export default buildConfig({
 
   admin: {
     user: 'admins',
-    theme: 'dark',
     meta: {
       titleSuffix: '— DT Déménagement Admin',
     },
