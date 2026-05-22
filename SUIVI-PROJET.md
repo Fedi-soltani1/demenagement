@@ -66,6 +66,42 @@ CONSÉQUENCE : Les nouvelles colonnes ajoutées dans les collections Payload NE 
 ## 🤖 DERNIÈRE MISE À JOUR PAR CLAUDE CODE
 
 ```
+Date        : 2026-05-22 — SESSION ADMIN REDESIGN
+Session     : Dev 2 (Admin Dashboard + CSS overhaul)
+Commit      : 2c43fd7 — feat: redesign admin dashboard + comprehensive CSS overhaul
+
+─── SESSION 2026-05-22 — ADMIN REDESIGN COMPLET ────────────────────────────
+
+1. AdminDashboard.tsx — REDESIGN COMPLET
+   - Suppression de tous les boutons d'action (📞 💬)
+   - Nouveau layout : Alert banner → KPI cards (4) → Aujourd'hui strip
+     → Mini Calendar + Accès rapide → Pipeline dossiers + RDV stats
+     → Table des derniers dossiers reçus
+   - MiniCalendar : grille mensuelle auto-fetch avec points colorés par statut RDV
+   - PipelineBar : barres de progression horizontales par statut dossier
+   - QuickLink : cartes de navigation avec badges (nouveaux/non lus)
+   - KPI : stats avec bordure colorée supérieure + icône + lien cliquable
+   - Table propre : monospace pour numéro dossier, pills colorés, hover
+
+2. custom-admin.css — OVERHAUL COMPLET (~400 lignes)
+   - Tables : header gris, row hover rouge clair, typographie 12.5px
+   - Formulaires : inputs bords rondis, focus ring rouge, labels uppercase
+   - Sidebar : group labels rouge + uppercase, nav links hover arrondi
+   - Boutons : ombres, hover states, secondary style
+   - Pagination : boutons carrés arrondis, page active rouge
+   - Toasts : bord coloré gauche (succès vert, erreur rouge)
+   - Modals : border-radius 14px, ombres, footer grisé
+   - Scrollbar : custom webkit 6px, thumb rouge au hover
+   - Select/ReactSelect : focus et option selected rouge
+
+3. ZonesMapClient.tsx — NOUVEAU (refactor zones/page.tsx)
+   - Extraction du dynamic import Leaflet hors du Server Component
+   - Résout le conflit Server Component + dynamic({ ssr: false })
+
+BRANCHE ACTIVE    : main
+BLOQUEURS         : Aucun
+Reprendre à : "Déploiement production Vercel + Railway"
+
 Date        : 2026-05-20 — FIN DE SESSION
 Session     : Dev 2 (Auth + Messagerie + Bugs fixes)
 Commit      : 9552dc5 — fix: renommer /api/messages → /api/client/message
