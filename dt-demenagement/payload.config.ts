@@ -50,6 +50,13 @@ export default buildConfig({
     importMap: {
       baseDir: path.resolve(dirname),
     },
+    components: {
+      graphics: {
+        Logo: '@/components/payload/AdminLogo',
+        Icon: '@/components/payload/AdminIcon',
+      },
+      afterDashboard: ['@/components/payload/AdminDashboard'],
+    },
   },
 
   localization: {

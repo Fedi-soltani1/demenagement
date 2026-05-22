@@ -16,7 +16,7 @@ const Demenagements: CollectionConfig = {
   admin: {
     group: '📬 Demandes clients',
     useAsTitle: 'numeroDossier',
-    defaultColumns: ['numeroDossier', 'nomComplet', 'telephone', 'statut', 'dateDemenagement'],
+    defaultColumns: ['numeroDossier', 'nomComplet', 'telephone', 'statut', 'devisStatut', 'dateDemenagement', 'createdAt'],
     description: 'Chaque ligne = une demande de devis reçue. Ouvrir un dossier et changer le "Statut du dossier" pour que le client voie l\'avancement en temps réel.',
   },
 
@@ -54,6 +54,9 @@ const Demenagements: CollectionConfig = {
       defaultValue: 'devis_recu',
       admin: {
         description: '👆 C\'est CE champ que vous modifiez au quotidien. Le client voit le statut dans son espace.',
+        components: {
+          Cell: '@/components/payload/DossierStatutCell',
+        },
       },
       options: [
         { label: '📥 Devis reçu — nouveau, pas encore traité',     value: 'devis_recu' },

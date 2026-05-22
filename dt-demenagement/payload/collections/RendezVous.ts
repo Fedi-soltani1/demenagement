@@ -27,7 +27,12 @@ const RendezVous: CollectionConfig = {
       type: 'select',
       required: true,
       defaultValue: 'nouveau',
-      admin: { description: 'Mettre à jour après avoir contacté le client.' },
+      admin: {
+        description: 'Mettre à jour après avoir contacté le client.',
+        components: {
+          Cell: '@/components/payload/RDVStatutCell',
+        },
+      },
       options: [
         { label: '🆕 Nouveau — pas encore traité', value: 'nouveau' },
         { label: '✅ Confirmé — RDV validé',        value: 'confirme' },
@@ -64,6 +69,16 @@ const RendezVous: CollectionConfig = {
       label: 'Heure souhaitée',
       type: 'text',
       required: false,
+    },
+    {
+      name: 'actionsRapides',
+      type: 'ui',
+      label: '⚡ Actions rapides',
+      admin: {
+        components: {
+          Field: '@/components/payload/RDVActions',
+        },
+      },
     },
   ],
 }
