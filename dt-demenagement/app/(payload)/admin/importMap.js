@@ -1,5 +1,7 @@
 import { default as default_043a135b5bf61c6c0293ccc212327364 } from '@/components/payload/DossierPipelineField'
+import { default as default_ba9f6cd83058905c544f217015932b9a } from '@/components/payload/DossierNumeroCell'
 import { default as default_5a0188a70b9b30cbd877f4236d25597f } from '@/components/payload/DossierStatutCell'
+import { default as default_a3e73777b572bed8f65364e432be9838 } from '@/components/payload/DossierClientCell'
 import { default as default_8ac8105d304bf750f880d02219803fb8 } from '@/components/payload/DossierNotesCell'
 import { default as default_7b1942edc728b4f0f4c01b21977f4787 } from '@/components/payload/DevisStatutCell'
 import { default as default_48385a705c89432a57989e43a54a039c } from '@/components/payload/DevisGenerator'
@@ -41,7 +43,9 @@ import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } f
 /** @type import('payload').ImportMap */
 export const importMap = {
   "@/components/payload/DossierPipelineField#default": default_043a135b5bf61c6c0293ccc212327364,
+  "@/components/payload/DossierNumeroCell#default": default_ba9f6cd83058905c544f217015932b9a,
   "@/components/payload/DossierStatutCell#default": default_5a0188a70b9b30cbd877f4236d25597f,
+  "@/components/payload/DossierClientCell#default": default_a3e73777b572bed8f65364e432be9838,
   "@/components/payload/DossierNotesCell#default": default_8ac8105d304bf750f880d02219803fb8,
   "@/components/payload/DevisStatutCell#default": default_7b1942edc728b4f0f4c01b21977f4787,
   "@/components/payload/DevisGenerator#default": default_48385a705c89432a57989e43a54a039c,
