@@ -7,8 +7,8 @@ const RendezVous: CollectionConfig = {
   labels: { singular: 'Rendez-vous visite', plural: 'Rendez-vous visites' },
 
   access: {
-    read:   isCommercial,
-    create: isAdmin,
+    read:   ({ req: { user } }) => Boolean(user),
+    create: ({ req: { user } }) => Boolean(user),
     update: isCommercial,
     delete: isAdmin,
   },

@@ -37,7 +37,6 @@ import { default as default_313e964a7107ac39e31c5ff2e54b6ba9 } from '@/component
 import { default as default_90396af18c2250adfc20df25d311cd9a } from '@/components/payload/AdminDashboard'
 import { default as default_102ed69b2b53d2a7d35cc74f912ad60e } from '@/components/payload/CalendarNavLink'
 import { default as default_83caa34b9c33d3543c6ac49d8e8a5659 } from '@/components/payload/RDVCalendarView'
-import { default as default_6af5e44bfe8969d895b729c864e38279 } from '@/components/payload/ThemeToggle'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
 /** @type import('payload').ImportMap */
@@ -81,6 +80,5 @@ export const importMap = {
   "@/components/payload/AdminDashboard#default": default_90396af18c2250adfc20df25d311cd9a,
   "@/components/payload/CalendarNavLink#default": default_102ed69b2b53d2a7d35cc74f912ad60e,
   "@/components/payload/RDVCalendarView#default": default_83caa34b9c33d3543c6ac49d8e8a5659,
-  "@/components/payload/ThemeToggle#default": default_6af5e44bfe8969d895b729c864e38279,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }

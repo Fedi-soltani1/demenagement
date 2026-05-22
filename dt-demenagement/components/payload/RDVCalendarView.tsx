@@ -66,11 +66,12 @@ export default function RDVCalendarView() {
   const todayKey = `${now.getFullYear()}-${pad2(now.getMonth() + 1)}-${pad2(now.getDate())}`
 
   const fetchMonth = useCallback(() => {
-    const first = `${year}-${pad2(month + 1)}-01`
-    const last  = `${year}-${pad2(month + 1)}-${pad2(new Date(year, month + 1, 0).getDate())}`
+    // dateVisite is a text field (YYYY-MM-DD) — use "like" with year-month prefix
+    // (greater_than_or_equal / less_than_or_equal are not reliable on text fields in Payload)
+    const yearMonth = `${year}-${pad2(month + 1)}`
     setLoading(true)
     fetch(
-      `/api/rendez-vous?where[dateVisite][greater_than_or_equal]=${first}&where[dateVisite][less_than_or_equal]=${last}&limit=200&sort=dateVisite`,
+      `/api/rendez-vous?where[dateVisite][like]=${yearMonth}&limit=200&sort=dateVisite`,
       { credentials: 'include' }
     )
       .then((r) => r.ok ? r.json() : Promise.reject())

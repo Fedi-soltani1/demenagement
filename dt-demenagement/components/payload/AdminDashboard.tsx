@@ -82,9 +82,8 @@ function MiniCalendar() {
   const todayKey = `${year}-${pad2(month + 1)}-${pad2(now.getDate())}`
 
   useEffect(() => {
-    const firstDay = `${year}-${pad2(month + 1)}-01`
-    const lastDay  = `${year}-${pad2(month + 1)}-${pad2(new Date(year, month + 1, 0).getDate())}`
-    fetch(`/api/rendez-vous?where[dateVisite][greater_than_or_equal]=${firstDay}&where[dateVisite][less_than_or_equal]=${lastDay}&limit=100`, { credentials: 'include' })
+    const yearMonth = `${year}-${pad2(month + 1)}`
+    fetch(`/api/rendez-vous?where[dateVisite][like]=${yearMonth}&limit=100`, { credentials: 'include' })
       .then((r) => r.ok ? r.json() : Promise.reject())
       .then((d: { docs: MiniRDV[] }) => setRdvs(d.docs ?? []))
       .catch(() => {})
