@@ -107,7 +107,7 @@ body,
 header.app-header {
   background: var(--dt-header-bg) !important;
   border-bottom: 1px solid var(--dt-border) !important;
-  box-shadow: 0 1px 0 var(--dt-border), 0 2px 12px rgba(0,0,0,0.05) !important;
+  box-shadow: 0 1px 0 var(--dt-border), 0 4px 16px rgba(0,0,0,0.04) !important;
   height: 56px !important;
   border-top: 3px solid var(--dt-red) !important;
   position: sticky !important;
@@ -115,35 +115,30 @@ header.app-header {
   z-index: 100 !important;
 }
 
-/* Flex layout inside header */
+/* Flex layout inside header — single row, full width */
 .app-header__content,
 .app-header > div {
   height: 100% !important;
   display: flex !important;
   align-items: center !important;
-  padding: 0 20px !important;
-  gap: 12px !important;
+  padding: 0 16px !important;
+  gap: 8px !important;
+  flex: 1 !important;
 }
 
-/* Hide Payload's "DT / Dashboard" breadcrumb from the top bar — it clutters the header */
+/* Hide Payload's "DT / Dashboard" breadcrumb from the top bar */
 .app-header .step-nav,
 header.app-header .step-nav {
   display: none !important;
 }
 
-/* Spacer so right-side items are pushed to the right */
-.app-header__content,
-.app-header > div {
-  flex: 1 !important;
-}
-
-/* Breadcrumb below header (page view header) — keep visible */
+/* Breadcrumb below header — keep visible and styled */
 .view-description .step-nav,
 .collection-edit__header .step-nav {
   display: flex !important;
   align-items: center !important;
   gap: 4px !important;
-  font-size: 12px !important;
+  font-size: 11.5px !important;
   color: var(--dt-muted) !important;
 }
 
@@ -152,8 +147,8 @@ header.app-header .step-nav {
   color: var(--dt-text2) !important;
   text-decoration: none !important;
   font-weight: 600 !important;
-  font-size: 12.5px !important;
-  padding: 3px 7px !important;
+  font-size: 12px !important;
+  padding: 3px 6px !important;
   border-radius: 5px !important;
   transition: background 0.12s, color 0.12s !important;
 }
@@ -182,10 +177,10 @@ header.app-header .step-nav {
 .account-nav,
 .account-nav__toggle,
 .app-header .account {
-  display: flex !important;
+  display: inline-flex !important;
   align-items: center !important;
-  gap: 8px !important;
-  padding: 6px 12px !important;
+  gap: 6px !important;
+  padding: 5px 10px !important;
   border-radius: 8px !important;
   font-size: 12px !important;
   font-weight: 600 !important;
@@ -194,21 +189,48 @@ header.app-header .step-nav {
   border: 1px solid var(--dt-border) !important;
   cursor: pointer !important;
   transition: background 0.12s, border-color 0.12s, color 0.12s !important;
+  white-space: nowrap !important;
 }
 
 .account-nav:hover,
 .account-nav__toggle:hover {
   background: rgba(181,32,39,0.06) !important;
-  border-color: rgba(181,32,39,0.25) !important;
+  border-color: rgba(181,32,39,0.3) !important;
   color: var(--dt-red) !important;
 }
 
-/* Locale switcher */
+/* Locale switcher — compact chip */
 .locale-picker,
 .app-header .locale-picker {
-  font-size: 12px !important;
-  font-weight: 600 !important;
+  font-size: 11.5px !important;
+  font-weight: 700 !important;
   color: var(--dt-muted) !important;
+  letter-spacing: 0.5px !important;
+  text-transform: uppercase !important;
+}
+
+/* Hamburger / nav-toggle button */
+.nav__toggle,
+.hamburger,
+.app-header .nav__toggle {
+  width: 34px !important;
+  height: 34px !important;
+  border-radius: 7px !important;
+  border: 1px solid var(--dt-border) !important;
+  background: var(--dt-surface2) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  color: var(--dt-text2) !important;
+  transition: background 0.12s, color 0.12s !important;
+  flex-shrink: 0 !important;
+}
+
+.nav__toggle:hover,
+.hamburger:hover {
+  background: rgba(181,32,39,0.06) !important;
+  color: var(--dt-red) !important;
 }
 
 /* ═══════════════════════════════════════════
@@ -219,91 +241,139 @@ header.app-header .step-nav {
 aside.nav__wrap {
   background: var(--dt-nav-bg) !important;
   border-right: 1px solid var(--dt-border) !important;
-  box-shadow: 2px 0 8px rgba(0,0,0,0.03) !important;
+  box-shadow: 1px 0 0 var(--dt-border) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
 }
 
-/* Logo area */
+/* ── Logo / brand header ── */
 .nav__header {
-  padding: 14px 16px 10px !important;
-  border-bottom: 1px solid var(--dt-border2) !important;
-  margin-bottom: 4px !important;
+  padding: 14px 16px 12px !important;
+  border-bottom: 1px solid var(--dt-border) !important;
+  flex-shrink: 0 !important;
 }
 
-/* Group labels */
+/* ── Scrollable nav area ── */
+.nav__scroll,
+.nav__groups {
+  flex: 1 !important;
+  overflow-y: auto !important;
+  padding: 6px 0 8px !important;
+}
+
+/* ── Group separators ── */
+.nav__group {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+  border-top: none !important;
+}
+
+.nav__group + .nav__group {
+  margin-top: 2px !important;
+}
+
+/* ── Group labels ── */
 .nav__group-label,
 .nav__group > span,
 nav .group-label {
-  font-size: 9px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  font-size: 9.5px !important;
   font-weight: 800 !important;
-  letter-spacing: 1px !important;
+  letter-spacing: 1.1px !important;
   text-transform: uppercase !important;
-  color: var(--dt-red) !important;
-  padding: 12px 18px 4px !important;
-  display: block !important;
-  opacity: 1 !important;
-}
-
-/* Globals group label in a neutral tone */
-.nav__group--globals .nav__group-label {
   color: var(--dt-muted) !important;
+  padding: 14px 18px 5px !important;
+  opacity: 1 !important;
+  user-select: none !important;
 }
 
-/* Group separators */
-.nav__group {
-  border-top: 1px solid var(--dt-border2) !important;
-  margin-top: 2px !important;
-  padding-top: 2px !important;
+/* First group (🚚 Opérations) — highlight in red */
+.nav__group:first-of-type .nav__group-label,
+.nav__group:first-of-type > span {
+  color: var(--dt-red) !important;
 }
 
-.nav__group:first-of-type {
-  border-top: none !important;
-  margin-top: 0 !important;
-}
-
-/* Nav links */
+/* ── Nav links ── */
 .nav__link {
   display: flex !important;
   align-items: center !important;
-  gap: 8px !important;
-  border-radius: 7px !important;
-  margin: 1px 10px !important;
-  padding: 7px 10px !important;
-  font-size: 12.5px !important;
+  gap: 9px !important;
+  border-radius: 8px !important;
+  margin: 1px 8px !important;
+  padding: 8px 11px !important;
+  font-size: 13px !important;
   font-weight: 500 !important;
   color: var(--dt-text2) !important;
   text-decoration: none !important;
-  transition: background 0.12s, color 0.12s !important;
+  transition: background 0.13s, color 0.13s !important;
   position: relative !important;
+  overflow: hidden !important;
 }
 
 .nav__link:hover {
-  background: rgba(181,32,39,0.06) !important;
-  color: var(--dt-red) !important;
+  background: rgba(181,32,39,0.07) !important;
+  color: var(--dt-text) !important;
 }
 
 .nav__link--active,
 .nav__link[aria-current='page'] {
-  background: rgba(181,32,39,0.09) !important;
+  background: rgba(181,32,39,0.10) !important;
   color: var(--dt-red) !important;
   font-weight: 700 !important;
 }
 
-.nav__link--active::before {
-  content: '';
-  position: absolute;
-  left: -10px;
-  top: 4px;
-  bottom: 4px;
-  width: 3px;
-  background: var(--dt-red);
-  border-radius: 0 3px 3px 0;
+/* Left accent bar on active link */
+.nav__link--active::before,
+.nav__link[aria-current='page']::before {
+  content: '' !important;
+  position: absolute !important;
+  left: 0 !important;
+  top: 5px !important;
+  bottom: 5px !important;
+  width: 3px !important;
+  background: var(--dt-red) !important;
+  border-radius: 0 3px 3px 0 !important;
 }
 
-/* Bottom area */
+/* ── Bottom account / controls area ── */
 .nav__account,
 .nav__controls {
-  border-top: 1px solid var(--dt-border2) !important;
-  padding: 8px 10px 12px !important;
+  border-top: 1px solid var(--dt-border) !important;
+  padding: 10px 10px 14px !important;
+  flex-shrink: 0 !important;
+  background: var(--dt-surface2) !important;
+}
+
+.nav__account a,
+.nav__controls a,
+.nav__account button,
+.nav__controls button {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 7px 10px !important;
+  border-radius: 8px !important;
+  font-size: 12.5px !important;
+  font-weight: 600 !important;
+  color: var(--dt-text2) !important;
+  text-decoration: none !important;
+  width: 100% !important;
+  transition: background 0.12s, color 0.12s !important;
+  background: none !important;
+  border: none !important;
+  cursor: pointer !important;
+  text-align: start !important;
+}
+
+.nav__account a:hover,
+.nav__controls a:hover,
+.nav__account button:hover,
+.nav__controls button:hover {
+  background: rgba(181,32,39,0.07) !important;
+  color: var(--dt-red) !important;
 }
 
 /* ═══════════════════════════════════════════
@@ -952,23 +1022,40 @@ input[type='radio']:checked {
 }
 
 [data-theme='dark'] .nav__link {
-  color: #8892b0 !important;
+  color: #c0c8df !important;
 }
 
 [data-theme='dark'] .nav__link:hover {
   background: rgba(204,42,51,0.12) !important;
-  color: #e03540 !important;
+  color: #e2e6f0 !important;
 }
 
 [data-theme='dark'] .nav__link--active,
 [data-theme='dark'] .nav__link[aria-current='page'] {
   background: rgba(204,42,51,0.18) !important;
   color: #e03540 !important;
+  font-weight: 700 !important;
 }
 
 [data-theme='dark'] .nav__account,
 [data-theme='dark'] .nav__controls {
-  border-top: 1px solid #1e2130 !important;
+  border-top: 1px solid #262a38 !important;
+  background: #1a1d2a !important;
+}
+
+[data-theme='dark'] .nav__account a,
+[data-theme='dark'] .nav__controls a,
+[data-theme='dark'] .nav__account button,
+[data-theme='dark'] .nav__controls button {
+  color: #c0c8df !important;
+}
+
+[data-theme='dark'] .nav__account a:hover,
+[data-theme='dark'] .nav__controls a:hover,
+[data-theme='dark'] .nav__account button:hover,
+[data-theme='dark'] .nav__controls button:hover {
+  background: rgba(204,42,51,0.12) !important;
+  color: #e03540 !important;
 }
 
 /* View description dark */
@@ -1203,14 +1290,29 @@ input[type='radio']:checked {
 [data-theme='dark'] .account-nav__toggle,
 [data-theme='dark'] .app-header .account {
   background: #1e2130 !important;
-  border-color: #262a38 !important;
-  color: #8892b0 !important;
+  border-color: #2e3248 !important;
+  color: #c0c8df !important;
 }
 
 [data-theme='dark'] .account-nav:hover,
 [data-theme='dark'] .account-nav__toggle:hover {
   background: rgba(204,42,51,0.15) !important;
-  border-color: rgba(204,42,51,0.3) !important;
+  border-color: rgba(204,42,51,0.35) !important;
+  color: #e03540 !important;
+}
+
+/* Hamburger / toggle dark */
+[data-theme='dark'] .nav__toggle,
+[data-theme='dark'] .hamburger,
+[data-theme='dark'] .app-header .nav__toggle {
+  background: #1e2130 !important;
+  border-color: #2e3248 !important;
+  color: #c0c8df !important;
+}
+
+[data-theme='dark'] .nav__toggle:hover,
+[data-theme='dark'] .hamburger:hover {
+  background: rgba(204,42,51,0.15) !important;
   color: #e03540 !important;
 }
 
@@ -1237,7 +1339,18 @@ input[type='radio']:checked {
 /* Locale picker dark */
 [data-theme='dark'] .locale-picker,
 [data-theme='dark'] .app-header .locale-picker {
-  color: #5a6080 !important;
+  color: #6c7289 !important;
+}
+
+/* Nav group labels dark */
+[data-theme='dark'] .nav__group-label,
+[data-theme='dark'] .nav__group > span {
+  color: #4a5068 !important;
+}
+
+[data-theme='dark'] .nav__group:first-of-type .nav__group-label,
+[data-theme='dark'] .nav__group:first-of-type > span {
+  color: #cc2a33 !important;
 }
 
 /* Add-row button dark */
