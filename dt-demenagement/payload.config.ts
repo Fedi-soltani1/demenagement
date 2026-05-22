@@ -58,7 +58,6 @@ export default buildConfig({
       },
       header:         ['@/components/payload/AdminHeaderBar'],
       afterDashboard: ['@/components/payload/AdminDashboard'],
-      beforeNavLinks: ['@/components/payload/CalendarNavLink'],
       views: {
         rdvCalendar: {
           Component: '@/components/payload/RDVCalendarView',

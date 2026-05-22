@@ -11,6 +11,7 @@ const Settings: GlobalConfig = {
   },
 
   admin: {
+    group: '⚙️ Paramètres',
     description: 'Informations de contact, réseaux sociaux et options globales du site. Ces données apparaissent dans le footer, la page contact et le bouton WhatsApp.',
   },
 

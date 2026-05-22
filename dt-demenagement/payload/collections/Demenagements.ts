@@ -16,7 +16,7 @@ const Demenagements: CollectionConfig = {
   admin: {
     group: '🚚 Opérations',
     useAsTitle: 'numeroDossier',
-    defaultColumns: ['numeroDossier', 'nomComplet', 'telephone', 'statut', 'devisStatut', 'notesRapides', 'dateDemenagement', 'createdAt'],
+    defaultColumns: ['numeroDossier', 'nomComplet', 'statut', 'dateDemenagement', 'devisStatut', 'notesRapides'],
     listSearchableFields: ['numeroDossier', 'nomComplet', 'telephone', 'clientId'],
     description: 'Chaque ligne = une demande de devis reçue. Ouvrir un dossier et changer le "Statut du dossier" pour que le client voie l\'avancement en temps réel.',
     components: {
@@ -60,6 +60,9 @@ const Demenagements: CollectionConfig = {
       admin: {
         description: 'Généré automatiquement à la soumission du formulaire. Ne pas modifier.',
         readOnly: true,
+        components: {
+          Cell: '@/components/payload/DossierNumeroCell',
+        },
       },
     },
     {
@@ -93,9 +96,15 @@ const Demenagements: CollectionConfig = {
     // ── Informations client ──────────────────────────────────────────────────
     {
       name: 'nomComplet',
-      label: 'Nom complet du client',
+      label: 'Client',
       type: 'text',
-      admin: { readOnly: true, description: 'Rempli automatiquement depuis le formulaire.' },
+      admin: {
+        readOnly: true,
+        description: 'Rempli automatiquement depuis le formulaire.',
+        components: {
+          Cell: '@/components/payload/DossierClientCell',
+        },
+      },
     },
     {
       name: 'clientId',
