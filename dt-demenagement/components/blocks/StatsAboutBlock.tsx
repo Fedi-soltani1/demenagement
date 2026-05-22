@@ -14,7 +14,7 @@ function toYoutubeEmbed(url: string): string {
     let id: string | null = null
     if (u.hostname.includes('youtu.be')) id = u.pathname.slice(1)
     else if (u.hostname.includes('youtube.com')) id = u.searchParams.get('v')
-    if (id) return `https://www.youtube.com/embed/${id}?autoplay=1&rel=0`
+    if (id) return `https://www.youtube.com/embed/${id}?autoplay=1&controls=0&rel=0&modestbranding=1&disablekb=1`
   } catch { /* ignore */ }
   return url
 }
