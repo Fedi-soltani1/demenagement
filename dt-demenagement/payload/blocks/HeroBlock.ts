@@ -47,18 +47,26 @@ export const HeroBlock: Block = {
       ],
     },
     {
+      name: 'videoYoutube',
+      label: 'Vidéo YouTube de fond (optionnelle)',
+      type: 'text',
+      admin: {
+        description: 'Coller le lien YouTube (ex: https://www.youtube.com/watch?v=ABC123). Prioritaire sur l\'image si les deux sont renseignés. Muette, en boucle, sans contrôles.',
+      },
+    },
+    {
       name: 'imageHero',
       label: 'Image de fond (optionnelle)',
       type: 'upload',
       relationTo: 'media',
-      admin: { description: 'Image affichée si la scène 3D est désactivée ou sur mobile.' },
+      admin: { description: 'Image affichée si la scène 3D est désactivée et aucune vidéo YouTube renseignée.' },
     },
     {
       name: 'afficher3D',
       label: 'Afficher l\'animation 3D (camion)',
       type: 'checkbox',
       defaultValue: true,
-      admin: { description: 'Désactivée automatiquement sur mobile. Décocher pour afficher l\'image à la place.' },
+      admin: { description: 'Désactivée automatiquement sur mobile. Décocher pour afficher la vidéo ou l\'image à la place.' },
     },
   ],
 }
