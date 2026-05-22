@@ -44,24 +44,25 @@ export default function DossierStatutCell({ cellData, rowData }: CellProps) {
 
   // Color the entire row based on status and age
   useEffect(() => {
-    const tr = wrapperRef.current?.closest('tr') as HTMLTableRowElement | null
+    const tr    = wrapperRef.current?.closest('tr') as HTMLTableRowElement | null
     if (!tr) return
 
+    const isDark     = document.documentElement.getAttribute('data-theme') === 'dark'
     const createdAt  = rowData?.createdAt as string | undefined
     const ageHours   = createdAt ? (Date.now() - new Date(createdAt).getTime()) / 3600000 : 0
 
     if (statut === 'annule') {
-      tr.style.background = '#fafafa'
-      tr.style.opacity    = '0.6'
+      tr.style.background = isDark ? 'rgba(255,255,255,0.02)' : '#fafafa'
+      tr.style.opacity    = '0.55'
     } else if (statut === 'livre') {
-      tr.style.background = '#f8f4ff'
+      tr.style.background = isDark ? 'rgba(124,58,237,0.07)' : '#f8f4ff'
       tr.style.opacity    = '1'
     } else if (statut === 'devis_recu' && ageHours >= 48) {
-      tr.style.background  = '#fffbf0'
-      tr.style.borderLeft  = '3px solid #f59e0b'
-      tr.style.opacity     = '1'
+      tr.style.background = isDark ? 'rgba(245,158,11,0.07)' : '#fffbf0'
+      tr.style.borderLeft = '3px solid #f59e0b'
+      tr.style.opacity    = '1'
     } else if (statut === 'confirme') {
-      tr.style.background = '#f8fff9'
+      tr.style.background = isDark ? 'rgba(22,163,74,0.07)' : '#f8fff9'
       tr.style.opacity    = '1'
     } else {
       tr.style.background = ''

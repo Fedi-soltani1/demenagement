@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useRef, useEffect } from 'react'
-import { useTheme, useAuth, useLocale } from '@payloadcms/ui'
+import { useTheme, useAuth, useLocale, useNav } from '@payloadcms/ui'
 import { usePathname } from 'next/navigation'
 
 /* ─── page title lookup ─────────────────────────────────────────────────────── */
@@ -31,12 +31,22 @@ function getPageTitle(path: string): string {
   return last ? last.charAt(0).toUpperCase() + last.replace(/-/g, ' ').slice(1) : 'Admin'
 }
 
+/* ─── Hamburger icon ────────────────────────────────────────────────────────── */
+function HamburgerIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M3 9H15M3 5H15M3 13H15" stroke="currentColor" strokeWidth="1.6" strokeLinecap="square" />
+    </svg>
+  )
+}
+
 /* ─── component ─────────────────────────────────────────────────────────────── */
 export default function AdminHeaderBar() {
-  const { theme, setTheme } = useTheme()
-  const { user, logOut }    = useAuth()
-  const localeData          = useLocale()
-  const pathname            = usePathname()
+  const { theme, setTheme }      = useTheme()
+  const { user, logOut }         = useAuth()
+  const localeData               = useLocale()
+  const pathname                 = usePathname()
+  const { navOpen, setNavOpen }  = useNav()
   const [menuOpen, setMenuOpen]     = useState(false)
   const [localeOpen, setLocaleOpen] = useState(false)
   const menuRef   = useRef<HTMLDivElement>(null)
@@ -66,28 +76,44 @@ export default function AdminHeaderBar() {
   }
 
   return (
-    <header style={header}>
+    <div style={wrapper}>
+
+      {/* ── Sidebar toggle ── */}
+      <button
+        type="button"
+        onClick={() => setNavOpen(!navOpen)}
+        title={navOpen ? 'Réduire le menu' : 'Ouvrir le menu'}
+        aria-label={navOpen ? 'Fermer la navigation' : 'Ouvrir la navigation'}
+        style={{
+          ...btnBase,
+          color: 'var(--dt-text2)',
+          flexShrink: 0,
+        }}
+      >
+        <HamburgerIcon />
+      </button>
+
+      {/* ── Separator ── */}
+      <div style={divider} />
 
       {/* ── DT Logo ── */}
       <a href="/admin" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none', flexShrink: 0 }}>
-        {/* Icon box */}
         <div style={{
-          width: '32px', height: '32px', borderRadius: '8px',
+          width: '30px', height: '30px', borderRadius: '7px',
           background: 'linear-gradient(145deg,#cc2a33 0%,#8a1820 100%)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           boxShadow: '0 2px 6px rgba(181,32,39,0.35)', flexShrink: 0,
         }}>
-          <span style={{ color: '#fff', fontWeight: 900, fontSize: '12px', letterSpacing: '-0.5px' }}>DT</span>
+          <span style={{ color: '#fff', fontWeight: 900, fontSize: '11px', letterSpacing: '-0.5px' }}>DT</span>
         </div>
-        {/* Name — hidden on very small screens via CSS class */}
         <div style={{ lineHeight: 1.25 }} className="dt-header-brand">
-          <div style={{ color: 'var(--dt-text)', fontWeight: 700, fontSize: '13px', whiteSpace: 'nowrap' }}>DT Déménagement</div>
+          <div style={{ color: 'var(--dt-text)', fontWeight: 700, fontSize: '12.5px', whiteSpace: 'nowrap' }}>DT Déménagement</div>
           <div style={{ color: 'var(--dt-red)', fontSize: '9px', letterSpacing: '0.06em', fontWeight: 700, textTransform: 'uppercase' }}>Tunisie · Admin</div>
         </div>
       </a>
 
       {/* ── Separator + current page ── */}
-      <span style={{ color: 'var(--dt-muted2)', fontSize: '16px', flexShrink: 0, margin: '0 6px', userSelect: 'none' }}>›</span>
+      <span style={{ color: 'var(--dt-muted2)', fontSize: '15px', flexShrink: 0, margin: '0 4px', userSelect: 'none' }}>›</span>
       <span style={pageTitleStyle}>{pageTitle}</span>
 
       {/* ── Spacer ── */}
@@ -101,8 +127,8 @@ export default function AdminHeaderBar() {
           title="Changer de langue"
           style={{
             ...btnBase,
-            fontSize: '11px', fontWeight: 800, letterSpacing: '0.5px',
-            padding: '0 10px', width: 'auto', minWidth: '42px',
+            fontSize: '10.5px', fontWeight: 800, letterSpacing: '0.5px',
+            padding: '0 10px', width: 'auto', minWidth: '40px',
             color: 'var(--dt-muted)',
           }}
         >
@@ -166,14 +192,12 @@ export default function AdminHeaderBar() {
 
         {menuOpen && (
           <div style={dropdownPanel}>
-            {/* User info */}
             <div style={{ padding: '10px 14px 8px', borderBottom: '1px solid var(--dt-border)' }}>
               <div style={{ fontSize: '12.5px', fontWeight: 700, color: 'var(--dt-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '180px' }}>
                 {displayName}
               </div>
               <div style={{ fontSize: '11px', color: 'var(--dt-muted)', marginTop: '2px' }}>Administrateur</div>
             </div>
-            {/* Actions */}
             <div style={{ padding: '4px' }}>
               <a
                 href="/admin/account"
@@ -199,32 +223,33 @@ export default function AdminHeaderBar() {
           </div>
         )}
       </div>
-    </header>
+    </div>
   )
 }
 
 /* ─── Styles ─────────────────────────────────────────────────────────────────── */
 
-const header: React.CSSProperties = {
-  display:         'flex',
-  alignItems:      'center',
-  padding:         '0 14px 0 16px',
-  gap:             '6px',
-  height:          '56px',
-  background:      'var(--dt-header-bg)',
-  borderBottom:    '1px solid var(--dt-border)',
-  borderTop:       '3px solid var(--dt-red)',
-  boxShadow:       '0 1px 0 var(--dt-border), 0 4px 16px rgba(0,0,0,0.04)',
-  position:        'sticky',
-  top:             0,
-  zIndex:          200,
-  flexShrink:      0,
-  width:           '100%',
-  boxSizing:       'border-box',
+const wrapper: React.CSSProperties = {
+  display:        'flex',
+  alignItems:     'center',
+  padding:        '0 14px 0 12px',
+  gap:            '6px',
+  height:         '100%',
+  width:          '100%',
+  boxSizing:      'border-box',
+  flex:           1,
+}
+
+const divider: React.CSSProperties = {
+  width:        '1px',
+  height:       '20px',
+  background:   'var(--dt-border)',
+  flexShrink:   0,
+  margin:       '0 2px',
 }
 
 const pageTitleStyle: React.CSSProperties = {
-  fontSize:     '13.5px',
+  fontSize:     '13px',
   fontWeight:   600,
   color:        'var(--dt-text)',
   whiteSpace:   'nowrap',
@@ -234,9 +259,9 @@ const pageTitleStyle: React.CSSProperties = {
 }
 
 const btnBase: React.CSSProperties = {
-  width:          '34px',
-  height:         '34px',
-  borderRadius:   '8px',
+  width:          '32px',
+  height:         '32px',
+  borderRadius:   '7px',
   border:         '1px solid var(--dt-border)',
   background:     'var(--dt-surface2)',
   color:          'var(--dt-text)',
@@ -252,7 +277,7 @@ const btnBase: React.CSSProperties = {
 
 const dropdownPanel: React.CSSProperties = {
   position:     'absolute',
-  top:          '42px',
+  top:          '40px',
   right:        0,
   minWidth:     '210px',
   background:   'var(--dt-surface)',

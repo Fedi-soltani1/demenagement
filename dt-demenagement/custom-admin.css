@@ -116,164 +116,59 @@ header.app-header {
   overflow: visible !important;
 }
 
-/* Single-row flex layout using Payload v3's real class names */
+/* ── Hide ALL native header elements — AdminHeaderBar owns the full bar ── */
+.app-header__mobile-nav-toggler,
+.nav-toggler,
+.app-header__step-nav-wrapper,
+.app-header__localizer-spacing,
+.app-header__localizer,
+.app-header__account,
+.app-header__bg {
+  display: none !important;
+}
+
+/* ── Flatten wrapper — no padding, no gap (AdminHeaderBar handles its own) ── */
 .app-header__wrapper {
   display: flex !important;
   align-items: center !important;
   height: 100% !important;
-  padding: 0 14px 0 12px !important;
-  gap: 6px !important;
+  padding: 0 !important;
+  gap: 0 !important;
   width: 100% !important;
   box-sizing: border-box !important;
 }
 
+/* ── Controls + actions fill the full header width ── */
 .app-header__controls-wrapper {
   display: flex !important;
   align-items: center !important;
   flex: 1 !important;
-  gap: 6px !important;
   min-width: 0 !important;
   height: 100% !important;
 }
 
-/* Breadcrumb takes all available space */
-.app-header__step-nav-wrapper {
-  flex: 1 !important;
-  min-width: 0 !important;
-  display: flex !important;
-  align-items: center !important;
-}
-
-/* Actions slot — our AdminHeaderBar goes here */
 .app-header__actions-wrapper {
   display: flex !important;
   align-items: center !important;
-  flex-shrink: 0 !important;
+  flex: 1 !important;
+  height: 100% !important;
+  min-width: 0 !important;
 }
 
 .app-header__actions {
   display: flex !important;
   align-items: center !important;
-  gap: 5px !important;
+  flex: 1 !important;
+  height: 100% !important;
+  width: 100% !important;
+  min-width: 0 !important;
 }
 
-/* ── Hamburger ── */
-.nav-toggler,
-.app-header__mobile-nav-toggler {
-  width: 34px !important;
-  height: 34px !important;
-  border-radius: 7px !important;
-  border: 1px solid var(--dt-border) !important;
-  background: var(--dt-surface2) !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  cursor: pointer !important;
-  color: var(--dt-text2) !important;
-  transition: background 0.12s, color 0.12s !important;
-  flex-shrink: 0 !important;
-}
-
-.nav-toggler:hover,
-.app-header__mobile-nav-toggler:hover {
-  background: rgba(181,32,39,0.07) !important;
-  color: var(--dt-red) !important;
-  border-color: rgba(181,32,39,0.25) !important;
-}
-
-.nav-toggler .icon,
-.hamburger .icon {
-  stroke: currentColor !important;
-}
-
-/* ── Breadcrumb / step-nav inside header ── */
-.app-header__step-nav,
-.step-nav.app-header__step-nav {
-  display: flex !important;
-  align-items: center !important;
-  gap: 6px !important;
-  font-size: 12px !important;
-  color: var(--dt-muted) !important;
-  overflow: hidden !important;
-}
-
-.step-nav__home {
-  display: flex !important;
-  align-items: center !important;
-  text-decoration: none !important;
-  flex-shrink: 0 !important;
-}
-
-.step-nav__last {
-  color: var(--dt-text) !important;
-  font-weight: 600 !important;
-  font-size: 13px !important;
-  white-space: nowrap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-}
-
-/* Separator "/" between breadcrumb segments */
-.app-header__step-nav > span:not(.step-nav__last) {
-  color: var(--dt-muted2) !important;
-  font-size: 14px !important;
-}
-
-/* ── Native locale picker — styled as compact chip ── */
-.localizer-button {
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 2px !important;
-  padding: 5px 9px !important;
-  border-radius: 7px !important;
-  background: var(--dt-surface2) !important;
-  border: 1px solid var(--dt-border) !important;
-  cursor: pointer !important;
-  font-size: 11px !important;
-  font-weight: 800 !important;
-  color: var(--dt-muted) !important;
-  letter-spacing: 0.6px !important;
-  text-transform: uppercase !important;
-  white-space: nowrap !important;
-  text-decoration: none !important;
-  transition: border-color 0.12s, color 0.12s, background 0.12s !important;
-  flex-shrink: 0 !important;
-  height: 32px !important;
-}
-
-.localizer-button:hover {
-  border-color: rgba(181,32,39,0.3) !important;
-  color: var(--dt-red) !important;
-  background: rgba(181,32,39,0.05) !important;
-}
-
-/* Hide the verbose "Locale: " prefix, show only the code */
-.localizer-button__label {
-  display: none !important;
-}
-
-.localizer-button__current {
-  display: flex !important;
-  align-items: center !important;
-  gap: 2px !important;
-}
-
-.localizer-button__current-label {
-  font-size: 11px !important;
-  font-weight: 800 !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.6px !important;
-}
-
-.localizer-button__chevron {
-  width: 12px !important;
-  height: 12px !important;
-  opacity: 0.6 !important;
-}
-
-/* ── Hide Payload's native account/gravatar — our AdminHeaderBar replaces it ── */
-.app-header__account {
-  display: none !important;
+/* AdminHeaderBar (div) inside actions fills full space */
+.app-header__actions > div {
+  flex: 1 !important;
+  height: 100% !important;
+  min-width: 0 !important;
 }
 
 /* ── Breadcrumb below header (in view-description) ── */
@@ -812,7 +707,7 @@ label.field-label {
   cursor: pointer !important;
   font-size: 11px !important;
   font-weight: 700 !important;
-  color: #555 !important;
+  color: var(--dt-muted) !important;
   letter-spacing: 0.3px !important;
   border-bottom: none !important;
   margin-bottom: 0 !important;
@@ -843,7 +738,7 @@ label.field-label {
   padding: 8px 14px !important;
   font-size: 11px !important;
   font-weight: 700 !important;
-  color: #666 !important;
+  color: var(--dt-muted) !important;
 }
 
 .add-row__button,
@@ -1115,38 +1010,6 @@ input[type='radio']:checked {
   background: #161820 !important;
   border-bottom: 1px solid #262a38 !important;
   box-shadow: 0 1px 0 #262a38, 0 2px 12px rgba(0,0,0,0.4) !important;
-}
-
-/* Hamburger dark */
-[data-theme='dark'] .nav-toggler,
-[data-theme='dark'] .app-header__mobile-nav-toggler {
-  background: #1e2130 !important;
-  border-color: #2e3248 !important;
-  color: #c0c8df !important;
-}
-
-[data-theme='dark'] .nav-toggler:hover {
-  background: rgba(204,42,51,0.15) !important;
-  border-color: rgba(204,42,51,0.3) !important;
-  color: #e03540 !important;
-}
-
-/* Breadcrumb in header dark */
-[data-theme='dark'] .step-nav__last {
-  color: #e2e6f0 !important;
-}
-
-/* Locale chip dark */
-[data-theme='dark'] .localizer-button {
-  background: #1e2130 !important;
-  border-color: #2e3248 !important;
-  color: #6c7289 !important;
-}
-
-[data-theme='dark'] .localizer-button:hover {
-  background: rgba(204,42,51,0.12) !important;
-  border-color: rgba(204,42,51,0.3) !important;
-  color: #e03540 !important;
 }
 
 /* Nav dark */
@@ -1445,22 +1308,16 @@ input[type='radio']:checked {
   color: #e03540 !important;
 }
 
-/* Hamburger / toggle dark */
-[data-theme='dark'] .nav__toggle,
-[data-theme='dark'] .hamburger,
-[data-theme='dark'] .app-header .nav__toggle {
-  background: #1e2130 !important;
-  border-color: #2e3248 !important;
-  color: #c0c8df !important;
+/* Breadcrumbs dark (below header, in view-description) */
+[data-theme='dark'] .breadcrumbs {
+  color: #5a6080 !important;
 }
 
-[data-theme='dark'] .nav__toggle:hover,
-[data-theme='dark'] .hamburger:hover {
-  background: rgba(204,42,51,0.15) !important;
+[data-theme='dark'] .breadcrumbs a {
   color: #e03540 !important;
 }
 
-/* Step-nav dark */
+/* Step-nav dark (below-header breadcrumb, not in header) */
 [data-theme='dark'] .step-nav a,
 [data-theme='dark'] .step-nav__step a {
   color: #c0c8df !important;
@@ -1471,19 +1328,14 @@ input[type='radio']:checked {
   color: #e03540 !important;
 }
 
-/* Breadcrumbs dark */
-[data-theme='dark'] .breadcrumbs {
-  color: #5a6080 !important;
-}
-
-[data-theme='dark'] .breadcrumbs a {
-  color: #e03540 !important;
-}
-
-/* Locale picker dark */
-[data-theme='dark'] .locale-picker,
-[data-theme='dark'] .app-header .locale-picker {
-  color: #6c7289 !important;
+/* app-header inner content wrappers dark */
+[data-theme='dark'] .app-header__content,
+[data-theme='dark'] .app-header__wrapper,
+[data-theme='dark'] .app-header__controls-wrapper,
+[data-theme='dark'] .app-header__actions-wrapper,
+[data-theme='dark'] .app-header__actions {
+  background: transparent !important;
+  color: #e2e6f0 !important;
 }
 
 /* Nav group labels dark */
@@ -1797,5 +1649,45 @@ input[type='radio']:checked {
 .nav__controls .theme-selector,
 .nav__controls [class*='theme'] select {
   display: none !important;
+}
+
+/* ═══════════════════════════════════════════
+   NATIVE SELECT — status dropdowns in cells
+   ═══════════════════════════════════════════ */
+
+/* Let status pill selects keep their semantic bg/color in both modes */
+.table select {
+  font-family: inherit !important;
+  transition: opacity 0.15s !important;
+}
+
+/* Dark mode: select options list (browser-native) */
+[data-theme='dark'] .table select option {
+  background: #1e2130 !important;
+  color: #e2e6f0 !important;
+}
+
+/* ═══════════════════════════════════════════
+   POPUP / FLOATING PANELS — dark mode catch-all
+   ═══════════════════════════════════════════ */
+
+/* Any inline popup panel rendered by custom cell components */
+[data-theme='dark'] .table [style*='background: rgb(255, 255, 255)'],
+[data-theme='dark'] .table [style*='background:#fff'],
+[data-theme='dark'] .table [style*="background: #fff"] {
+  background: #1e2130 !important;
+  border-color: #262a38 !important;
+  color: #e2e6f0 !important;
+}
+
+/* Textarea inside custom cell popups */
+[data-theme='dark'] .table textarea {
+  background: #252840 !important;
+  border-color: #2e3248 !important;
+  color: #e2e6f0 !important;
+}
+
+[data-theme='dark'] .table textarea::placeholder {
+  color: #4a5068 !important;
 }
 
