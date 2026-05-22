@@ -1,0 +1,142 @@
+/*
+ * DT Déménagement Tunisie — Admin CSS overrides
+ * Forces light theme and replaces Payload's blue accent with DT red (#b52027)
+ *
+ * Payload v3 uses these CSS custom properties throughout the admin UI.
+ * RGB values: #b52027 = 181, 32, 39
+ */
+
+/* ── Force light theme variables ───────────────────────────────── */
+:root,
+[data-theme='light'],
+[data-theme='dark'] {
+  /* Background & surfaces */
+  --color-base-0:   255, 255, 255;
+  --color-base-50:  248, 248, 250;
+  --color-base-100: 240, 241, 244;
+  --color-base-150: 228, 230, 235;
+  --color-base-200: 210, 213, 220;
+  --color-base-250: 188, 192, 200;
+  --color-base-300: 160, 165, 175;
+  --color-base-350: 130, 135, 148;
+  --color-base-400: 100, 105, 118;
+  --color-base-450:  70,  75,  88;
+  --color-base-500:  50,  53,  64;
+  --color-base-550:  38,  40,  50;
+  --color-base-600:  28,  30,  38;
+  --color-base-650:  22,  24,  30;
+  --color-base-700:  18,  19,  25;
+  --color-base-750:  14,  15,  20;
+  --color-base-800:  10,  11,  15;
+  --color-base-850:   8,   9,  12;
+  --color-base-900:   6,   7,   9;
+  --color-base-950:   4,   5,   7;
+  --color-base-1000:  2,   3,   4;
+
+  /* Replace Payload blue accent → DT red */
+  --color-blue-50:  255, 240, 241;
+  --color-blue-100: 254, 220, 222;
+  --color-blue-200: 251, 180, 183;
+  --color-blue-250: 240, 140, 144;
+  --color-blue-300: 225, 100, 106;
+  --color-blue-350: 210,  70,  78;
+  --color-blue-400: 195,  50,  58;
+  --color-blue-450: 181,  32,  39;   /* ← DT red exact */
+  --color-blue-500: 160,  25,  32;
+  --color-blue-550: 140,  20,  26;
+  --color-blue-600: 120,  15,  20;
+  --color-blue-650: 100,  10,  15;
+  --color-blue-700:  80,   8,  12;
+  --color-blue-750:  60,   5,   9;
+  --color-blue-800:  45,   3,   6;
+  --color-blue-850:  30,   2,   4;
+  --color-blue-900:  18,   1,   2;
+  --color-blue-950:   8,   0,   1;
+  --color-blue-1000:  4,   0,   0;
+
+  /* Ensure page background and text use light values */
+  --theme-elevation-0:    rgb(var(--color-base-0));
+  --theme-elevation-50:   rgb(var(--color-base-50));
+  --theme-elevation-100:  rgb(var(--color-base-100));
+  --theme-elevation-150:  rgb(var(--color-base-150));
+  --theme-elevation-200:  rgb(var(--color-base-200));
+  --theme-elevation-500:  rgb(var(--color-base-500));
+  --theme-elevation-800:  rgb(var(--color-base-800));
+  --theme-elevation-1000: rgb(var(--color-base-1000));
+
+  --theme-text:           rgb(var(--color-base-1000));
+  --theme-text-muted:     rgb(var(--color-base-400));
+  --theme-border-color:   rgb(var(--color-base-150));
+  --theme-bg:             rgb(var(--color-base-50));
+}
+
+/* ── Sidebar ────────────────────────────────────────────────────── */
+.nav__wrap {
+  background: #ffffff !important;
+  border-right: 1px solid #e8e8e8 !important;
+}
+
+/* Active nav item highlight */
+.nav__link--active,
+.nav__link:hover {
+  background: rgba(181, 32, 39, 0.07) !important;
+  color: #b52027 !important;
+}
+
+/* ── Top header bar ──────────────────────────────────────────────── */
+.app-header {
+  background: #ffffff !important;
+  border-bottom: 1px solid #e8e8e8 !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06) !important;
+}
+
+/* ── Buttons — primary ───────────────────────────────────────────── */
+.btn--style-primary {
+  background: #b52027 !important;
+  border-color: #b52027 !important;
+  color: #ffffff !important;
+}
+.btn--style-primary:hover {
+  background: #8a1820 !important;
+  border-color: #8a1820 !important;
+}
+
+/* ── Pill / badge default blue → red ────────────────────────────── */
+.pill--style-dark {
+  background: rgba(181, 32, 39, 0.12) !important;
+  color: #b52027 !important;
+}
+
+/* ── Table: row hover ────────────────────────────────────────────── */
+.table .row:hover td {
+  background: rgba(181, 32, 39, 0.03) !important;
+}
+
+/* ── Checkbox / toggle accent ────────────────────────────────────── */
+input[type='checkbox']:checked {
+  accent-color: #b52027;
+}
+
+/* ── Focus ring ──────────────────────────────────────────────────── */
+*:focus-visible {
+  outline-color: #b52027 !important;
+}
+
+/* ── Links inside admin ───────────────────────────────────────────── */
+.payload-admin a:not(.btn):not(.nav__link) {
+  color: #b52027;
+}
+
+/* ── Dashboard welcome card / after-login banner ─────────────────── */
+.dashboard__welcome-block {
+  background: linear-gradient(135deg, #b52027 0%, #8a1820 100%) !important;
+}
+
+/* ── Collection group headings ────────────────────────────────────── */
+.nav__group-label {
+  color: #b52027 !important;
+  font-weight: 700 !important;
+  font-size: 10px !important;
+  letter-spacing: 0.6px !important;
+  text-transform: uppercase !important;
+}
