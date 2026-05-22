@@ -1,59 +1,58 @@
 /*
  * DT Déménagement Tunisie — Admin CSS overrides
- * Forces light theme and replaces Payload's blue accent with DT red (#b52027)
- * RGB values: #b52027 = 181, 32, 39
+ * Light theme + DT red (#b52027) replaces Payload blue
+ * RGB 181 32 39
  */
 
-/* ═══════════════════════════════════════════════════════
-   THEME TOKENS — force light everywhere
-   ═══════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════
+   THEME TOKENS
+   ═══════════════════════════════════════════ */
 
 :root,
 [data-theme='light'],
 [data-theme='dark'] {
-  /* Background & surfaces */
-  --color-base-0:   255, 255, 255;
-  --color-base-50:  248, 248, 250;
-  --color-base-100: 240, 241, 244;
-  --color-base-150: 228, 230, 235;
-  --color-base-200: 210, 213, 220;
-  --color-base-250: 188, 192, 200;
-  --color-base-300: 160, 165, 175;
-  --color-base-350: 130, 135, 148;
-  --color-base-400: 100, 105, 118;
-  --color-base-450:  70,  75,  88;
-  --color-base-500:  50,  53,  64;
-  --color-base-550:  38,  40,  50;
-  --color-base-600:  28,  30,  38;
-  --color-base-650:  22,  24,  30;
-  --color-base-700:  18,  19,  25;
-  --color-base-750:  14,  15,  20;
-  --color-base-800:  10,  11,  15;
-  --color-base-850:   8,   9,  12;
-  --color-base-900:   6,   7,   9;
-  --color-base-950:   4,   5,   7;
-  --color-base-1000:  2,   3,   4;
+  --color-base-0:    255, 255, 255;
+  --color-base-50:   248, 248, 250;
+  --color-base-100:  240, 241, 244;
+  --color-base-150:  228, 230, 235;
+  --color-base-200:  210, 213, 220;
+  --color-base-250:  188, 192, 200;
+  --color-base-300:  160, 165, 175;
+  --color-base-350:  130, 135, 148;
+  --color-base-400:  100, 105, 118;
+  --color-base-450:   70,  75,  88;
+  --color-base-500:   50,  53,  64;
+  --color-base-550:   38,  40,  50;
+  --color-base-600:   28,  30,  38;
+  --color-base-650:   22,  24,  30;
+  --color-base-700:   18,  19,  25;
+  --color-base-750:   14,  15,  20;
+  --color-base-800:   10,  11,  15;
+  --color-base-850:    8,   9,  12;
+  --color-base-900:    6,   7,   9;
+  --color-base-950:    4,   5,   7;
+  --color-base-1000:   2,   3,   4;
 
-  /* Replace Payload blue → DT red */
-  --color-blue-50:  255, 240, 241;
-  --color-blue-100: 254, 220, 222;
-  --color-blue-200: 251, 180, 183;
-  --color-blue-250: 240, 140, 144;
-  --color-blue-300: 225, 100, 106;
-  --color-blue-350: 210,  70,  78;
-  --color-blue-400: 195,  50,  58;
-  --color-blue-450: 181,  32,  39;   /* ← DT red exact */
-  --color-blue-500: 160,  25,  32;
-  --color-blue-550: 140,  20,  26;
-  --color-blue-600: 120,  15,  20;
-  --color-blue-650: 100,  10,  15;
-  --color-blue-700:  80,   8,  12;
-  --color-blue-750:  60,   5,   9;
-  --color-blue-800:  45,   3,   6;
-  --color-blue-850:  30,   2,   4;
-  --color-blue-900:  18,   1,   2;
-  --color-blue-950:   8,   0,   1;
-  --color-blue-1000:  4,   0,   0;
+  /* Blue → DT red */
+  --color-blue-50:   255, 240, 241;
+  --color-blue-100:  254, 220, 222;
+  --color-blue-200:  251, 180, 183;
+  --color-blue-250:  240, 140, 144;
+  --color-blue-300:  225, 100, 106;
+  --color-blue-350:  210,  70,  78;
+  --color-blue-400:  195,  50,  58;
+  --color-blue-450:  181,  32,  39;
+  --color-blue-500:  160,  25,  32;
+  --color-blue-550:  140,  20,  26;
+  --color-blue-600:  120,  15,  20;
+  --color-blue-650:  100,  10,  15;
+  --color-blue-700:   80,   8,  12;
+  --color-blue-750:   60,   5,   9;
+  --color-blue-800:   45,   3,   6;
+  --color-blue-850:   30,   2,   4;
+  --color-blue-900:   18,   1,   2;
+  --color-blue-950:    8,   0,   1;
+  --color-blue-1000:   4,   0,   0;
 
   --theme-elevation-0:    rgb(var(--color-base-0));
   --theme-elevation-50:   rgb(var(--color-base-50));
@@ -63,78 +62,181 @@
   --theme-elevation-500:  rgb(var(--color-base-500));
   --theme-elevation-800:  rgb(var(--color-base-800));
   --theme-elevation-1000: rgb(var(--color-base-1000));
-
   --theme-text:           rgb(var(--color-base-1000));
   --theme-text-muted:     rgb(var(--color-base-400));
   --theme-border-color:   rgb(var(--color-base-150));
   --theme-bg:             rgb(var(--color-base-50));
 }
 
-/* ═══════════════════════════════════════════════════════
-   GLOBAL LAYOUT
-   ═══════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════
+   GLOBAL
+   ═══════════════════════════════════════════ */
 
 body,
 .payload-admin {
-  background: #f7f8fa !important;
+  background: #f5f6f8 !important;
   color: #1a1a1a !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
 }
 
-/* ═══════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════
    TOP HEADER BAR
-   ═══════════════════════════════════════════════════════ */
+   ═══════════════════════════════════════════ */
 
 .app-header,
 header.app-header {
   background: #ffffff !important;
-  border-bottom: 1px solid #e8eaed !important;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06) !important;
+  border-bottom: 1px solid #eaedf0 !important;
+  box-shadow: 0 1px 0 #eaedf0, 0 2px 6px rgba(0,0,0,0.04) !important;
   height: 56px !important;
+  /* Red accent stripe across the top */
+  border-top: 3px solid #b52027 !important;
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 100 !important;
 }
 
-/* ═══════════════════════════════════════════════════════
+/* Flex layout inside header */
+.app-header__content,
+.app-header > div {
+  height: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  padding: 0 20px !important;
+  gap: 12px !important;
+}
+
+/* Breadcrumbs in header */
+.step-nav,
+.app-header .step-nav {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  font-size: 12px !important;
+  color: #9aa0ab !important;
+}
+
+.step-nav__step a,
+.step-nav a {
+  color: #1a1a1a !important;
+  text-decoration: none !important;
+  font-weight: 600 !important;
+  font-size: 12.5px !important;
+}
+
+.step-nav__step:not(:last-child)::after,
+.step-nav__chevron {
+  content: '›' !important;
+  color: #ccc !important;
+  margin: 0 3px !important;
+}
+
+/* Account / user button in header */
+.account-nav,
+.account-nav__toggle,
+.app-header .account {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 6px 12px !important;
+  borderRadius: 8px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  color: #3a3d4a !important;
+  background: #f5f6f8 !important;
+  border: 1px solid #eaedf0 !important;
+  cursor: pointer !important;
+  transition: background 0.12s !important;
+}
+
+.account-nav:hover,
+.account-nav__toggle:hover {
+  background: rgba(181,32,39,0.05) !important;
+  border-color: rgba(181,32,39,0.2) !important;
+  color: #b52027 !important;
+}
+
+/* Locale switcher */
+.locale-picker,
+.app-header .locale-picker {
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  color: #555 !important;
+}
+
+/* ═══════════════════════════════════════════
    SIDEBAR / NAV
-   ═══════════════════════════════════════════════════════ */
+   ═══════════════════════════════════════════ */
 
 .nav__wrap,
 aside.nav__wrap {
   background: #ffffff !important;
-  border-right: 1px solid #e8eaed !important;
-  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.04) !important;
+  border-right: 1px solid #eaedf0 !important;
+  box-shadow: 2px 0 8px rgba(0,0,0,0.03) !important;
 }
 
-/* Nav group labels */
+/* Logo area */
+.nav__header {
+  padding: 14px 16px 10px !important;
+  border-bottom: 1px solid #f0f1f4 !important;
+  margin-bottom: 4px !important;
+}
+
+/* Group labels */
 .nav__group-label,
 .nav__group > span,
 nav .group-label {
-  color: #b52027 !important;
-  font-size: 9.5px !important;
+  font-size: 9px !important;
   font-weight: 800 !important;
-  letter-spacing: 0.8px !important;
+  letter-spacing: 1px !important;
   text-transform: uppercase !important;
-  padding: 16px 16px 4px !important;
+  color: #b52027 !important;
+  padding: 12px 18px 4px !important;
+  display: block !important;
   opacity: 1 !important;
+}
+
+/* Globals group label in a neutral tone */
+.nav__group--globals .nav__group-label {
+  color: #9aa0ab !important;
+}
+
+/* Group separators */
+.nav__group {
+  border-top: 1px solid #f2f3f5 !important;
+  margin-top: 2px !important;
+  padding-top: 2px !important;
+}
+
+.nav__group:first-of-type {
+  border-top: none !important;
+  margin-top: 0 !important;
 }
 
 /* Nav links */
 .nav__link {
-  border-radius: 6px !important;
-  margin: 1px 8px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  border-radius: 7px !important;
+  margin: 1px 10px !important;
   padding: 7px 10px !important;
   font-size: 12.5px !important;
   font-weight: 500 !important;
-  color: #4a4a4a !important;
+  color: #3a3d4a !important;
+  text-decoration: none !important;
   transition: background 0.12s, color 0.12s !important;
+  position: relative !important;
 }
 
 .nav__link:hover {
-  background: rgba(181, 32, 39, 0.07) !important;
+  background: rgba(181,32,39,0.06) !important;
   color: #b52027 !important;
 }
 
 .nav__link--active,
 .nav__link[aria-current='page'] {
-  background: rgba(181, 32, 39, 0.1) !important;
+  background: rgba(181,32,39,0.09) !important;
   color: #b52027 !important;
   font-weight: 700 !important;
 }
@@ -142,80 +244,103 @@ nav .group-label {
 .nav__link--active::before {
   content: '';
   position: absolute;
-  left: 0;
-  top: 20%;
-  bottom: 20%;
+  left: -10px;
+  top: 4px;
+  bottom: 4px;
   width: 3px;
   background: #b52027;
   border-radius: 0 3px 3px 0;
 }
 
-/* ═══════════════════════════════════════════════════════
-   MAIN CONTENT AREA
-   ═══════════════════════════════════════════════════════ */
+/* Bottom area */
+.nav__account,
+.nav__controls {
+  border-top: 1px solid #f2f3f5 !important;
+  padding: 8px 10px 12px !important;
+}
+
+/* ═══════════════════════════════════════════
+   PAGE TITLE / VIEW DESCRIPTION
+   ═══════════════════════════════════════════ */
+
+.view-description {
+  background: #ffffff !important;
+  border-bottom: 1px solid #eaedf0 !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.03) !important;
+  padding: 16px 24px !important;
+}
+
+.eyebrow {
+  font-size: 10px !important;
+  font-weight: 800 !important;
+  color: #b52027 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.8px !important;
+}
+
+.render-title,
+h1.render-title {
+  font-size: 20px !important;
+  font-weight: 800 !important;
+  color: #1a1a1a !important;
+  margin: 4px 0 0 !important;
+}
+
+/* Breadcrumbs */
+.breadcrumbs {
+  font-size: 11.5px !important;
+  color: #9aa0ab !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+}
+
+.breadcrumbs a {
+  color: #b52027 !important;
+  text-decoration: none !important;
+  font-weight: 600 !important;
+}
+
+/* ═══════════════════════════════════════════
+   MAIN CONTENT
+   ═══════════════════════════════════════════ */
 
 .template-default,
 .gutter--left,
 .gutter--right {
-  background: #f7f8fa !important;
+  background: #f5f6f8 !important;
 }
 
-/* Page wrapper padding */
 .collection-list__wrap,
 .collection-edit__wrap,
 .dashboard__wrap {
   padding: 24px !important;
 }
 
-/* ═══════════════════════════════════════════════════════
-   PAGE HEADERS / BREADCRUMBS
-   ═══════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════
+   DASHBOARD — hide Payload defaults
+   ═══════════════════════════════════════════ */
 
-.view-description {
-  background: #ffffff !important;
-  border-bottom: 1px solid #e8eaed !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+.dashboard__card-list,
+.dashboard__globals,
+.dashboard__welcome-block {
+  display: none !important;
 }
 
-.eyebrow {
-  font-size: 10px !important;
-  font-weight: 700 !important;
-  color: #b52027 !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.6px !important;
+.dashboard > .eyebrow,
+.dashboard > h1 {
+  display: none !important;
 }
 
-.render-title h1,
-h1.render-title {
-  font-size: 20px !important;
-  font-weight: 800 !important;
-  color: #1a1a1a !important;
-}
-
-/* Breadcrumb */
-.breadcrumbs {
-  font-size: 11px !important;
-  color: #999 !important;
-}
-
-.breadcrumbs a {
-  color: #b52027 !important;
-  text-decoration: none !important;
-}
-
-.breadcrumbs a:hover {
-  text-decoration: underline !important;
-}
-
-/* ═══════════════════════════════════════════════════════
-   LIST VIEW — TABLE
-   ═══════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════
+   TABLE (list view)
+   ═══════════════════════════════════════════ */
 
 .table {
   background: #ffffff !important;
   border-radius: 10px !important;
   overflow: hidden !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.07), 0 0 0 1px rgba(0, 0, 0, 0.04) !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.03) !important;
 }
 
 .table table {
@@ -224,70 +349,60 @@ h1.render-title {
   font-size: 12.5px !important;
 }
 
-/* Table header row */
 .table thead tr th,
 .table .table__header-cell {
   background: #f8f9fb !important;
   color: #9aa0ab !important;
-  font-size: 10px !important;
+  font-size: 9.5px !important;
   font-weight: 800 !important;
-  letter-spacing: 0.6px !important;
+  letter-spacing: 0.7px !important;
   text-transform: uppercase !important;
   padding: 10px 14px !important;
-  border-bottom: 2px solid #eef0f3 !important;
+  border-bottom: 2px solid #eef0f4 !important;
   white-space: nowrap !important;
 }
 
-/* Table body rows */
 .table tbody tr td,
 .table .table__cell {
   padding: 11px 14px !important;
   color: #2d3142 !important;
-  border-bottom: 1px solid #f0f2f5 !important;
+  border-bottom: 1px solid #f2f4f7 !important;
   vertical-align: middle !important;
   font-size: 12.5px !important;
 }
 
-/* Row hover */
 .table tbody tr:hover td,
 .table .row:hover td {
   background: #fdf5f5 !important;
 }
 
-/* Last row no border */
 .table tbody tr:last-child td {
   border-bottom: none !important;
 }
 
-/* Sort indicator */
 .table .sort-column__asc,
 .table .sort-column__desc {
   color: #b52027 !important;
 }
 
-/* ═══════════════════════════════════════════════════════
-   LIST CONTROLS (search / filter bar)
-   ═══════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════
+   LIST CONTROLS
+   ═══════════════════════════════════════════ */
 
 .list-controls {
   background: #ffffff !important;
   border-radius: 10px !important;
   margin-bottom: 12px !important;
-  padding: 12px 16px !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(0, 0, 0, 0.04) !important;
+  padding: 10px 16px !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 0 0 1px rgba(0,0,0,0.03) !important;
 }
 
-.list-controls__wrap {
-  gap: 10px !important;
-}
-
-/* Search input */
 .search-filter__input,
 .list-controls input[type='text'] {
-  border: 1px solid #e0e3e8 !important;
+  border: 1px solid #dde1e8 !important;
   border-radius: 7px !important;
   font-size: 12.5px !important;
-  background: #f7f8fa !important;
+  background: #f8f9fb !important;
   color: #1a1a1a !important;
   padding: 7px 12px !important;
   transition: border-color 0.15s !important;
@@ -296,25 +411,20 @@ h1.render-title {
 .search-filter__input:focus,
 .list-controls input[type='text']:focus {
   border-color: #b52027 !important;
-  background: #ffffff !important;
+  background: #fff !important;
   outline: none !important;
-  box-shadow: 0 0 0 3px rgba(181, 32, 39, 0.08) !important;
+  box-shadow: 0 0 0 3px rgba(181,32,39,0.08) !important;
 }
 
-/* Filter button */
-.list-controls .btn {
-  font-size: 12px !important;
-}
-
-/* ═══════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════
    PAGINATION
-   ═══════════════════════════════════════════════════════ */
+   ═══════════════════════════════════════════ */
 
 .pagination {
   margin-top: 14px !important;
   display: flex !important;
   align-items: center !important;
-  gap: 4px !important;
+  gap: 3px !important;
 }
 
 .pagination__page,
@@ -327,34 +437,27 @@ h1.render-title {
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  border: 1px solid #e8eaed !important;
+  border: 1px solid #eaedf0 !important;
   background: #fff !important;
   color: #555 !important;
   transition: all 0.12s !important;
 }
 
-.pagination__page--active,
-.pagination .btn--active {
+.pagination__page--active {
   background: #b52027 !important;
   border-color: #b52027 !important;
   color: #fff !important;
 }
 
 .pagination__page:hover:not(.pagination__page--active) {
-  background: rgba(181, 32, 39, 0.06) !important;
+  background: rgba(181,32,39,0.06) !important;
   border-color: #b52027 !important;
   color: #b52027 !important;
 }
 
-/* Per-page selector */
-.per-page {
-  font-size: 11px !important;
-  color: #888 !important;
-}
-
-/* ═══════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════
    BUTTONS
-   ═══════════════════════════════════════════════════════ */
+   ═══════════════════════════════════════════ */
 
 .btn {
   border-radius: 7px !important;
@@ -362,72 +465,67 @@ h1.render-title {
   font-weight: 600 !important;
   transition: all 0.15s !important;
   cursor: pointer !important;
+  letter-spacing: 0.1px !important;
 }
 
 .btn--style-primary {
   background: #b52027 !important;
   border-color: #b52027 !important;
   color: #ffffff !important;
-  box-shadow: 0 1px 3px rgba(181, 32, 39, 0.3) !important;
+  box-shadow: 0 1px 3px rgba(181,32,39,0.25), 0 1px 1px rgba(0,0,0,0.05) !important;
 }
 
 .btn--style-primary:hover {
   background: #9a1b21 !important;
   border-color: #9a1b21 !important;
-  box-shadow: 0 2px 6px rgba(181, 32, 39, 0.4) !important;
+  box-shadow: 0 3px 8px rgba(181,32,39,0.35) !important;
+  transform: translateY(-1px) !important;
 }
 
 .btn--style-secondary {
   background: #ffffff !important;
-  border: 1px solid #e0e3e8 !important;
-  color: #3a3a4a !important;
+  border: 1px solid #dde1e8 !important;
+  color: #3a3d4a !important;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
 }
 
 .btn--style-secondary:hover {
   border-color: #b52027 !important;
   color: #b52027 !important;
-  background: rgba(181, 32, 39, 0.03) !important;
+  background: rgba(181,32,39,0.03) !important;
 }
 
-.btn--style-pill {
-  border-radius: 20px !important;
-}
-
-/* Save / publish bar */
+/* Save bar at bottom */
 .doc-controls {
   background: #ffffff !important;
-  border-top: 1px solid #e8eaed !important;
-  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05) !important;
+  border-top: 1px solid #eaedf0 !important;
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.05) !important;
   padding: 12px 24px !important;
 }
 
-/* ═══════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════
    DOCUMENT EDIT FORM
-   ═══════════════════════════════════════════════════════ */
+   ═══════════════════════════════════════════ */
 
-/* Field wrapper */
 .field-type {
   margin-bottom: 20px !important;
 }
 
-/* Labels */
 .label-wrap label,
 .field-label,
 label.field-label {
-  font-size: 11px !important;
+  font-size: 10.5px !important;
   font-weight: 700 !important;
   color: #5a6070 !important;
   text-transform: uppercase !important;
-  letter-spacing: 0.4px !important;
+  letter-spacing: 0.5px !important;
   margin-bottom: 6px !important;
 }
 
-/* Required star */
 .required {
   color: #b52027 !important;
 }
 
-/* Inputs, textareas, selects */
 .field-type input[type='text'],
 .field-type input[type='email'],
 .field-type input[type='tel'],
@@ -447,67 +545,68 @@ label.field-label {
   padding: 8px 12px !important;
   transition: border-color 0.15s, box-shadow 0.15s !important;
   width: 100% !important;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04) !important;
 }
 
 .field-type input:focus,
 .field-type textarea:focus {
   border-color: #b52027 !important;
   outline: none !important;
-  box-shadow: 0 0 0 3px rgba(181, 32, 39, 0.1) !important;
+  box-shadow: 0 0 0 3px rgba(181,32,39,0.1) !important;
 }
 
-/* Select / react-select */
 .rs__control--is-focused,
 .ReactSelect__control--is-focused {
   border-color: #b52027 !important;
-  box-shadow: 0 0 0 3px rgba(181, 32, 39, 0.1) !important;
+  box-shadow: 0 0 0 3px rgba(181,32,39,0.1) !important;
 }
 
-.rs__option--is-selected,
-.ReactSelect__option--is-selected {
+.rs__option--is-selected {
   background: #b52027 !important;
   color: #fff !important;
 }
 
-.rs__option--is-focused:not(.rs__option--is-selected),
-.ReactSelect__option--is-focused:not(.ReactSelect__option--is-selected) {
-  background: rgba(181, 32, 39, 0.06) !important;
+.rs__option--is-focused:not(.rs__option--is-selected) {
+  background: rgba(181,32,39,0.06) !important;
   color: #b52027 !important;
 }
 
-/* Textarea */
 .field-type textarea {
   min-height: 100px !important;
   resize: vertical !important;
   line-height: 1.6 !important;
 }
 
-/* Section/row/group headers in form */
+/* Section headings */
 .row-label,
-.collapsible__header,
 .section-title__wrap {
-  font-size: 11px !important;
+  font-size: 10.5px !important;
   font-weight: 800 !important;
-  color: #888 !important;
+  color: #9aa0ab !important;
   text-transform: uppercase !important;
   letter-spacing: 0.6px !important;
-  padding: 8px 0 !important;
-  border-bottom: 1px solid #f0f0f0 !important;
+  padding-bottom: 8px !important;
+  border-bottom: 1px solid #f0f2f5 !important;
   margin-bottom: 16px !important;
 }
 
-/* Collapsible / group fields */
+/* Collapsible */
 .collapsible {
-  border: 1px solid #ebebeb !important;
+  border: 1px solid #eaedf0 !important;
   border-radius: 10px !important;
   overflow: hidden !important;
   margin-bottom: 16px !important;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03) !important;
 }
 
 .collapsible__header {
   background: #f8f9fb !important;
   padding: 12px 16px !important;
   cursor: pointer !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  color: #555 !important;
+  letter-spacing: 0.3px !important;
   border-bottom: none !important;
   margin-bottom: 0 !important;
 }
@@ -517,30 +616,17 @@ label.field-label {
   background: #fff !important;
 }
 
-/* ═══════════════════════════════════════════════════════
-   RELATIONSHIP FIELDS
-   ═══════════════════════════════════════════════════════ */
-
-.relationship-wrap {
-  border: 1px solid #dde1e8 !important;
-  border-radius: 8px !important;
-  background: #fafbfc !important;
-}
-
-.relationship__value {
-  font-size: 13px !important;
-}
-
-/* ═══════════════════════════════════════════════════════
-   ARRAY / BLOCK FIELDS
-   ═══════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════
+   ARRAY / BLOCKS
+   ═══════════════════════════════════════════ */
 
 .array-field__row,
 .blocks-field__block {
-  border: 1px solid #ebebeb !important;
+  border: 1px solid #eaedf0 !important;
   border-radius: 8px !important;
   background: #ffffff !important;
   margin-bottom: 8px !important;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03) !important;
 }
 
 .array-field__row-header,
@@ -557,34 +643,35 @@ label.field-label {
 .blocks-field__add-button {
   font-size: 12px !important;
   color: #b52027 !important;
-  border: 1px dashed rgba(181, 32, 39, 0.3) !important;
+  border: 1px dashed rgba(181,32,39,0.25) !important;
   border-radius: 8px !important;
   padding: 8px !important;
-  background: rgba(181, 32, 39, 0.02) !important;
+  background: rgba(181,32,39,0.02) !important;
+  width: 100% !important;
 }
 
 .add-row__button:hover,
 .blocks-field__add-button:hover {
-  background: rgba(181, 32, 39, 0.06) !important;
+  background: rgba(181,32,39,0.06) !important;
   border-color: #b52027 !important;
 }
 
-/* ═══════════════════════════════════════════════════════
-   TABS (locale switcher, etc.)
-   ═══════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════
+   TABS
+   ═══════════════════════════════════════════ */
 
 .tabs-header__list {
-  border-bottom: 2px solid #eef0f3 !important;
-  background: transparent !important;
+  border-bottom: 2px solid #eaedf0 !important;
 }
 
 .tabs-header__tab-button {
   font-size: 12.5px !important;
   font-weight: 600 !important;
-  color: #888 !important;
+  color: #9aa0ab !important;
   padding: 8px 16px !important;
   border-bottom: 2px solid transparent !important;
-  transition: color 0.15s, border-color 0.15s !important;
+  margin-bottom: -2px !important;
+  transition: color 0.15s !important;
 }
 
 .tabs-header__tab-button--active,
@@ -594,60 +681,63 @@ label.field-label {
   font-weight: 700 !important;
 }
 
-/* ═══════════════════════════════════════════════════════
-   STATUS PILLS / BADGES
-   ═══════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════
+   STATUS PILLS
+   ═══════════════════════════════════════════ */
 
-.pill,
-.status-pill {
+.pill {
   border-radius: 20px !important;
   font-size: 10.5px !important;
   font-weight: 700 !important;
   padding: 2px 9px !important;
-  display: inline-block !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
 }
 
 .pill--style-dark {
-  background: rgba(181, 32, 39, 0.12) !important;
+  background: rgba(181,32,39,0.1) !important;
   color: #b52027 !important;
 }
 
-/* ═══════════════════════════════════════════════════════
-   TOASTS / NOTIFICATIONS
-   ═══════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════
+   TOASTS
+   ═══════════════════════════════════════════ */
 
-.payload-toast-container .toast--success,
 .toast--success {
   background: #f0fdf4 !important;
-  border-left: 4px solid #16a34a !important;
+  border-left: 3px solid #16a34a !important;
   color: #15803d !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
 }
 
-.payload-toast-container .toast--error,
 .toast--error {
   background: #fef2f2 !important;
-  border-left: 4px solid #b52027 !important;
+  border-left: 3px solid #b52027 !important;
   color: #b52027 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
 }
 
-.payload-toast-container .toast--info,
 .toast--info {
   background: #fdf8f8 !important;
-  border-left: 4px solid #b52027 !important;
-  color: #b52027 !important;
+  border-left: 3px solid #b52027 !important;
+  color: #7a1520 !important;
+  border-radius: 8px !important;
 }
 
-/* ═══════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════
    MODALS
-   ═══════════════════════════════════════════════════════ */
+   ═══════════════════════════════════════════ */
 
 .modal {
   border-radius: 14px !important;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15) !important;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.05) !important;
 }
 
 .modal__header {
-  border-bottom: 1px solid #eef0f3 !important;
+  border-bottom: 1px solid #eaedf0 !important;
   padding: 18px 24px !important;
 }
 
@@ -663,74 +753,67 @@ label.field-label {
 }
 
 .modal__footer {
-  border-top: 1px solid #eef0f3 !important;
+  border-top: 1px solid #eaedf0 !important;
   padding: 14px 24px !important;
   background: #f8f9fb !important;
   border-radius: 0 0 14px 14px !important;
 }
 
-/* Backdrop */
 .modal-item {
-  background: rgba(10, 10, 20, 0.45) !important;
+  background: rgba(5, 5, 15, 0.4) !important;
+  backdrop-filter: blur(2px) !important;
 }
 
-/* ═══════════════════════════════════════════════════════
-   CHECKBOX / RADIO / TOGGLE
-   ═══════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════
+   CHECKBOX / TOGGLE
+   ═══════════════════════════════════════════ */
 
 input[type='checkbox']:checked,
 input[type='radio']:checked {
   accent-color: #b52027 !important;
 }
 
-.checkbox-input__custom:checked,
 .checkbox-input__custom[data-checked='true'] {
   background: #b52027 !important;
   border-color: #b52027 !important;
 }
 
-/* ═══════════════════════════════════════════════════════
-   FOCUS RINGS
-   ═══════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════
+   FOCUS RING
+   ═══════════════════════════════════════════ */
 
 *:focus-visible {
-  outline: 2px solid rgba(181, 32, 39, 0.5) !important;
+  outline: 2px solid rgba(181,32,39,0.45) !important;
   outline-offset: 2px !important;
 }
 
-/* ═══════════════════════════════════════════════════════
-   LINKS
-   ═══════════════════════════════════════════════════════ */
-
-.payload-admin a:not(.btn):not(.nav__link):not(.document-header__back-button) {
-  color: #b52027 !important;
-}
-
-/* ═══════════════════════════════════════════════════════
-   EMPTY STATE
-   ═══════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════
+   EMPTY STATE / NO RESULTS
+   ═══════════════════════════════════════════ */
 
 .no-results {
   background: #ffffff !important;
   border-radius: 10px !important;
   padding: 48px !important;
   text-align: center !important;
-  border: 1px solid #eef0f3 !important;
+  border: 1px solid #eaedf0 !important;
 }
 
-/* ═══════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════
    LOGIN PAGE
-   ═══════════════════════════════════════════════════════ */
+   ═══════════════════════════════════════════ */
 
 .login {
-  background: #f7f8fa !important;
+  background: linear-gradient(135deg, #f5f6f8 0%, #fff 100%) !important;
 }
 
 .login__wrap {
   background: #ffffff !important;
-  border-radius: 14px !important;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
-  padding: 36px 40px !important;
+  border-radius: 16px !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.10), 0 0 0 1px rgba(0,0,0,0.04) !important;
+  padding: 40px !important;
+  /* Red top stripe on login card */
+  border-top: 4px solid #b52027 !important;
 }
 
 .login h1 {
@@ -739,110 +822,21 @@ input[type='radio']:checked {
   color: #1a1a1a !important;
 }
 
-/* ═══════════════════════════════════════════════════════
-   DASHBOARD — hide Payload's default collection cards
-   and globals list; keep only our custom AdminDashboard
-   ═══════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════
+   RELATIONSHIP FIELDS
+   ═══════════════════════════════════════════ */
 
-.dashboard__card-list,
-.dashboard__globals,
-.dashboard__welcome-block {
-  display: none !important;
+.relationship-wrap {
+  border: 1px solid #dde1e8 !important;
+  border-radius: 8px !important;
+  background: #fafbfc !important;
 }
 
-/* Hide the "Dashboard" page title eyebrow Payload injects */
-.dashboard > .eyebrow {
-  display: none !important;
-}
+/* ═══════════════════════════════════════════
+   SCROLLBAR (webkit)
+   ═══════════════════════════════════════════ */
 
-/* Ensure our afterDashboard component has proper spacing */
-.dashboard .after-dashboard,
-.dashboard > div:last-child {
-  margin-top: 0 !important;
-  padding-top: 0 !important;
-}
-
-/* ═══════════════════════════════════════════════════════
-   SIDEBAR — group labels & separators
-   ═══════════════════════════════════════════════════════ */
-
-.nav__group-label,
-.nav__group > span,
-nav .group-label {
-  color: #b52027 !important;
-  font-size: 9.5px !important;
-  font-weight: 800 !important;
-  letter-spacing: 0.8px !important;
-  text-transform: uppercase !important;
-  padding: 14px 16px 5px !important;
-  opacity: 1 !important;
-  display: block !important;
-}
-
-/* Separator line between groups */
-.nav__group + .nav__group,
-.nav__group {
-  border-top: 1px solid #f0f0f3 !important;
-  margin-top: 4px !important;
-  padding-top: 4px !important;
-}
-
-.nav__group:first-child {
-  border-top: none !important;
-  margin-top: 0 !important;
-}
-
-/* Nav logo area spacing */
-.nav__header {
-  padding: 12px 16px !important;
-  border-bottom: 1px solid #f0f0f3 !important;
-  margin-bottom: 6px !important;
-}
-
-/* Account/profile link at bottom */
-.nav__account {
-  border-top: 1px solid #f0f0f3 !important;
-  padding: 8px 8px 12px !important;
-  margin-top: auto !important;
-}
-
-/* Nav link icon */
-.nav__link svg {
-  width: 14px !important;
-  height: 14px !important;
-  flex-shrink: 0 !important;
-}
-
-/* Globals section in sidebar (Settings) */
-.nav__group--globals .nav__group-label {
-  color: #888 !important;
-}
-
-/* Sidebar footer - logout, account links */
-.nav__controls {
-  padding: 10px 16px !important;
-  border-top: 1px solid #f0f0f3 !important;
-}
-
-/* ═══════════════════════════════════════════════════════
-   CUSTOM SCROLLBAR (webkit)
-   ═══════════════════════════════════════════════════════ */
-
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: #f0f0f0;
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #d0d0d8;
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #b52027;
-}
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: #f2f3f5; border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: #d0d3da; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #b52027; }
