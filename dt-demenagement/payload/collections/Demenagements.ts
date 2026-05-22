@@ -14,7 +14,7 @@ const Demenagements: CollectionConfig = {
   },
 
   admin: {
-    group: '📬 Demandes clients',
+    group: '🚚 Opérations',
     useAsTitle: 'numeroDossier',
     defaultColumns: ['numeroDossier', 'nomComplet', 'telephone', 'statut', 'devisStatut', 'dateDemenagement', 'createdAt'],
     description: 'Chaque ligne = une demande de devis reçue. Ouvrir un dossier et changer le "Statut du dossier" pour que le client voie l\'avancement en temps réel.',

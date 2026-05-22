@@ -67,25 +67,38 @@ export default buildConfig({
     fallback: true,
   },
 
-  // 16 collections (15 métier + 1 admins)
+  // 17 collections — ordered to drive sidebar group order
   collections: [
-    Admins,
-    Media,
-    Categories,
-    Partners,
-    Services,
-    FAQ,
-    Villes,
-    Pays,
-    Pages,
-    Blog,
-    Testimonials,
-    GoogleReviews,
-    Newsletter,
-    Clients,
-    Messages,
+    // 🚚 Opérations (daily use — always first)
     Demenagements,
     RendezVous,
+    Messages,
+
+    // 👥 Utilisateurs
+    Clients,
+    Admins,
+
+    // 📝 Contenu du site
+    Pages,
+    Blog,
+    Services,
+    FAQ,
+    Categories,
+
+    // ⭐ Avis & Réputation
+    GoogleReviews,
+    Testimonials,
+    Partners,
+
+    // 📧 Marketing
+    Newsletter,
+
+    // 📍 Zones d'intervention
+    Villes,
+    Pays,
+
+    // 🖼️ Médias
+    Media,
   ],
 
   // 1 global (singleton)

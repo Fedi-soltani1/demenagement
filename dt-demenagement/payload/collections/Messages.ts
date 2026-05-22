@@ -14,7 +14,7 @@ const Messages: CollectionConfig = {
   },
 
   admin: {
-    group: '📬 Demandes clients',
+    group: '🚚 Opérations',
     useAsTitle: 'contenu',
     defaultColumns: ['demenagement', 'auteur', 'lu', 'createdAt'],
     description: 'Vue conversation : sélectionnez un dossier à gauche pour lire et répondre aux messages.',

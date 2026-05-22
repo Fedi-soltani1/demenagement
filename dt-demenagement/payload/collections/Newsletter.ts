@@ -13,7 +13,7 @@ const Newsletter: CollectionConfig = {
   },
 
   admin: {
-    group: '📬 Demandes clients',
+    group: '📧 Marketing',
     useAsTitle: 'email',
     defaultColumns: ['email', 'statut', 'createdAt'],
     description: 'Liste des emails inscrits à la newsletter. Statut "Confirmé" = email vérifié, prêt pour les campagnes.',
