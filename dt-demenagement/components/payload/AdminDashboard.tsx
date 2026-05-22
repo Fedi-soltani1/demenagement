@@ -177,8 +177,9 @@ export default function AdminDashboard() {
                 Derniers RDV
               </div>
               {stats.recentRDV.map((rdv) => (
-                <a key={rdv.id} href={`/admin/collections/rendez-vous/${rdv.id}`}
-                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '7px 0', borderBottom: '1px solid #f5f5f5', textDecoration: 'none', gap: '8px' }}>
+                <div key={rdv.id}
+                  onClick={() => { window.location.href = `/admin/collections/rendez-vous/${rdv.id}` }}
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '7px 0', borderBottom: '1px solid #f5f5f5', cursor: 'pointer', gap: '8px' }}>
                   <div style={{ minWidth: 0 }}>
                     <div style={{ fontSize: '12px', fontWeight: 600, color: '#1a1a1a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {rdv.prenom} {rdv.nom}
@@ -200,7 +201,7 @@ export default function AdminDashboard() {
                         style={{ fontSize: '13px', textDecoration: 'none' }} title="WhatsApp">💬</a>
                     )}
                   </div>
-                </a>
+                </div>
               ))}
             </>
           )}
