@@ -44,7 +44,7 @@ export default buildConfig({
 
   admin: {
     user: 'admins',
-    theme: 'auto',
+    theme: 'all',
     meta: {
       titleSuffix: '— DT Déménagement Admin',
     },
@@ -56,9 +56,8 @@ export default buildConfig({
         Logo: '@/components/payload/AdminLogo',
         Icon: '@/components/payload/AdminIcon',
       },
-      header:          ['@/components/payload/ThemeToggle'],
-      afterDashboard:  ['@/components/payload/AdminDashboard'],
-      beforeNavLinks:  ['@/components/payload/CalendarNavLink'],
+      header:         ['@/components/payload/AdminHeaderBar'],
+      afterDashboard: ['@/components/payload/AdminDashboard'],
       views: {
         rdvCalendar: {
           Component: '@/components/payload/RDVCalendarView',

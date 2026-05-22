@@ -639,7 +639,7 @@ h1.render-title {
 label.field-label {
   font-size: 10.5px !important;
   font-weight: 700 !important;
-  color: #5a6070 !important;
+  color: var(--dt-muted) !important;
   text-transform: uppercase !important;
   letter-spacing: 0.5px !important;
   margin-bottom: 6px !important;
@@ -1365,6 +1365,121 @@ input[type='radio']:checked {
 [data-theme='dark'] ::-webkit-scrollbar-track { background: #1a1c24; }
 [data-theme='dark'] ::-webkit-scrollbar-thumb { background: #2e3148; }
 [data-theme='dark'] ::-webkit-scrollbar-thumb:hover { background: #cc2a33; }
+
+/* ── Catch-all: any raw text / heading that stayed black ── */
+[data-theme='dark'] h1,
+[data-theme='dark'] h2,
+[data-theme='dark'] h3,
+[data-theme='dark'] h4,
+[data-theme='dark'] p,
+[data-theme='dark'] span:not([class*='badge']):not([class*='pill']):not([class*='status']) {
+  color: inherit;
+}
+
+/* Field descriptions / helper text */
+[data-theme='dark'] .field-description,
+[data-theme='dark'] .field-description p,
+[data-theme='dark'] .field-type .description,
+[data-theme='dark'] [class*='field__description'],
+[data-theme='dark'] .label-wrap + p {
+  color: #6c7289 !important;
+}
+
+/* ReactSelect dark — menu and options */
+[data-theme='dark'] .rs__menu,
+[data-theme='dark'] .ReactSelect__menu {
+  background: #1e2130 !important;
+  border: 1px solid #262a38 !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4) !important;
+}
+
+[data-theme='dark'] .rs__option,
+[data-theme='dark'] .ReactSelect__option {
+  background: transparent !important;
+  color: #c0c8df !important;
+}
+
+[data-theme='dark'] .rs__option:hover,
+[data-theme='dark'] .rs__option--is-focused {
+  background: rgba(204,42,51,0.10) !important;
+  color: #e03540 !important;
+}
+
+[data-theme='dark'] .rs__option--is-selected,
+[data-theme='dark'] .ReactSelect__option--is-selected {
+  background: rgba(204,42,51,0.20) !important;
+  color: #e03540 !important;
+}
+
+[data-theme='dark'] .rs__single-value,
+[data-theme='dark'] .ReactSelect__single-value {
+  color: #e2e6f0 !important;
+}
+
+[data-theme='dark'] .rs__placeholder,
+[data-theme='dark'] .ReactSelect__placeholder {
+  color: #4a5068 !important;
+}
+
+[data-theme='dark'] .rs__indicator,
+[data-theme='dark'] .ReactSelect__indicator {
+  color: #4a5068 !important;
+}
+
+[data-theme='dark'] .rs__multi-value {
+  background: #252840 !important;
+}
+
+[data-theme='dark'] .rs__multi-value__label {
+  color: #c0c8df !important;
+}
+
+/* Checkbox / toggle labels dark */
+[data-theme='dark'] .checkbox-input__label,
+[data-theme='dark'] .checkbox__label,
+[data-theme='dark'] .toggle-input__label {
+  color: #c0c8df !important;
+}
+
+/* Number / point-in-time fields dark */
+[data-theme='dark'] .number-field,
+[data-theme='dark'] .date-time-picker input {
+  background: #1e2130 !important;
+  border-color: #262a38 !important;
+  color: #e2e6f0 !important;
+}
+
+/* Status/pill chips used across collections */
+[data-theme='dark'] .pill {
+  background: #1e2130 !important;
+  border-color: #262a38 !important;
+  color: #c0c8df !important;
+}
+
+/* Doc sidebar (right panel in edit view) */
+[data-theme='dark'] .doc-sidebar,
+[data-theme='dark'] .doc-sidebar__card {
+  background: #161820 !important;
+  border-color: #262a38 !important;
+}
+
+[data-theme='dark'] .doc-sidebar__card-content {
+  color: #8892b0 !important;
+}
+
+/* Section title rows in edit forms */
+[data-theme='dark'] .row-label,
+[data-theme='dark'] .section-title {
+  color: #4a5068 !important;
+  border-color: #1e2130 !important;
+}
+
+/* Textarea dark */
+[data-theme='dark'] .field-type textarea {
+  background: #1e2130 !important;
+  border-color: #262a38 !important;
+  color: #e2e6f0 !important;
+}
 
 /* ═══════════════════════════════════════════
    POPUPS / DROPDOWNS (table actions, column selector, filters)
