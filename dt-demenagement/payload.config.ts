@@ -45,7 +45,6 @@ export default buildConfig({
   admin: {
     user: 'admins',
     theme: 'light',
-    css: path.resolve(dirname, 'custom-admin.css'),
     meta: {
       titleSuffix: '— DT Déménagement Admin',
     },

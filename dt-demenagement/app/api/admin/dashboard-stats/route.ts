@@ -65,11 +65,11 @@ export async function GET(request: NextRequest): Promise<Response> {
       })),
       safeCount(payload.count({
         collection: 'demenagements',
-        // Use 'in' with active statuts instead of not_equals to avoid adapter quirks
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         where: { and: [
           { statut: { in: ['devis_recu', 'confirme', 'en_preparation', 'en_cours'] } },
-          { dateDemenagement: { greater_than_or_equal: todayStart.toISOString() } },
-          { dateDemenagement: { less_than_or_equal:    todayEnd.toISOString()   } },
+          { dateDemenagement: { greater_than_or_equal: todayStart.toISOString() } as any },
+          { dateDemenagement: { less_than_or_equal:    todayEnd.toISOString()   } as any },
         ]},
         overrideAccess: true,
       })),
