@@ -10,6 +10,19 @@ import { ShineBorderEffect } from '@/components/ui/ShineBorder'
 import { COMPANY } from '@/lib/constants'
 import { useDevisModal } from '@/components/layout/DevisModal'
 
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function extractYoutubeId(url: string): string | null {
+  try {
+    const u = new URL(url)
+    if (u.hostname.includes('youtu.be')) return u.pathname.slice(1)
+    if (u.hostname.includes('youtube.com')) return u.searchParams.get('v')
+    return null
+  } catch {
+    return null
+  }
+}
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 type Point = { x: number; y: number }
@@ -177,6 +190,7 @@ export type CmsHero = {
   stat3Valeur?: string | null
   stat3Label?: string | null
   pills?: { texte: string }[] | null
+  videoYoutube?: string | null
   imageHero?: string | null
   afficher3D?: boolean | null
 }
@@ -188,8 +202,9 @@ export function HeroBlock({ cms }: { cms?: CmsHero }) {
   const locale = useLocale()
   const { open: openDevisModal } = useDevisModal()
 
-  const showCanvas = cms?.afficher3D !== false
-  const canvasRef  = useRef<HTMLCanvasElement | null>(null)
+  const showCanvas  = cms?.afficher3D !== false
+  const youtubeId   = !showCanvas && cms?.videoYoutube ? extractYoutubeId(cms.videoYoutube) : null
+  const canvasRef   = useRef<HTMLCanvasElement | null>(null)
   useWaveCanvas(canvasRef)
 
   // CMS override avec fallback i18n
@@ -221,8 +236,20 @@ export function HeroBlock({ cms }: { cms?: CmsHero }) {
         aria-hidden="true"
         style={{ display: showCanvas ? 'block' : 'none' }}
       />
-      {/* Image de fond CMS — visible uniquement si afficher3D=false */}
-      {!showCanvas && cms?.imageHero && (
+      {/* Vidéo YouTube de fond — prioritaire sur l'image si afficher3D=false */}
+      {youtubeId && (
+        <iframe
+          src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&mute=1&loop=1&playlist=${youtubeId}&controls=0&showinfo=0&rel=0&disablekb=1`}
+          className="absolute inset-0 h-full w-full scale-[1.4] pointer-events-none"
+          style={{ border: 'none' }}
+          allow="autoplay; encrypted-media"
+          aria-hidden="true"
+          tabIndex={-1}
+          title=""
+        />
+      )}
+      {/* Image de fond CMS — visible si afficher3D=false et pas de vidéo YouTube */}
+      {!showCanvas && !youtubeId && cms?.imageHero && (
         <Image
           src={cms.imageHero}
           alt=""
