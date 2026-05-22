@@ -8,6 +8,17 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Play, X, ArrowRight } from 'lucide-react'
 import { CounterAnimation } from '@/components/ui/CounterAnimation'
 
+function toYoutubeEmbed(url: string): string {
+  try {
+    const u = new URL(url)
+    let id: string | null = null
+    if (u.hostname.includes('youtu.be')) id = u.pathname.slice(1)
+    else if (u.hostname.includes('youtube.com')) id = u.searchParams.get('v')
+    if (id) return `https://www.youtube.com/embed/${id}?autoplay=1&rel=0`
+  } catch { /* ignore */ }
+  return url
+}
+
 export type CmsApropos = {
   badge?: string | null
   titre?: string | null
@@ -172,8 +183,9 @@ export function StatsAboutBlock({ cms }: { cms?: CmsApropos }) {
               onClick={(e) => e.stopPropagation()}
             >
               <iframe
-                src={videoUrl ?? 'about:blank'}
+                src={videoUrl ? toYoutubeEmbed(videoUrl) : 'about:blank'}
                 className="w-full h-full"
+                allow="autoplay; encrypted-media; fullscreen"
                 allowFullScreen
                 title={t('videoLabel')}
               />

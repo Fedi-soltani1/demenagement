@@ -40,7 +40,7 @@ export const AboutBlock: Block = {
       name: 'videoUrl',
       label: 'Vidéo YouTube à la place de l\'image (optionnelle)',
       type: 'text',
-      admin: { description: 'URL embed YouTube. Ex: https://www.youtube.com/embed/XXXXX — Si renseignée, remplace la photo par une vidéo.' },
+      admin: { description: 'Lien YouTube normal ou embed. Ex: https://www.youtube.com/watch?v=XXXXX — La conversion en embed est automatique. Si renseignée, un bouton Play apparaît sur la photo.' },
     },
     {
       name: 'ctaTexte',
