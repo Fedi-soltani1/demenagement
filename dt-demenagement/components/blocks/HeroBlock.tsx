@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect, useRef } from 'react'
-import Link from 'next/link'
+import Image from 'next/image'
 import { useTranslations, useLocale } from 'next-intl'
 import { motion, type Variants } from 'framer-motion'
 import { ArrowRight } from 'lucide-react'
@@ -177,6 +177,8 @@ export type CmsHero = {
   stat3Valeur?: string | null
   stat3Label?: string | null
   pills?: { texte: string }[] | null
+  imageHero?: string | null
+  afficher3D?: boolean | null
 }
 
 // ─── HeroBlock ────────────────────────────────────────────────────────────────
@@ -186,7 +188,8 @@ export function HeroBlock({ cms }: { cms?: CmsHero }) {
   const locale = useLocale()
   const { open: openDevisModal } = useDevisModal()
 
-  const canvasRef = useRef<HTMLCanvasElement | null>(null)
+  const showCanvas = cms?.afficher3D !== false || !cms?.imageHero
+  const canvasRef  = useRef<HTMLCanvasElement | null>(null)
   useWaveCanvas(canvasRef)
 
   // CMS override avec fallback i18n
@@ -211,13 +214,24 @@ export function HeroBlock({ cms }: { cms?: CmsHero }) {
       className="relative isolate flex min-h-[100svh] w-full items-center justify-center overflow-hidden bg-[var(--color-bg-dark)]"
       aria-label="Section principale"
     >
-      {/* Canvas ondes animées — remplace TruckScene 3D */}
-      <canvas
-        ref={canvasRef}
-        className="absolute inset-0 h-full w-full"
-        aria-hidden="true"
-        style={{ display: 'block' }}
-      />
+      {/* Background : canvas ondes animées OU image de fond CMS */}
+      {showCanvas ? (
+        <canvas
+          ref={canvasRef}
+          className="absolute inset-0 h-full w-full"
+          aria-hidden="true"
+          style={{ display: 'block' }}
+        />
+      ) : cms?.imageHero ? (
+        <Image
+          src={cms.imageHero}
+          alt=""
+          fill
+          priority
+          className="object-cover"
+          aria-hidden="true"
+        />
+      ) : null}
 
       {/* Halos ambiance — superposés sur le canvas */}
       <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">

@@ -99,6 +99,8 @@ function adaptHero(b: PayloadBlock): CmsHero {
     sousTitre:  str(b.sousTitre),
     cta1Texte:  str(ctaPrimaire?.texte)   ?? null,
     cta2Texte:  str(ctaSecondaire?.texte) ?? null,
+    imageHero:  mediaUrl(b.imageHero),
+    afficher3D: typeof b.afficher3D === 'boolean' ? b.afficher3D : true,
   }
 }
 
