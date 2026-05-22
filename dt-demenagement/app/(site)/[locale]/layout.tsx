@@ -4,6 +4,7 @@ import { ThemeProvider } from '@/components/layout/ThemeProvider'
 import { NavbarServer } from '@/components/layout/NavbarServer'
 import { FooterServer } from '@/components/layout/FooterServer'
 import { CustomCursor } from '@/components/layout/CustomCursor'
+import { LivePreviewListener } from '@/components/blocks/LivePreviewListener'
 import { PageLoader } from '@/components/layout/PageLoader'
 import { ScrollToTop } from '@/components/layout/ScrollToTop'
 import { WhatsAppButton } from '@/components/layout/WhatsAppButton'
@@ -51,6 +52,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
           <ScrollToTop />
           <WhatsAppButton />
           <CookieBanner />
+          <LivePreviewListener serverURL={process.env.NEXT_PUBLIC_PAYLOAD_URL ?? 'http://localhost:3000'} />
         </DevisModalProvider>
       </ThemeProvider>
     </NextIntlClientProvider>
