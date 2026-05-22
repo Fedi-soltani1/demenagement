@@ -7,6 +7,13 @@
    TOKENS — DEEP NAVY (single theme, no toggle)
    ═══════════════════════════════════════════ */
 
+/*
+ * These CSS custom properties are read directly by Payload CMS v3's own
+ * stylesheets from :root — they are NOT consumed via var() in this file.
+ * Removing them would revert Payload's internal components to their default
+ * blue/light theme. They must remain on :root (not scoped to .payload-admin)
+ * because Payload's bundled CSS uses them at the global scope.
+ */
 :root {
   /* Base scale: 0 = darkest (#0b0e1a) → 1000 = white */
   --color-base-0:      11,  14,  26;
@@ -71,10 +78,17 @@
    GLOBAL
    ═══════════════════════════════════════════ */
 
-html, body, .payload-admin {
+.payload-admin,
+#payload-admin-root,
+[data-payload] {
   background: #0b0e1a !important;
   color: #e2e8f5 !important;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+}
+
+/* Keyboard focus — accessible for admin users */
+.payload-admin :focus-visible {
+  outline: 2px solid #b52027;
+  outline-offset: 2px;
 }
 
 /* ═══════════════════════════════════════════
@@ -88,9 +102,9 @@ header.app-header {
   box-shadow: 0 1px 0 #1f2d47, 0 2px 8px rgba(0,0,0,0.4) !important;
   height: 56px !important;
   border-top: 3px solid #b52027 !important;
-  position: sticky !important;
-  top: 0 !important;
-  z-index: 100 !important;
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 .app-header__content,
@@ -401,7 +415,13 @@ a.btn--style-primary {
 .btn--style-primary:hover {
   background: #d42833 !important;
   box-shadow: 0 4px 12px rgba(181,32,39,0.3) !important;
-  transform: translateY(-1px) !important;
+  transform: translateY(-1px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn--style-primary:hover {
+    transform: none;
+  }
 }
 
 .btn--style-secondary,
@@ -512,15 +532,13 @@ select.field-select {
 }
 
 /* Lexical toolbar */
-.lexical-toolbar,
-.toolbar {
+.lexical-toolbar {
   background: #111827 !important;
   border-bottom: 1px solid #1f2d47 !important;
   padding: 6px 10px !important;
 }
 
-.lexical-toolbar button,
-.toolbar button {
+.lexical-toolbar button {
   background: transparent !important;
   border: none !important;
   color: #94a3b8 !important;
@@ -528,8 +546,7 @@ select.field-select {
   padding: 4px 6px !important;
 }
 
-.lexical-toolbar button:hover,
-.toolbar button:hover {
+.lexical-toolbar button:hover {
   background: rgba(255,255,255,0.06) !important;
   color: #e2e8f5 !important;
 }
@@ -549,12 +566,6 @@ select.field-select {
   font-weight: 700 !important;
   text-transform: uppercase !important;
   letter-spacing: 0.5px !important;
-}
-
-/* Save status */
-.document-controls .pill--style-success {
-  background: rgba(16,185,129,0.12) !important;
-  color: #10b981 !important;
 }
 
 /* ═══════════════════════════════════════════
@@ -592,6 +603,39 @@ select.field-select {
 .blocks-field__add-button:hover {
   border-color: #b52027 !important;
   color: #b52027 !important;
+}
+
+/* ═══════════════════════════════════════════
+   COLLAPSIBLE FIELDS
+   ═══════════════════════════════════════════ */
+
+.collapsible__toggle,
+.collapsible-field__toggle {
+  background: #111827 !important;
+  border: 1px solid #1f2d47 !important;
+  border-radius: 6px !important;
+  color: #e2e8f5 !important;
+  padding: 8px 12px !important;
+  cursor: pointer !important;
+  width: 100% !important;
+  text-align: left !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  transition: background 0.12s !important;
+}
+
+.collapsible__toggle:hover,
+.collapsible-field__toggle:hover {
+  background: rgba(181,32,39,0.06) !important;
+}
+
+.collapsible__content,
+.collapsible-field__content {
+  background: #0b0e1a !important;
+  border: 1px solid #1f2d47 !important;
+  border-top: none !important;
+  border-radius: 0 0 6px 6px !important;
+  padding: 12px !important;
 }
 
 /* ═══════════════════════════════════════════
@@ -699,6 +743,7 @@ select.field-select {
 .modal__backdrop,
 .drawer__backdrop {
   background: rgba(0,0,0,0.6) !important;
+  -webkit-backdrop-filter: blur(2px) !important;
   backdrop-filter: blur(2px) !important;
 }
 
@@ -834,6 +879,60 @@ select.field-select {
 ::-webkit-scrollbar-track        { background: #0b0e1a; }
 ::-webkit-scrollbar-thumb        { background: #1f2d47; border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover  { background: #2a3d5a; }
+
+/* Firefox */
+* { scrollbar-width: thin; scrollbar-color: #1f2d47 #0b0e1a; }
+
+/* ═══════════════════════════════════════════
+   MISSING STATES
+   ═══════════════════════════════════════════ */
+
+/* File upload — drag active */
+.upload__dropzone--drag-over,
+.file-field__dropzone--drag-over {
+  border-color: #b52027 !important;
+  background: rgba(181,32,39,0.06) !important;
+  color: #e2e8f5 !important;
+}
+
+/* Empty collection list */
+.collection-list__no-results,
+.list-view__no-results {
+  color: #64748b !important;
+  text-align: center !important;
+  padding: 48px 24px !important;
+  font-size: 14px !important;
+}
+
+/* Loading / shimmer states */
+.loading-overlay,
+.payload-loading {
+  background: rgba(11,14,26,0.8) !important;
+}
+
+/* Code blocks in Lexical rich text */
+.PlaygroundEditorTheme__code,
+pre.PlaygroundEditorTheme__code,
+.lexical-editor pre,
+.ContentEditable__root pre {
+  background: #1a2235 !important;
+  border: 1px solid #1f2d47 !important;
+  border-radius: 6px !important;
+  color: #e2e8f5 !important;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace !important;
+  font-size: 12px !important;
+  padding: 12px 16px !important;
+  overflow-x: auto !important;
+}
+
+.PlaygroundEditorTheme__code code,
+.lexical-editor code {
+  background: rgba(181,32,39,0.1) !important;
+  color: #f87171 !important;
+  border-radius: 3px !important;
+  padding: 1px 5px !important;
+  font-size: 11px !important;
+}
 
 /* ═══════════════════════════════════════════
    LOGIN PAGE
