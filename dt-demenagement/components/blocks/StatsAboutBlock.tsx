@@ -8,15 +8,13 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Play, X, ArrowRight } from 'lucide-react'
 import { CounterAnimation } from '@/components/ui/CounterAnimation'
 
-function toYoutubeEmbed(url: string): string {
+function extractYoutubeId(url: string): string | null {
   try {
     const u = new URL(url)
-    let id: string | null = null
-    if (u.hostname.includes('youtu.be')) id = u.pathname.slice(1)
-    else if (u.hostname.includes('youtube.com')) id = u.searchParams.get('v')
-    if (id) return `https://www.youtube.com/embed/${id}?autoplay=1&controls=0&rel=0&modestbranding=1&disablekb=1`
+    if (u.hostname.includes('youtu.be')) return u.pathname.slice(1).split('?')[0] ?? null
+    if (u.hostname.includes('youtube.com')) return u.searchParams.get('v')
   } catch { /* ignore */ }
-  return url
+  return null
 }
 
 export type CmsApropos = {
@@ -43,7 +41,8 @@ export type CmsApropos = {
 export function StatsAboutBlock({ cms }: { cms?: CmsApropos }) {
   const t = useTranslations('Home.about')
   const locale = useLocale()
-  const [videoOpen, setVideoOpen] = useState(false)
+  const [videoOpen, setVideoOpen]       = useState(false)
+  const [videoStarted, setVideoStarted] = useState(false)
 
   const badge    = cms?.badge    ?? t('badge')
   const titre    = cms?.titre    ?? t('title')
@@ -162,7 +161,7 @@ export function StatsAboutBlock({ cms }: { cms?: CmsApropos }) {
       </div>
 
       {/* Modal vidéo lightbox */}
-      <AnimatePresence>
+      <AnimatePresence onExitComplete={() => setVideoStarted(false)}>
         {videoOpen && (
           <motion.div
             className="fixed inset-0 z-[9995] flex items-center justify-center bg-black/90 p-4"
@@ -182,18 +181,43 @@ export function StatsAboutBlock({ cms }: { cms?: CmsApropos }) {
               transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
               onClick={(e) => e.stopPropagation()}
             >
-              <iframe
-                src={videoUrl ? toYoutubeEmbed(videoUrl) : 'about:blank'}
-                className="absolute inset-0 w-full h-full"
-                allow="autoplay; encrypted-media; fullscreen"
-                allowFullScreen
-                title={t('videoLabel')}
-              />
-              {/* Overlay — masque l'UI YouTube (boutons, logo, suggestions) */}
-              <div className="absolute inset-0" aria-hidden="true" />
+              {videoStarted && videoUrl ? (
+                /* Iframe chargée APRÈS le clic sur play — autoplay autorisé par le geste utilisateur */
+                <iframe
+                  src={`https://www.youtube.com/embed/${extractYoutubeId(videoUrl)}?autoplay=1&controls=0&rel=0&modestbranding=1&disablekb=1&iv_load_policy=3&loop=1&playlist=${extractYoutubeId(videoUrl)}`}
+                  className="absolute inset-0 w-full h-full"
+                  allow="autoplay; encrypted-media; fullscreen"
+                  allowFullScreen
+                  title={t('videoLabel')}
+                />
+              ) : (
+                /* Miniature YouTube + bouton play custom — aucun élément YouTube visible */
+                <>
+                  {videoUrl && extractYoutubeId(videoUrl) && (
+                    <img
+                      src={`https://img.youtube.com/vi/${extractYoutubeId(videoUrl)}/maxresdefault.jpg`}
+                      alt=""
+                      className="absolute inset-0 w-full h-full object-cover"
+                      aria-hidden="true"
+                    />
+                  )}
+                  <div className="absolute inset-0 bg-black/30" aria-hidden="true" />
+                  <button
+                    onClick={() => setVideoStarted(true)}
+                    className="absolute inset-0 flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                    aria-label={t('videoLabel')}
+                  >
+                    <span className="w-20 h-20 rounded-full bg-[var(--color-red)] flex items-center justify-center shadow-2xl hover:scale-110 transition-transform duration-200">
+                      <Play className="w-8 h-8 text-white fill-current ms-1" aria-hidden="true" />
+                    </span>
+                  </button>
+                </>
+              )}
+
+              {/* Bouton fermer — toujours visible */}
               <button
                 onClick={() => setVideoOpen(false)}
-                className="absolute top-3 end-3 w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                className="absolute top-3 end-3 z-10 w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
                 aria-label="Fermer la vidéo"
               >
                 <X className="w-4 h-4 text-white" aria-hidden="true" />
