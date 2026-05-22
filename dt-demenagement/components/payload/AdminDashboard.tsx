@@ -182,6 +182,7 @@ function QuickLink({ icon, label, sub, href, badge, badgeColor }: {
   return (
     <a href={href} style={{ textDecoration: 'none', display: 'block' }}>
       <div
+        className="dt-quicklink"
         style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 14px', borderRadius: '8px', background: '#fff', border: '1px solid #eee', transition: 'box-shadow 0.15s, border-color 0.15s', cursor: 'pointer' }}
         onMouseEnter={(e) => { const el = e.currentTarget as HTMLDivElement; el.style.boxShadow = '0 2px 8px rgba(181,32,39,0.1)'; el.style.borderColor = '#f0c0c0' }}
         onMouseLeave={(e) => { const el = e.currentTarget as HTMLDivElement; el.style.boxShadow = 'none'; el.style.borderColor = '#eee' }}
@@ -238,28 +239,31 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true)
   const [error,   setError]   = useState(false)
 
-  // Hide Payload's default dashboard content and page header injected above our component
+  // Hide Payload's default dashboard widgets and page title bar
   useEffect(() => {
     const hide = () => {
-      // 1. Hide sibling elements inside .dashboard (collection cards, globals)
-      const dashboard = document.querySelector('.dashboard')
-      if (!dashboard) return false
-      const kids = Array.from(dashboard.children) as HTMLElement[]
-      if (kids.length < 2) return false
-      kids.slice(0, -1).forEach((el) => { el.style.display = 'none' })
+      // Cible par classe — pas par position DOM (fragile si Payload injecte après notre composant)
+      document.querySelectorAll<HTMLElement>(
+        '.dashboard__card-list, .dashboard__globals, .dashboard__welcome-block'
+      ).forEach((el) => { el.style.display = 'none' })
 
-      // 2. Hide Payload's page title bar ("Dashboard" heading + user info)
-      document.querySelectorAll<HTMLElement>('.view-description, .view-description__content').forEach((el) => {
+      document.querySelectorAll<HTMLElement>('.dashboard > .eyebrow, .dashboard > h1').forEach((el) => {
         el.style.display = 'none'
       })
-      return true
+
+      // Barre de titre uniquement sur la page dashboard
+      if (/\/admin\/?$/.test(window.location.pathname)) {
+        document.querySelectorAll<HTMLElement>('.view-description').forEach((el) => {
+          el.style.display = 'none'
+        })
+      }
     }
-    if (!hide()) {
-      const t1 = setTimeout(hide, 80)
-      const t2 = setTimeout(hide, 350)
-      return () => { clearTimeout(t1); clearTimeout(t2) }
-    }
-    return undefined
+
+    // 3 passages pour couvrir le rendu async de Payload
+    const t1 = setTimeout(hide, 0)
+    const t2 = setTimeout(hide, 150)
+    const t3 = setTimeout(hide, 500)
+    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3) }
   }, [])
 
   useEffect(() => {
@@ -274,15 +278,49 @@ export default function AdminDashboard() {
   const pipelineMax = stats ? Math.max(stats.dossiers.devis_recu, stats.dossiers.confirme, stats.dossiers.en_preparation, stats.dossiers.en_cours, stats.dossiers.livre, stats.dossiers.annule, 1) : 1
 
   return (
-    <div style={{ fontFamily: 'system-ui, -apple-system, sans-serif', paddingBottom: '48px' }}>
+    <div className="dt-admin-dashboard" style={{ fontFamily: 'system-ui, -apple-system, sans-serif', paddingBottom: '48px' }}>
 
-      {/* ── Keyframes (inline) ── */}
+      {/* ── Keyframes + dark mode overrides (inline = !important needed pour écraser inline styles) ── */}
       <style>{`
         @keyframes dt-shimmer {
           0%   { background-position: 300% 0 }
           100% { background-position: -300% 0 }
         }
         @keyframes dt-spin { to { transform: rotate(360deg) } }
+
+        [data-theme='dark'] .dt-admin-dashboard .dt-card {
+          background: #1a1b25 !important;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.05) !important;
+        }
+        [data-theme='dark'] .dt-admin-dashboard .dt-card-header {
+          color: #5a6078 !important;
+        }
+        [data-theme='dark'] .dt-admin-dashboard .dt-strip {
+          background: #1a1b25 !important;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.05) !important;
+        }
+        [data-theme='dark'] .dt-admin-dashboard .dt-kpi {
+          background: #1a1b25 !important;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.05) !important;
+        }
+        [data-theme='dark'] .dt-admin-dashboard .dt-kpi-value { color: inherit !important; }
+        [data-theme='dark'] .dt-admin-dashboard .dt-kpi-label { color: #5a6078 !important; }
+        [data-theme='dark'] .dt-admin-dashboard .dt-text-primary { color: #e4e6f0 !important; }
+        [data-theme='dark'] .dt-admin-dashboard .dt-text-muted  { color: #5a6078 !important; }
+        [data-theme='dark'] .dt-admin-dashboard .dt-pipeline-track { background: #2a2d3a !important; }
+        [data-theme='dark'] .dt-admin-dashboard .dt-divider { border-top-color: #2a2d3a !important; }
+        [data-theme='dark'] .dt-admin-dashboard .dt-quicklink {
+          background: #13141b !important;
+          border-color: #2a2d3a !important;
+        }
+        [data-theme='dark'] .dt-admin-dashboard .dt-quicklink:hover {
+          border-color: rgba(181,32,39,0.4) !important;
+          box-shadow: 0 2px 8px rgba(181,32,39,0.15) !important;
+        }
+        [data-theme='dark'] .dt-admin-dashboard .dt-cal-day-text { color: #9da1b8 !important; }
+        [data-theme='dark'] .dt-admin-dashboard .dt-table-row { border-bottom-color: #22253a !important; }
+        [data-theme='dark'] .dt-admin-dashboard .dt-table-row:hover td,
+        [data-theme='dark'] .dt-admin-dashboard .dt-table-row:hover > div { background: rgba(181,32,39,0.06) !important; }
       `}</style>
 
       {/* ── Error banner ── */}
@@ -350,7 +388,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* ── Aujourd'hui strip ── */}
-      <div style={{ background: '#fff', borderRadius: '10px', padding: '14px 20px', marginBottom: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04)', display: 'flex', alignItems: 'center', gap: '32px', flexWrap: 'wrap' as const }}>
+      <div className="dt-strip" style={{ background: '#fff', borderRadius: '10px', padding: '14px 20px', marginBottom: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04)', display: 'flex', alignItems: 'center', gap: '32px', flexWrap: 'wrap' as const }}>
         <div style={{ fontSize: '12px', fontWeight: 700, color: '#b52027', textTransform: 'uppercase' as const, letterSpacing: '0.5px', flexShrink: 0 }}>Aujourd&apos;hui</div>
         <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' as const }}>
           {loading ? (
@@ -388,13 +426,13 @@ export default function AdminDashboard() {
 
       {/* ── Row 2: Calendar + Quick Links ── */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: '16px', marginBottom: '16px' }}>
-        <div style={{ background: '#fff', borderRadius: '12px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04)' }}>
-          <div style={{ fontSize: '12px', fontWeight: 700, color: '#888', textTransform: 'uppercase' as const, letterSpacing: '0.5px', marginBottom: '14px' }}>Calendrier des RDV</div>
+        <div className="dt-card" style={{ background: '#fff', borderRadius: '12px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04)' }}>
+          <div className="dt-card-header" style={{ fontSize: '12px', fontWeight: 700, color: '#888', textTransform: 'uppercase' as const, letterSpacing: '0.5px', marginBottom: '14px' }}>Calendrier des RDV</div>
           <MiniCalendar />
         </div>
 
-        <div style={{ background: '#fff', borderRadius: '12px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04)' }}>
-          <div style={{ fontSize: '12px', fontWeight: 700, color: '#888', textTransform: 'uppercase' as const, letterSpacing: '0.5px', marginBottom: '14px' }}>Accès rapide</div>
+        <div className="dt-card" style={{ background: '#fff', borderRadius: '12px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04)' }}>
+          <div className="dt-card-header" style={{ fontSize: '12px', fontWeight: 700, color: '#888', textTransform: 'uppercase' as const, letterSpacing: '0.5px', marginBottom: '14px' }}>Accès rapide</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
             <QuickLink icon="📋" label="Dossiers"       sub={loading ? '…' : `${stats?.dossiers.total ?? 0} total`}                   href="/admin/collections/demenagements" badge={stats?.dossiers.devis_recu} badgeColor="#fef3c7" />
             <QuickLink icon="📅" label="Rendez-vous"    sub={loading ? '…' : `${(stats?.rdv.nouveaux ?? 0) + (stats?.rdv.confirmes ?? 0)} actifs`} href="/admin/collections/rendez-vous"  badge={stats?.rdv.nouveaux}    badgeColor="#fef3c7" />
@@ -408,8 +446,8 @@ export default function AdminDashboard() {
 
       {/* ── Row 3: Pipeline + RDV stats ── */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
-        <div style={{ background: '#fff', borderRadius: '12px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04)' }}>
-          <div style={{ fontSize: '12px', fontWeight: 700, color: '#888', textTransform: 'uppercase' as const, letterSpacing: '0.5px', marginBottom: '16px' }}>Pipeline dossiers</div>
+        <div className="dt-card" style={{ background: '#fff', borderRadius: '12px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04)' }}>
+          <div className="dt-card-header" style={{ fontSize: '12px', fontWeight: 700, color: '#888', textTransform: 'uppercase' as const, letterSpacing: '0.5px', marginBottom: '16px' }}>Pipeline dossiers</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             <PipelineBar loading={loading} icon="📥" label="Devis reçu"    value={stats?.dossiers.devis_recu     ?? 0} max={pipelineMax} color="#f59e0b" />
             <PipelineBar loading={loading} icon="✅" label="Confirmé"       value={stats?.dossiers.confirme       ?? 0} max={pipelineMax} color="#10b981" />
@@ -424,8 +462,8 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        <div style={{ background: '#fff', borderRadius: '12px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04)' }}>
-          <div style={{ fontSize: '12px', fontWeight: 700, color: '#888', textTransform: 'uppercase' as const, letterSpacing: '0.5px', marginBottom: '16px' }}>Rendez-vous visites</div>
+        <div className="dt-card" style={{ background: '#fff', borderRadius: '12px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04)' }}>
+          <div className="dt-card-header" style={{ fontSize: '12px', fontWeight: 700, color: '#888', textTransform: 'uppercase' as const, letterSpacing: '0.5px', marginBottom: '16px' }}>Rendez-vous visites</div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
             {loading ? (
               <>
@@ -452,9 +490,9 @@ export default function AdminDashboard() {
       </div>
 
       {/* ── Recent dossiers table ── */}
-      <div style={{ background: '#fff', borderRadius: '12px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04)' }}>
+      <div className="dt-card" style={{ background: '#fff', borderRadius: '12px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-          <div style={{ fontSize: '12px', fontWeight: 700, color: '#888', textTransform: 'uppercase' as const, letterSpacing: '0.5px' }}>Derniers dossiers reçus</div>
+          <div className="dt-card-header" style={{ fontSize: '12px', fontWeight: 700, color: '#888', textTransform: 'uppercase' as const, letterSpacing: '0.5px' }}>Derniers dossiers reçus</div>
           <a href="/admin/collections/demenagements" style={{ fontSize: '11px', color: '#b52027', textDecoration: 'none', fontWeight: 700, padding: '5px 12px', border: '1px solid #fde2e2', borderRadius: '6px' }}>
             Voir tous →
           </a>
