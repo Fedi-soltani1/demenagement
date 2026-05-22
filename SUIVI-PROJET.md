@@ -66,6 +66,27 @@ CONSÉQUENCE : Les nouvelles colonnes ajoutées dans les collections Payload NE 
 ## 🤖 DERNIÈRE MISE À JOUR PAR CLAUDE CODE
 
 ```
+Date        : 2026-05-22 — FIX HERO IMAGE DE FOND
+Session     : Dev 1 (HeroBlock imageHero + afficher3D)
+Commit      : 6a7fb1a — fix: hero — wire imageHero + afficher3D from Payload CMS to component
+
+─── SESSION 2026-05-22 (soir) — HERO BLOCK FIX ────────────────────────────
+
+1. HeroBlock.tsx + BlockRenderer.tsx — FIX imageHero
+   - CmsHero type : ajout imageHero et afficher3D
+   - adaptHero() : map mediaUrl(b.imageHero) + afficher3D boolean
+   - HeroBlock : showCanvas = afficher3D !== false || !imageHero
+     → Si afficher3D=true → canvas ondes animées (comportement actuel)
+     → Si afficher3D=false ET imageHero fourni → next/image plein écran
+   - Aussi : import Image from 'next/image' (remplace Link inutilisé)
+   - Commits précédents de la session (admin redesign + merge Oussama) :
+     b99fb04 fix: restore livePreview config + CalendarNavLink after merge
+     (+ commits admin redesign, merge, sidebar reorder, importMap fix)
+
+BRANCHE ACTIVE    : main
+BLOQUEURS         : Aucun
+Reprendre à : "Déploiement production Vercel"
+
 Date        : 2026-05-22 — SESSION ADMIN REDESIGN
 Session     : Dev 2 (Admin Dashboard + CSS overhaul)
 Commit      : 2c43fd7 — feat: redesign admin dashboard + comprehensive CSS overhaul
@@ -431,6 +452,12 @@ FONCTIONNALITÉS ELEMENTOR-LIKE OPÉRATIONNELLES (session 2026-05-21) :
      → LivePreviewWrapper.tsx : Client Component avec useLivePreview()
      → page.tsx : utilise LivePreviewWrapper si page Payload trouvée
      → Requiert NEXT_PUBLIC_PAYLOAD_URL dans .env.local (http://localhost:3000)
+
+FIX HERO SECTION (session 2026-05-22 soir) :
+  ✅ imageHero : champ upload Payload maintenant câblé → next/image plein écran
+  ✅ afficher3D : checkbox Payload maintenant câblé → canvas ondes si true
+     → Si afficher3D=true (défaut) → canvas ondes animées
+     → Si afficher3D=false + imageHero uploadée → image de fond statique
 
 PROCHAINE ACTION  : Déploiement production
   1. Ajouter NEXT_PUBLIC_PAYLOAD_URL=https://[ton-domaine-vercel] dans .env Vercel
