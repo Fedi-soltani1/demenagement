@@ -25,6 +25,7 @@
     "@auth/drizzle-adapter": "^1.11.2",
     "@payloadcms/db-postgres": "^3.84.1",
     "@payloadcms/email-resend": "^3.84.1",
+    "@payloadcms/live-preview": "3.84.1",
     "@payloadcms/live-preview-react": "^3.84.1",
     "@payloadcms/next": "^3.84.1",
     "@payloadcms/richtext-lexical": "^3.84.1",

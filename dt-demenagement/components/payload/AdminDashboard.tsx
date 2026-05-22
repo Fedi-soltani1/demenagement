@@ -278,7 +278,8 @@ export default function AdminDashboard() {
           0%   { background-position: 300% 0 }
           100% { background-position: -300% 0 }
         }
-        @keyframes dt-spin { to { transform: rotate(360deg) } }
+        @keyframes dt-spin  { to { transform: rotate(360deg) } }
+        @keyframes dt-pulse { 0%,100% { opacity:1; transform:scale(1) } 50% { opacity:0.4; transform:scale(1.4) } }
       `}</style>
 
       {/* ── Error banner ── */}
@@ -294,31 +295,81 @@ export default function AdminDashboard() {
       {/* ── Alert banner (urgences) ── */}
       {!loading && stats && totalUrgent > 0 && (
         <div style={{
-          background: 'linear-gradient(135deg, var(--dt-red), var(--dt-red-dark))', color: '#fff',
-          borderRadius: '10px', padding: '12px 20px', marginBottom: '20px',
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap' as const, gap: '8px',
+          background:   'var(--dt-surface)',
+          border:       '1px solid rgba(181,32,39,0.25)',
+          borderLeft:   '4px solid var(--dt-red)',
+          borderRadius: '10px',
+          padding:      '14px 18px',
+          marginBottom: '20px',
+          display:      'flex',
+          alignItems:   'center',
+          justifyContent: 'space-between',
+          flexWrap:     'wrap' as const,
+          gap:          '10px',
+          boxShadow:    '0 2px 8px rgba(181,32,39,0.07)',
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <span style={{ fontSize: '18px' }}>⚠️</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            {/* Pulsing indicator */}
+            <div style={{ position: 'relative', flexShrink: 0 }}>
+              <div style={{
+                width: '10px', height: '10px', borderRadius: '50%',
+                background: 'var(--dt-red)',
+                animation: 'dt-pulse 1.8s ease-in-out infinite',
+              }} />
+            </div>
             <div>
-              <div style={{ fontWeight: 700, fontSize: '13px', marginBottom: '2px' }}>Action requise</div>
-              <div style={{ fontSize: '11px', opacity: 0.85 }}>
-                {stats.urgent.dossiers > 0 && `${stats.urgent.dossiers} dossier${stats.urgent.dossiers > 1 ? 's' : ''} sans réponse +48h`}
-                {stats.urgent.dossiers > 0 && stats.urgent.messages > 0 && ' · '}
-                {stats.urgent.messages > 0 && `${stats.urgent.messages} message${stats.urgent.messages > 1 ? 's' : ''} non lu${stats.urgent.messages > 1 ? 's' : ''} +24h`}
+              <div style={{
+                fontWeight: 700, fontSize: '12.5px',
+                color: 'var(--dt-red)', marginBottom: '3px',
+                letterSpacing: '0.1px',
+              }}>
+                Action requise
+              </div>
+              <div style={{ fontSize: '11.5px', color: 'var(--dt-text2)', display: 'flex', flexWrap: 'wrap' as const, gap: '6px', alignItems: 'center' }}>
+                {stats.urgent.dossiers > 0 && (
+                  <span style={{
+                    background: 'rgba(181,32,39,0.08)', color: 'var(--dt-red)',
+                    borderRadius: '20px', padding: '1px 8px', fontWeight: 600,
+                    fontSize: '11px', border: '1px solid rgba(181,32,39,0.18)',
+                  }}>
+                    {stats.urgent.dossiers} dossier{stats.urgent.dossiers > 1 ? 's' : ''} sans réponse +48h
+                  </span>
+                )}
+                {stats.urgent.messages > 0 && (
+                  <span style={{
+                    background: 'rgba(181,32,39,0.08)', color: 'var(--dt-red)',
+                    borderRadius: '20px', padding: '1px 8px', fontWeight: 600,
+                    fontSize: '11px', border: '1px solid rgba(181,32,39,0.18)',
+                  }}>
+                    {stats.urgent.messages} message{stats.urgent.messages > 1 ? 's' : ''} non lu{stats.urgent.messages > 1 ? 's' : ''} +24h
+                  </span>
+                )}
               </div>
             </div>
           </div>
-          <div style={{ display: 'flex', gap: '8px' }}>
+          <div style={{ display: 'flex', gap: '7px' }}>
             {stats.urgent.dossiers > 0 && (
-              <a href="/admin/collections/demenagements?where[statut][equals]=devis_recu"
-                style={{ fontSize: '11px', background: 'rgba(255,255,255,0.2)', color: '#fff', textDecoration: 'none', padding: '5px 12px', borderRadius: '6px', fontWeight: 600 }}>
-                Dossiers →
+              <a
+                href="/admin/collections/demenagements?where[statut][equals]=devis_recu"
+                style={{
+                  fontSize: '11.5px', background: 'var(--dt-red)', color: '#fff',
+                  textDecoration: 'none', padding: '6px 14px', borderRadius: '7px',
+                  fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '4px',
+                }}
+              >
+                Voir dossiers →
               </a>
             )}
             {stats.urgent.messages > 0 && (
-              <a href="/admin/collections/messages"
-                style={{ fontSize: '11px', background: 'rgba(255,255,255,0.2)', color: '#fff', textDecoration: 'none', padding: '5px 12px', borderRadius: '6px', fontWeight: 600 }}>
+              <a
+                href="/admin/collections/messages"
+                style={{
+                  fontSize: '11.5px', background: 'var(--dt-surface2)', color: 'var(--dt-text)',
+                  textDecoration: 'none', padding: '6px 14px', borderRadius: '7px',
+                  fontWeight: 600, border: '1px solid var(--dt-border)',
+                  display: 'inline-flex', alignItems: 'center', gap: '4px',
+                }}
+              >
                 Messages →
               </a>
             )}
