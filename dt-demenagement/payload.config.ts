@@ -44,6 +44,7 @@ export default buildConfig({
 
   admin: {
     user: 'admins',
+    theme: 'all',
     meta: {
       titleSuffix: '— DT Déménagement Admin',
     },
@@ -55,28 +56,14 @@ export default buildConfig({
         Logo: '@/components/payload/AdminLogo',
         Icon: '@/components/payload/AdminIcon',
       },
-      afterDashboard:  ['@/components/payload/AdminDashboard'],
-      beforeNavLinks:  ['@/components/payload/CalendarNavLink'],
+      header:         ['@/components/payload/AdminHeaderBar'],
+      afterDashboard: ['@/components/payload/AdminDashboard'],
       views: {
         rdvCalendar: {
           Component: '@/components/payload/RDVCalendarView',
           path: '/rdv-calendar',
         },
       },
-    },
-    livePreview: {
-      url: ({ data, locale }: { data: { slug?: string }, locale: { code: string } }) => {
-        const base = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
-        const slug = data.slug ?? ''
-        if (slug === 'accueil' || slug === '') return `${base}/${locale.code}`
-        return `${base}/${locale.code}/${slug}`
-      },
-      collections: ['pages'],
-      breakpoints: [
-        { label: 'Mobile',  name: 'mobile',  width: 375,  height: 812 },
-        { label: 'Tablette', name: 'tablet', width: 768,  height: 1024 },
-        { label: 'Desktop', name: 'desktop', width: 1440, height: 900 },
-      ],
     },
   },
 
@@ -89,9 +76,9 @@ export default buildConfig({
   // 17 collections — ordered to drive sidebar group order
   collections: [
     // 🚚 Opérations (daily use — always first)
-    Demenagements,   // pipeline principal
-    Messages,        // communications urgentes avant planning
-    RendezVous,      // planification visites
+    Demenagements,
+    Messages,
+    RendezVous,
 
     // 👥 Utilisateurs
     Clients,
@@ -99,13 +86,13 @@ export default buildConfig({
 
     // 📝 Contenu du site
     Pages,
-    Services,        // offres commerciales avant contenu éditorial
+    Services,
     Blog,
     FAQ,
     Categories,
 
     // ⭐ Avis & Réputation
-    Testimonials,    // témoignages gérés manuellement en premier
+    Testimonials,
     GoogleReviews,
     Partners,
 

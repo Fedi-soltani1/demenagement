@@ -29,6 +29,13 @@ const securityHeaders = [
 ]
 
 const nextConfig: NextConfig = {
+  // Tree-shake heavy packages so only used icons/components are bundled
+  optimizePackageImports: [
+    'lucide-react',
+    'framer-motion',
+    '@payloadcms/ui',
+  ],
+
   // Packages Node.js purs — jamais bundlés par webpack pour le browser
   serverExternalPackages: [
     'postgres',

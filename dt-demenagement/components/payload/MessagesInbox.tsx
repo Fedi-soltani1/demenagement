@@ -146,12 +146,13 @@ export default function MessagesInbox() {
                 onClick={() => { setSelected(conv.dossierId); setError('') }}
                 style={{
                   ...s.convRow,
-                  backgroundColor: selected === conv.dossierId ? '#1a1a2e' : 'transparent',
+                  backgroundColor: selected === conv.dossierId ? 'var(--dt-row-hover)' : 'transparent',
+                  borderLeft:      selected === conv.dossierId ? '3px solid var(--dt-red)' : '3px solid transparent',
                 }}
               >
                 <div style={{
                   ...s.avatar,
-                  backgroundColor: conv.unreadCount > 0 ? '#b52027' : '#374151',
+                  backgroundColor: conv.unreadCount > 0 ? 'var(--dt-red)' : 'var(--dt-muted2)',
                 }}>
                   {conv.nomComplet.charAt(0).toUpperCase()}
                 </div>
@@ -168,7 +169,7 @@ export default function MessagesInbox() {
                   <div style={s.convPreviewRow}>
                     <span style={{
                       ...s.convPreview,
-                      color:      conv.unreadCount > 0 ? '#ccc' : '#555',
+                      color:      conv.unreadCount > 0 ? 'var(--dt-text)' : 'var(--dt-muted)',
                       fontWeight: conv.unreadCount > 0 ? 600 : 400,
                     }}>
                       {conv.lastMessage.auteur === 'admin' ? '→ ' : ''}{conv.lastMessage.contenu}
@@ -195,7 +196,7 @@ export default function MessagesInbox() {
           <>
             {/* Thread header */}
             <div style={s.threadHeader}>
-              <div style={{ ...s.avatar, backgroundColor: '#b52027', width: 36, height: 36, fontSize: '13px' }}>
+              <div style={{ ...s.avatar, backgroundColor: 'var(--dt-red)', width: 36, height: 36, fontSize: '13px' }}>
                 {selectedConv.nomComplet.charAt(0).toUpperCase()}
               </div>
               <div>
@@ -217,20 +218,28 @@ export default function MessagesInbox() {
             {/* Messages */}
             <div style={s.messageList}>
               {selectedConv.messages.map((msg) => {
-                const isAdmin = msg.auteur === 'admin'
+                const isAdminMsg = msg.auteur === 'admin'
                 return (
-                  <div key={msg.id} style={{ display: 'flex', justifyContent: isAdmin ? 'flex-end' : 'flex-start' }}>
+                  <div key={msg.id} style={{ display: 'flex', justifyContent: isAdminMsg ? 'flex-end' : 'flex-start' }}>
                     <div style={{
                       ...s.bubble,
-                      backgroundColor: isAdmin ? '#1d4ed8' : '#1f2937',
-                      borderRadius:    isAdmin ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
+                      backgroundColor: isAdminMsg ? 'var(--dt-red)' : 'var(--dt-surface2)',
+                      color:           isAdminMsg ? '#ffffff'        : 'var(--dt-text)',
+                      borderRadius:    isAdminMsg ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
+                      border:          isAdminMsg ? 'none' : '1px solid var(--dt-border)',
                     }}>
-                      <div style={{ ...s.bubbleAuthor, color: isAdmin ? '#93c5fd' : '#9ca3af' }}>
-                        {isAdmin ? '👤 Admin' : '🧑 Client'}
-                        {!isAdmin && !msg.lu && <span style={s.unreadDot}> ● Non lu</span>}
+                      <div style={{
+                        ...s.bubbleAuthor,
+                        color: isAdminMsg ? 'rgba(255,255,255,0.75)' : 'var(--dt-muted)',
+                      }}>
+                        {isAdminMsg ? '👤 Admin' : '🧑 Client'}
+                        {!isAdminMsg && !msg.lu && <span style={s.unreadDot}> ● Non lu</span>}
                       </div>
                       <div style={s.bubbleText}>{msg.contenu}</div>
-                      <div style={s.bubbleTime}>
+                      <div style={{
+                        ...s.bubbleTime,
+                        color: isAdminMsg ? 'rgba(255,255,255,0.5)' : 'var(--dt-muted2)',
+                      }}>
                         {new Date(msg.createdAt).toLocaleString('fr-FR', {
                           day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit',
                         })}
@@ -260,8 +269,9 @@ export default function MessagesInbox() {
                 disabled={isPending || !replyContent.trim()}
                 style={{
                   ...s.sendBtn,
-                  backgroundColor: isPending || !replyContent.trim() ? '#374151' : '#1d4ed8',
-                  cursor:          isPending || !replyContent.trim() ? 'not-allowed' : 'pointer',
+                  backgroundColor: isPending || !replyContent.trim() ? 'var(--dt-surface2)' : 'var(--dt-red)',
+                  color:           isPending || !replyContent.trim() ? 'var(--dt-muted)'    : '#ffffff',
+                  cursor:          isPending || !replyContent.trim() ? 'not-allowed'         : 'pointer',
                 }}
               >
                 {isPending ? '…' : '→ Envoyer'}
@@ -276,14 +286,14 @@ export default function MessagesInbox() {
   )
 }
 
-// ─── Styles ───────────────────────────────────────────────────────────────────
+// ─── Styles — all CSS vars, adapts to light + dark automatically ──────────────
 
 const s = {
   root: {
     display:         'flex',
     height:          'calc(100vh - 100px)',
-    backgroundColor: '#0a0a0a',
-    border:          '1px solid #1a1a1a',
+    backgroundColor: 'var(--dt-bg)',
+    border:          '1px solid var(--dt-border)',
     borderRadius:    '12px',
     overflow:        'hidden',
     margin:          '0.75rem',
@@ -293,25 +303,25 @@ const s = {
   leftPanel: {
     width:           '300px',
     flexShrink:      0,
-    borderRight:     '1px solid #1a1a1a',
+    borderRight:     '1px solid var(--dt-border)',
     display:         'flex',
     flexDirection:   'column',
-    backgroundColor: '#0f0f0f',
+    backgroundColor: 'var(--dt-surface)',
   } as React.CSSProperties,
 
   leftHeader: {
     padding:         '14px 16px',
-    borderBottom:    '1px solid #1a1a1a',
+    borderBottom:    '1px solid var(--dt-border)',
     display:         'flex',
     alignItems:      'center',
     justifyContent:  'space-between',
-    backgroundColor: '#111',
+    backgroundColor: 'var(--dt-surface)',
   } as React.CSSProperties,
 
   leftTitle: {
     fontSize:   '14px',
     fontWeight: 700,
-    color:      '#f8f5f0',
+    color:      'var(--dt-text)',
   } as React.CSSProperties,
 
   convList: {
@@ -321,10 +331,10 @@ const s = {
 
   convRow: {
     width:          '100%',
-    padding:        '12px 14px',
+    padding:        '12px 14px 12px 11px',
     textAlign:      'left',
     border:         'none',
-    borderBottom:   '1px solid #141414',
+    borderBottom:   '1px solid var(--dt-border2)',
     cursor:         'pointer',
     display:        'flex',
     gap:            '10px',
@@ -358,25 +368,25 @@ const s = {
   } as React.CSSProperties,
 
   convName: {
-    fontSize:      '12px',
-    fontWeight:    600,
-    color:         '#e5e7eb',
-    overflow:      'hidden',
-    textOverflow:  'ellipsis',
-    whiteSpace:    'nowrap',
-    maxWidth:      '140px',
+    fontSize:     '12px',
+    fontWeight:   600,
+    color:        'var(--dt-text)',
+    overflow:     'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace:   'nowrap',
+    maxWidth:     '140px',
   } as React.CSSProperties,
 
   convTime: {
-    fontSize:  '10px',
-    color:     '#4b5563',
+    fontSize:   '10px',
+    color:      'var(--dt-muted)',
     flexShrink: 0,
     marginLeft: '4px',
   } as React.CSSProperties,
 
   convDossier: {
-    fontSize: '10px',
-    color:    '#4b5563',
+    fontSize:     '10px',
+    color:        'var(--dt-muted)',
     marginBottom: '3px',
   } as React.CSSProperties,
 
@@ -396,17 +406,17 @@ const s = {
   } as React.CSSProperties,
 
   rightPanel: {
-    flex:           1,
-    display:        'flex',
-    flexDirection:  'column',
-    backgroundColor: '#0d0d0d',
-    minWidth:       0,
+    flex:            1,
+    display:         'flex',
+    flexDirection:   'column',
+    backgroundColor: 'var(--dt-bg)',
+    minWidth:        0,
   } as React.CSSProperties,
 
   threadHeader: {
     padding:         '12px 18px',
-    borderBottom:    '1px solid #1a1a1a',
-    backgroundColor: '#0f0f0f',
+    borderBottom:    '1px solid var(--dt-border)',
+    backgroundColor: 'var(--dt-surface)',
     display:         'flex',
     alignItems:      'center',
     gap:             '12px',
@@ -415,16 +425,16 @@ const s = {
   threadName: {
     fontSize:   '13px',
     fontWeight: 700,
-    color:      '#f8f5f0',
+    color:      'var(--dt-text)',
   } as React.CSSProperties,
 
   threadSub: {
     fontSize: '11px',
-    color:    '#4b5563',
+    color:    'var(--dt-muted)',
   } as React.CSSProperties,
 
   dossierLink: {
-    color:          '#b52027',
+    color:          'var(--dt-red)',
     marginLeft:     '8px',
     textDecoration: 'none',
     fontWeight:     600,
@@ -442,7 +452,6 @@ const s = {
   bubble: {
     maxWidth:   '65%',
     padding:    '10px 14px',
-    color:      '#f9fafb',
     fontSize:   '13px',
     lineHeight: 1.5,
   } as React.CSSProperties,
@@ -450,7 +459,6 @@ const s = {
   bubbleAuthor: {
     fontSize:      '10px',
     fontWeight:    700,
-    opacity:       0.7,
     textTransform: 'uppercase' as const,
     letterSpacing: '0.05em',
     marginBottom:  '4px',
@@ -463,7 +471,6 @@ const s = {
 
   bubbleTime: {
     fontSize:  '10px',
-    opacity:   0.45,
     marginTop: '4px',
     textAlign: 'right' as const,
   } as React.CSSProperties,
@@ -475,8 +482,8 @@ const s = {
 
   replyRow: {
     padding:         '10px 14px',
-    borderTop:       '1px solid #1a1a1a',
-    backgroundColor: '#0f0f0f',
+    borderTop:       '1px solid var(--dt-border)',
+    backgroundColor: 'var(--dt-surface)',
     display:         'flex',
     gap:             '10px',
     alignItems:      'flex-end',
@@ -486,9 +493,9 @@ const s = {
     flex:            1,
     padding:         '10px 14px',
     borderRadius:    '10px',
-    border:          '1px solid #1f2937',
-    backgroundColor: '#111',
-    color:           '#f9fafb',
+    border:          '1px solid var(--dt-border)',
+    backgroundColor: 'var(--dt-surface2)',
+    color:           'var(--dt-text)',
     fontFamily:      'inherit',
     fontSize:        '13px',
     resize:          'none' as const,
@@ -499,7 +506,6 @@ const s = {
   sendBtn: {
     padding:      '10px 18px',
     borderRadius: '10px',
-    color:        '#fff',
     border:       'none',
     fontWeight:   600,
     fontSize:     '13px',
@@ -509,14 +515,15 @@ const s = {
 
   errorBar: {
     padding:         '8px 16px',
-    backgroundColor: '#7f1d1d',
-    color:           '#fca5a5',
+    backgroundColor: 'rgba(181,32,39,0.12)',
+    color:           'var(--dt-red)',
     fontSize:        '12px',
+    borderTop:       '1px solid rgba(181,32,39,0.2)',
   } as React.CSSProperties,
 
   redBadge: {
     fontSize:        '11px',
-    backgroundColor: '#b52027',
+    backgroundColor: 'var(--dt-red)',
     color:           '#fff',
     borderRadius:    '999px',
     padding:         '2px 8px',
@@ -524,7 +531,7 @@ const s = {
   } as React.CSSProperties,
 
   redBadgeSmall: {
-    backgroundColor: '#b52027',
+    backgroundColor: 'var(--dt-red)',
     color:           '#fff',
     borderRadius:    '999px',
     padding:         '1px 6px',
@@ -538,7 +545,7 @@ const s = {
     display:        'flex',
     alignItems:     'center',
     justifyContent: 'center',
-    color:          '#444',
+    color:          'var(--dt-muted)',
     fontSize:       '13px',
     flexDirection:  'column',
     textAlign:      'center',
@@ -547,7 +554,7 @@ const s = {
   emptyMsg: {
     padding:   '2rem',
     textAlign: 'center',
-    color:     '#444',
+    color:     'var(--dt-muted)',
     fontSize:  '13px',
   } as React.CSSProperties,
 }

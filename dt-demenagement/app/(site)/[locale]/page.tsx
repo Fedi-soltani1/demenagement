@@ -13,8 +13,8 @@ import type { TestimonialData } from '@/components/blocks/TestimonialsBlock'
 import type { BlogArticleData } from '@/components/blocks/BlogPreviewBlock'
 import type { PartnerData }     from '@/components/blocks/PartnersBlock'
 
-// ISR : les modifications Payload sont visibles dans la minute en prod
-export const revalidate = 60
+// ISR : les modifications Payload sont visibles dans les 5 minutes en prod
+export const revalidate = 300
 
 interface HomePageProps {
   params: Promise<{ locale: string }>

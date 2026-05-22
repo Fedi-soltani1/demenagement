@@ -98,22 +98,24 @@ export default function DossierStatutCell({ cellData, rowData }: CellProps) {
         onChange={handleChange}
         disabled={!id || saving}
         style={{
-          background:          current.bg,
+          backgroundColor:     current.bg,
           color:               current.color,
-          border:              `1px solid ${current.color}22`,
+          border:              `1px solid ${current.color}33`,
           borderRadius:        '10px',
-          padding:             '3px 8px',
+          padding:             '3px 8px 3px 10px',
           fontSize:            '11px',
           fontWeight:          600,
           cursor:              id && !saving ? 'pointer' : 'not-allowed',
           outline:             'none',
-          maxWidth:            '140px',
+          maxWidth:            '148px',
           appearance:          'none' as const,
           WebkitAppearance:    'none' as const,
-          paddingRight:        '20px',
+          paddingRight:        '22px',
           backgroundImage:     `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='${encodeURIComponent(current.color)}' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E")`,
           backgroundRepeat:    'no-repeat',
-          backgroundPosition:  'right 6px center',
+          backgroundPosition:  'right 7px center',
+          backgroundSize:      '9px',
+          transition:          'opacity 0.15s',
         }}
       >
         {OPTIONS.map((o) => (
