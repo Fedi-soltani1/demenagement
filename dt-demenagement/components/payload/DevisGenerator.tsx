@@ -22,14 +22,15 @@ type DossierSummary = {
   devisStatut?: string
 }
 
-type Action = 'idle' | 'pdf' | 'email'
-type Result = { type: 'success' | 'error'; msg: string } | null
+type Action    = 'idle' | 'pdf' | 'email'
+type SendPanel = 'hidden' | 'choice' | 'confirm-email'
+type Result    = { type: 'success' | 'error'; msg: string } | null
 
 const STATUT: Record<string, { label: string; color: string; bg: string }> = {
-  brouillon: { label: 'Brouillon',        color: '#7a5500', bg: '#fff8e6' },
-  envoye:    { label: 'Envoyé',           color: '#1a5c1a', bg: '#e6f4e6' },
-  accepte:   { label: 'Accepté',          color: '#1a5c1a', bg: '#e6f4e6' },
-  refuse:    { label: 'Refusé',           color: '#8a1820', bg: '#fde8e8' },
+  brouillon: { label: 'Brouillon', color: '#7a5500', bg: '#fff8e6' },
+  envoye:    { label: 'Envoyé',   color: '#1a5c1a', bg: '#e6f4e6' },
+  accepte:   { label: 'Accepté',  color: '#1a5c1a', bg: '#e6f4e6' },
+  refuse:    { label: 'Refusé',   color: '#8a1820', bg: '#fde8e8' },
 }
 
 function expiryDate(days: number): string {
@@ -54,7 +55,6 @@ function whatsappUrl(telephone: string | undefined, dossier: DossierSummary): st
 export default function DevisGenerator() {
   const { id } = useDocumentInfo()
 
-  // Live form field values — updates in real-time as admin types (no save required)
   const liveFields = useFormFields(([fields]: [Record<string, { value?: unknown }>]) => ({
     prixTotalTTC:       fields.prixTotalTTC?.value       as number | undefined,
     devisValiditeJours: fields.devisValiditeJours?.value as number | undefined,
@@ -62,11 +62,11 @@ export default function DevisGenerator() {
     devisStatut:        fields.devisStatut?.value        as string | undefined,
   }))
 
-  const [dossier, setDossier]         = useState<DossierSummary | null>(null)
-  const [fetching, setFetching]       = useState(true)
-  const [action, setAction]           = useState<Action>('idle')
-  const [result, setResult]           = useState<Result>(null)
-  const [confirmEmail, setConfirmEmail] = useState(false)
+  const [dossier,   setDossier]   = useState<DossierSummary | null>(null)
+  const [fetching,  setFetching]  = useState(true)
+  const [action,    setAction]    = useState<Action>('idle')
+  const [result,    setResult]    = useState<Result>(null)
+  const [sendPanel, setSendPanel] = useState<SendPanel>('hidden')
 
   const fetchDossier = useCallback(async (showSkeleton = false) => {
     if (!id) return
@@ -91,92 +91,82 @@ export default function DevisGenerator() {
 
   const dossierId = Number(id)
 
-  // Merge live form values over saved values (live takes priority)
   const livePrix     = liveFields?.prixTotalTTC       ?? dossier?.prixTotalTTC       ?? 0
   const liveValidite = liveFields?.devisValiditeJours ?? dossier?.devisValiditeJours ?? 30
-  const liveNotes    = liveFields?.devisNotes         ?? dossier?.devisNotes         ?? ''
   const liveStatut   = liveFields?.devisStatut        ?? dossier?.devisStatut        ?? 'brouillon'
 
   const hasPrix    = livePrix > 0
   const statutInfo = STATUT[liveStatut] ?? { label: 'Brouillon', color: '#7a5500', bg: '#fff8e6' }
   const busy       = action !== 'idle'
 
-  // Overrides passed to the PDF API so it uses current (unsaved) values
   function buildOverrides() {
     const o: Record<string, unknown> = {}
     if (liveFields?.prixTotalTTC != null)       o.prixTotalTTC       = liveFields.prixTotalTTC
     if (liveFields?.devisValiditeJours != null) o.devisValiditeJours = liveFields.devisValiditeJours
     if (liveFields?.devisNotes != null)         o.devisNotes         = liveFields.devisNotes
-    // Always pass lignesDevis from DB (live form doesn't expose array live values in useFormFields)
     if (dossier?.lignesDevis?.length)           o.lignesDevis        = dossier.lignesDevis
     return o
   }
 
   async function getPdfBlob(): Promise<Blob> {
-    const overrides = buildOverrides()
     const res = await fetch('/api/admin/generate-devis', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method:      'POST',
+      headers:     { 'Content-Type': 'application/json' },
       credentials: 'include',
-      body: JSON.stringify({ dossierId, overrides }),
+      body:        JSON.stringify({ dossierId, overrides: buildOverrides() }),
     })
     if (!res.ok) {
-      const j: { error?: string; details?: unknown } = await res.json().catch(() => ({}))
+      const j: { error?: string } = await res.json().catch(() => ({}))
       throw new Error(j.error ?? `Erreur ${res.status}`)
     }
     return res.blob()
   }
 
-  function download(blob: Blob, name: string) {
+  function triggerDownload(blob: Blob, name: string) {
     const url = URL.createObjectURL(blob)
     const a   = document.createElement('a')
     a.href = url; a.download = name
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
+    document.body.appendChild(a); a.click(); document.body.removeChild(a)
     setTimeout(() => URL.revokeObjectURL(url), 1000)
   }
 
   async function handleDownload() {
-    setAction('pdf'); setResult(null)
+    setAction('pdf'); setResult(null); setSendPanel('hidden')
     try {
       const blob = await getPdfBlob()
-      download(blob, `Devis-${dossier?.numeroDossier ?? id}.pdf`)
-      setResult({ type: 'success', msg: 'PDF généré et téléchargé avec succès.' })
+      triggerDownload(blob, `Devis-${dossier?.numeroDossier ?? id}.pdf`)
+      setResult({ type: 'success', msg: 'PDF généré et téléchargé.' })
+      setSendPanel('choice')
     } catch (e) {
       setResult({ type: 'error', msg: e instanceof Error ? e.message : 'Erreur lors de la génération.' })
     } finally { setAction('idle') }
   }
 
   async function handleSendEmail() {
-    setConfirmEmail(false); setAction('email'); setResult(null)
+    setSendPanel('hidden'); setAction('email'); setResult(null)
     try {
       const res = await fetch('/api/admin/send-devis', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method:      'POST',
+        headers:     { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ dossierId, overrides: buildOverrides() }),
+        body:        JSON.stringify({ dossierId, overrides: buildOverrides() }),
       })
       const j: { error?: string } = await res.json().catch(() => ({}))
       if (!res.ok) throw new Error(j.error ?? `Erreur ${res.status}`)
-      setResult({ type: 'success', msg: `Devis envoyé par email à ${dossier?.clientId ?? 'le client'}.` })
+      setResult({ type: 'success', msg: `✉️ Devis envoyé par email à ${dossier?.clientId ?? 'le client'}.` })
       fetchDossier(false)
     } catch (e) {
       setResult({ type: 'error', msg: e instanceof Error ? e.message : "Erreur lors de l'envoi." })
     } finally { setAction('idle') }
   }
 
-  async function handleWhatsApp() {
-    setAction('pdf'); setResult(null)
-    try {
-      const blob = await getPdfBlob()
-      download(blob, `Devis-${dossier?.numeroDossier ?? id}.pdf`)
-    } catch (e) {
-      setResult({ type: 'error', msg: e instanceof Error ? e.message : 'Erreur lors de la génération.' })
-      setAction('idle'); return
+  function handleWhatsApp() {
+    if (dossier) {
+      window.open(
+        whatsappUrl(dossier.telephone, { ...dossier, prixTotalTTC: livePrix, devisValiditeJours: liveValidite }),
+        '_blank'
+      )
     }
-    setAction('idle')
-    if (dossier) window.open(whatsappUrl(dossier.telephone, { ...dossier, prixTotalTTC: livePrix, devisValiditeJours: liveValidite }), '_blank')
   }
 
   return (
@@ -264,7 +254,7 @@ export default function DevisGenerator() {
               <div style={{ fontSize: '10px', color: '#999', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>Prix Total TTC</div>
               <div style={{ fontSize: '20px', fontWeight: 700, color: hasPrix ? '#b52027' : '#9a6a00' }}>
                 {hasPrix
-                  ? `${Math.round(livePrix).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} DT`
+                  ? `${Math.round(livePrix).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} DT`
                   : '— non renseigné'}
               </div>
               {liveFields?.prixTotalTTC !== undefined && liveFields.prixTotalTTC !== dossier.prixTotalTTC && (
@@ -286,14 +276,19 @@ export default function DevisGenerator() {
           </div>
         )}
 
-        {/* Action buttons */}
-        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: hasPrix ? '0' : '14px' }}>
-          <ActionButton onClick={handleDownload}            disabled={!hasPrix || busy} loading={action === 'pdf'}   bg="#b52027" label="Télécharger PDF"    loadingLabel="Génération..." />
-          <ActionButton onClick={() => setConfirmEmail(true)} disabled={!hasPrix || busy} loading={action === 'email'} bg="#1a5cbf" label="Envoyer par email"  loadingLabel="Envoi..." />
-          <ActionButton onClick={handleWhatsApp}            disabled={!hasPrix || busy} loading={false}             bg="#128c7e" label="WhatsApp"            loadingLabel="..." />
+        {/* Primary action */}
+        <div style={{ marginTop: hasPrix ? '0' : '14px' }}>
+          <ActionButton
+            onClick={handleDownload}
+            disabled={!hasPrix || busy}
+            loading={action === 'pdf'}
+            bg="#b52027"
+            label="📥 Télécharger PDF"
+            loadingLabel="Génération en cours…"
+          />
         </div>
 
-        {/* Result */}
+        {/* Result banner */}
         {result && (
           <div style={{
             marginTop: '12px', padding: '10px 14px', borderRadius: '6px', fontSize: '12px',
@@ -303,41 +298,94 @@ export default function DevisGenerator() {
             display: 'flex', justifyContent: 'space-between', alignItems: 'center',
           }}>
             <span>{result.type === 'success' ? '✅' : '❌'} {result.msg}</span>
-            <button type="button" onClick={() => setResult(null)}
-              style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '16px', color: 'inherit', lineHeight: 1, padding: '0 2px' }}>×</button>
+            <button type="button" onClick={() => { setResult(null); setSendPanel('hidden') }}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '16px', color: 'inherit', lineHeight: 1, padding: '0 2px' }}>
+              ×
+            </button>
+          </div>
+        )}
+
+        {/* Post-download: send choice */}
+        {sendPanel === 'choice' && dossier && (
+          <div style={{ marginTop: '10px', background: '#f4f8ff', border: '1px solid #c8dcf8', borderRadius: '8px', padding: '14px 16px' }}>
+            <p style={{ margin: '0 0 10px', fontSize: '12px', color: '#1a1a1a', fontWeight: 700 }}>
+              📤 Envoyer ce devis au client ?
+            </p>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                disabled={busy}
+                onClick={() => setSendPanel('confirm-email')}
+                style={sendBtnStyle('#1a5cbf', busy)}
+              >
+                ✉️ Envoyer par email
+              </button>
+              <button
+                type="button"
+                disabled={busy}
+                onClick={handleWhatsApp}
+                style={sendBtnStyle('#128c7e', busy)}
+              >
+                💬 WhatsApp
+              </button>
+              <button
+                type="button"
+                onClick={() => setSendPanel('hidden')}
+                style={{ padding: '9px 14px', background: '#e8e8e8', color: '#555', border: 'none', borderRadius: '6px', fontSize: '12px', cursor: 'pointer' }}
+              >
+                Plus tard
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Email confirmation */}
+        {sendPanel === 'confirm-email' && dossier && (
+          <div style={{ marginTop: '10px', background: '#f0f6ff', border: '1px solid #c0d8f8', borderRadius: '8px', padding: '16px' }}>
+            <p style={{ margin: '0 0 8px', fontSize: '13px', color: '#1a1a1a', fontWeight: 600 }}>
+              Confirmer l&apos;envoi par email
+            </p>
+            <p style={{ margin: '0 0 4px', fontSize: '12px', color: '#555' }}>
+              À : <strong style={{ color: '#1a5cbf' }}>{dossier.clientId}</strong>
+              {dossier.nomComplet ? ` (${dossier.nomComplet})` : ''}
+            </p>
+            {livePrix > 0 && (
+              <p style={{ margin: '0 0 12px', fontSize: '12px', color: '#555' }}>
+                Montant : <strong style={{ color: '#b52027' }}>
+                  {Math.round(livePrix).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} DT TTC
+                </strong>
+                {' · '}Validité : <strong>{liveValidite} jours</strong>
+              </p>
+            )}
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button
+                type="button"
+                onClick={() => setSendPanel('choice')}
+                style={{ padding: '8px 16px', background: '#e0e0e0', border: 'none', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', fontWeight: 500 }}
+              >
+                ← Retour
+              </button>
+              <button
+                type="button"
+                onClick={handleSendEmail}
+                disabled={action === 'email'}
+                style={sendBtnStyle('#1a5cbf', action === 'email')}
+              >
+                {action === 'email' ? 'Envoi en cours…' : '✉️ Confirmer l\'envoi'}
+              </button>
+            </div>
           </div>
         )}
 
         <p style={{ margin: '12px 0 0', fontSize: '11px', color: '#ccc' }}>
           Le PDF utilise les valeurs actuelles des champs (même non sauvegardées).
         </p>
-
-        {/* Email confirmation panel */}
-        {confirmEmail && dossier && (
-          <div style={{ marginTop: '12px', background: '#f0f6ff', border: '1px solid #c0d8f8', borderRadius: '8px', padding: '16px' }}>
-            <p style={{ margin: '0 0 10px', fontSize: '13px', color: '#1a1a1a', fontWeight: 600 }}>Confirmer l&apos;envoi du devis</p>
-            <p style={{ margin: '0 0 10px', fontSize: '12px', color: '#555', lineHeight: 1.6 }}>
-              Le PDF sera envoyé à <strong style={{ color: '#1a5cbf' }}>{dossier.clientId}</strong> ({dossier.nomComplet})
-              {livePrix > 0 && <span> — Montant : <strong style={{ color: '#b52027' }}>{Math.round(livePrix).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} DT TTC</strong></span>}.
-            </p>
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <button type="button" onClick={() => setConfirmEmail(false)}
-                style={{ padding: '8px 16px', background: '#e0e0e0', border: 'none', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', fontWeight: 500 }}>
-                Annuler
-              </button>
-              <button type="button" onClick={handleSendEmail}
-                style={{ padding: '8px 18px', background: '#1a5cbf', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', fontWeight: 700 }}>
-                Envoyer maintenant
-              </button>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   )
 }
 
-// ── Sub-components ────────────────────────────────────────────────────────────
+// ── Sub-components ─────────────────────────────────────────────────────────────
 
 function InfoRow({ label, value, copyable }: { label: string; value?: string; copyable?: boolean }) {
   const [copied, setCopied] = useState(false)
@@ -361,14 +409,14 @@ function ActionButton({ onClick, disabled, loading, bg, label, loadingLabel }: {
   onClick: () => void; disabled: boolean; loading: boolean; bg: string; label: string; loadingLabel: string
 }) {
   const style: CSSProperties = {
-    padding: '10px 16px',
+    padding:    '10px 20px',
     background: disabled ? '#c8c8c8' : bg,
-    color: '#fff',
-    border: 'none',
+    color:      '#fff',
+    border:     'none',
     borderRadius: '6px',
-    fontSize: '13px',
-    fontWeight: 600,
-    cursor: disabled ? 'not-allowed' : 'pointer',
+    fontSize:   '13px',
+    fontWeight: 700,
+    cursor:     disabled ? 'not-allowed' : 'pointer',
   }
   return (
     <button type="button" onClick={onClick} disabled={disabled} style={style}>
@@ -377,13 +425,26 @@ function ActionButton({ onClick, disabled, loading, bg, label, loadingLabel }: {
   )
 }
 
+function sendBtnStyle(bg: string, disabled: boolean): CSSProperties {
+  return {
+    padding:      '9px 16px',
+    background:   disabled ? '#9abadf' : bg,
+    color:        '#fff',
+    border:       'none',
+    borderRadius: '6px',
+    fontSize:     '12px',
+    fontWeight:   700,
+    cursor:       disabled ? 'not-allowed' : 'pointer',
+  }
+}
+
 function alertStyle(bg: string, border: string, color: string): CSSProperties {
   return {
-    padding: '10px 14px',
-    background: bg,
-    border: `1px solid ${border}`,
+    padding:      '10px 14px',
+    background:   bg,
+    border:       `1px solid ${border}`,
     borderRadius: '6px',
-    fontSize: '12px',
+    fontSize:     '12px',
     color,
     marginBottom: '14px',
   }
