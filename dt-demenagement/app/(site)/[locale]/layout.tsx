@@ -2,7 +2,7 @@ import { NextIntlClientProvider } from 'next-intl'
 import { getMessages, setRequestLocale } from 'next-intl/server'
 import { ThemeProvider } from '@/components/layout/ThemeProvider'
 import { NavbarServer } from '@/components/layout/NavbarServer'
-import { Footer } from '@/components/layout/Footer'
+import { FooterServer } from '@/components/layout/FooterServer'
 import { CustomCursor } from '@/components/layout/CustomCursor'
 import { PageLoader } from '@/components/layout/PageLoader'
 import { ScrollToTop } from '@/components/layout/ScrollToTop'
@@ -47,7 +47,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
           <main id="main-content">
             {children}
           </main>
-          <Footer />
+          <FooterServer />
           <ScrollToTop />
           <WhatsAppButton />
           <CookieBanner />

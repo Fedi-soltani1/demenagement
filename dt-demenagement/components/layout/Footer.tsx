@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { useTranslations, useLocale } from 'next-intl'
 import { PhoneLink } from '@/components/ui/PhoneLink'
 import { COMPANY, SERVICES, VILLES, PAYS } from '@/lib/constants'
+import type { NavService } from '@/components/layout/Navbar'
 
 // ─── Icons ────────────────────────────────────────────────────────────────────
 
@@ -49,10 +50,13 @@ function IconMail() {
 
 // ─── Footer ───────────────────────────────────────────────────────────────────
 
-function Footer() {
+function Footer({ services: cmsServices }: { services?: NavService[] }) {
   const t = useTranslations('Footer')
-  const tServices = useTranslations('Services')
   const locale = useLocale()
+
+  const displayServices: NavService[] = (cmsServices && cmsServices.length > 0)
+    ? cmsServices
+    : SERVICES.map((s) => ({ nom: s.nom, slug: s.slug }))
 
   const currentYear = new Date().getFullYear()
 
@@ -142,13 +146,13 @@ function Footer() {
               {t('servicesTitle')}
             </h3>
             <ul className="space-y-2.5">
-              {SERVICES.map((service) => (
+              {displayServices.map((service) => (
                 <li key={service.slug}>
                   <Link
                     href={`/${locale}/services/${service.slug}`}
                     className="text-sm text-[var(--color-text-muted)] hover:text-[var(--color-red)] transition-colors"
                   >
-                    {tServices(service.slug)}
+                    {service.nom}
                   </Link>
                 </li>
               ))}
