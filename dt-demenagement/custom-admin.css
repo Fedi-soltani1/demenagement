@@ -847,7 +847,7 @@ label.field-label {
 .collapsible {
   border: 1px solid var(--dt-border) !important;
   border-radius: 10px !important;
-  overflow: hidden !important;
+  overflow: visible !important;
   margin-bottom: 16px !important;
   box-shadow: 0 1px 2px rgba(0,0,0,0.03) !important;
 }
@@ -862,6 +862,7 @@ label.field-label {
   letter-spacing: 0.3px !important;
   border-bottom: none !important;
   margin-bottom: 0 !important;
+  border-radius: 10px 10px 0 0 !important;
 }
 
 .collapsible__content {
