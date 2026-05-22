@@ -37,10 +37,17 @@ export const AboutBlock: Block = {
       admin: { description: 'Photo affichée à côté du texte. Ratio 4:3 recommandé. Ex: photo de l\'équipe, du dépôt, d\'un déménagement en cours.' },
     },
     {
+      name: 'videoFichier',
+      label: 'Vidéo à uploader (MP4 — recommandé)',
+      type: 'upload',
+      relationTo: 'media',
+      admin: { description: 'Uploader un fichier MP4 directement. Prioritaire sur le lien YouTube. Aucun bouton externe, contrôle total.' },
+    },
+    {
       name: 'videoUrl',
-      label: 'Vidéo YouTube à la place de l\'image (optionnelle)',
+      label: 'Lien YouTube (si pas de fichier uploadé)',
       type: 'text',
-      admin: { description: 'Lien YouTube normal ou embed. Ex: https://www.youtube.com/watch?v=XXXXX — La conversion en embed est automatique. Si renseignée, un bouton Play apparaît sur la photo.' },
+      admin: { description: 'Lien YouTube normal. Ex: https://www.youtube.com/watch?v=XXXXX — Utilisé uniquement si aucun fichier vidéo n\'est uploadé.' },
     },
     {
       name: 'ctaTexte',

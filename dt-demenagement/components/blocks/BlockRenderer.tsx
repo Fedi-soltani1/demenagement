@@ -126,8 +126,9 @@ function adaptAbout(b: PayloadBlock): CmsApropos {
     badge:     str(b.badge),
     titre:     str(b.titre),
     texte:     str(b.texte),
-    image:     b.image ? { url: mediaUrl(b.image) } : null,
-    videoUrl:  str(b.videoUrl),
+    image:         b.image ? { url: mediaUrl(b.image) } : null,
+    videoFichier:  mediaUrl(b.videoFichier),
+    videoUrl:      str(b.videoUrl),
     ctaTexte:  str(b.ctaTexte),
   }
 

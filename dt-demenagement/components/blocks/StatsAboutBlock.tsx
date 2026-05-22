@@ -22,6 +22,7 @@ export type CmsApropos = {
   titre?: string | null
   texte?: string | null
   image?: { url?: string | null } | null
+  videoFichier?: string | null
   videoUrl?: string | null
   ctaTexte?: string | null
   stat1Valeur?: number | null
@@ -43,6 +44,8 @@ export function StatsAboutBlock({ cms }: { cms?: CmsApropos }) {
   const locale = useLocale()
   const [videoOpen, setVideoOpen]       = useState(false)
   const [videoStarted, setVideoStarted] = useState(false)
+
+  const videoFichierUrl = cms?.videoFichier ?? null
 
   const badge    = cms?.badge    ?? t('badge')
   const titre    = cms?.titre    ?? t('title')
@@ -181,19 +184,31 @@ export function StatsAboutBlock({ cms }: { cms?: CmsApropos }) {
               transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
               onClick={(e) => e.stopPropagation()}
             >
-              {videoStarted && videoUrl ? (
-                /* Iframe chargée APRÈS le clic sur play — autoplay autorisé par le geste utilisateur */
-                <iframe
-                  src={`https://www.youtube.com/embed/${extractYoutubeId(videoUrl)}?autoplay=1&controls=0&rel=0&modestbranding=1&disablekb=1&iv_load_policy=3&loop=1&playlist=${extractYoutubeId(videoUrl)}`}
-                  className="absolute inset-0 w-full h-full"
-                  allow="autoplay; encrypted-media; fullscreen"
-                  allowFullScreen
-                  title={t('videoLabel')}
-                />
+              {videoStarted ? (
+                videoFichierUrl ? (
+                  /* Fichier MP4 uploadé — balise video HTML5, zéro UI externe */
+                  <video
+                    src={videoFichierUrl}
+                    className="absolute inset-0 w-full h-full"
+                    autoPlay
+                    controls
+                    playsInline
+                    title={t('videoLabel')}
+                  />
+                ) : videoUrl ? (
+                  /* YouTube — iframe chargée au clic (autoplay autorisé par geste utilisateur) */
+                  <iframe
+                    src={`https://www.youtube.com/embed/${extractYoutubeId(videoUrl)}?autoplay=1&controls=0&rel=0&modestbranding=1&disablekb=1&iv_load_policy=3`}
+                    className="absolute inset-0 w-full h-full"
+                    allow="autoplay; encrypted-media; fullscreen"
+                    allowFullScreen
+                    title={t('videoLabel')}
+                  />
+                ) : null
               ) : (
-                /* Miniature YouTube + bouton play custom — aucun élément YouTube visible */
+                /* Miniature + bouton play custom */
                 <>
-                  {videoUrl && extractYoutubeId(videoUrl) && (
+                  {videoUrl && extractYoutubeId(videoUrl) && !videoFichierUrl && (
                     <img
                       src={`https://img.youtube.com/vi/${extractYoutubeId(videoUrl)}/maxresdefault.jpg`}
                       alt=""
