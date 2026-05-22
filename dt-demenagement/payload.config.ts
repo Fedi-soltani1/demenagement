@@ -89,9 +89,9 @@ export default buildConfig({
   // 17 collections — ordered to drive sidebar group order
   collections: [
     // 🚚 Opérations (daily use — always first)
-    Demenagements,
-    RendezVous,
-    Messages,
+    Demenagements,   // pipeline principal
+    Messages,        // communications urgentes avant planning
+    RendezVous,      // planification visites
 
     // 👥 Utilisateurs
     Clients,
@@ -99,14 +99,14 @@ export default buildConfig({
 
     // 📝 Contenu du site
     Pages,
+    Services,        // offres commerciales avant contenu éditorial
     Blog,
-    Services,
     FAQ,
     Categories,
 
     // ⭐ Avis & Réputation
+    Testimonials,    // témoignages gérés manuellement en premier
     GoogleReviews,
-    Testimonials,
     Partners,
 
     // 📧 Marketing
