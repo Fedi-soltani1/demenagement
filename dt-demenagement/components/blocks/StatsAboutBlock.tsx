@@ -184,11 +184,13 @@ export function StatsAboutBlock({ cms }: { cms?: CmsApropos }) {
             >
               <iframe
                 src={videoUrl ? toYoutubeEmbed(videoUrl) : 'about:blank'}
-                className="w-full h-full"
+                className="absolute inset-0 w-full h-full"
                 allow="autoplay; encrypted-media; fullscreen"
                 allowFullScreen
                 title={t('videoLabel')}
               />
+              {/* Overlay — masque l'UI YouTube (boutons, logo, suggestions) */}
+              <div className="absolute inset-0" aria-hidden="true" />
               <button
                 onClick={() => setVideoOpen(false)}
                 className="absolute top-3 end-3 w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
