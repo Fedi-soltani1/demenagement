@@ -1,27 +1,28 @@
-// No 'use client' — plain server component, no hooks that can fail in nav context
+// Server component — no hooks, renders directly in beforeNavLinks slot
 import React from 'react'
 
 export default function CalendarNavLink() {
   return (
-    <div style={{ padding: '2px 12px 8px' }}>
+    <div style={{ padding: '6px 8px 2px' }}>
       <a
         href="/admin/rdv-calendar"
         style={{
           display:        'flex',
           alignItems:     'center',
-          gap:            '10px',
-          padding:        '9px 12px',
+          gap:            '8px',
+          padding:        '8px 10px',
           borderRadius:   '6px',
-          fontSize:       '13px',
+          fontSize:       '12.5px',
           fontWeight:     600,
           color:          '#b52027',
-          background:     'rgba(181,32,39,0.06)',
+          background:     'rgba(181,32,39,0.07)',
           textDecoration: 'none',
-          border:         '1px solid rgba(181,32,39,0.15)',
+          border:         '1px solid rgba(181,32,39,0.12)',
+          transition:     'background 0.12s',
         }}
       >
-        <span style={{ fontSize: '16px' }}>📅</span>
-        Calendrier RDV
+        <span style={{ fontSize: '14px', flexShrink: 0 }}>🗓️</span>
+        <span>Calendrier RDV</span>
       </a>
     </div>
   )

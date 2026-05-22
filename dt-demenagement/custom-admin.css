@@ -740,17 +740,30 @@ input[type='radio']:checked {
 }
 
 /* ═══════════════════════════════════════════════════════
-   DASHBOARD WELCOME (Payload's default dashboard card)
+   DASHBOARD — hide Payload's default collection cards
+   and globals list; keep only our custom AdminDashboard
    ═══════════════════════════════════════════════════════ */
 
+.dashboard__card-list,
+.dashboard__globals,
 .dashboard__welcome-block {
-  background: linear-gradient(135deg, #b52027 0%, #8a1820 100%) !important;
-  border-radius: 12px !important;
+  display: none !important;
+}
+
+/* Hide the "Dashboard" page title eyebrow Payload injects */
+.dashboard > .eyebrow {
+  display: none !important;
+}
+
+/* Ensure our afterDashboard component has proper spacing */
+.dashboard .after-dashboard,
+.dashboard > div:last-child {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
 }
 
 /* ═══════════════════════════════════════════════════════
-   SIDEBAR — collection group labels (Payload renders them
-   as <p> or <span> siblings of the nav list)
+   SIDEBAR — group labels & separators
    ═══════════════════════════════════════════════════════ */
 
 .nav__group-label,
@@ -761,9 +774,54 @@ nav .group-label {
   font-weight: 800 !important;
   letter-spacing: 0.8px !important;
   text-transform: uppercase !important;
-  padding: 16px 16px 4px !important;
+  padding: 14px 16px 5px !important;
   opacity: 1 !important;
   display: block !important;
+}
+
+/* Separator line between groups */
+.nav__group + .nav__group,
+.nav__group {
+  border-top: 1px solid #f0f0f3 !important;
+  margin-top: 4px !important;
+  padding-top: 4px !important;
+}
+
+.nav__group:first-child {
+  border-top: none !important;
+  margin-top: 0 !important;
+}
+
+/* Nav logo area spacing */
+.nav__header {
+  padding: 12px 16px !important;
+  border-bottom: 1px solid #f0f0f3 !important;
+  margin-bottom: 6px !important;
+}
+
+/* Account/profile link at bottom */
+.nav__account {
+  border-top: 1px solid #f0f0f3 !important;
+  padding: 8px 8px 12px !important;
+  margin-top: auto !important;
+}
+
+/* Nav link icon */
+.nav__link svg {
+  width: 14px !important;
+  height: 14px !important;
+  flex-shrink: 0 !important;
+}
+
+/* Globals section in sidebar (Settings) */
+.nav__group--globals .nav__group-label {
+  color: #888 !important;
+}
+
+/* Sidebar footer - logout, account links */
+.nav__controls {
+  padding: 10px 16px !important;
+  border-top: 1px solid #f0f0f3 !important;
 }
 
 /* ═══════════════════════════════════════════════════════
