@@ -25,10 +25,13 @@ const MOCK_POSTS = [
   { id: '6', imageUrl: 'https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?w=400&q=80', likes: 93  },
 ]
 
-const INSTAGRAM_URL = 'https://www.instagram.com/dt.demenagement'
+const INSTAGRAM_URL_DEFAULT = 'https://www.instagram.com/dt.demenagement'
 
-export function InstagramFeedBlock() {
+interface InstagramCms { titre?: string | null; lienProfil?: string | null }
+
+export function InstagramFeedBlock({ cms }: { cms?: InstagramCms } = {}) {
   const t = useTranslations('Home.instagram')
+  const INSTAGRAM_URL = cms?.lienProfil ?? INSTAGRAM_URL_DEFAULT
 
   return (
     <section
@@ -52,7 +55,7 @@ export function InstagramFeedBlock() {
               className="font-heading font-bold text-[var(--color-text-light)]"
               style={{ fontSize: 'clamp(1.8rem, 3.5vw, 3rem)' }}
             >
-              {t('title')}
+              {cms?.titre ?? t('title')}
             </h2>
           </div>
 

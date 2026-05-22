@@ -1,9 +1,11 @@
 import type { Block } from 'payload'
+import { actifField } from '../fields/actifField'
 
 export const GoogleReviewsBlock: Block = {
   slug: 'google-reviews',
   labels: { singular: '⭐ Section Avis Google', plural: 'Sections Avis Google' },
   fields: [
+    actifField,
     {
       name: 'titre',
       label: 'Titre de la section',

@@ -5,7 +5,15 @@ import { useTranslations } from 'next-intl'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Send, CheckCircle2 } from 'lucide-react'
 
-export function NewsletterBlock() {
+interface NewsletterCms {
+  titre?:          string | null
+  sousTitre?:      string | null
+  texteBouton?:    string | null
+  placeholderEmail?: string | null
+  texteRgpd?:      string | null
+}
+
+export function NewsletterBlock({ cms }: { cms?: NewsletterCms } = {}) {
   const t = useTranslations('Home.newsletter')
   const [email, setEmail] = useState('')
   const [rgpd, setRgpd] = useState(false)
@@ -66,10 +74,10 @@ export function NewsletterBlock() {
             className="font-heading font-bold text-white mb-4"
             style={{ fontSize: 'clamp(1.8rem, 3.5vw, 3rem)' }}
           >
-            {t('title')}
+            {cms?.titre ?? t('title')}
           </h2>
           <p className="font-body text-white/80 leading-relaxed mb-8">
-            {t('subtitle')}
+            {cms?.sousTitre ?? t('subtitle')}
           </p>
         </motion.div>
 
@@ -107,7 +115,7 @@ export function NewsletterBlock() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder={t('placeholder')}
+                  placeholder={cms?.placeholderEmail ?? t('placeholder')}
                   required
                   className="flex-1 rounded-full px-6 py-4 bg-white/10 border border-white/20 text-white placeholder:text-white/50 font-body text-sm focus:outline-none focus:border-white/60 focus:bg-white/15 transition-all duration-200"
                 />
@@ -121,7 +129,7 @@ export function NewsletterBlock() {
                   ) : (
                     <Send className="w-4 h-4" aria-hidden="true" />
                   )}
-                  {t('ctaText')}
+                  {cms?.texteBouton ?? t('ctaText')}
                 </button>
               </div>
 
@@ -135,7 +143,7 @@ export function NewsletterBlock() {
                   required
                 />
                 <span className="font-body text-xs text-white/70 leading-relaxed text-start">
-                  {t('rgpd')}
+                  {cms?.texteRgpd ?? t('rgpd')}
                 </span>
               </label>
 

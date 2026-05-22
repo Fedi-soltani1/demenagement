@@ -1,9 +1,11 @@
 import type { Block } from 'payload'
+import { actifField } from '../fields/actifField'
 
 export const WhyUsBlock: Block = {
   slug: 'why-us',
   labels: { singular: '✅ Section Pourquoi nous choisir', plural: 'Sections Pourquoi nous choisir' },
   fields: [
+    actifField,
     {
       name: 'titre',
       label: 'Titre de la section',

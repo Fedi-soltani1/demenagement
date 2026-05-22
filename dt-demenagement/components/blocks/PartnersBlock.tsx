@@ -18,7 +18,9 @@ const PARTNERS_FALLBACK = [
   'JCC', 'Ministère Environnement',
 ]
 
-export function PartnersBlock({ partners = [] }: { partners?: PartnerData[] }) {
+interface PartnersCms { titre?: string | null }
+
+export function PartnersBlock({ partners = [], cms }: { partners?: PartnerData[]; cms?: PartnersCms }) {
   const t = useTranslations('Home.partners')
 
   const hasPayloadData = partners.length > 0
@@ -46,7 +48,7 @@ export function PartnersBlock({ partners = [] }: { partners?: PartnerData[] }) {
             className="font-heading font-bold text-[var(--color-text-light)]"
             style={{ fontSize: 'clamp(1.5rem, 2.5vw, 2.2rem)' }}
           >
-            {t('title')}
+            {cms?.titre ?? t('title')}
           </h2>
         </motion.div>
       </div>

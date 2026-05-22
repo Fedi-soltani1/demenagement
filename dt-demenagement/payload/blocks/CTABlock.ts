@@ -1,9 +1,11 @@
 import type { Block } from 'payload'
+import { actifField } from '../fields/actifField'
 
 export const CTABlock: Block = {
   slug: 'cta',
   labels: { singular: '📣 Section Appel à l\'action (bannière incitative)', plural: 'Sections Appel à l\'action' },
   fields: [
+    actifField,
     {
       name: 'titre',
       label: 'Titre accrocheur',

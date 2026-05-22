@@ -1,9 +1,11 @@
 import type { Block } from 'payload'
+import { actifField } from '../fields/actifField'
 
 export const FAQBlock: Block = {
   slug: 'faq',
   labels: { singular: '❓ Section FAQ (questions fréquentes)', plural: 'Sections FAQ' },
   fields: [
+    actifField,
     {
       name: 'titre',
       label: 'Titre de la section',

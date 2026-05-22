@@ -1,9 +1,11 @@
 import type { Block } from 'payload'
+import { actifField } from '../fields/actifField'
 
 export const GalleryBlock: Block = {
   slug: 'gallery',
   labels: { singular: '🖼️ Section Galerie photos', plural: 'Sections Galerie photos' },
   fields: [
+    actifField,
     {
       name: 'titre',
       label: 'Titre de la galerie (optionnel)',

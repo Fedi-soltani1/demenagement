@@ -1,9 +1,11 @@
 import type { Block } from 'payload'
+import { actifField } from '../fields/actifField'
 
 export const NewsletterBlock: Block = {
   slug: 'newsletter',
   labels: { singular: '📧 Section Newsletter (inscription email)', plural: 'Sections Newsletter' },
   fields: [
+    actifField,
     {
       name: 'titre',
       label: 'Titre du formulaire',

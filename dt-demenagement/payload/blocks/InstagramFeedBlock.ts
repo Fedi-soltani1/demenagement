@@ -1,9 +1,11 @@
 import type { Block } from 'payload'
+import { actifField } from '../fields/actifField'
 
 export const InstagramFeedBlock: Block = {
   slug: 'instagram-feed',
   labels: { singular: '📸 Section Fil Instagram', plural: 'Sections Fil Instagram' },
   fields: [
+    actifField,
     {
       name: 'titre',
       label: 'Titre de la section (optionnel)',

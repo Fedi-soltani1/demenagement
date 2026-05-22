@@ -33,10 +33,15 @@ const Pages: CollectionConfig = {
 
   admin: {
     group: '📝 Contenu du site',
-    useAsTitle: 'titre',
+    useAsTitle: 'slug',
     defaultColumns: ['titre', 'slug', 'publie'],
     description: 'Pages du site (accueil, à propos, contact…). Cliquer sur une page pour modifier ses blocs.',
-    preview: (doc) => `${process.env.NEXT_PUBLIC_SITE_URL}/fr/${doc.slug as string}`,
+    preview: (doc) => {
+        const base = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
+        const slug = doc.slug as string
+        if (slug === 'accueil' || !slug) return `${base}/fr`
+        return `${base}/fr/${slug}`
+      },
   },
 
   versions: {

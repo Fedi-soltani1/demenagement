@@ -1,9 +1,11 @@
 import type { Block } from 'payload'
+import { actifField } from '../fields/actifField'
 
 export const AboutBlock: Block = {
   slug: 'about',
   labels: { singular: '🏢 Section À propos de DT Déménagement', plural: 'Sections À propos' },
   fields: [
+    actifField,
     {
       name: 'badge',
       label: 'Accroche au-dessus du titre (optionnelle)',

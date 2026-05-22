@@ -114,7 +114,9 @@ function LeafletMap() {
   )
 }
 
-export function MapBlock() {
+interface MapCms { titre?: string | null; sousTitre?: string | null }
+
+export function MapBlock({ cms }: { cms?: MapCms } = {}) {
   const t = useTranslations('Home.map')
 
   return (
@@ -139,10 +141,10 @@ export function MapBlock() {
               className="font-heading font-bold text-[var(--color-text-light)] mb-5"
               style={{ fontSize: 'clamp(1.8rem, 3.5vw, 3rem)' }}
             >
-              {t('title')}
+              {cms?.titre ?? t('title')}
             </h2>
             <p className="font-body text-[var(--color-text-muted)] leading-relaxed mb-8">
-              {t('subtitle')}
+              {cms?.sousTitre ?? t('subtitle')}
             </p>
 
             {/* Liste villes */}

@@ -76,7 +76,9 @@ function normalizeArticle(a: BlogArticleData): NormalizedArticle {
   }
 }
 
-export function BlogPreviewBlock({ articles = [] }: { articles?: BlogArticleData[] }) {
+interface BlogCms { titre?: string | null; sousTitre?: string | null; ctaTexte?: string | null }
+
+export function BlogPreviewBlock({ articles = [], cms }: { articles?: BlogArticleData[]; cms?: BlogCms }) {
   const t = useTranslations('Home.blog')
   const locale = useLocale()
 
@@ -105,14 +107,14 @@ export function BlogPreviewBlock({ articles = [] }: { articles?: BlogArticleData
               className="font-heading font-bold text-[var(--color-text-light)]"
               style={{ fontSize: 'clamp(1.8rem, 3.5vw, 3rem)' }}
             >
-              {t('title')}
+              {cms?.titre ?? t('title')}
             </h2>
           </div>
           <Link
             href={`/${locale}/blog`}
             className="group flex-shrink-0 inline-flex items-center gap-2 text-[var(--color-red)] font-body font-semibold text-sm hover:gap-3 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)] rounded"
           >
-            {t('ctaText')}
+            {cms?.ctaTexte ?? t('ctaText')}
             <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" aria-hidden="true" />
           </Link>
         </motion.div>

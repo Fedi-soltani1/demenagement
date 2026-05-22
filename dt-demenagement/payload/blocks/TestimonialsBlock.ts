@@ -1,9 +1,11 @@
 import type { Block } from 'payload'
+import { actifField } from '../fields/actifField'
 
 export const TestimonialsBlock: Block = {
   slug: 'testimonials',
   labels: { singular: '💬 Section Témoignages clients', plural: 'Sections Témoignages clients' },
   fields: [
+    actifField,
     {
       name: 'titre',
       label: 'Titre de la section',

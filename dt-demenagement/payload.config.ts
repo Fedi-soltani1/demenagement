@@ -65,6 +65,20 @@ export default buildConfig({
         },
       },
     },
+    livePreview: {
+      url: ({ data, locale }: { data: { slug?: string }, locale: { code: string } }) => {
+        const base = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
+        const slug = data.slug ?? ''
+        if (slug === 'accueil' || slug === '') return `${base}/${locale.code}`
+        return `${base}/${locale.code}/${slug}`
+      },
+      collections: ['pages'],
+      breakpoints: [
+        { label: 'Mobile',  name: 'mobile',  width: 375,  height: 812 },
+        { label: 'Tablette', name: 'tablet', width: 768,  height: 1024 },
+        { label: 'Desktop', name: 'desktop', width: 1440, height: 900 },
+      ],
+    },
   },
 
   localization: {

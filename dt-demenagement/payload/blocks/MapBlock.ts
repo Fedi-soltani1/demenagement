@@ -1,9 +1,11 @@
 import type { Block } from 'payload'
+import { actifField } from '../fields/actifField'
 
 export const MapBlock: Block = {
   slug: 'map',
   labels: { singular: '🗺️ Section Carte des zones d\'intervention', plural: 'Sections Carte' },
   fields: [
+    actifField,
     {
       name: 'titre',
       label: 'Titre de la section',

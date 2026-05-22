@@ -130,11 +130,16 @@ function ServiceCard({
   )
 }
 
-export function ServicesBlock({ services = [] }: { services?: ServiceData[] }) {
+interface ServicesCms {
+  titre?:    string | null
+  sousTitre?: string | null
+  ctaTexte?: string | null
+}
+
+export function ServicesBlock({ services = [], cms }: { services?: ServiceData[]; cms?: ServicesCms }) {
   const t = useTranslations('Home.services')
   const locale = useLocale()
 
-  // Utilise les données Payload si disponibles, sinon le fallback statique
   const displayServices = services.length > 0 ? services : SERVICES_FALLBACK
 
   return (
@@ -143,7 +148,6 @@ export function ServicesBlock({ services = [] }: { services?: ServiceData[] }) {
       aria-labelledby="services-title"
     >
       <div className="max-w-7xl mx-auto">
-        {/* En-tête */}
         <motion.div
           className="text-center max-w-2xl mx-auto mb-16"
           initial={{ opacity: 0, y: 30 }}
@@ -159,10 +163,10 @@ export function ServicesBlock({ services = [] }: { services?: ServiceData[] }) {
             className="font-heading font-bold text-[var(--color-text-light)] mb-4"
             style={{ fontSize: 'clamp(1.8rem, 3.5vw, 3rem)' }}
           >
-            {t('title')}
+            {cms?.titre ?? t('title')}
           </h2>
           <p className="font-body text-[var(--color-text-muted)] leading-relaxed">
-            {t('subtitle')}
+            {cms?.sousTitre ?? t('subtitle')}
           </p>
         </motion.div>
 
@@ -185,7 +189,7 @@ export function ServicesBlock({ services = [] }: { services?: ServiceData[] }) {
             href={`/${locale}/services`}
             className="group inline-flex items-center gap-2 px-8 py-4 rounded-full border border-[var(--color-red)]/40 text-[var(--color-red)] font-body font-semibold text-sm uppercase tracking-wider transition-all duration-300 hover:bg-[var(--color-red)]/10 hover:border-[var(--color-red)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)]"
           >
-            {t('ctaText')}
+            {cms?.ctaTexte ?? t('ctaText')}
             <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" aria-hidden="true" />
           </Link>
         </motion.div>

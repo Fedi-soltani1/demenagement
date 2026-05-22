@@ -1,9 +1,11 @@
 import type { Block } from 'payload'
+import { actifField } from '../fields/actifField'
 
 export const VideoBlock: Block = {
   slug: 'video',
   labels: { singular: '🎬 Section Vidéo', plural: 'Sections Vidéo' },
   fields: [
+    actifField,
     {
       name: 'titre',
       label: 'Titre au-dessus de la vidéo (optionnel)',

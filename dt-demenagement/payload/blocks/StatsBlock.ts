@@ -1,9 +1,11 @@
 import type { Block } from 'payload'
+import { actifField } from '../fields/actifField'
 
 export const StatsBlock: Block = {
   slug: 'stats',
   labels: { singular: '📊 Section Chiffres clés (compteurs animés)', plural: 'Sections Chiffres clés' },
   fields: [
+    actifField,
     {
       name: 'titre',
       label: 'Titre de la section (optionnel)',

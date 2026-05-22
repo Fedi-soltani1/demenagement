@@ -1,9 +1,11 @@
 import type { Block } from 'payload'
+import { actifField } from '../fields/actifField'
 
 export const BlogPreviewBlock: Block = {
   slug: 'blog-preview',
   labels: { singular: '📰 Section Aperçu Blog (derniers articles)', plural: 'Sections Aperçu Blog' },
   fields: [
+    actifField,
     {
       name: 'titre',
       label: 'Titre de la section',

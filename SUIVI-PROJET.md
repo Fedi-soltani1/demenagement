@@ -98,6 +98,19 @@ Commit      : 2c43fd7 — feat: redesign admin dashboard + comprehensive CSS ove
    - Extraction du dynamic import Leaflet hors du Server Component
    - Résout le conflit Server Component + dynamic({ ssr: false })
 
+─── SESSION 2026-05-22 — PAYLOAD CMS FIELDS + LIVE PREVIEW ─────────────────
+
+4. BlockRenderer.tsx — CMS PROPS CABLES (sections 5-12)
+   - services, map, testimonials, partners, instagram-feed,
+     newsletter, blog-preview : cms props extraits du bloc Payload
+5. 8 composants blocs — interface cms? ajoutée
+   - ServicesBlock, MapBlock, TestimonialsBlock, PartnersBlock,
+     InstagramFeedBlock, NewsletterBlock, BlogPreviewBlock, GoogleReviewsBlock
+6. LivePreviewWrapper.tsx — NOUVEAU (server slot pattern)
+   - GoogleReviewsBlock pré-rendu server-side, passé comme ReactNode
+   - useLivePreview pour mise à jour temps réel
+7. payload.config.ts — livePreview URL + breakpoints mobiles
+
 BRANCHE ACTIVE    : main
 BLOQUEURS         : Aucun
 Reprendre à : "Déploiement production Vercel + Railway"
@@ -408,14 +421,26 @@ FONCTIONNALITÉ TERMINÉE — DevisModal 3-screen flow (2026-05-20) :
   ⚠️ TABLE NEON : CREATE TABLE rendez_vous à exécuter manuellement (push:false)
      SQL dans docs/superpowers/plans/2026-05-20-devis-modal-rdv-flow.md Task 4
 
+FONCTIONNALITÉS ELEMENTOR-LIKE OPÉRATIONNELLES (session 2026-05-21) :
+  ✅ 18 blocs Payload : champ "actif" (checkbox sidebar) sur TOUS les blocs
+     → Admin peut décocher pour masquer un bloc sans le supprimer
+  ✅ BlockRenderer.tsx : if (block.actif === false) return null
+     → Blocs désactivés invisibles sur le site
+  ✅ Payload Live Preview : admin édite → iframe frontend se met à jour en temps réel
+     → payload.config.ts : admin.livePreview configuré
+     → LivePreviewWrapper.tsx : Client Component avec useLivePreview()
+     → page.tsx : utilise LivePreviewWrapper si page Payload trouvée
+     → Requiert NEXT_PUBLIC_PAYLOAD_URL dans .env.local (http://localhost:3000)
+
 PROCHAINE ACTION  : Déploiement production
-  1. Vérifier domaine demenagement.tn sur resend.com/domains
+  1. Ajouter NEXT_PUBLIC_PAYLOAD_URL=https://[ton-domaine-vercel] dans .env Vercel
+  2. Vérifier domaine demenagement.tn sur resend.com/domains
      → Changer EMAIL_FROM=noreply@demenagement.tn
      → Changer EMAIL_DEVIS_TO=contact@demenagement.tn
-  2. Remplir toutes les variables .env sur Vercel
-  3. Déployer sur Vercel (git push → auto-deploy)
-  4. Configurer DNS demenagement.tn → Vercel
-  5. Ouvrir /api/seed?secret=[SEED_SECRET] → initialiser données
+  3. Remplir toutes les variables .env sur Vercel
+  4. Déployer sur Vercel (git push → auto-deploy)
+  5. Configurer DNS demenagement.tn → Vercel
+  6. Ouvrir /api/seed?secret=[SEED_SECRET] → initialiser données
 BRANCHE ACTIVE    : main
 BLOQUEURS         : Resend en mode test (envoie uniquement vers fedi.soltani1@esprit.tn)
                     → vérifier domaine demenagement.tn sur resend.com pour lever ce blocage

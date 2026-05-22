@@ -1,9 +1,11 @@
 import type { Block } from 'payload'
+import { actifField } from '../fields/actifField'
 
 export const ServicesBlock: Block = {
   slug: 'services',
   labels: { singular: '🛠️ Section Services (liste de prestations)', plural: 'Sections Services' },
   fields: [
+    actifField,
     {
       name: 'titre',
       label: 'Titre de la section',

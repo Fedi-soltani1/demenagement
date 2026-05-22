@@ -259,6 +259,7 @@ export default function AdminDashboard() {
       const t2 = setTimeout(hide, 350)
       return () => { clearTimeout(t1); clearTimeout(t2) }
     }
+    return undefined
   }, [])
 
   useEffect(() => {

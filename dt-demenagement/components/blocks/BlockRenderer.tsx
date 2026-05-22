@@ -8,7 +8,6 @@ import { WhyUsBlock,         type CmsPourquoiNous }   from '@/components/blocks/
 import { ServicesBlock,      type ServiceData }       from '@/components/blocks/ServicesBlock'
 import { MapBlock }                                    from '@/components/blocks/MapBlock'
 import { TestimonialsBlock,  type TestimonialData }   from '@/components/blocks/TestimonialsBlock'
-import { GoogleReviewsBlock }                          from '@/components/blocks/GoogleReviewsBlock'
 import { PartnersBlock,      type PartnerData }       from '@/components/blocks/PartnersBlock'
 import { InstagramFeedBlock }                          from '@/components/blocks/InstagramFeedBlock'
 import { NewsletterBlock }                             from '@/components/blocks/NewsletterBlock'
@@ -61,11 +60,12 @@ type PartnerPayload = {
 // ─── Props du renderer ────────────────────────────────────────────────────────
 
 interface BlockRendererProps {
-  blocks:       PayloadBlock[]
-  services:     ServiceData[]
-  testimonials: TestimonialData[]
-  blog:         BlogArticleData[]
-  partners:     PartnerData[]
+  blocks:             PayloadBlock[]
+  services:           ServiceData[]
+  testimonials:       TestimonialData[]
+  blog:               BlogArticleData[]
+  partners:           PartnerData[]
+  googleReviewsNode?: React.ReactNode
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -239,6 +239,7 @@ export function BlockRenderer({
   testimonials,
   blog,
   partners,
+  googleReviewsNode,
 }: BlockRendererProps) {
   if (!blocks.length) return null
 
@@ -246,6 +247,8 @@ export function BlockRenderer({
     <>
       {blocks.map((block, index) => {
         const key = block.id ?? `block-${index}`
+
+        if (block.actif === false) return null
 
         switch (block.blockType) {
 
@@ -263,6 +266,7 @@ export function BlockRenderer({
               <ServicesBlock
                 key={key}
                 services={adaptServices(block, services)}
+                cms={{ titre: str(block.titre), sousTitre: str(block.sousTitre), ctaTexte: str(block.ctaTexte) }}
               />
             )
 
@@ -270,35 +274,54 @@ export function BlockRenderer({
             return <WhyUsBlock key={key} cms={adaptWhyUs(block)} />
 
           case 'map':
-            return <MapBlock key={key} />
+            return <MapBlock key={key} cms={{ titre: str(block.titre), sousTitre: str(block.sousTitre) }} />
 
           case 'testimonials':
             return (
               <TestimonialsBlock
                 key={key}
                 testimonials={adaptTestimonials(block, testimonials)}
+                cms={{ titre: str(block.titre), sousTitre: str(block.sousTitre) }}
               />
             )
 
           case 'google-reviews':
-            return <GoogleReviewsBlock key={key} />
+            return <React.Fragment key={key}>{googleReviewsNode}</React.Fragment>
 
           case 'partners':
             return (
               <PartnersBlock
                 key={key}
                 partners={adaptPartners(block, partners)}
+                cms={{ titre: str(block.titre) }}
               />
             )
 
           case 'instagram-feed':
-            return <InstagramFeedBlock key={key} />
+            return <InstagramFeedBlock key={key} cms={{ titre: str(block.titre), lienProfil: str(block.lienProfil) }} />
 
           case 'newsletter':
-            return <NewsletterBlock key={key} />
+            return (
+              <NewsletterBlock
+                key={key}
+                cms={{
+                  titre:            str(block.titre),
+                  sousTitre:        str(block.sousTitre),
+                  texteBouton:      str(block.texteBouton),
+                  placeholderEmail: str(block.placeholderEmail),
+                  texteRgpd:        str(block.texteRgpd),
+                }}
+              />
+            )
 
           case 'blog-preview':
-            return <BlogPreviewBlock key={key} articles={blog} />
+            return (
+              <BlogPreviewBlock
+                key={key}
+                articles={blog}
+                cms={{ titre: str(block.titre), sousTitre: str(block.sousTitre), ctaTexte: str(block.ctaTexte) }}
+              />
+            )
 
           case 'cta':
             return <CTAFinalBlock key={key} cms={adaptCta(block)} />

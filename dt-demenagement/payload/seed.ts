@@ -508,13 +508,143 @@ export async function seed(payload: Payload): Promise<void> {
     }
   }
 
-  // ── 8. Page accueil avec tous les blocs ───────────────────────────────────
-  payload.logger.info('\n🏠 [BONUS] Page accueil avec blocs...')
+  // ── Page accueil — 13 blocs complets (miroir exact du site) ─────────────
+  payload.logger.info('\n🏠 Page accueil avec les 13 blocs...')
   const pageExisting = await payload.find({
     collection: 'pages',
     where: { slug: { equals: 'accueil' } },
     limit: 1,
   })
+
+  const pageLayout = [
+    // 1 — Hero principal
+    {
+      blockType: 'hero',
+      actif: true,
+      badge: 'N°1 du déménagement en Tunisie',
+      titre: 'Déménagez en toute sérénité à travers toute la Tunisie',
+      sousTitre: 'Professionnel, fiable et certifié. Particuliers, entreprises et international — nous prenons soin de chaque déménagement.',
+      ctaPrimaire: { texte: 'Devis gratuit en 24h', lien: '/fr/devis' },
+      ctaSecondaire: { texte: 'Appeler maintenant', lien: 'tel:+21652880311' },
+      afficher3D: true,
+    },
+    // 2 — Bande points forts (mini-features)
+    {
+      blockType: 'mini-features',
+      actif: true,
+      items: [
+        { icone: 'users',   titre: 'Particuliers & Entreprises', description: 'Solutions adaptées à chaque profil — résidentiel, bureau, ambassade.' },
+        { icone: 'truck',   titre: 'Transporteur Professionnel', description: 'Flotte moderne, équipe formée, assurance tous risques incluse.' },
+        { icone: 'package', titre: 'Emballage Expert',           description: 'Matériaux certifiés, fragiles protégés, livraison garantie intact.' },
+        { icone: 'globe',   titre: 'International',              description: 'Déménagement vers 9 pays européens. Formalités douanières gérées.' },
+      ],
+    },
+    // 3 — À propos (texte + 4 chiffres clés)
+    {
+      blockType: 'about',
+      actif: true,
+      badge: 'À propos de DT',
+      titre: "15 ans d'expertise au service de votre déménagement",
+      texte: "DT Déménagement Tunisie est la référence nationale pour tous vos projets de déménagement. Fondée à Tunis, notre entreprise s'est bâtie sur des valeurs de confiance, de rigueur et de service client exceptionnel.",
+      ctaTexte: 'En savoir plus',
+      stats: [
+        { valeur: 5000, suffixe: '+',   label: 'Déménagements réalisés' },
+        { valeur: 15,   suffixe: ' ans', label: "D'expérience" },
+        { valeur: 24,   suffixe: 'h',   label: 'Délai de réponse' },
+        { valeur: 98,   suffixe: '%',   label: 'Clients satisfaits' },
+      ],
+    },
+    // 4 — Pourquoi nous choisir
+    {
+      blockType: 'why-us',
+      actif: true,
+      titre: 'Ce qui nous distingue',
+      sousTitre: "Notre engagement envers l'excellence se traduit dans chaque aspect de notre service.",
+      arguments: [
+        { icone: 'zap',        titre: 'Efficacité prouvée',      texte: 'Processus optimisés pour un déménagement rapide et sans stress.' },
+        { icone: 'headphones', titre: 'Écoute client',            texte: 'Chaque projet est unique — nous adaptons notre service à vos besoins.' },
+        { icone: 'shield',     titre: 'Fiabilité totale',         texte: 'Respect des délais, transparence des prix, zéro mauvaise surprise.' },
+        { icone: 'users',      titre: 'Équipe professionnelle',   texte: "Personnel formé, certifié et passionné par l'excellence du service." },
+      ],
+    },
+    // 5 — Nos services
+    {
+      blockType: 'services',
+      actif: true,
+      badge: 'Nos prestations',
+      titre: 'Services de Déménagement Complets',
+      sousTitre: "De l'emballage à la livraison, nous gérons chaque étape avec soin.",
+    },
+    // 6 — Carte zones d'intervention (Tunisie + international)
+    {
+      blockType: 'map',
+      actif: true,
+      titre: 'Nous intervenons partout en Tunisie et en Europe',
+      sousTitre: "24 villes en Tunisie, 9 pays européens — votre déménagement international est entre de bonnes mains.",
+      mode: 'tunisie',
+    },
+    // 7 — Témoignages clients
+    {
+      blockType: 'testimonials',
+      actif: true,
+      badge: 'Témoignages',
+      titre: 'Ils nous ont fait confiance',
+      affichage: 'carrousel',
+      nombreMax: 6,
+    },
+    // 8 — Avis Google
+    {
+      blockType: 'google-reviews',
+      actif: true,
+      badge: 'Avis Google',
+      titre: 'Ce que disent nos clients',
+      afficherNoteGlobale: true,
+      nombreAvis: '6',
+      noteMinimum: '4',
+    },
+    // 9 — Logos partenaires
+    {
+      blockType: 'partners',
+      actif: true,
+      badge: 'Partenaires',
+      titre: 'Ils nous font confiance',
+    },
+    // 10 — Fil Instagram
+    {
+      blockType: 'instagram-feed',
+      actif: true,
+      titre: 'Suivez notre actualité',
+      nombrePosts: 6,
+      lienProfil: 'https://www.instagram.com/dtdemenagement',
+    },
+    // 11 — Newsletter
+    {
+      blockType: 'newsletter',
+      actif: true,
+      titre: 'Conseils déménagement gratuits',
+      sousTitre: 'Recevez nos meilleures astuces directement dans votre boîte mail.',
+      texteBouton: "S'abonner gratuitement",
+      placeholderEmail: 'votre@email.com',
+      texteRgpd: "En vous abonnant, vous acceptez notre politique de confidentialité. Désinscription à tout moment.",
+    },
+    // 12 — Derniers articles de blog
+    {
+      blockType: 'blog-preview',
+      actif: true,
+      badge: 'Blog & Conseils',
+      titre: 'Nos derniers articles',
+      nombreArticles: '3',
+    },
+    // 13 — CTA final
+    {
+      blockType: 'cta',
+      actif: true,
+      titre: 'Prêt pour votre déménagement ?',
+      sousTitre: 'Obtenez votre devis gratuit en 2 minutes. Notre équipe vous rappelle sous 24h.',
+      boutonPrimaire: { texte: 'Devis gratuit', lien: '/fr/devis' },
+      couleurFond: 'rouge',
+    },
+  ] as const
 
   if (pageExisting.docs.length === 0) {
     await payload.create({
@@ -525,83 +655,24 @@ export async function seed(payload: Payload): Promise<void> {
         publie: true,
         seo: {
           metaTitle: 'DT Déménagement Tunisie — N°1 du déménagement en Tunisie',
-          metaDescription: 'Spécialiste du déménagement en Tunisie et vers l\'Europe. Devis gratuit en 2h. Plus de 5000 déménagements réalisés depuis 2009.',
+          metaDescription: "Spécialiste du déménagement en Tunisie et vers l'Europe. Devis gratuit en 2h. Plus de 5000 déménagements réalisés depuis 2009.",
         },
-        layout: [
-          // Bloc Hero
-          {
-            blockType: 'hero',
-            badge: 'N°1 du déménagement en Tunisie',
-            titre: 'Déménagez en toute sérénité à travers toute la Tunisie',
-            sousTitre: 'Plus de 5 000 déménagements réalisés. Devis gratuit en 2h. Professionnel, ponctuel, sécurisé.',
-            ctaPrimaire: { texte: 'Devis gratuit', lien: '/fr/devis' },
-            ctaSecondaire: { texte: 'Nos services', lien: '/fr/services' },
-            afficher3D: true,
-          },
-          // Bloc Stats
-          {
-            blockType: 'stats',
-            titre: 'Nos chiffres parlent d\'eux-mêmes',
-            animation: true,
-            stats: [
-              { valeur: 15,   suffixe: '+',  libelle: 'Années d\'expérience', icone: 'calendar' },
-              { valeur: 5000, suffixe: '+',  libelle: 'Déménagements réalisés', icone: 'truck' },
-              { valeur: 24,   suffixe: '/7', libelle: 'Disponibilité', icone: 'clock' },
-              { valeur: 98,   suffixe: '%',  libelle: 'Clients satisfaits', icone: 'star' },
-            ],
-          },
-          // Bloc Services
-          {
-            blockType: 'services',
-            titre: 'Nos services',
-            sousTitre: 'Une offre complète pour tous vos besoins de déménagement',
-            badge: 'Ce que nous faisons',
-          },
-          // Bloc Why Us
-          {
-            blockType: 'why-us',
-            titre: 'Pourquoi choisir DT Déménagement ?',
-            sousTitre: 'Depuis 2009, nous nous engageons pour des déménagements réussis',
-            arguments: [
-              { icone: 'shield', titre: 'Assurance tous risques', texte: 'Vos biens sont assurés de bout en bout. Zéro risque, zéro stress.' },
-              { icone: 'clock',  titre: 'Ponctualité garantie',   texte: 'Nous respectons les horaires convenus. Votre temps est précieux.' },
-              { icone: 'award',  titre: '15 ans d\'expérience',   texte: 'Plus de 5 000 déménagements réussis depuis 2009 en Tunisie et en Europe.' },
-              { icone: 'users',  titre: 'Équipe professionnelle', texte: 'Des déménageurs formés, expérimentés et respectueux de vos biens.' },
-            ],
-          },
-          // Bloc Témoignages
-          {
-            blockType: 'testimonials',
-            titre: 'Ce que disent nos clients',
-            badge: 'Témoignages',
-          },
-          // Bloc Google Reviews
-          {
-            blockType: 'google-reviews',
-            titre: 'Avis Google vérifiés',
-            badge: 'Google Reviews',
-          },
-          // Bloc Blog Preview
-          {
-            blockType: 'blog-preview',
-            titre: 'Conseils déménagement',
-            badge: 'Notre blog',
-            nombreArticles: 3,
-          },
-          // Bloc CTA final
-          {
-            blockType: 'cta',
-            titre: 'Prêt à déménager ?',
-            sousTitre: 'Contactez-nous pour un devis gratuit et sans engagement. Réponse garantie sous 2h.',
-            boutonPrimaire: { texte: 'Obtenir mon devis gratuit', lien: '/fr/devis' },
-            couleurFond: 'rouge',
-          },
-        ],
+        layout: pageLayout as unknown as [],
       },
     })
-    payload.logger.info('  ✅ Page accueil créée avec 8 blocs')
+    payload.logger.info('  ✅ Page accueil créée avec 13 blocs')
   } else {
-    payload.logger.info('  ⏭️  Page accueil déjà existante')
+    const pageId = pageExisting.docs[0]?.id as string
+    await payload.update({
+      collection: 'pages',
+      id: pageId,
+      data: {
+        titre: 'Accueil — DT Déménagement Tunisie',
+        publie: true,
+        layout: pageLayout as unknown as [],
+      },
+    })
+    payload.logger.info('  ✅ Page accueil mise à jour — 13 blocs (map, mini-features, about, partners, instagram, newsletter ajoutés)')
   }
 
   payload.logger.info('\n✅ ═══════════════════════════════════════')

@@ -1,9 +1,11 @@
 import type { Block } from 'payload'
+import { actifField } from '../fields/actifField'
 
 export const CustomBlock: Block = {
   slug: 'custom',
   labels: { singular: '✏️ Section Libre (contenu personnalisé)', plural: 'Sections Libres' },
   fields: [
+    actifField,
     {
       name: 'titre',
       label: 'Titre de la section (optionnel)',

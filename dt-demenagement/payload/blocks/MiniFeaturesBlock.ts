@@ -1,9 +1,11 @@
 import type { Block } from 'payload'
+import { actifField } from '../fields/actifField'
 
 export const MiniFeaturesBlock: Block = {
   slug: 'mini-features',
   labels: { singular: '⚡ Section Points forts (bande rapide)', plural: 'Sections Points forts' },
   fields: [
+    actifField,
     {
       name: 'items',
       label: 'Points forts à afficher',

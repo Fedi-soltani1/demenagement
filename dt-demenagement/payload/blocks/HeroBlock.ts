@@ -1,9 +1,11 @@
 import type { Block } from 'payload'
+import { actifField } from '../fields/actifField'
 
 export const HeroBlock: Block = {
   slug: 'hero',
   labels: { singular: '🦸 Section Hero (grande bannière d\'accueil)', plural: 'Sections Hero' },
   fields: [
+    actifField,
     {
       name: 'badge',
       label: 'Badge accroche (petit texte au-dessus du titre)',

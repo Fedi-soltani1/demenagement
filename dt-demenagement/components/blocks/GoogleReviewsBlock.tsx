@@ -1,6 +1,5 @@
 import React from 'react'
 import { getTranslations } from 'next-intl/server'
-import { getLocale } from 'next-intl/server'
 import { GoogleReviewsClient } from '@/components/blocks/GoogleReviewsClient'
 import type { GoogleReviewsResponse, ReviewData } from '@/app/api/google-reviews/route'
 
@@ -26,10 +25,11 @@ async function fetchGoogleReviews(baseUrl: string): Promise<GoogleReviewsRespons
   }
 }
 
-export async function GoogleReviewsBlock() {
-  const locale   = await getLocale()
-  const t        = await getTranslations({ locale, namespace: 'Home.googleReviews' })
-  const baseUrl  = process.env.NEXT_PUBLIC_SERVER_URL ?? 'http://localhost:3000'
+interface GoogleReviewsCms { titre?: string | null }
+
+export async function GoogleReviewsBlock({ cms }: { cms?: GoogleReviewsCms } = {}) {
+  const t       = await getTranslations('Home.googleReviews')
+  const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL ?? 'http://localhost:3000'
 
   const data = await fetchGoogleReviews(baseUrl)
 
@@ -40,7 +40,7 @@ export async function GoogleReviewsBlock() {
       reviews={data.reviews}
       placeUrl={data.placeUrl}
       badgeLabel={t('badge')}
-      title={t('title')}
+      title={cms?.titre ?? t('title')}
       ratingLabel={t('ratingLabel')}
       reviewsLabel={t('reviewsLabel')}
       ctaLabel={t('cta')}

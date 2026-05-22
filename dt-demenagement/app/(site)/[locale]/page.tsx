@@ -3,7 +3,9 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 import { setRequestLocale, getTranslations } from 'next-intl/server'
 import { COMPANY, LOCALES } from '@/lib/constants'
-import { BlockRenderer } from '@/components/blocks/BlockRenderer'
+import { BlockRenderer }          from '@/components/blocks/BlockRenderer'
+import { LivePreviewWrapper }     from '@/components/blocks/LivePreviewWrapper'
+import { GoogleReviewsBlock }     from '@/components/blocks/GoogleReviewsBlock'
 import { buildMetadata, localBusinessSchema } from '@/lib/seo'
 
 import type { ServiceData }     from '@/components/blocks/ServicesBlock'
@@ -98,10 +100,43 @@ export default async function HomePage({ params }: HomePageProps) {
     }).catch(() => ({ docs: [] as unknown[] })),
   ])
 
-  // Extraire les blocs de la page accueil
+  // Extraire la page accueil depuis Payload
   type PageDoc = { layout?: unknown[] }
-  const page   = pageData.docs[0] as PageDoc | undefined
-  const blocks = (page?.layout ?? []) as Array<{ blockType: string; id?: string; [key: string]: unknown }>
+  const page = pageData.docs[0] as PageDoc | undefined
+
+  const sharedProps = {
+    services:     servicesRes.docs     as ServiceData[],
+    testimonials: testimonialsRes.docs as TestimonialData[],
+    blog:         blogRes.docs         as BlogArticleData[],
+    partners:     partnersRes.docs     as PartnerData[],
+  }
+
+  // Blocs de fallback si aucune page 'accueil' n'est configurée dans Payload
+  const fallbackBlocks: Array<{ blockType: string; id?: string; [key: string]: unknown }> = [
+    { blockType: 'hero' },
+    { blockType: 'mini-features' },
+    { blockType: 'about' },
+    { blockType: 'why-us' },
+    { blockType: 'services' },
+    { blockType: 'map' },
+    { blockType: 'testimonials' },
+    { blockType: 'google-reviews' },
+    { blockType: 'partners' },
+    { blockType: 'instagram-feed' },
+    { blockType: 'newsletter' },
+    { blockType: 'blog-preview' },
+    { blockType: 'cta' },
+  ]
+
+  // Extraire le titre du bloc google-reviews depuis Payload (s'il est défini)
+  type BlockWithType = { blockType: string; titre?: string | null; [key: string]: unknown }
+  const googleReviewsTitre = (page?.layout as BlockWithType[] | undefined)
+    ?.find((b) => b.blockType === 'google-reviews')
+    ?.titre ?? null
+
+  // GoogleReviewsBlock est un Server Component async — pré-rendu ici pour qu'il
+  // puisse être passé comme slot React.ReactNode dans LivePreviewWrapper (Client Component)
+  const googleReviewsNode = <GoogleReviewsBlock cms={{ titre: googleReviewsTitre }} />
 
   return (
     <main>
@@ -109,38 +144,19 @@ export default async function HomePage({ params }: HomePageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema()) }}
       />
-      {blocks.length > 0 ? (
-        // Mode page builder : l'admin a configuré les blocs dans Payload
-        <BlockRenderer
-          blocks={blocks}
-          services={servicesRes.docs     as ServiceData[]}
-          testimonials={testimonialsRes.docs as TestimonialData[]}
-          blog={blogRes.docs             as BlogArticleData[]}
-          partners={partnersRes.docs     as PartnerData[]}
+      {page ? (
+        // Mode Live Preview : useLivePreview met à jour les blocs en temps réel
+        <LivePreviewWrapper
+          initialPage={page}
+          googleReviewsNode={googleReviewsNode}
+          {...sharedProps}
         />
       ) : (
-        // Mode fallback : aucune page 'accueil' dans Payload → affichage par défaut i18n
-        // L'admin doit créer la page dans /admin → Pages → Nouvelle page (slug: accueil)
+        // Mode fallback : aucune page 'accueil' dans Payload
         <BlockRenderer
-          blocks={[
-            { blockType: 'hero' },
-            { blockType: 'mini-features' },
-            { blockType: 'about' },
-            { blockType: 'why-us' },
-            { blockType: 'services' },
-            { blockType: 'map' },
-            { blockType: 'testimonials' },
-            { blockType: 'google-reviews' },
-            { blockType: 'partners' },
-            { blockType: 'instagram-feed' },
-            { blockType: 'newsletter' },
-            { blockType: 'blog-preview' },
-            { blockType: 'cta' },
-          ]}
-          services={servicesRes.docs     as ServiceData[]}
-          testimonials={testimonialsRes.docs as TestimonialData[]}
-          blog={blogRes.docs             as BlogArticleData[]}
-          partners={partnersRes.docs     as PartnerData[]}
+          blocks={fallbackBlocks}
+          googleReviewsNode={googleReviewsNode}
+          {...sharedProps}
         />
       )}
     </main>

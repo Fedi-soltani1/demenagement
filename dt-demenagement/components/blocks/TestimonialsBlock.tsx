@@ -35,7 +35,9 @@ function normalize(t: TestimonialData): NormalizedTestimonial {
   return { id: t.id, nom: t.nom, ville: t.ville, note, texte: t.texte }
 }
 
-export function TestimonialsBlock({ testimonials = [] }: { testimonials?: TestimonialData[] }) {
+interface TestimonialsCms { titre?: string | null; sousTitre?: string | null }
+
+export function TestimonialsBlock({ testimonials = [], cms }: { testimonials?: TestimonialData[]; cms?: TestimonialsCms }) {
   const t = useTranslations('Home.testimonials')
   const [current, setCurrent] = useState(0)
   const [paused, setPaused] = useState(false)
@@ -79,9 +81,9 @@ export function TestimonialsBlock({ testimonials = [] }: { testimonials?: Testim
             className="font-heading font-bold text-[var(--color-text-light)] mb-3"
             style={{ fontSize: 'clamp(1.8rem, 3.5vw, 3rem)' }}
           >
-            {t('title')}
+            {cms?.titre ?? t('title')}
           </h2>
-          <p className="font-body text-[var(--color-text-muted)]">{t('subtitle')}</p>
+          <p className="font-body text-[var(--color-text-muted)]">{cms?.sousTitre ?? t('subtitle')}</p>
         </motion.div>
 
         {/* Carousel */}
