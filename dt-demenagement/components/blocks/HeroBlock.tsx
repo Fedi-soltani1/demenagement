@@ -70,8 +70,9 @@ const statsVariants: Variants = {
 
 // ─── Hook canvas ondes animées ────────────────────────────────────────────────
 
-function useWaveCanvas(canvasRef: React.RefObject<HTMLCanvasElement | null>) {
+function useWaveCanvas(canvasRef: React.RefObject<HTMLCanvasElement | null>, active: boolean) {
   useEffect(() => {
+    if (!active) return
     const canvas = canvasRef.current
     if (!canvas) return
 
@@ -172,7 +173,7 @@ function useWaveCanvas(canvasRef: React.RefObject<HTMLCanvasElement | null>) {
       cancelAnimationFrame(animationId)
       observer.disconnect()
     }
-  }, [canvasRef])
+  }, [canvasRef, active])
 }
 
 // ─── Types CMS ────────────────────────────────────────────────────────────────
@@ -207,7 +208,7 @@ export function HeroBlock({ cms }: { cms?: CmsHero }) {
   const videoFichierUrl = !showCanvas ? (cms?.videoFichier ?? null) : null
   const youtubeId       = !showCanvas && !videoFichierUrl && cms?.videoYoutube ? extractYoutubeId(cms.videoYoutube) : null
   const canvasRef       = useRef<HTMLCanvasElement | null>(null)
-  useWaveCanvas(canvasRef)
+  useWaveCanvas(canvasRef, showCanvas)
 
   // CMS override avec fallback i18n
   const badge    = cms?.badge    ?? t('badge')
