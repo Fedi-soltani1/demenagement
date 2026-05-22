@@ -25,6 +25,15 @@ interface RDVRow {
   createdAt: string
 }
 
+interface TodayRDVItem {
+  id: number
+  nom?: string
+  prenom?: string
+  telephone?: string
+  heure?: string
+  statut?: string
+}
+
 interface Stats {
   dossiers: {
     devis_recu: number; confirme: number; en_preparation: number
@@ -34,15 +43,17 @@ interface Stats {
   messagesNonLus: number
   recentDossiers: DossierRow[]
   recentRDV: RDVRow[]
+  urgent: { dossiers: number; messages: number }
+  aujourd_hui: { rdv: number; rdvList: TodayRDVItem[]; demenagements: number }
 }
 
 const DOSSIER_STATUT: Record<string, { label: string; color: string; bg: string }> = {
-  devis_recu:     { label: '📥 Reçu',         color: '#7a5500', bg: '#fff3cd' },
-  confirme:       { label: '✅ Confirmé',      color: '#155724', bg: '#d4edda' },
-  en_preparation: { label: '📦 Préparation',   color: '#0c5460', bg: '#d1ecf1' },
-  en_cours:       { label: '🚛 En cours',      color: '#1a3a6b', bg: '#cce5ff' },
-  livre:          { label: '🏁 Livré',          color: '#3d1a78', bg: '#e2d9f3' },
-  annule:         { label: '❌ Annulé',         color: '#721c24', bg: '#f8d7da' },
+  devis_recu:     { label: '📥 Reçu',        color: '#7a5500', bg: '#fff3cd' },
+  confirme:       { label: '✅ Confirmé',     color: '#155724', bg: '#d4edda' },
+  en_preparation: { label: '📦 Préparation',  color: '#0c5460', bg: '#d1ecf1' },
+  en_cours:       { label: '🚛 En cours',     color: '#1a3a6b', bg: '#cce5ff' },
+  livre:          { label: '🏁 Livré',         color: '#3d1a78', bg: '#e2d9f3' },
+  annule:         { label: '❌ Annulé',        color: '#721c24', bg: '#f8d7da' },
 }
 
 const RDV_STATUT: Record<string, { label: string; color: string; bg: string }> = {
@@ -94,9 +105,9 @@ function relativeTime(iso: string) {
 }
 
 export default function AdminDashboard() {
-  const [stats, setStats]   = useState<Stats | null>(null)
+  const [stats, setStats]     = useState<Stats | null>(null)
   const [loading, setLoading] = useState(true)
-  const [error, setError]   = useState(false)
+  const [error, setError]     = useState(false)
 
   useEffect(() => {
     fetch('/api/admin/dashboard-stats', { credentials: 'include' })
@@ -122,8 +133,50 @@ export default function AdminDashboard() {
     </div>
   )
 
+  const totalUrgent = stats.urgent.dossiers + stats.urgent.messages
+
   return (
     <div style={s.wrapper}>
+
+      {/* ── Alert banner (conditional) ── */}
+      {totalUrgent > 0 && (
+        <div style={{
+          background: '#b52027', color: '#fff', borderRadius: '8px',
+          padding: '10px 18px', marginBottom: '20px',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          flexWrap: 'wrap' as const, gap: '8px',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <span style={{ fontSize: '18px' }}>⚠️</span>
+            <div>
+              <span style={{ fontWeight: 700, fontSize: '13px' }}>Action requise — </span>
+              <span style={{ fontSize: '12px' }}>
+                {stats.urgent.dossiers > 0 && (
+                  <span>{stats.urgent.dossiers} dossier{stats.urgent.dossiers > 1 ? 's' : ''} sans réponse depuis +48h</span>
+                )}
+                {stats.urgent.dossiers > 0 && stats.urgent.messages > 0 && <span> · </span>}
+                {stats.urgent.messages > 0 && (
+                  <span>{stats.urgent.messages} message{stats.urgent.messages > 1 ? 's' : ''} client non lu{stats.urgent.messages > 1 ? 's' : ''} depuis +24h</span>
+                )}
+              </span>
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            {stats.urgent.dossiers > 0 && (
+              <a href="/admin/collections/demenagements?where[statut][equals]=devis_recu"
+                style={{ fontSize: '11px', background: 'rgba(255,255,255,0.2)', color: '#fff', textDecoration: 'none', padding: '4px 10px', borderRadius: '5px', fontWeight: 600 }}>
+                Voir dossiers →
+              </a>
+            )}
+            {stats.urgent.messages > 0 && (
+              <a href="/admin/collections/messages"
+                style={{ fontSize: '11px', background: 'rgba(255,255,255,0.2)', color: '#fff', textDecoration: 'none', padding: '4px 10px', borderRadius: '5px', fontWeight: 600 }}>
+                Voir messages →
+              </a>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* ── Header ── */}
       <div style={s.header}>
@@ -138,10 +191,69 @@ export default function AdminDashboard() {
 
       {/* ── KPI cards row ── */}
       <div style={s.kpiRow}>
-        <StatCard value={stats.dossiers.devis_recu}   label="Nouveaux dossiers à traiter" color="#b85c00" bg="#fff3cd" href="/admin/collections/demenagements?where[statut][equals]=devis_recu" />
-        <StatCard value={stats.dossiers.confirme}     label="Dossiers confirmés (actifs)"  color="#155724" bg="#d4edda" />
-        <StatCard value={stats.messagesNonLus}        label="Messages non lus (clients)"   color="#7f1d1d" bg="#fde8e8" href="/admin/collections/messages" />
-        <StatCard value={stats.rdv.nouveaux}          label="RDV nouveaux à confirmer"     color="#1a3a6b" bg="#cce5ff" href="/admin/collections/rendez-vous?where[statut][equals]=nouveau" />
+        <StatCard value={stats.dossiers.devis_recu} label="Nouveaux dossiers à traiter" color="#b85c00" bg="#fff3cd" href="/admin/collections/demenagements?where[statut][equals]=devis_recu" />
+        <StatCard value={stats.dossiers.confirme}   label="Dossiers confirmés (actifs)"  color="#155724" bg="#d4edda" />
+        <StatCard value={stats.messagesNonLus}      label="Messages non lus (clients)"   color="#7f1d1d" bg="#fde8e8" href="/admin/collections/messages" />
+        <StatCard value={stats.rdv.nouveaux}        label="RDV nouveaux à confirmer"     color="#1a3a6b" bg="#cce5ff" href="/admin/collections/rendez-vous?where[statut][equals]=nouveau" />
+      </div>
+
+      {/* ── Aujourd'hui strip ── */}
+      <div style={s.card}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+          <div style={s.cardTitle}>📅 Aujourd&apos;hui — {new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}</div>
+          <a href="/admin/rdv-calendar" style={{ fontSize: '11px', color: '#b52027', textDecoration: 'none', fontWeight: 600 }}>
+            Voir calendrier →
+          </a>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
+          {/* Today's RDVs */}
+          <div style={{ background: '#f0f7ff', borderRadius: '8px', padding: '12px', borderLeft: '3px solid #1a3a6b' }}>
+            <div style={{ fontSize: '22px', fontWeight: 800, color: '#1a3a6b' }}>{stats.aujourd_hui.rdv}</div>
+            <div style={{ fontSize: '11px', color: '#555', marginTop: '2px', fontWeight: 500 }}>RDV visites aujourd&apos;hui</div>
+            {stats.aujourd_hui.rdvList.length > 0 && (
+              <div style={{ marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                {stats.aujourd_hui.rdvList.slice(0, 3).map((r) => (
+                  <div key={r.id} style={{ fontSize: '10px', color: '#555', display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ fontWeight: 600 }}>{r.prenom} {r.nom}</span>
+                    <span style={{ color: '#888' }}>{r.heure ?? '—'}</span>
+                  </div>
+                ))}
+                {stats.aujourd_hui.rdvList.length > 3 && (
+                  <div style={{ fontSize: '10px', color: '#1a3a6b', fontWeight: 600 }}>
+                    +{stats.aujourd_hui.rdvList.length - 3} autre{stats.aujourd_hui.rdvList.length - 3 > 1 ? 's' : ''}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+          {/* Today's déménagements */}
+          <div style={{ background: '#f0fff4', borderRadius: '8px', padding: '12px', borderLeft: '3px solid #155724' }}>
+            <div style={{ fontSize: '22px', fontWeight: 800, color: '#155724' }}>{stats.aujourd_hui.demenagements}</div>
+            <div style={{ fontSize: '11px', color: '#555', marginTop: '2px', fontWeight: 500 }}>Déménagements prévus</div>
+            <div style={{ fontSize: '10px', color: '#888', marginTop: '6px' }}>
+              Dossiers avec date fixée aujourd&apos;hui
+            </div>
+          </div>
+          {/* Urgent / overdue */}
+          <div style={{
+            background: totalUrgent > 0 ? '#fde8e8' : '#f8f8f8',
+            borderRadius: '8px', padding: '12px',
+            borderLeft: `3px solid ${totalUrgent > 0 ? '#b52027' : '#ddd'}`,
+          }}>
+            <div style={{ fontSize: '22px', fontWeight: 800, color: totalUrgent > 0 ? '#b52027' : '#aaa' }}>
+              {totalUrgent}
+            </div>
+            <div style={{ fontSize: '11px', color: '#555', marginTop: '2px', fontWeight: 500 }}>
+              Éléments urgents
+            </div>
+            <div style={{ fontSize: '10px', color: '#888', marginTop: '6px' }}>
+              {totalUrgent === 0
+                ? 'Tout est à jour ✓'
+                : `${stats.urgent.dossiers} dossier${stats.urgent.dossiers !== 1 ? 's' : ''} · ${stats.urgent.messages} message${stats.urgent.messages !== 1 ? 's' : ''}`
+              }
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* ── Second row: pipeline + RDV pipeline ── */}
@@ -151,12 +263,12 @@ export default function AdminDashboard() {
         <div style={s.card}>
           <div style={s.cardTitle}>📊 Pipeline dossiers</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            <StatBadge v={stats.dossiers.devis_recu}     label="📥 Devis reçu"       color="#b85c00" bg="#fff3cd" />
-            <StatBadge v={stats.dossiers.confirme}       label="✅ Confirmé"          color="#155724" bg="#d4edda" />
-            <StatBadge v={stats.dossiers.en_preparation} label="📦 En préparation"   color="#0c5460" bg="#d1ecf1" />
-            <StatBadge v={stats.dossiers.en_cours}       label="🚛 En cours"          color="#1a3a6b" bg="#cce5ff" />
-            <StatBadge v={stats.dossiers.livre}          label="🏁 Livré"              color="#3d1a78" bg="#e2d9f3" />
-            <StatBadge v={stats.dossiers.annule}         label="❌ Annulé"             color="#721c24" bg="#f8d7da" />
+            <StatBadge v={stats.dossiers.devis_recu}     label="📥 Devis reçu"      color="#b85c00" bg="#fff3cd" />
+            <StatBadge v={stats.dossiers.confirme}       label="✅ Confirmé"         color="#155724" bg="#d4edda" />
+            <StatBadge v={stats.dossiers.en_preparation} label="📦 En préparation"  color="#0c5460" bg="#d1ecf1" />
+            <StatBadge v={stats.dossiers.en_cours}       label="🚛 En cours"         color="#1a3a6b" bg="#cce5ff" />
+            <StatBadge v={stats.dossiers.livre}          label="🏁 Livré"             color="#3d1a78" bg="#e2d9f3" />
+            <StatBadge v={stats.dossiers.annule}         label="❌ Annulé"            color="#721c24" bg="#f8d7da" />
           </div>
           <div style={{ marginTop: '12px', paddingTop: '10px', borderTop: '1px solid #eee', display: 'flex', justifyContent: 'space-between' }}>
             <span style={{ fontSize: '12px', color: '#555' }}>Total dossiers</span>
@@ -185,8 +297,7 @@ export default function AdminDashboard() {
                       {rdv.prenom} {rdv.nom}
                     </div>
                     <div style={{ fontSize: '10px', color: '#888' }}>
-                      {rdv.telephone}
-                      {rdv.dateVisite ? ` · ${rdv.dateVisite}` : ''}
+                      {rdv.telephone}{rdv.dateVisite ? ` · ${rdv.dateVisite}` : ''}
                     </div>
                   </div>
                   <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flexShrink: 0 }}>
@@ -246,7 +357,7 @@ export default function AdminDashboard() {
                     ) : '—'}
                   </td>
                   <td style={s.td}>{pill(d.statut ?? 'devis_recu', DOSSIER_STATUT)}</td>
-                  <td style={{ ...s.td }}>
+                  <td style={s.td}>
                     {d.devisStatut ? pill(d.devisStatut, {
                       brouillon: { label: 'Brouillon', color: '#7a5500', bg: '#fff8e6' },
                       envoye:    { label: 'Envoyé',    color: '#1a5c1a', bg: '#e6f4e6' },
@@ -279,71 +390,35 @@ const s = {
   } as React.CSSProperties,
 
   header: {
-    display:        'flex',
-    justifyContent: 'space-between',
-    alignItems:     'flex-start',
-    marginBottom:   '24px',
-    paddingBottom:  '16px',
-    borderBottom:   '1px solid #eee',
+    display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start',
+    marginBottom: '24px', paddingBottom: '16px', borderBottom: '1px solid #eee',
   } as React.CSSProperties,
 
-  title: {
-    fontSize:   '20px',
-    fontWeight: 800,
-    color:      '#1a1a1a',
-    margin:     0,
-  } as React.CSSProperties,
-
-  subtitle: {
-    fontSize: '12px',
-    color:    '#888',
-    margin:   '3px 0 0',
-  } as React.CSSProperties,
+  title:    { fontSize: '20px', fontWeight: 800, color: '#1a1a1a', margin: 0 } as React.CSSProperties,
+  subtitle: { fontSize: '12px', color: '#888', margin: '3px 0 0' }            as React.CSSProperties,
 
   kpiRow: {
-    display:             'grid',
-    gridTemplateColumns: 'repeat(4, 1fr)',
-    gap:                 '12px',
-    marginBottom:        '20px',
+    display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginBottom: '16px',
   } as React.CSSProperties,
 
   row2: {
-    display:             'grid',
-    gridTemplateColumns: '1fr 1fr',
-    gap:                 '16px',
-    marginBottom:        '16px',
+    display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px', marginTop: '16px',
   } as React.CSSProperties,
 
   card: {
-    background:   '#fff',
-    border:       '1px solid #e8e8e8',
-    borderRadius: '10px',
-    padding:      '18px 20px',
+    background: '#fff', border: '1px solid #e8e8e8', borderRadius: '10px',
+    padding: '18px 20px', marginBottom: '16px',
   } as React.CSSProperties,
 
   cardTitle: {
-    fontSize:      '13px',
-    fontWeight:    700,
-    color:         '#1a1a1a',
-    marginBottom:  '12px',
-    paddingBottom: '8px',
-    borderBottom:  '1px solid #f0f0f0',
+    fontSize: '13px', fontWeight: 700, color: '#1a1a1a',
+    marginBottom: '12px', paddingBottom: '8px', borderBottom: '1px solid #f0f0f0',
   } as React.CSSProperties,
 
   th: {
-    padding:   '8px 12px',
-    textAlign: 'left' as const,
-    fontSize:  '10px',
-    fontWeight: 700,
-    color:     '#999',
-    textTransform: 'uppercase' as const,
-    letterSpacing: '0.4px',
-    whiteSpace: 'nowrap' as const,
+    padding: '8px 12px', textAlign: 'left' as const, fontSize: '10px', fontWeight: 700,
+    color: '#999', textTransform: 'uppercase' as const, letterSpacing: '0.4px', whiteSpace: 'nowrap' as const,
   } as React.CSSProperties,
 
-  td: {
-    padding:  '9px 12px',
-    color:    '#333',
-    fontSize: '12px',
-  } as React.CSSProperties,
+  td: { padding: '9px 12px', color: '#333', fontSize: '12px' } as React.CSSProperties,
 }

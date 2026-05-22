@@ -16,7 +16,8 @@ const RendezVous: CollectionConfig = {
   admin: {
     group: '🚚 Opérations',
     useAsTitle: 'nom',
-    defaultColumns: ['nom', 'prenom', 'telephone', 'dateVisite', 'statut', 'createdAt'],
+    defaultColumns: ['nom', 'prenom', 'telephone', 'dateVisite', 'heure', 'statut', 'createdAt'],
+    listSearchableFields: ['nom', 'prenom', 'telephone', 'whatsapp'],
     description: 'Demandes de visite à domicile reçues depuis le site. Contacter le client pour confirmer le RDV.',
   },
 

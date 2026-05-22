@@ -16,8 +16,12 @@ const Demenagements: CollectionConfig = {
   admin: {
     group: '🚚 Opérations',
     useAsTitle: 'numeroDossier',
-    defaultColumns: ['numeroDossier', 'nomComplet', 'telephone', 'statut', 'devisStatut', 'dateDemenagement', 'createdAt'],
+    defaultColumns: ['numeroDossier', 'nomComplet', 'telephone', 'statut', 'devisStatut', 'notesRapides', 'dateDemenagement', 'createdAt'],
+    listSearchableFields: ['numeroDossier', 'nomComplet', 'telephone', 'clientId'],
     description: 'Chaque ligne = une demande de devis reçue. Ouvrir un dossier et changer le "Statut du dossier" pour que le client voie l\'avancement en temps réel.',
+    components: {
+      beforeListTable: ['@/components/payload/DossierExportButton'],
+    },
   },
 
   hooks: {
@@ -34,6 +38,18 @@ const Demenagements: CollectionConfig = {
   },
 
   fields: [
+    // ── Barre de progression ──────────────────────────────────────────────────
+    {
+      name: 'pipelineStatus',
+      type: 'ui',
+      label: '📍 Avancement du dossier',
+      admin: {
+        components: {
+          Field: '@/components/payload/DossierPipelineField',
+        },
+      },
+    },
+
     // ── Informations dossier ─────────────────────────────────────────────────
     {
       name: 'numeroDossier',
@@ -257,6 +273,19 @@ const Demenagements: CollectionConfig = {
           required: true,
         },
       ],
+    },
+
+    // ── Notes rapides (tous admins) ───────────────────────────────────────────
+    {
+      name: 'notesRapides',
+      label: '⚡ Notes rapides',
+      type: 'textarea',
+      admin: {
+        description: 'Notes visibles par tous les admins. Modifiable directement depuis la liste des dossiers.',
+        components: {
+          Cell: '@/components/payload/DossierNotesCell',
+        },
+      },
     },
 
     // ── Notes internes ────────────────────────────────────────────────────────

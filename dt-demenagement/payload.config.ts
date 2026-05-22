@@ -58,6 +58,13 @@ export default buildConfig({
         Icon: '@/components/payload/AdminIcon',
       },
       afterDashboard: ['@/components/payload/AdminDashboard'],
+      afterNavLinks:  ['@/components/payload/CalendarNavLink'],
+      views: {
+        rdvCalendar: {
+          Component: '@/components/payload/RDVCalendarView',
+          path: '/rdv-calendar',
+        },
+      },
     },
   },
 
