@@ -101,74 +101,20 @@ body,
 
 /* ═══════════════════════════════════════════
    TOP HEADER BAR
+   AdminHeaderBar renders above the Payload layout (admin.components.header slot).
+   The native AppHeader (app-header) renders inside template-default__wrap below.
+   Hide the native one entirely — our bar handles everything.
    ═══════════════════════════════════════════ */
 
 .app-header,
 header.app-header {
-  background: var(--dt-header-bg) !important;
-  border-bottom: 1px solid var(--dt-border) !important;
-  box-shadow: 0 1px 0 var(--dt-border), 0 4px 16px rgba(0,0,0,0.04) !important;
-  height: 56px !important;
-  border-top: 3px solid var(--dt-red) !important;
-  position: sticky !important;
-  top: 0 !important;
-  z-index: 100 !important;
-  overflow: visible !important;
-}
-
-/* ── Hide ALL native header elements — AdminHeaderBar owns the full bar ── */
-.app-header__mobile-nav-toggler,
-.nav-toggler,
-.app-header__step-nav-wrapper,
-.app-header__localizer-spacing,
-.app-header__localizer,
-.app-header__account,
-.app-header__bg {
   display: none !important;
 }
 
-/* ── Flatten wrapper — no padding, no gap (AdminHeaderBar handles its own) ── */
-.app-header__wrapper {
-  display: flex !important;
-  align-items: center !important;
-  height: 100% !important;
-  padding: 0 !important;
-  gap: 0 !important;
-  width: 100% !important;
-  box-sizing: border-box !important;
-}
-
-/* ── Controls + actions fill the full header width ── */
-.app-header__controls-wrapper {
-  display: flex !important;
-  align-items: center !important;
-  flex: 1 !important;
-  min-width: 0 !important;
-  height: 100% !important;
-}
-
-.app-header__actions-wrapper {
-  display: flex !important;
-  align-items: center !important;
-  flex: 1 !important;
-  height: 100% !important;
-  min-width: 0 !important;
-}
-
-.app-header__actions {
-  display: flex !important;
-  align-items: center !important;
-  flex: 1 !important;
-  height: 100% !important;
-  width: 100% !important;
-  min-width: 0 !important;
-}
-
-/* AdminHeaderBar (div) inside actions fills full space */
-.app-header__actions > div {
-  flex: 1 !important;
-  height: 100% !important;
-  min-width: 0 !important;
+/* Also hide the desktop nav-toggler wrapper in template-default
+   (our AdminHeaderBar has its own sidebar toggle via useNav) */
+.template-default__nav-toggler-wrapper {
+  display: none !important;
 }
 
 /* ── Breadcrumb below header (in view-description) ── */
@@ -1004,12 +950,9 @@ input[type='radio']:checked {
   color: #e2e6f0 !important;
 }
 
-/* Header dark */
-[data-theme='dark'] .app-header,
-[data-theme='dark'] header.app-header {
-  background: #161820 !important;
-  border-bottom: 1px solid #262a38 !important;
-  box-shadow: 0 1px 0 #262a38, 0 2px 12px rgba(0,0,0,0.4) !important;
+/* app-header inner content wrappers dark — these are hidden, kept for safety */
+[data-theme='dark'] .app-header {
+  display: none !important;
 }
 
 /* Nav dark */
@@ -1328,15 +1271,6 @@ input[type='radio']:checked {
   color: #e03540 !important;
 }
 
-/* app-header inner content wrappers dark */
-[data-theme='dark'] .app-header__content,
-[data-theme='dark'] .app-header__wrapper,
-[data-theme='dark'] .app-header__controls-wrapper,
-[data-theme='dark'] .app-header__actions-wrapper,
-[data-theme='dark'] .app-header__actions {
-  background: transparent !important;
-  color: #e2e6f0 !important;
-}
 
 /* Nav group labels dark */
 [data-theme='dark'] .nav__group-label,

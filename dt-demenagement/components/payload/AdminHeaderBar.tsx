@@ -76,7 +76,7 @@ export default function AdminHeaderBar() {
   }
 
   return (
-    <div style={wrapper}>
+    <header style={headerStyle}>
 
       {/* ── Sidebar toggle ── */}
       <button
@@ -223,21 +223,28 @@ export default function AdminHeaderBar() {
           </div>
         )}
       </div>
-    </div>
+    </header>
   )
 }
 
 /* ─── Styles ─────────────────────────────────────────────────────────────────── */
 
-const wrapper: React.CSSProperties = {
-  display:        'flex',
-  alignItems:     'center',
-  padding:        '0 14px 0 12px',
-  gap:            '6px',
-  height:         '100%',
-  width:          '100%',
-  boxSizing:      'border-box',
-  flex:           1,
+const headerStyle: React.CSSProperties = {
+  display:      'flex',
+  alignItems:   'center',
+  padding:      '0 14px 0 12px',
+  gap:          '6px',
+  height:       '56px',
+  width:        '100%',
+  boxSizing:    'border-box',
+  background:   'var(--dt-header-bg)',
+  borderBottom: '1px solid var(--dt-border)',
+  borderTop:    '3px solid var(--dt-red)',
+  boxShadow:    '0 1px 0 var(--dt-border), 0 4px 16px rgba(0,0,0,0.04)',
+  position:     'sticky',
+  top:          0,
+  zIndex:       200,
+  flexShrink:   0,
 }
 
 const divider: React.CSSProperties = {
