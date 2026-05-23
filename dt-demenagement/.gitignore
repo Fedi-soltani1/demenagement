@@ -45,3 +45,6 @@ storybook-static
 
 # Uploaded media files (managed by Payload CMS, not committed to git)
 /public/media/
+
+# Scripts d'administration DB — contiennent des credentials hardcodés
+scripts/*.mjs
