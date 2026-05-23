@@ -852,6 +852,18 @@ label.field-label {
   box-shadow: 0 1px 2px rgba(0,0,0,0.03) !important;
 }
 
+/* Quand le collapsible est ouvert : overflow visible pour que les dropdowns
+   (ReactSelect, popups) puissent s'afficher hors des limites du conteneur */
+.collapsible--is-open {
+  overflow: visible !important;
+}
+
+/* Les champs de formulaire à l'intérieur d'un bloc ouvert doivent
+   toujours rester interactifs */
+.collapsible--is-open .collapsible__content {
+  pointer-events: auto !important;
+}
+
 .collapsible__header {
   background: var(--dt-surface2) !important;
   padding: 12px 16px !important;
@@ -1421,6 +1433,10 @@ input[type='radio']:checked {
 /* Collapsible dark */
 [data-theme='dark'] .collapsible {
   border-color: #262a38 !important;
+}
+
+[data-theme='dark'] .collapsible--is-open {
+  overflow: visible !important;
 }
 
 [data-theme='dark'] .collapsible__header {
