@@ -25,6 +25,7 @@ export type CmsApropos = {
   videoFichier?: string | null
   videoUrl?: string | null
   ctaTexte?: string | null
+  imagePosition?: 'gauche' | 'droite' | null
   stat1Valeur?: number | null
   stat1Suffixe?: string | null
   stat1Label?: string | null
@@ -45,7 +46,8 @@ export function StatsAboutBlock({ cms }: { cms?: CmsApropos }) {
   const [videoOpen, setVideoOpen]       = useState(false)
   const [videoStarted, setVideoStarted] = useState(false)
 
-  const videoFichierUrl = cms?.videoFichier ?? null
+  const videoFichierUrl  = cms?.videoFichier ?? null
+  const imagePositionEnd = cms?.imagePosition === 'droite'
 
   const badge    = cms?.badge    ?? t('badge')
   const titre    = cms?.titre    ?? t('title')
@@ -53,6 +55,9 @@ export function StatsAboutBlock({ cms }: { cms?: CmsApropos }) {
   const ctaTexte = cms?.ctaTexte ?? t('ctaText')
   const imageUrl = cms?.image?.url ?? 'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=800&q=80'
   const videoUrl = cms?.videoUrl ?? null
+
+  // Le bouton play s'affiche si une vidéo MP4 OU un lien YouTube est configuré
+  const hasVideo = Boolean(videoFichierUrl || videoUrl)
 
   const STATS = [
     { target: cms?.stat1Valeur ?? parseInt(t('stat1Value'), 10), suffix: cms?.stat1Suffixe ?? t('stat1Suffix'), label: cms?.stat1Label ?? t('stat1Label') },
@@ -66,12 +71,12 @@ export function StatsAboutBlock({ cms }: { cms?: CmsApropos }) {
       className="py-section px-container bg-[var(--color-bg-dark)] overflow-hidden"
       aria-labelledby="about-title"
     >
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+      <div className={`max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center ${imagePositionEnd ? 'lg:[&>*:first-child]:order-2' : ''}`}>
 
-        {/* Colonne gauche — image débordante + bouton vidéo */}
+        {/* Colonne image — peut être à gauche ou à droite selon imagePosition */}
         <motion.div
           className="relative"
-          initial={{ opacity: 0, x: -60 }}
+          initial={{ opacity: 0, x: imagePositionEnd ? 60 : -60 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true, margin: '-80px' }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
@@ -89,8 +94,8 @@ export function StatsAboutBlock({ cms }: { cms?: CmsApropos }) {
             <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" aria-hidden="true" />
           </div>
 
-          {/* Bouton play vidéo — visible seulement si une URL est configurée */}
-          {videoUrl && (
+          {/* Bouton play vidéo — visible si fichier MP4 uploadé OU lien YouTube configuré */}
+          {hasVideo && (
           <button
             onClick={() => setVideoOpen(true)}
             className="absolute bottom-6 start-6 flex items-center gap-3 px-5 py-3 rounded-full bg-[var(--color-red)] text-white font-body font-semibold text-sm shadow-lg hover:bg-[var(--color-red-dark)] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"

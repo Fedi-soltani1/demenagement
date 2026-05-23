@@ -132,7 +132,8 @@ function adaptAbout(b: PayloadBlock): CmsApropos {
     image:         b.image ? { url: mediaUrl(b.image) } : null,
     videoFichier:  mediaUrl(b.videoFichier),
     videoUrl:      str(b.videoUrl),
-    ctaTexte:  str(b.ctaTexte),
+    ctaTexte:      str(b.ctaTexte),
+    imagePosition: (str(b.imagePosition) as 'gauche' | 'droite') || null,
   }
 
   // Injecter les 4 stats si définies dans Payload
