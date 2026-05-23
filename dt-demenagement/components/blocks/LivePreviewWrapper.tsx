@@ -7,6 +7,7 @@ import type { ServiceData }                      from '@/components/blocks/Servi
 import type { TestimonialData }                  from '@/components/blocks/TestimonialsBlock'
 import type { BlogArticleData }                  from '@/components/blocks/BlogPreviewBlock'
 import type { PartnerData }                      from '@/components/blocks/PartnersBlock'
+import type { MapVille, MapPays }                from '@/components/blocks/MapBlock'
 import type React                                from 'react'
 
 type PageDoc = { layout?: unknown[] }
@@ -17,6 +18,8 @@ interface LivePreviewWrapperProps {
   testimonials:      TestimonialData[]
   blog:              BlogArticleData[]
   partners:          PartnerData[]
+  villes:            MapVille[]
+  pays:              MapPays[]
   googleReviewsNode: React.ReactNode
 }
 
@@ -26,6 +29,8 @@ export function LivePreviewWrapper({
   testimonials,
   blog,
   partners,
+  villes,
+  pays,
   googleReviewsNode,
 }: LivePreviewWrapperProps) {
   const { data } = useLivePreview<PageDoc>({
@@ -43,6 +48,8 @@ export function LivePreviewWrapper({
       testimonials={testimonials}
       blog={blog}
       partners={partners}
+      villes={villes}
+      pays={pays}
       googleReviewsNode={googleReviewsNode}
     />
   )

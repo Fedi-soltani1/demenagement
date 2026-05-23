@@ -114,7 +114,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
           __html: JSON.stringify(serviceSchema({
             name:        service.nom,
             description: service.description,
-            url:         `${COMPANY.siteUrl}/${locale}/services/${service.slug}`,
+            url:         `${COMPANY.siteUrl}/services/${service.slug}`,
             image:       service.image?.url,
           })),
         }}
@@ -122,7 +122,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
       <Breadcrumb
         items={[
           { label: 'Accueil', href: `/${locale}` },
-          { label: t('title'), href: `/${locale}/services` },
+          { label: t('title'), href: '/services' },
           { label: service.nom },
         ]}
       />
@@ -172,7 +172,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
 
           <div className="flex flex-col sm:flex-row gap-4">
             <Link
-              href={`/${locale}/devis?service=${slug}`}
+              href={`/devis?service=${slug}`}
               className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[var(--color-red)] text-white font-body font-bold text-sm uppercase tracking-wider hover:bg-[var(--color-red-dark)] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)]"
             >
               {t('ctaDevis')}
@@ -267,7 +267,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
             <p className="font-body text-[var(--color-text-muted)] text-sm">{t('ctaBottomSub')}</p>
           </div>
           <Link
-            href={`/${locale}/devis?service=${slug}`}
+            href={`/devis?service=${slug}`}
             className="flex-shrink-0 inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[var(--color-red)] text-white font-body font-bold text-sm uppercase tracking-wider hover:bg-[var(--color-red-dark)] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)]"
           >
             {t('ctaDevis')}

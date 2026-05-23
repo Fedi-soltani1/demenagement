@@ -18,7 +18,6 @@ export type ArticleItem = {
 
 interface BlogGridProps {
   articles: ArticleItem[]
-  locale: string
   labels: {
     minRead: string
     readMore: string
@@ -38,7 +37,7 @@ const cardVariants: Variants = {
   }),
 }
 
-export function BlogGrid({ articles, locale, labels }: BlogGridProps) {
+export function BlogGrid({ articles, labels }: BlogGridProps) {
   if (articles.length === 0) {
     return (
       <div className="text-center py-20">
@@ -63,7 +62,7 @@ export function BlogGrid({ articles, locale, labels }: BlogGridProps) {
             className="group flex flex-col rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-card)] overflow-hidden hover:border-[var(--color-red)]/30 transition-colors duration-300"
           >
             <Link
-              href={`/${locale}/blog/${article.slug}`}
+              href={`/blog/${article.slug}`}
               className="block relative aspect-[16/9] overflow-hidden"
               tabIndex={-1}
               aria-hidden="true"
@@ -110,7 +109,7 @@ export function BlogGrid({ articles, locale, labels }: BlogGridProps) {
               </div>
 
               <h2 className="font-heading font-semibold text-[var(--color-text-light)] mb-3 leading-snug group-hover:text-[var(--color-red)] transition-colors duration-200 line-clamp-2">
-                <Link href={`/${locale}/blog/${article.slug}`}>{article.titre}</Link>
+                <Link href={`/blog/${article.slug}`}>{article.titre}</Link>
               </h2>
 
               {article.extrait && (
@@ -120,7 +119,7 @@ export function BlogGrid({ articles, locale, labels }: BlogGridProps) {
               )}
 
               <Link
-                href={`/${locale}/blog/${article.slug}`}
+                href={`/blog/${article.slug}`}
                 className="inline-flex items-center gap-1 text-[var(--color-red)] font-body text-sm font-medium mt-auto hover:gap-2 transition-all duration-200"
                 aria-label={`Lire l'article : ${article.titre}`}
               >

@@ -63,7 +63,7 @@ export default async function DossierPage({ params }: PageProps) {
   setRequestLocale(locale)
 
   const session = await auth()
-  if (!session?.user?.email) redirect(`/${locale}/connexion`)
+  if (!session?.user?.email) redirect('/connexion')
 
   const t = await getTranslations({ locale, namespace: 'EspaceClient' })
   const payload = await getPayload({ config })
@@ -94,7 +94,7 @@ export default async function DossierPage({ params }: PageProps) {
       <Breadcrumb
         items={[
           { label: t('breadcrumbHome'),      href: `/${locale}` },
-          { label: t('breadcrumbDashboard'), href: `/${locale}/espace-client` },
+          { label: t('breadcrumbDashboard'), href: '/espace-client' },
           { label: `#${dossier.numeroDossier}` },
         ]}
       />
@@ -105,7 +105,7 @@ export default async function DossierPage({ params }: PageProps) {
           {/* Header */}
           <div className="flex items-center gap-4 mb-8">
             <Link
-              href={`/${locale}/espace-client`}
+              href="/espace-client"
               className="flex items-center justify-center w-9 h-9 rounded-xl border border-white/8 bg-white/[0.02] text-[var(--color-text-muted)] hover:text-[var(--color-text-light)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)]"
               aria-label={t('backToDashboard')}
             >

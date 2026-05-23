@@ -217,7 +217,7 @@ export function DevisModalProvider({ children }: { children: ReactNode }) {
     if (contact.email) params.set('email', contact.email)
     const locale = pathname.split('/')[1] ?? 'fr'
     close()
-    router.push(`/${locale}/devis?${params.toString()}`)
+    router.push(`/devis?${params.toString()}`)
   }
 
   // ── Screen 2 → 3 ────────────────────────────────────────────────────────────

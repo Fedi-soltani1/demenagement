@@ -18,11 +18,9 @@ const ZonesMapDynamic = dynamic(
 export function ZonesMapClient({
   villes,
   pays,
-  locale,
 }: {
   villes: MapVille[]
   pays: MapPays[]
-  locale: string
 }) {
-  return <ZonesMapDynamic villes={villes} pays={pays} locale={locale} />
+  return <ZonesMapDynamic villes={villes} pays={pays} />
 }

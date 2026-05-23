@@ -21,13 +21,12 @@ export interface MapPays {
 interface ZonesMapProps {
   villes: MapVille[]
   pays: MapPays[]
-  locale: string
 }
 
 const TILE_DARK  = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
 const TILE_LIGHT = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
 
-export function ZonesMap({ villes, pays, locale }: ZonesMapProps) {
+export function ZonesMap({ villes, pays }: ZonesMapProps) {
   const mapRef       = useRef<HTMLDivElement>(null)
   const instanceRef  = useRef<unknown>(null)
   const tileLayerRef = useRef<unknown>(null)
@@ -110,7 +109,7 @@ export function ZonesMap({ villes, pays, locale }: ZonesMapProps) {
             `<div style="font-family:sans-serif;min-width:120px">
                <strong style="font-size:13px;color:#111">${v.nom}</strong>
                <br/><span style="font-size:11px;color:#666">${v.region}</span>
-               <br/><a href="/${locale}/villes/${v.slug}" style="font-size:11px;color:#b52027;font-weight:600;text-decoration:none;">
+               <br/><a href="/villes/${v.slug}" style="font-size:11px;color:#b52027;font-weight:600;text-decoration:none;">
                  Voir la page →
                </a>
              </div>`,
@@ -157,7 +156,7 @@ export function ZonesMap({ villes, pays, locale }: ZonesMapProps) {
         instanceRef.current = null
       }
     }
-  }, [villes, pays, locale])
+  }, [villes, pays])
 
   return (
     <div

@@ -121,7 +121,7 @@ export default async function BlogArticlePage({ params }: BlogPageProps) {
       <Breadcrumb
         items={[
           { label: 'Accueil', href: `/${locale}` },
-          { label: 'Blog', href: `/${locale}/blog` },
+          { label: 'Blog', href: '/blog' },
           { label: article.titre },
         ]}
       />
@@ -221,7 +221,7 @@ export default async function BlogArticlePage({ params }: BlogPageProps) {
               Partager cet article
             </span>
             <a
-              href={`https://www.facebook.com/sharer/sharer.php?u=${COMPANY.siteUrl}/${locale}/blog/${slug}`}
+              href={`https://www.facebook.com/sharer/sharer.php?u=${COMPANY.siteUrl}/blog/${slug}`}
               target="_blank"
               rel="noopener noreferrer"
               className="px-4 py-2 rounded-full border border-white/15 font-body text-xs text-[var(--color-text-muted)] hover:border-blue-400/40 hover:text-blue-400 transition-colors duration-200"
@@ -230,7 +230,7 @@ export default async function BlogArticlePage({ params }: BlogPageProps) {
               <span className="sr-only">(ouvre dans un nouvel onglet)</span>
             </a>
             <a
-              href={`https://wa.me/?text=${COMPANY.siteUrl}/${locale}/blog/${slug}`}
+              href={`https://wa.me/?text=${COMPANY.siteUrl}/blog/${slug}`}
               target="_blank"
               rel="noopener noreferrer"
               className="px-4 py-2 rounded-full border border-white/15 font-body text-xs text-[var(--color-text-muted)] hover:border-green-400/40 hover:text-green-400 transition-colors duration-200"
@@ -253,7 +253,7 @@ export default async function BlogArticlePage({ params }: BlogPageProps) {
               {relatedArticles.map((art) => (
                 <Link
                   key={art.id}
-                  href={`/${locale}/blog/${art.slug}`}
+                  href={`/blog/${art.slug}`}
                   className="group block rounded-2xl border border-white/8 bg-white/[0.03] overflow-hidden hover:border-[var(--color-red)]/30 transition-colors duration-300"
                 >
                   {art.imageAlaUne?.url && (
@@ -289,7 +289,7 @@ export default async function BlogArticlePage({ params }: BlogPageProps) {
       <div className="py-8 px-container bg-[var(--color-bg-dark)] border-t border-white/5">
         <div className="max-w-3xl mx-auto">
           <Link
-            href={`/${locale}/blog`}
+            href="/blog"
             className="inline-flex items-center gap-2 font-body text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text-light)] transition-colors duration-200"
           >
             <ArrowLeft className="w-4 h-4" aria-hidden="true" />
@@ -315,7 +315,7 @@ export default async function BlogArticlePage({ params }: BlogPageProps) {
             },
             datePublished: article.datePublication,
             ...(article.imageAlaUne?.url && { image: article.imageAlaUne.url }),
-            url: `${COMPANY.siteUrl}/${locale}/blog/${slug}`,
+            url: `${COMPANY.siteUrl}/blog/${slug}`,
           }),
         }}
       />

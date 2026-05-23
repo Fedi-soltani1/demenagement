@@ -5,9 +5,9 @@ import type { NextAuthConfig } from 'next-auth'
 export const authConfig = {
   session: { strategy: 'jwt' as const },
   pages: {
-    signIn:        '/fr/connexion',
-    verifyRequest: '/fr/connexion?verify=1',
-    error:         '/fr/connexion',
+    signIn:        '/connexion',
+    verifyRequest: '/connexion?verify=1',
+    error:         '/connexion',
   },
   providers: [],
   callbacks: {

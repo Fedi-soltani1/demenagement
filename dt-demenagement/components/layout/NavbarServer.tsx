@@ -7,33 +7,42 @@ import type { NavService } from '@/components/layout/Navbar'
 
 type ServiceDoc = { id: string; nom?: string | null; slug?: string | null }
 
-type PageDoc = {
-  layout?: Array<{ blockType: string; services?: ServiceDoc[] | null }>
-}
-
 async function fetchNavServices(locale: string): Promise<NavService[]> {
   noStore()
   const payload = await getPayload({ config })
   const loc = locale as 'fr' | 'ar' | 'en'
 
   try {
-    // Lire les services sélectionnés dans le bloc ServicesBlock de la homepage
+    // Lire le dernier brouillon OU la version publiée de la page d'accueil
+    // draft: true → retourne la version la plus récente (brouillon inclus)
     const pageRes = await payload.find({
       collection: 'pages',
-      where: { and: [{ slug: { equals: 'accueil' } }, { publie: { equals: true } }] },
+      where: { slug: { equals: 'accueil' } },
       locale: loc,
       limit: 1,
       depth: 2,
+      draft: true,
     })
 
-    const page = pageRes.docs[0] as PageDoc | undefined
-    const servicesBlock = page?.layout?.find((b) => b.blockType === 'services')
-    const selected = servicesBlock?.services ?? []
+    const page = pageRes.docs[0]
+    const layout = (page as { layout?: unknown[] } | undefined)?.layout ?? []
 
-    if (selected.length > 0) {
-      return selected
-        .filter((s): s is ServiceDoc => !!s && typeof s === 'object' && !!s.nom && !!s.slug)
-        .map((s) => ({ nom: s.nom!, slug: s.slug! }))
+    const servicesBlock = layout.find(
+      (b): b is { blockType: string; services?: unknown[] } =>
+        typeof b === 'object' && b !== null &&
+        (b as { blockType?: string }).blockType === 'services'
+    )
+    const rawSelected = servicesBlock?.services ?? []
+
+    if (rawSelected.length > 0) {
+      const populated: NavService[] = []
+      for (const s of rawSelected) {
+        if (typeof s === 'object' && s !== null) {
+          const svc = s as { nom?: string | null; slug?: string | null }
+          if (svc.nom && svc.slug) populated.push({ nom: svc.nom, slug: svc.slug })
+        }
+      }
+      if (populated.length > 0) return populated
     }
   } catch { /* fallback ci-dessous */ }
 

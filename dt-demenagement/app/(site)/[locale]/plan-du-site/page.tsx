@@ -1,7 +1,11 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { getPayload } from 'payload'
+import config from '@payload-config'
 import { setRequestLocale } from 'next-intl/server'
-import { LOCALES, COMPANY, SERVICES } from '@/lib/constants'
+import { LOCALES, COMPANY } from '@/lib/constants'
+
+export const revalidate = 3600
 
 export async function generateStaticParams() {
   return LOCALES.map((locale) => ({ locale }))
@@ -15,15 +19,45 @@ export default async function PlanDuSitePage({ params }: { params: Promise<{ loc
   const { locale } = await params
   setRequestLocale(locale)
 
+  const payload = await getPayload({ config })
+
+  const [servicesRes, villesRes] = await Promise.all([
+    payload.find({
+      collection: 'services',
+      where: { publie: { equals: true } },
+      sort: 'ordre',
+      locale: locale as 'fr' | 'ar' | 'en',
+      limit: 50,
+      select: { nom: true, slug: true },
+      depth: 0,
+    }).catch(() => ({ docs: [] as unknown[] })),
+
+    payload.find({
+      collection: 'villes',
+      where: { publie: { equals: true } },
+      sort: 'nom',
+      locale: locale as 'fr' | 'ar' | 'en',
+      limit: 100,
+      select: { nom: true, slug: true },
+      depth: 0,
+    }).catch(() => ({ docs: [] as unknown[] })),
+  ])
+
+  type ServiceDoc = { nom?: string | null; slug?: string | null }
+  type VilleDoc   = { nom?: string | null; slug?: string | null }
+
+  const services = (servicesRes.docs as ServiceDoc[]).filter((s) => s.nom && s.slug)
+  const villes   = (villesRes.docs   as VilleDoc[]).filter((v) => v.nom && v.slug)
+
   const mainLinks = [
-    { label: 'Accueil',           href: `/${locale}` },
-    { label: 'Nos services',      href: `/${locale}/services` },
-    { label: 'Zones d\'intervention', href: `/${locale}/zones` },
-    { label: 'Blog & conseils',   href: `/${locale}/blog` },
-    { label: 'À propos',          href: `/${locale}/a-propos` },
-    { label: 'Contact',           href: `/${locale}/contact` },
-    { label: 'Devis gratuit',     href: `/${locale}/devis` },
-    { label: 'FAQ',               href: `/${locale}/faq` },
+    { label: 'Accueil',               href: '/' },
+    { label: 'Nos services',          href: '/services' },
+    { label: 'Zones d\'intervention', href: '/zones' },
+    { label: 'Blog & conseils',       href: '/blog' },
+    { label: 'À propos',              href: '/a-propos' },
+    { label: 'Contact',               href: '/contact' },
+    { label: 'Devis gratuit',         href: '/devis' },
+    { label: 'FAQ',                   href: '/faq' },
   ]
 
   return (
@@ -50,23 +84,38 @@ export default async function PlanDuSitePage({ params }: { params: Promise<{ loc
           <div>
             <h2 className="font-heading font-semibold text-[var(--color-red)] text-sm uppercase tracking-widest mb-4">Services</h2>
             <ul className="space-y-3">
-              {SERVICES.map((s) => (
-                <li key={s.slug}>
-                  <Link href={`/${locale}/services/${s.slug}`} className="font-body text-[var(--color-text-muted)] hover:text-[var(--color-red)] transition-colors text-sm">
-                    {s.slug.replace(/-/g, ' ')}
+              {services.map((s) => (
+                <li key={s.slug!}>
+                  <Link href={`/services/${s.slug}`} className="font-body text-[var(--color-text-muted)] hover:text-[var(--color-red)] transition-colors text-sm">
+                    {s.nom}
                   </Link>
                 </li>
               ))}
             </ul>
           </div>
 
+          {villes.length > 0 && (
+            <div>
+              <h2 className="font-heading font-semibold text-[var(--color-red)] text-sm uppercase tracking-widest mb-4">Villes</h2>
+              <ul className="space-y-3">
+                {villes.map((v) => (
+                  <li key={v.slug!}>
+                    <Link href={`/villes/${v.slug}`} className="font-body text-[var(--color-text-muted)] hover:text-[var(--color-red)] transition-colors text-sm">
+                      {v.nom}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
           <div>
             <h2 className="font-heading font-semibold text-[var(--color-red)] text-sm uppercase tracking-widest mb-4">Mentions légales</h2>
             <ul className="space-y-3">
               {[
-                { label: 'Politique de confidentialité', href: `/${locale}/politique-confidentialite` },
-                { label: 'Mentions légales',             href: `/${locale}/mentions-legales` },
-                { label: 'Politique cookies',            href: `/${locale}/politique-cookies` },
+                { label: 'Politique de confidentialité', href: '/politique-confidentialite' },
+                { label: 'Mentions légales',             href: '/mentions-legales' },
+                { label: 'Politique cookies',            href: '/politique-cookies' },
               ].map(({ label, href }) => (
                 <li key={href}>
                   <Link href={href} className="font-body text-[var(--color-text-muted)] hover:text-[var(--color-red)] transition-colors text-sm">

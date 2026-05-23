@@ -80,7 +80,6 @@ export default async function BlogPage({
         <div className="max-w-7xl mx-auto">
           <BlogGrid
             articles={articles}
-            locale={locale}
             labels={{
               minRead:   t('minRead'),
               readMore:  t('readMore'),

@@ -18,7 +18,6 @@ export type ServiceItem = {
 
 interface ServicesGridProps {
   services: ServiceItem[]
-  locale: string
   labels: {
     priceFrom: string
     currency: string
@@ -48,7 +47,7 @@ const cardVariants: Variants = {
   }),
 }
 
-export function ServicesGrid({ services, locale, labels }: ServicesGridProps) {
+export function ServicesGrid({ services, labels }: ServicesGridProps) {
   if (services.length === 0) {
     return (
       <p className="text-center font-body text-[var(--color-text-muted)] py-20">
@@ -71,7 +70,7 @@ export function ServicesGrid({ services, locale, labels }: ServicesGridProps) {
             variants={cardVariants}
           >
             <Link
-              href={`/${locale}/services/${service.slug}`}
+              href={`/services/${service.slug}`}
               className="group relative rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-card)] overflow-hidden block hover:border-[var(--color-red)]/40 transition-all duration-300 hover:shadow-[0_0_40px_rgba(181,32,39,0.08)]"
             >
               {service.image?.url ? (

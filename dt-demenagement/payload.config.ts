@@ -70,7 +70,6 @@ export default buildConfig({
     livePreview: {
       url: ({
         data,
-        locale,
         collectionConfig,
       }: {
         data: { slug?: string }
@@ -79,16 +78,15 @@ export default buildConfig({
       }) => {
         const base = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
         const slug = data.slug ?? ''
-        const loc  = locale.code
         const col  = collectionConfig?.slug
 
-        if (col === 'services') return `${base}/${loc}/services/${slug}`
-        if (col === 'blog')     return `${base}/${loc}/blog/${slug}`
-        if (col === 'villes')   return `${base}/${loc}/villes/${slug}`
+        if (col === 'services') return `${base}/services/${slug}`
+        if (col === 'blog')     return `${base}/blog/${slug}`
+        if (col === 'villes')   return `${base}/villes/${slug}`
 
         // Pages collection
-        if (slug === 'accueil' || slug === '') return `${base}/${loc}`
-        return `${base}/${loc}/${slug}`
+        if (slug === 'accueil' || slug === '') return base
+        return `${base}/${slug}`
       },
       collections: ['pages', 'services', 'blog', 'villes'],
       breakpoints: [
@@ -100,7 +98,7 @@ export default buildConfig({
   },
 
   localization: {
-    locales: ['fr', 'ar', 'en'],
+    locales: ['fr'],
     defaultLocale: 'fr',
     fallback: true,
   },

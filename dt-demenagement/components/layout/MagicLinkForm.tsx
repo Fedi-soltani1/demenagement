@@ -34,7 +34,7 @@ export function MagicLinkForm({
       const result = await signIn('resend', {
         email,
         redirect: false,
-        callbackUrl: callbackUrl ?? `/${locale}/espace-client`,
+        callbackUrl: callbackUrl ?? `/espace-client`,
       })
       if (result?.error) {
         setError(t('errorDefault'))

@@ -93,7 +93,6 @@ export default async function ServicesPage({
         <div className="max-w-7xl mx-auto">
           <ServicesGrid
             services={services}
-            locale={locale}
             labels={{
               priceFrom: t('priceFrom'),
               currency:  t('currency'),
@@ -112,7 +111,7 @@ export default async function ServicesPage({
           </h2>
           <p className="font-body text-[var(--color-text-muted)] mb-8">{t('ctaBottomSub')}</p>
           <Link
-            href={`/${locale}/devis`}
+            href="/devis"
             className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[var(--color-red)] text-white font-body font-bold text-sm uppercase tracking-wider hover:bg-[var(--color-red-dark)] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)]"
           >
             {t('ctaDevis')}

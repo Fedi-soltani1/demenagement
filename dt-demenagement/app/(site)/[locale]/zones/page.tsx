@@ -241,7 +241,7 @@ export default async function ZonesPage({ params }: ZonesPageProps) {
       {/* Carte interactive */}
       <section className="py-section px-container bg-[var(--color-bg-dark2)]" aria-label={t('mapLabel')}>
         <div className="max-w-7xl mx-auto">
-          <ZonesMapClient villes={mapVilles} pays={mapPays} locale={locale} />
+          <ZonesMapClient villes={mapVilles} pays={mapPays} />
           <p className="mt-3 font-body text-xs text-[var(--color-text-muted)] text-center">
             {t('mapHint')}
           </p>
@@ -273,7 +273,7 @@ export default async function ZonesPage({ params }: ZonesPageProps) {
                 {villes.map((ville) => (
                   <Link
                     key={ville.slug}
-                    href={`/${locale}/villes/${ville.slug}`}
+                    href={`/villes/${ville.slug}`}
                     className="group flex items-center gap-2 px-4 py-3 rounded-xl border border-white/8 bg-white/[0.02] hover:border-[var(--color-red)]/30 hover:bg-[var(--color-red)]/5 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)] focus-visible:ring-offset-1 focus-visible:ring-offset-[var(--color-bg-dark)]"
                   >
                     <MapPin className="w-3.5 h-3.5 text-[var(--color-red)] flex-shrink-0 opacity-70 group-hover:opacity-100" aria-hidden="true" />
@@ -329,7 +329,7 @@ export default async function ZonesPage({ params }: ZonesPageProps) {
           </h2>
           <p className="font-body text-[var(--color-text-muted)] mb-8">{t('ctaSub')}</p>
           <Link
-            href={`/${locale}/devis`}
+            href="/devis"
             className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[var(--color-red)] text-white font-body font-bold text-sm uppercase tracking-wider hover:bg-[var(--color-red-dark)] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)]"
           >
             {t('ctaButton')}

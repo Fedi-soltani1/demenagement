@@ -3,7 +3,7 @@
 import React from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { useTranslations, useLocale } from 'next-intl'
+import { useTranslations } from 'next-intl'
 import { motion } from 'framer-motion'
 import { ArrowRight, Clock } from 'lucide-react'
 import { ShineBorderEffect } from '@/components/ui/ShineBorder'
@@ -80,7 +80,6 @@ interface BlogCms { titre?: string | null; sousTitre?: string | null; ctaTexte?:
 
 export function BlogPreviewBlock({ articles = [], cms }: { articles?: BlogArticleData[]; cms?: BlogCms }) {
   const t = useTranslations('Home.blog')
-  const locale = useLocale()
 
   const displayArticles = articles.length > 0 ? articles.map(normalizeArticle) : MOCK_ARTICLES
 
@@ -116,7 +115,7 @@ export function BlogPreviewBlock({ articles = [], cms }: { articles?: BlogArticl
             )}
           </div>
           <Link
-            href={`/${locale}/blog`}
+            href="/blog"
             className="group flex-shrink-0 inline-flex items-center gap-2 text-[var(--color-red)] font-body font-semibold text-sm hover:gap-3 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)] rounded"
           >
             {cms?.ctaTexte ?? t('ctaText')}
@@ -136,7 +135,7 @@ export function BlogPreviewBlock({ articles = [], cms }: { articles?: BlogArticl
               transition={{ duration: 0.55, delay: i * 0.1 }}
             >
               {/* Image */}
-              <Link href={`/${locale}/blog/${article.slug}`} className="block relative aspect-[16/9] overflow-hidden" tabIndex={-1} aria-hidden="true">
+              <Link href={`/blog/${article.slug}`} className="block relative aspect-[16/9] overflow-hidden" tabIndex={-1} aria-hidden="true">
                 <Image
                   src={article.imageUrl}
                   alt=""
@@ -164,7 +163,7 @@ export function BlogPreviewBlock({ articles = [], cms }: { articles?: BlogArticl
                 </div>
 
                 <h3 className="font-heading font-semibold text-[var(--color-text-light)] mb-3 leading-snug group-hover:text-[var(--color-red)] transition-colors duration-200 line-clamp-2">
-                  <Link href={`/${locale}/blog/${article.slug}`}>{article.titre}</Link>
+                  <Link href={`/blog/${article.slug}`}>{article.titre}</Link>
                 </h3>
 
                 <p className="font-body text-[var(--color-text-muted)] text-sm leading-relaxed mb-5 flex-1 line-clamp-3">
@@ -172,7 +171,7 @@ export function BlogPreviewBlock({ articles = [], cms }: { articles?: BlogArticl
                 </p>
 
                 <Link
-                  href={`/${locale}/blog/${article.slug}`}
+                  href={`/blog/${article.slug}`}
                   className="inline-flex items-center gap-1.5 text-[var(--color-red)] font-body text-sm font-medium group/link focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)] rounded"
                 >
                   {t('readMore')}

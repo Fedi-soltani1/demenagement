@@ -129,7 +129,7 @@ export default async function ContactPage({
               {t('ctaText')}
             </p>
             <Link
-              href={`/${locale}/devis`}
+              href="/devis"
               className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[var(--color-red)] text-white font-body font-semibold text-sm uppercase tracking-wider hover:bg-[var(--color-red-dark)] hover:shadow-[0_0_24px_rgba(181,32,39,0.4)] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)]"
             >
               {t('ctaButton')} →

@@ -12,6 +12,7 @@ import type { ServiceData }     from '@/components/blocks/ServicesBlock'
 import type { TestimonialData } from '@/components/blocks/TestimonialsBlock'
 import type { BlogArticleData } from '@/components/blocks/BlogPreviewBlock'
 import type { PartnerData }     from '@/components/blocks/PartnersBlock'
+import type { MapVille, MapPays } from '@/components/blocks/MapBlock'
 
 // ISR 60s — changes Payload visibles en moins d'une minute
 export const revalidate = 60
@@ -46,6 +47,8 @@ export default async function HomePage({ params }: HomePageProps) {
     testimonialsRes,
     blogRes,
     partnersRes,
+    villesRes,
+    paysRes,
   ] = await Promise.all([
 
     // Page accueil depuis la collection Pages (slug = 'accueil')
@@ -98,17 +101,50 @@ export default async function HomePage({ params }: HomePageProps) {
       limit: 30,
       depth: 1,
     }).catch(() => ({ docs: [] as unknown[] })),
+
+    // Villes tunisiennes publiées (pour la carte)
+    payload.find({
+      collection: 'villes',
+      where: { publie: { equals: true } },
+      sort: 'nom',
+      locale: loc,
+      limit: 50,
+      depth: 0,
+    }).catch(() => ({ docs: [] as unknown[] })),
+
+    // Pays internationaux publiés (pour la carte)
+    payload.find({
+      collection: 'pays',
+      where: { publie: { equals: true } },
+      sort: 'nom',
+      locale: loc,
+      limit: 30,
+      depth: 0,
+    }).catch(() => ({ docs: [] as unknown[] })),
   ])
 
   // Extraire la page accueil depuis Payload
   type PageDoc = { layout?: unknown[] }
   const page = pageData.docs[0] as PageDoc | undefined
 
+  type VilleDoc = { nom?: string | null; slug?: string | null; region?: string | null; coordonnees?: { lat?: number | null; lng?: number | null } | null }
+  type PaysDoc  = { nom?: string | null; slug?: string | null; drapeau?: string | null; coordonnees?: { lat?: number | null; lng?: number | null } | null }
+
+  const villes: MapVille[] = (villesRes.docs as VilleDoc[])
+    .filter((v) => v.nom && v.slug && v.coordonnees?.lat != null && v.coordonnees?.lng != null)
+    .map((v) => ({ nom: v.nom!, slug: v.slug!, lat: v.coordonnees!.lat!, lng: v.coordonnees!.lng!, region: v.region ?? '' }))
+
+  const pays: MapPays[] = (paysRes.docs as PaysDoc[])
+    .filter((p) => p.nom && p.slug && p.coordonnees?.lat != null && p.coordonnees?.lng != null)
+    .map((p) => ({ nom: p.nom!, slug: p.slug!, drapeau: p.drapeau ?? '', lat: p.coordonnees!.lat!, lng: p.coordonnees!.lng! }))
+
   const sharedProps = {
     services:     servicesRes.docs     as ServiceData[],
     testimonials: testimonialsRes.docs as TestimonialData[],
     blog:         blogRes.docs         as BlogArticleData[],
     partners:     partnersRes.docs     as PartnerData[],
+    villes,
+    pays,
   }
 
   // Blocs de fallback si aucune page 'accueil' n'est configurée dans Payload

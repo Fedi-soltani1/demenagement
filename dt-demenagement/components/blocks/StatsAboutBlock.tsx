@@ -3,7 +3,7 @@
 import React, { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useTranslations, useLocale } from 'next-intl'
+import { useTranslations } from 'next-intl'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Play, X, ArrowRight } from 'lucide-react'
 import { CounterAnimation } from '@/components/ui/CounterAnimation'
@@ -42,7 +42,6 @@ export type CmsApropos = {
 
 export function StatsAboutBlock({ cms }: { cms?: CmsApropos }) {
   const t = useTranslations('Home.about')
-  const locale = useLocale()
   const [videoOpen, setVideoOpen]       = useState(false)
   const [videoStarted, setVideoStarted] = useState(false)
 
@@ -159,7 +158,7 @@ export function StatsAboutBlock({ cms }: { cms?: CmsApropos }) {
           </div>
 
           <Link
-            href={`/${locale}/a-propos`}
+            href="/a-propos"
             className="group inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[var(--color-red)] text-white font-body font-semibold text-sm uppercase tracking-wider transition-all duration-300 hover:bg-[var(--color-red-dark)] hover:shadow-[0_0_30px_rgba(181,32,39,0.4)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)]"
           >
             {ctaTexte}

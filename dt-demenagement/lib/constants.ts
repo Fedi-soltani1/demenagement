@@ -17,7 +17,7 @@ export const COMPANY = {
   colorLight:       '#d4353d',
 } as const
 
-export const LOCALES = ['fr', 'ar', 'en'] as const
+export const LOCALES = ['fr'] as const
 export const DEFAULT_LOCALE = 'fr' as const
 export type Locale = (typeof LOCALES)[number]
 

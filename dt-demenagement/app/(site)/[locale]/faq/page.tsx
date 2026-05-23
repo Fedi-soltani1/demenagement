@@ -173,7 +173,7 @@ export default async function FAQPage({ params }: FAQPageProps) {
           </div>
           <div className="flex flex-col sm:flex-row gap-3 flex-shrink-0">
             <Link
-              href={`/${locale}/contact`}
+              href="/contact"
               className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full border border-white/20 text-[var(--color-text-muted)] font-body text-sm hover:border-white/40 hover:text-white transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
             >
               {t('ctaContact')}

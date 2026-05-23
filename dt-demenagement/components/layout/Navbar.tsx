@@ -1,13 +1,13 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useTheme } from 'next-themes'
-import { useLocale, useTranslations } from 'next-intl'
+import { useTranslations } from 'next-intl'
 import { PhoneLink } from '@/components/ui/PhoneLink'
 import { MenuToggleIcon } from '@/components/ui/MenuToggleIcon'
-import { COMPANY, VILLES, PAYS, LOCALES, type Locale } from '@/lib/constants'
+import { COMPANY, VILLES, PAYS } from '@/lib/constants'
 import { useDevisModal } from '@/components/layout/DevisModal'
 
 export type NavService = { nom: string; slug: string }
@@ -44,23 +44,6 @@ function IconMoon() {
   )
 }
 
-function IconGlobe() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true">
-      <circle cx="12" cy="12" r="10" />
-      <path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />
-    </svg>
-  )
-}
-
-// ─── Locale display info ───────────────────────────────────────────────────────
-
-const LOCALE_INFO: Record<Locale, { label: string; native: string }> = {
-  fr: { label: 'FR', native: 'Français' },
-  ar: { label: 'AR', native: 'عربي' },
-  en: { label: 'EN', native: 'English' },
-}
-
 // ─── ThemeToggle ──────────────────────────────────────────────────────────────
 
 function ThemeToggle({
@@ -91,72 +74,6 @@ function ThemeToggle({
   )
 }
 
-// ─── LocaleSwitcher ───────────────────────────────────────────────────────────
-
-function LocaleSwitcher({ ariaLabel }: { ariaLabel: string }) {
-  const locale = useLocale() as Locale
-  const pathname = usePathname()
-  const [open, setOpen] = useState(false)
-  const ref = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
-        setOpen(false)
-      }
-    }
-    document.addEventListener('mousedown', handler)
-    return () => document.removeEventListener('mousedown', handler)
-  }, [])
-
-  // ⚠️ Step 15 (locale routing) will make these paths work with the correct locale prefix.
-  const getLocalePath = (loc: Locale) => `/${loc}${pathname}`
-
-  return (
-    <div ref={ref} className="relative">
-      <button
-        type="button"
-        onClick={() => setOpen((o) => !o)}
-        aria-label={ariaLabel}
-        aria-expanded={open}
-        aria-haspopup="listbox"
-        className="flex items-center gap-1.5 px-2 py-1.5 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text-light)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)] rounded"
-      >
-        <IconGlobe />
-        <span>{LOCALE_INFO[locale].label}</span>
-        <IconChevronDown open={open} />
-      </button>
-
-      {open && (
-        <div
-          role="listbox"
-          aria-label={ariaLabel}
-          className="absolute end-0 top-full mt-1 w-40 bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl shadow-2xl py-1 z-50"
-        >
-          {LOCALES.map((loc) => (
-            <Link
-              key={loc}
-              href={getLocalePath(loc)}
-              role="option"
-              aria-selected={loc === locale}
-              onClick={() => setOpen(false)}
-              className={[
-                'flex items-center gap-2 px-3 py-2 text-sm transition-colors',
-                loc === locale
-                  ? 'text-[var(--color-red)] font-medium'
-                  : 'text-[var(--color-text-muted)] hover:text-[var(--color-text-light)] hover:bg-white/5',
-              ].join(' ')}
-            >
-              <span className="w-7 font-semibold">{LOCALE_INFO[loc].label}</span>
-              <span>{LOCALE_INFO[loc].native}</span>
-            </Link>
-          ))}
-        </div>
-      )}
-    </div>
-  )
-}
-
 // ─── CTA Link styled as primary button ────────────────────────────────────────
 
 const ctaClass =
@@ -172,7 +89,6 @@ const ctaClass =
 function Navbar({ services = [] }: { services?: NavService[] }) {
   const t = useTranslations('Navbar')
   const pathname = usePathname()
-  const locale = useLocale()
 
   const { open: openDevisModal } = useDevisModal()
 
@@ -255,7 +171,7 @@ function Navbar({ services = [] }: { services?: NavService[] }) {
 
             {/* ── Logo ── */}
             <Link
-              href={`/${locale}`}
+              href="/"
               className="flex items-center gap-3 shrink-0 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)] rounded"
               aria-label={t('logoAlt')}
             >
@@ -300,7 +216,7 @@ function Navbar({ services = [] }: { services?: NavService[] }) {
                     {services.map((service) => (
                       <Link
                         key={service.slug}
-                        href={`/${locale}/services/${service.slug}`}
+                        href={`/services/${service.slug}`}
                         role="menuitem"
                         className="flex items-center px-4 py-2.5 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text-light)] hover:bg-white/5 transition-colors"
                       >
@@ -342,7 +258,7 @@ function Navbar({ services = [] }: { services?: NavService[] }) {
                       {VILLES.slice(0, 8).map((ville) => (
                         <Link
                           key={ville.slug}
-                          href={`/${locale}/villes/${ville.slug}`}
+                          href={`/villes/${ville.slug}`}
                           role="menuitem"
                           className="px-2 py-1.5 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text-light)] hover:bg-white/5 rounded transition-colors"
                         >
@@ -357,7 +273,7 @@ function Navbar({ services = [] }: { services?: NavService[] }) {
                       {PAYS.map((pays) => (
                         <Link
                           key={pays.slug}
-                          href={`/${locale}/zones`}
+                          href="/zones"
                           role="menuitem"
                           className="px-2 py-1 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text-light)] hover:bg-white/5 rounded transition-colors"
                         >
@@ -367,7 +283,7 @@ function Navbar({ services = [] }: { services?: NavService[] }) {
                     </div>
                     <div className="pt-2 border-t border-[var(--color-border)]">
                       <Link
-                        href={`/${locale}/zones`}
+                        href="/zones"
                         role="menuitem"
                         className="text-sm font-medium text-[var(--color-red)] hover:text-[var(--color-red-light)] transition-colors"
                       >
@@ -382,7 +298,7 @@ function Navbar({ services = [] }: { services?: NavService[] }) {
               {navLinks.map(({ key, path }) => (
                 <Link
                   key={key}
-                  href={`/${locale}${path}`}
+                  href={path}
                   className="px-3 py-2 text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-text-light)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)] rounded"
                 >
                   {t(key)}
@@ -393,7 +309,6 @@ function Navbar({ services = [] }: { services?: NavService[] }) {
             {/* ── Desktop right actions ── */}
             <div className="hidden lg:flex items-center gap-2 ms-auto ps-4">
               <PhoneLink numero={COMPANY.phone1} source="navbar" />
-              <LocaleSwitcher ariaLabel={t('changeLocale')} />
               <ThemeToggle labelDark={t('switchToDark')} labelLight={t('switchToLight')} />
               <button
                 type="button"
@@ -445,7 +360,7 @@ function Navbar({ services = [] }: { services?: NavService[] }) {
                     {services.map((service) => (
                       <Link
                         key={service.slug}
-                        href={`/${locale}/services/${service.slug}`}
+                        href={`/services/${service.slug}`}
                         className="block py-2 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text-light)] transition-colors"
                       >
                         {service.nom}
@@ -475,7 +390,7 @@ function Navbar({ services = [] }: { services?: NavService[] }) {
                       {VILLES.slice(0, 8).map((ville) => (
                         <Link
                           key={ville.slug}
-                          href={`/${locale}/villes/${ville.slug}`}
+                          href={`/villes/${ville.slug}`}
                           className="py-1.5 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text-light)] transition-colors"
                         >
                           {ville.nom}
@@ -489,7 +404,7 @@ function Navbar({ services = [] }: { services?: NavService[] }) {
                       {PAYS.map((pays) => (
                         <Link
                           key={pays.slug}
-                          href={`/${locale}/zones`}
+                          href="/zones"
                           className="block py-1 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text-light)] transition-colors"
                         >
                           {pays.drapeau} {pays.nom}
@@ -497,7 +412,7 @@ function Navbar({ services = [] }: { services?: NavService[] }) {
                       ))}
                     </div>
                     <Link
-                      href={`/${locale}/zones`}
+                      href="/zones"
                       className="text-sm font-medium text-[var(--color-red)] hover:text-[var(--color-red-light)] transition-colors"
                     >
                       {t('allZones')} →
@@ -510,7 +425,7 @@ function Navbar({ services = [] }: { services?: NavService[] }) {
               {navLinks.map(({ key, path }) => (
                 <Link
                   key={key}
-                  href={`/${locale}${path}`}
+                  href={path}
                   className="block px-3 py-3 text-base font-medium text-[var(--color-text-light)] hover:text-[var(--color-red)] transition-colors rounded"
                 >
                   {t(key)}
@@ -531,8 +446,7 @@ function Navbar({ services = [] }: { services?: NavService[] }) {
               >
                 {t('devis')}
               </button>
-              <div className="flex items-center justify-between pt-1">
-                <LocaleSwitcher ariaLabel={t('changeLocale')} />
+              <div className="flex items-center justify-end pt-1">
                 <ThemeToggle labelDark={t('switchToDark')} labelLight={t('switchToLight')} />
               </div>
             </div>

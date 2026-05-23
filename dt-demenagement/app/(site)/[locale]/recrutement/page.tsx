@@ -34,7 +34,7 @@ export default async function RecrutementPage({ params }: { params: Promise<{ lo
           </a>
         </p>
         <Link
-          href={`/${locale}/contact`}
+          href="/contact"
           className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[var(--color-red)] text-white font-body font-semibold text-sm uppercase tracking-wider hover:bg-[var(--color-red-dark)] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)]"
         >
           Nous contacter →

@@ -86,7 +86,7 @@ function ServiceCard({
   return (
     <motion.a
       ref={cardRef}
-      href={`/${locale}/services/${service.slug}`}
+      href={`/services/${service.slug}`}
       className="group relative rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-card)] backdrop-blur-md p-card block overflow-hidden"
       style={{ rotateX, rotateY, transformStyle: 'preserve-3d', perspective: 1000 }}
       onMouseMove={handleMouseMove}
@@ -186,7 +186,7 @@ export function ServicesBlock({ services = [], cms }: { services?: ServiceData[]
           transition={{ duration: 0.5, delay: 0.4 }}
         >
           <Link
-            href={`/${locale}/services`}
+            href="/services"
             className="group inline-flex items-center gap-2 px-8 py-4 rounded-full border border-[var(--color-red)]/40 text-[var(--color-red)] font-body font-semibold text-sm uppercase tracking-wider transition-all duration-300 hover:bg-[var(--color-red)]/10 hover:border-[var(--color-red)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)]"
           >
             {cms?.ctaTexte ?? t('ctaText')}

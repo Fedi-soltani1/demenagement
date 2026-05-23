@@ -48,7 +48,7 @@ export default async function EspaceClientPage({ params }: PageProps) {
   setRequestLocale(locale)
 
   const session = await auth()
-  if (!session?.user?.email) redirect(`/${locale}/connexion`)
+  if (!session?.user?.email) redirect('/connexion')
 
   const t = await getTranslations({ locale, namespace: 'EspaceClient' })
   const payload = await getPayload({ config })
@@ -120,7 +120,7 @@ export default async function EspaceClientPage({ params }: PageProps) {
               title={t('emptyTitle')}
               subtitle={t('emptySubtitle')}
               ctaLabel={t('emptyCtaLabel')}
-              ctaHref={`/${locale}/devis`}
+              ctaHref="/devis"
             />
           ) : (
             <div className="space-y-4">
@@ -130,7 +130,7 @@ export default async function EspaceClientPage({ params }: PageProps) {
               {dossiers.map((d) => (
                 <Link
                   key={d.id}
-                  href={`/${locale}/espace-client/${d.numeroDossier}`}
+                  href={`/espace-client/${d.numeroDossier}`}
                   className="group block p-5 rounded-2xl border border-white/8 bg-white/[0.02] hover:border-[var(--color-red)]/20 hover:bg-white/[0.04] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)]"
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center gap-4">
@@ -174,7 +174,7 @@ export default async function EspaceClientPage({ params }: PageProps) {
           {/* CTA nouveau devis */}
           <div className="mt-10 pt-8 border-t border-white/5 text-center">
             <Link
-              href={`/${locale}/devis`}
+              href="/devis"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[var(--color-red)]/10 border border-[var(--color-red)]/20 text-[var(--color-red)] font-body font-semibold text-sm hover:bg-[var(--color-red)]/20 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)]"
             >
               {t('newDevisLabel')}

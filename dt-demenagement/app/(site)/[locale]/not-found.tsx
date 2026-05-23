@@ -110,10 +110,10 @@ export default function NotFoundPage() {
             </p>
             <div className="flex flex-wrap gap-x-6 gap-y-2 justify-center lg:justify-start">
               {[
-                { href: `/${locale}/services`, label: t('linkServices') },
-                { href: `/${locale}/zones`,    label: t('linkZones')    },
-                { href: `/${locale}/faq`,      label: t('linkFAQ')      },
-                { href: `/${locale}/blog`,     label: t('linkBlog')     },
+                { href: '/services', label: t('linkServices') },
+                { href: '/zones',    label: t('linkZones')    },
+                { href: '/faq',      label: t('linkFAQ')      },
+                { href: '/blog',     label: t('linkBlog')     },
               ].map(({ href, label }) => (
                 <Link
                   key={href}

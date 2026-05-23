@@ -106,7 +106,7 @@ export default async function DevisPage({ params, searchParams }: PageProps) {
             ].map(({ value, label, icon }) => (
               <a
                 key={value}
-                href={`/${locale}/devis?type=${value}`}
+                href={`/devis?type=${value}`}
                 className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg font-body text-sm font-medium transition-all ${
                   activeType === value
                     ? 'bg-[var(--color-red)] text-white shadow-lg'

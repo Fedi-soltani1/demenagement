@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { useTranslations, useLocale } from 'next-intl'
+import { useTranslations } from 'next-intl'
 import { PhoneLink } from '@/components/ui/PhoneLink'
 import { COMPANY, SERVICES, VILLES, PAYS } from '@/lib/constants'
 import type { NavService } from '@/components/layout/Navbar'
@@ -52,7 +52,6 @@ function IconMail() {
 
 function Footer({ services: cmsServices }: { services?: NavService[] }) {
   const t = useTranslations('Footer')
-  const locale = useLocale()
 
   const displayServices: NavService[] = (cmsServices && cmsServices.length > 0)
     ? cmsServices
@@ -149,7 +148,7 @@ function Footer({ services: cmsServices }: { services?: NavService[] }) {
               {displayServices.map((service) => (
                 <li key={service.slug}>
                   <Link
-                    href={`/${locale}/services/${service.slug}`}
+                    href={`/services/${service.slug}`}
                     className="text-sm text-[var(--color-text-muted)] hover:text-[var(--color-red)] transition-colors"
                   >
                     {service.nom}
@@ -171,7 +170,7 @@ function Footer({ services: cmsServices }: { services?: NavService[] }) {
               {VILLES.slice(0, 6).map((ville) => (
                 <li key={ville.slug}>
                   <Link
-                    href={`/${locale}/villes/${ville.slug}`}
+                    href={`/villes/${ville.slug}`}
                     className="text-sm text-[var(--color-text-muted)] hover:text-[var(--color-red)] transition-colors"
                   >
                     {ville.nom}
@@ -180,7 +179,7 @@ function Footer({ services: cmsServices }: { services?: NavService[] }) {
               ))}
               <li>
                 <Link
-                  href={`/${locale}/zones`}
+                  href="/zones"
                   className="text-sm font-medium text-[var(--color-red)] hover:text-[var(--color-red-light)] transition-colors"
                 >
                   {t('allCities')} →
@@ -194,7 +193,7 @@ function Footer({ services: cmsServices }: { services?: NavService[] }) {
               {PAYS.slice(0, 4).map((pays) => (
                 <li key={pays.slug}>
                   <Link
-                    href={`/${locale}/zones`}
+                    href="/zones"
                     className="text-sm text-[var(--color-text-muted)] hover:text-[var(--color-red)] transition-colors"
                   >
                     {pays.drapeau} {pays.nom}
@@ -203,7 +202,7 @@ function Footer({ services: cmsServices }: { services?: NavService[] }) {
               ))}
               <li>
                 <Link
-                  href={`/${locale}/zones#europe`}
+                  href="/zones#europe"
                   className="text-sm font-medium text-[var(--color-red)] hover:text-[var(--color-red-light)] transition-colors"
                 >
                   {t('allCountries')} →
@@ -229,7 +228,7 @@ function Footer({ services: cmsServices }: { services?: NavService[] }) {
               ).map(({ key, path }) => (
                 <li key={key}>
                   <Link
-                    href={`/${locale}${path}`}
+                    href={path}
                     className="text-sm text-[var(--color-text-muted)] hover:text-[var(--color-red)] transition-colors"
                   >
                     {t(key)}
@@ -240,7 +239,7 @@ function Footer({ services: cmsServices }: { services?: NavService[] }) {
 
             {/* CTA devis */}
             <Link
-              href={`/${locale}/devis`}
+              href="/devis"
               className="inline-flex items-center justify-center w-full px-4 py-3 text-sm font-semibold rounded-[var(--radius-btn)] bg-[var(--color-red)] text-white hover:bg-[var(--color-red-dark)] hover:shadow-[0_0_20px_rgba(181,32,39,0.4)] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-bg-dark-2)]"
             >
               {t('devis')}
@@ -269,7 +268,7 @@ function Footer({ services: cmsServices }: { services?: NavService[] }) {
             ).map(({ key, path }) => (
               <Link
                 key={key}
-                href={`/${locale}${path}`}
+                href={path}
                 className="text-xs text-[var(--color-text-muted)] hover:text-[var(--color-text-light)] transition-colors"
               >
                 {t(key)}

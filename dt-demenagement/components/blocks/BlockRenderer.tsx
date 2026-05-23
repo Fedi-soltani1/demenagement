@@ -8,7 +8,7 @@ import { MiniFeaturesBlock,  type CmsPointsForts }    from '@/components/blocks/
 import { StatsAboutBlock,    type CmsApropos }        from '@/components/blocks/StatsAboutBlock'
 import { WhyUsBlock,         type CmsPourquoiNous }   from '@/components/blocks/WhyUsBlock'
 import { ServicesBlock,      type ServiceData }       from '@/components/blocks/ServicesBlock'
-import { MapBlock }                                    from '@/components/blocks/MapBlock'
+import { MapBlock,            type MapVille, type MapPays } from '@/components/blocks/MapBlock'
 import { TestimonialsBlock,  type TestimonialData }   from '@/components/blocks/TestimonialsBlock'
 import { PartnersBlock,      type PartnerData }       from '@/components/blocks/PartnersBlock'
 import { InstagramFeedBlock }                          from '@/components/blocks/InstagramFeedBlock'
@@ -59,6 +59,22 @@ type PartnerPayload = {
   lien?: string | null
 }
 
+type VillePayload = {
+  id: string
+  nom?: string | null
+  slug?: string | null
+  region?: string | null
+  coordonnees?: { lat?: number | null; lng?: number | null } | null
+}
+
+type PaysPayload = {
+  id: string
+  nom?: string | null
+  slug?: string | null
+  drapeau?: string | null
+  coordonnees?: { lat?: number | null; lng?: number | null } | null
+}
+
 // ─── Props du renderer ────────────────────────────────────────────────────────
 
 interface BlockRendererProps {
@@ -67,6 +83,8 @@ interface BlockRendererProps {
   testimonials:       TestimonialData[]
   blog:               BlogArticleData[]
   partners:           PartnerData[]
+  villes:             MapVille[]
+  pays:               MapPays[]
   googleReviewsNode?: React.ReactNode
 }
 
@@ -239,6 +257,38 @@ function adaptPartners(
   return fallback
 }
 
+function adaptVilles(b: PayloadBlock, fallback: MapVille[]): MapVille[] {
+  const rel = b.villes
+  if (Array.isArray(rel) && rel.length > 0) {
+    return (rel as VillePayload[])
+      .filter((v) => v.nom && v.slug && v.coordonnees?.lat != null && v.coordonnees?.lng != null)
+      .map((v) => ({
+        nom:    v.nom!,
+        slug:   v.slug!,
+        lat:    v.coordonnees!.lat!,
+        lng:    v.coordonnees!.lng!,
+        region: v.region ?? '',
+      }))
+  }
+  return fallback
+}
+
+function adaptPays(b: PayloadBlock, fallback: MapPays[]): MapPays[] {
+  const rel = b.pays
+  if (Array.isArray(rel) && rel.length > 0) {
+    return (rel as PaysPayload[])
+      .filter((p) => p.nom && p.slug && p.coordonnees?.lat != null && p.coordonnees?.lng != null)
+      .map((p) => ({
+        nom:     p.nom!,
+        slug:    p.slug!,
+        drapeau: p.drapeau ?? '',
+        lat:     p.coordonnees!.lat!,
+        lng:     p.coordonnees!.lng!,
+      }))
+  }
+  return fallback
+}
+
 // ─── BlockRenderer ────────────────────────────────────────────────────────────
 
 export function BlockRenderer({
@@ -247,6 +297,8 @@ export function BlockRenderer({
   testimonials,
   blog,
   partners,
+  villes,
+  pays,
   googleReviewsNode,
 }: BlockRendererProps) {
   if (!blocks.length) return null
@@ -282,7 +334,14 @@ export function BlockRenderer({
             return <WhyUsBlock key={key} cms={adaptWhyUs(block)} />
 
           case 'map':
-            return <MapBlock key={key} cms={{ titre: str(block.titre), sousTitre: str(block.sousTitre) }} />
+            return (
+              <MapBlock
+                key={key}
+                cms={{ titre: str(block.titre), sousTitre: str(block.sousTitre) }}
+                villes={adaptVilles(block, villes)}
+                pays={adaptPays(block, pays)}
+              />
+            )
 
           case 'testimonials':
             return (

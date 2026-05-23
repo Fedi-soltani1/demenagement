@@ -98,7 +98,7 @@ export default async function VillePage({ params }: VillePageProps) {
       <Breadcrumb
         items={[
           { label: t('breadcrumbHome'), href: `/${locale}` },
-          { label: t('breadcrumbZones'), href: `/${locale}/zones` },
+          { label: t('breadcrumbZones'), href: '/zones' },
           { label: ville.nom },
         ]}
       />
@@ -139,7 +139,7 @@ export default async function VillePage({ params }: VillePageProps) {
 
           <div className="flex flex-col sm:flex-row gap-4">
             <Link
-              href={`/${locale}/devis?ville=${slug}`}
+              href={`/devis?ville=${slug}`}
               className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[var(--color-red)] text-white font-body font-bold text-sm uppercase tracking-wider hover:bg-[var(--color-red-dark)] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)]"
             >
               {t('ctaDevis', { name: ville.nom })}
@@ -164,7 +164,7 @@ export default async function VillePage({ params }: VillePageProps) {
               {services.map((service) => (
                 <Link
                   key={service.slug}
-                  href={`/${locale}/services/${service.slug}`}
+                  href={`/services/${service.slug}`}
                   className="group flex items-center gap-3 p-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-card)] hover:border-[var(--color-red)]/30 hover:bg-[var(--color-red)]/5 transition-all duration-200"
                 >
                   <CheckCircle className="w-5 h-5 text-[var(--color-red)] flex-shrink-0" aria-hidden="true" />
@@ -190,7 +190,7 @@ export default async function VillePage({ params }: VillePageProps) {
             </p>
           </div>
           <Link
-            href={`/${locale}/devis?ville=${slug}`}
+            href={`/devis?ville=${slug}`}
             className="flex-shrink-0 inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[var(--color-red)] text-white font-body font-bold text-sm uppercase tracking-wider hover:bg-[var(--color-red-dark)] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)]"
           >
             Devis gratuit →

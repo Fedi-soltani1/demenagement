@@ -276,7 +276,7 @@ export function DevisForm({
           <strong className="text-[var(--color-text-light)]">{form.email}</strong>
         </p>
         <a
-          href={`/${locale}/espace-client`}
+          href="/espace-client"
           className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[var(--color-red)]/10 border border-[var(--color-red)]/20 text-[var(--color-red)] font-body font-semibold text-sm hover:bg-[var(--color-red)]/20 transition-colors"
         >
           Suivre mon dossier
