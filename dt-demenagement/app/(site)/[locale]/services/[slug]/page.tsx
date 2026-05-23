@@ -3,6 +3,7 @@ import { getPayload } from 'payload'
 import type { Metadata } from 'next'
 import { setRequestLocale } from 'next-intl/server'
 import { getTranslations } from 'next-intl/server'
+import { unstable_noStore as noStore } from 'next/cache'
 import Image from 'next/image'
 import Link from 'next/link'
 import config from '@payload-config'
@@ -13,7 +14,7 @@ import { Breadcrumb } from '@/components/layout/Breadcrumb'
 import * as LucideIcons from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
-export const revalidate = 86400
+export const dynamic = 'force-dynamic'
 
 interface ServicePageProps {
   params: Promise<{ locale: string; slug: string }>
@@ -55,6 +56,7 @@ function getIcon(name: string | null | undefined, fallback: string = 'Check'): L
 }
 
 async function getService(slug: string, locale: string): Promise<ServiceDoc | null> {
+  noStore()
   const payload = await getPayload({ config })
   const result = await payload.find({
     collection: 'services',
