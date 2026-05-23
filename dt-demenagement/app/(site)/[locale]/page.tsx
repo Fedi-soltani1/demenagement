@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { setRequestLocale, getTranslations } from 'next-intl/server'
-import { unstable_noStore as noStore } from 'next/cache'
 import { COMPANY, LOCALES } from '@/lib/constants'
 import { BlockRenderer }          from '@/components/blocks/BlockRenderer'
 import { LivePreviewWrapper }     from '@/components/blocks/LivePreviewWrapper'
@@ -14,7 +13,8 @@ import type { TestimonialData } from '@/components/blocks/TestimonialsBlock'
 import type { BlogArticleData } from '@/components/blocks/BlogPreviewBlock'
 import type { PartnerData }     from '@/components/blocks/PartnersBlock'
 
-export const dynamic = 'force-dynamic'
+// ISR 60s — changes Payload visibles en moins d'une minute
+export const revalidate = 60
 
 interface HomePageProps {
   params: Promise<{ locale: string }>
@@ -36,7 +36,6 @@ export default async function HomePage({ params }: HomePageProps) {
   const { locale } = await params
   setRequestLocale(locale)
 
-  noStore()
   const payload = await getPayload({ config })
   const loc = locale as 'fr' | 'ar' | 'en'
 
