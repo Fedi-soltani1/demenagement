@@ -68,13 +68,28 @@ export default buildConfig({
       },
     },
     livePreview: {
-      url: ({ data, locale }: { data: { slug?: string }, locale: { code: string } }) => {
+      url: ({
+        data,
+        locale,
+        collectionConfig,
+      }: {
+        data: { slug?: string }
+        locale: { code: string }
+        collectionConfig?: { slug: string }
+      }) => {
         const base = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
         const slug = data.slug ?? ''
-        if (slug === 'accueil' || slug === '') return `${base}/${locale.code}`
-        return `${base}/${locale.code}/${slug}`
+        const loc  = locale.code
+
+        if (collectionConfig?.slug === 'services') {
+          return `${base}/${loc}/services/${slug}`
+        }
+
+        // Pages collection
+        if (slug === 'accueil' || slug === '') return `${base}/${loc}`
+        return `${base}/${loc}/${slug}`
       },
-      collections: ['pages'],
+      collections: ['pages', 'services'],
       breakpoints: [
         { label: 'Mobile',   name: 'mobile',  width: 375,  height: 812  },
         { label: 'Tablette', name: 'tablet',  width: 768,  height: 1024 },
