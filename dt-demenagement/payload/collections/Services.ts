@@ -1,10 +1,20 @@
 import type { CollectionConfig } from 'payload'
+import { revalidateTag } from 'next/cache'
 import { isAdmin } from '../access/isAdmin'
 import { isEditor } from '../access/isEditor'
+
+function revalidateNavServices() {
+  revalidateTag('nav-services')
+}
 
 const Services: CollectionConfig = {
   slug: 'services',
   labels: { singular: 'Service', plural: 'Services' },
+
+  hooks: {
+    afterChange: [() => revalidateNavServices()],
+    afterDelete: [() => revalidateNavServices()],
+  },
 
   access: {
     read: () => true,

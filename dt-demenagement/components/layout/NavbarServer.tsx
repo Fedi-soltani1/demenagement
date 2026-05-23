@@ -1,12 +1,13 @@
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { getLocale } from 'next-intl/server'
+import { unstable_cache } from 'next/cache'
 import { Navbar } from '@/components/layout/Navbar'
 import type { NavService } from '@/components/layout/Navbar'
 
 type ServiceDoc = { id: string; nom?: string | null; slug?: string | null; publie?: boolean }
 
-async function fetchNavServices(locale: string): Promise<NavService[]> {
+async function _fetchNavServices(locale: string): Promise<NavService[]> {
   try {
     const payload = await getPayload({ config })
     const res = await payload.find({
@@ -25,6 +26,12 @@ async function fetchNavServices(locale: string): Promise<NavService[]> {
     return []
   }
 }
+
+const fetchNavServices = (locale: string) =>
+  unstable_cache(_fetchNavServices, ['nav-services', locale], {
+    tags: ['nav-services'],
+    revalidate: 3600,
+  })(locale)
 
 export async function NavbarServer() {
   const locale   = await getLocale()
