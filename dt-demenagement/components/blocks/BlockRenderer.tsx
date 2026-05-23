@@ -39,6 +39,7 @@ type TestimonialPayload = {
   ville?: string | null
   note?: string | number | null
   texte?: string | null
+  photo?: { url?: string | null } | null
 }
 
 type BlogDocPayload = {
@@ -236,6 +237,7 @@ function adaptTestimonials(
       ville: t.ville ?? '',
       note:  String(t.note ?? 5),
       texte: t.texte ?? '',
+      photo: t.photo ?? null,
     }))
   }
   return fallback
@@ -348,7 +350,11 @@ export function BlockRenderer({
               <TestimonialsBlock
                 key={key}
                 testimonials={adaptTestimonials(block, testimonials)}
-                cms={{ titre: str(block.titre), sousTitre: str(block.sousTitre) }}
+                cms={{
+                  titre:     str(block.titre),
+                  sousTitre: str(block.sousTitre),
+                  affichage: (str(block.affichage) as 'carrousel' | 'grille' | 'liste' | null),
+                }}
               />
             )
 
@@ -360,7 +366,10 @@ export function BlockRenderer({
               <PartnersBlock
                 key={key}
                 partners={adaptPartners(block, partners)}
-                cms={{ titre: str(block.titre) }}
+                cms={{
+                  titre:     str(block.titre),
+                  affichage: (str(block.affichage) as 'defilement' | 'grille' | null),
+                }}
               />
             )
 
