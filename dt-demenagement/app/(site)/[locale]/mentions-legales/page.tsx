@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import { setRequestLocale } from 'next-intl/server'
 import { getTranslations } from 'next-intl/server'
+import { getPayload } from 'payload'
+import config from '@payload-config'
 import { COMPANY, LOCALES } from '@/lib/constants'
 import { Breadcrumb } from '@/components/layout/Breadcrumb'
 
@@ -27,7 +29,17 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function MentionsLegalesPage({ params }: PageProps) {
   const { locale } = await params
   setRequestLocale(locale)
-  const t = await getTranslations({ locale, namespace: 'Legal' })
+  const [t, payload] = await Promise.all([
+    getTranslations({ locale, namespace: 'Legal' }),
+    getPayload({ config }),
+  ])
+  const settings = await payload
+    .findGlobal({ slug: 'settings', locale: 'fr', depth: 0 })
+    .catch(() => null) as { telephone1?: string | null; email?: string | null; adresse?: string | null } | null
+
+  const phone   = settings?.telephone1 ?? COMPANY.phone1
+  const email   = settings?.email      ?? COMPANY.email
+  const adresse = settings?.adresse    ?? COMPANY.address
 
   return (
     <>
@@ -49,9 +61,9 @@ export default async function MentionsLegalesPage({ params }: PageProps) {
 
           <LegalSection title={t('mentionsEditor')}>
             <LegalPara>{COMPANY.name}</LegalPara>
-            <LegalPara>{t('mentionsAddress')} : {COMPANY.address}</LegalPara>
-            <LegalPara>{t('mentionsPhone')} : {COMPANY.phone1}</LegalPara>
-            <LegalPara>{t('mentionsEmail')} : {COMPANY.email}</LegalPara>
+            <LegalPara>{t('mentionsAddress')} : {adresse}</LegalPara>
+            <LegalPara>{t('mentionsPhone')} : {phone}</LegalPara>
+            <LegalPara>{t('mentionsEmail')} : {email}</LegalPara>
           </LegalSection>
 
           <LegalSection title={t('mentionsHosting')}>

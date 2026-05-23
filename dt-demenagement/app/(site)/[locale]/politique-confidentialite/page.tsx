@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import { setRequestLocale } from 'next-intl/server'
 import { getTranslations } from 'next-intl/server'
+import { getPayload } from 'payload'
+import config from '@payload-config'
 import { COMPANY, LOCALES } from '@/lib/constants'
 import { Breadcrumb } from '@/components/layout/Breadcrumb'
 
@@ -27,7 +29,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function PolitiqueConfidentialitePage({ params }: PageProps) {
   const { locale } = await params
   setRequestLocale(locale)
-  const t = await getTranslations({ locale, namespace: 'Legal' })
+  const [t, payload] = await Promise.all([
+    getTranslations({ locale, namespace: 'Legal' }),
+    getPayload({ config }),
+  ])
+  const settings = await payload
+    .findGlobal({ slug: 'settings', locale: 'fr', depth: 0 })
+    .catch(() => null) as { email?: string | null; adresse?: string | null } | null
+
+  const email   = settings?.email   ?? COMPANY.email
+  const adresse = settings?.adresse ?? COMPANY.address
 
   return (
     <>
@@ -48,7 +59,7 @@ export default async function PolitiqueConfidentialitePage({ params }: PageProps
           </p>
 
           <LegalSection title={t('privacyDataController')}>
-            <LegalPara>{t('privacyDataControllerText', { company: COMPANY.name, address: COMPANY.address, email: COMPANY.email })}</LegalPara>
+            <LegalPara>{t('privacyDataControllerText', { company: COMPANY.name, address: adresse, email })}</LegalPara>
           </LegalSection>
 
           <LegalSection title={t('privacyDataCollected')}>
@@ -84,7 +95,7 @@ export default async function PolitiqueConfidentialitePage({ params }: PageProps
               t('privacyRightItem4'),
               t('privacyRightItem5'),
             ]} />
-            <LegalPara>{t('privacyRightsContact', { email: COMPANY.email })}</LegalPara>
+            <LegalPara>{t('privacyRightsContact', { email })}</LegalPara>
           </LegalSection>
 
           <LegalSection title={t('privacyThirdParty')}>

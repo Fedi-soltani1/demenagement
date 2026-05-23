@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import { setRequestLocale } from 'next-intl/server'
 import { getTranslations } from 'next-intl/server'
+import { getPayload } from 'payload'
+import config from '@payload-config'
 import { COMPANY, LOCALES } from '@/lib/constants'
 import { Breadcrumb } from '@/components/layout/Breadcrumb'
 
@@ -27,7 +29,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function PolitiqueCookiesPage({ params }: PageProps) {
   const { locale } = await params
   setRequestLocale(locale)
-  const t = await getTranslations({ locale, namespace: 'Legal' })
+  const [t, payload] = await Promise.all([
+    getTranslations({ locale, namespace: 'Legal' }),
+    getPayload({ config }),
+  ])
+  const settings = await payload
+    .findGlobal({ slug: 'settings', locale: 'fr', depth: 0 })
+    .catch(() => null) as { email?: string | null } | null
+
+  const email = settings?.email ?? COMPANY.email
 
   return (
     <>
@@ -70,7 +80,7 @@ export default async function PolitiqueCookiesPage({ params }: PageProps) {
           </LegalSection>
 
           <LegalSection title={t('cookiesContact')}>
-            <LegalPara>{t('cookiesContactText', { email: COMPANY.email })}</LegalPara>
+            <LegalPara>{t('cookiesContactText', { email })}</LegalPara>
           </LegalSection>
         </div>
       </main>
