@@ -164,15 +164,28 @@ export default async function HomePage({ params }: HomePageProps) {
     { blockType: 'cta' },
   ]
 
-  // Extraire le titre du bloc google-reviews depuis Payload (s'il est défini)
-  type BlockWithType = { blockType: string; titre?: string | null; [key: string]: unknown }
-  const googleReviewsTitre = (page?.layout as BlockWithType[] | undefined)
+  // Extraire les champs du bloc google-reviews depuis Payload (s'il est défini)
+  type BlockWithType = {
+    blockType: string
+    titre?: string | null
+    afficherNoteGlobale?: boolean | null
+    nombreAvis?: number | null
+    noteMinimum?: string | null
+    [key: string]: unknown
+  }
+  const grBlock = (page?.layout as BlockWithType[] | undefined)
     ?.find((b) => b.blockType === 'google-reviews')
-    ?.titre ?? null
 
   // GoogleReviewsBlock est un Server Component async — pré-rendu ici pour qu'il
   // puisse être passé comme slot React.ReactNode dans LivePreviewWrapper (Client Component)
-  const googleReviewsNode = <GoogleReviewsBlock cms={{ titre: googleReviewsTitre }} />
+  const googleReviewsNode = (
+    <GoogleReviewsBlock cms={{
+      titre:               grBlock?.titre ?? null,
+      afficherNoteGlobale: grBlock?.afficherNoteGlobale ?? null,
+      nombreAvis:          grBlock?.nombreAvis ?? null,
+      noteMinimum:         grBlock?.noteMinimum ? parseInt(grBlock.noteMinimum, 10) : null,
+    }} />
+  )
 
   return (
     <main>

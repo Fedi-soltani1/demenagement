@@ -2,7 +2,7 @@
 
 import React, { useRef } from 'react'
 import Link from 'next/link'
-import { useTranslations, useLocale } from 'next-intl'
+import { useTranslations } from 'next-intl'
 import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion'
 import { Truck, Building2, Construction, Warehouse, Package, Wrench, ArrowRight, type LucideIcon } from 'lucide-react'
 import { ShineBorderEffect } from '@/components/ui/ShineBorder'
@@ -58,7 +58,6 @@ function ServiceCard({
 }) {
   const t = useTranslations('Home.services')
   const tServices = useTranslations('Services')
-  const locale = useLocale()
   const cardRef = useRef<HTMLAnchorElement>(null)
   const Icon = getIconForService(service)
 
@@ -131,16 +130,17 @@ function ServiceCard({
 }
 
 interface ServicesCms {
-  titre?:    string | null
+  titre?:     string | null
   sousTitre?: string | null
-  ctaTexte?: string | null
+  ctaTexte?:  string | null
+  layout?:    'grille' | 'liste' | 'carrousel' | null
 }
 
 export function ServicesBlock({ services = [], cms }: { services?: ServiceData[]; cms?: ServicesCms }) {
   const t = useTranslations('Home.services')
-  const locale = useLocale()
 
   const displayServices = services.length > 0 ? services : SERVICES_FALLBACK
+  const layout = cms?.layout ?? 'grille'
 
   return (
     <section
@@ -170,12 +170,36 @@ export function ServicesBlock({ services = [], cms }: { services?: ServiceData[]
           </p>
         </motion.div>
 
-        {/* Grille services */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-grid mb-12">
-          {displayServices.map((service, i) => (
-            <ServiceCard key={service.id} service={service} index={i} />
-          ))}
-        </div>
+        {/* Grille 3 colonnes (défaut) */}
+        {layout === 'grille' && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-grid mb-12">
+            {displayServices.map((service, i) => (
+              <ServiceCard key={service.id} service={service} index={i} />
+            ))}
+          </div>
+        )}
+
+        {/* Liste 2 colonnes */}
+        {layout === 'liste' && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-grid mb-12">
+            {displayServices.map((service, i) => (
+              <ServiceCard key={service.id} service={service} index={i} />
+            ))}
+          </div>
+        )}
+
+        {/* Carrousel horizontal */}
+        {layout === 'carrousel' && (
+          <div className="relative mb-12">
+            <div className="flex gap-grid overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-4 -mx-container px-container">
+              {displayServices.map((service, i) => (
+                <div key={service.id} className="snap-start shrink-0 w-[280px] sm:w-[320px]">
+                  <ServiceCard service={service} index={i} />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* CTA voir tous */}
         <motion.div

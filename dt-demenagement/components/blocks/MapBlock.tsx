@@ -9,7 +9,11 @@ import type { MapVille, MapPays } from '@/components/blocks/ZonesMap'
 
 export type { MapVille, MapPays }
 
-interface MapCms { titre?: string | null; sousTitre?: string | null }
+interface MapCms {
+  titre?: string | null
+  sousTitre?: string | null
+  mode?: 'tunisie' | 'europe' | 'complet' | null
+}
 
 interface MapBlockProps {
   cms?: MapCms
@@ -19,6 +23,9 @@ interface MapBlockProps {
 
 export function MapBlock({ cms, villes = [], pays = [] }: MapBlockProps = {}) {
   const t = useTranslations('Home.map')
+  const mode = cms?.mode ?? 'complet'
+  const displayVilles = mode === 'europe' ? [] : villes
+  const displayPays   = mode === 'tunisie' ? [] : pays
 
   return (
     <section
@@ -49,9 +56,9 @@ export function MapBlock({ cms, villes = [], pays = [] }: MapBlockProps = {}) {
             </p>
 
             {/* Liste des villes publiées */}
-            {villes.length > 0 && (
+            {displayVilles.length > 0 && (
               <div className="grid grid-cols-2 gap-2">
-                {villes.map((v, i) => (
+                {displayVilles.map((v, i) => (
                   <motion.div
                     key={v.slug}
                     className="flex items-center gap-2 font-body text-sm text-[var(--color-text-muted)]"
@@ -75,7 +82,7 @@ export function MapBlock({ cms, villes = [], pays = [] }: MapBlockProps = {}) {
             viewport={{ once: true, margin: '-80px' }}
             transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
           >
-            <ZonesMapClient villes={villes} pays={pays} />
+            <ZonesMapClient villes={displayVilles} pays={displayPays} />
           </motion.div>
         </div>
       </div>

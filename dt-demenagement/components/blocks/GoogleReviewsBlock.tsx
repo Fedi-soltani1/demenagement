@@ -25,7 +25,12 @@ async function fetchGoogleReviews(baseUrl: string): Promise<GoogleReviewsRespons
   }
 }
 
-interface GoogleReviewsCms { titre?: string | null }
+interface GoogleReviewsCms {
+  titre?: string | null
+  afficherNoteGlobale?: boolean | null
+  nombreAvis?: number | null
+  noteMinimum?: number | null
+}
 
 export async function GoogleReviewsBlock({ cms }: { cms?: GoogleReviewsCms } = {}) {
   const t       = await getTranslations('Home.googleReviews')
@@ -33,17 +38,24 @@ export async function GoogleReviewsBlock({ cms }: { cms?: GoogleReviewsCms } = {
 
   const data = await fetchGoogleReviews(baseUrl)
 
+  const minNote = cms?.noteMinimum ?? 4
+  const limit   = cms?.nombreAvis  ?? 6
+  const reviews = data.reviews
+    .filter((r) => r.note >= minNote)
+    .slice(0, limit)
+
   return (
     <GoogleReviewsClient
       note={data.note}
       total={data.total}
-      reviews={data.reviews}
+      reviews={reviews}
       placeUrl={data.placeUrl}
       badgeLabel={t('badge')}
       title={cms?.titre ?? t('title')}
       ratingLabel={t('ratingLabel')}
       reviewsLabel={t('reviewsLabel')}
       ctaLabel={t('cta')}
+      afficherNoteGlobale={cms?.afficherNoteGlobale ?? true}
     />
   )
 }

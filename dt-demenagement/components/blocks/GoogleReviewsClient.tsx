@@ -9,15 +9,16 @@ import { ShineBorderEffect } from '@/components/ui/ShineBorder'
 import type { ReviewData } from '@/app/api/google-reviews/route'
 
 interface GoogleReviewsClientProps {
-  note:         number
-  total:        number
-  reviews:      ReviewData[]
-  placeUrl:     string | null
-  badgeLabel:   string
-  title:        string
-  ratingLabel:  string
-  reviewsLabel: string
-  ctaLabel:     string
+  note:                number
+  total:               number
+  reviews:             ReviewData[]
+  placeUrl:            string | null
+  badgeLabel:          string
+  title:               string
+  ratingLabel:         string
+  reviewsLabel:        string
+  ctaLabel:            string
+  afficherNoteGlobale: boolean
 }
 
 export function GoogleReviewsClient({
@@ -30,6 +31,7 @@ export function GoogleReviewsClient({
   ratingLabel,
   reviewsLabel,
   ctaLabel,
+  afficherNoteGlobale,
 }: GoogleReviewsClientProps) {
   return (
     <section
@@ -57,19 +59,21 @@ export function GoogleReviewsClient({
           </h2>
 
           {/* Badge note globale */}
-          <div className="relative inline-flex items-center gap-4 px-8 py-4 rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-card)]">
-            <GoogleIcon />
-            <div className="text-start">
-              <div className="flex items-center gap-2">
-                <span className="font-mono text-3xl font-bold text-[var(--color-gold)]">{note}</span>
-                <StarRating rating={5} size="sm" />
+          {afficherNoteGlobale && (
+            <div className="relative inline-flex items-center gap-4 px-8 py-4 rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-card)]">
+              <GoogleIcon />
+              <div className="text-start">
+                <div className="flex items-center gap-2">
+                  <span className="font-mono text-3xl font-bold text-[var(--color-gold)]">{note}</span>
+                  <StarRating rating={5} size="sm" />
+                </div>
+                <p className="font-body text-xs text-[var(--color-text-muted)]">
+                  {ratingLabel} {total.toLocaleString('fr-FR')} {reviewsLabel}
+                </p>
               </div>
-              <p className="font-body text-xs text-[var(--color-text-muted)]">
-                {ratingLabel} {total.toLocaleString('fr-FR')} {reviewsLabel}
-              </p>
+              <ShineBorderEffect duration={8} color={['#b52027', '#c9a84c', '#b52027']} />
             </div>
-            <ShineBorderEffect duration={8} color={['#b52027', '#c9a84c', '#b52027']} />
-          </div>
+          )}
         </motion.div>
 
         {/* Grille avis */}

@@ -328,7 +328,12 @@ export function BlockRenderer({
               <ServicesBlock
                 key={key}
                 services={adaptServices(block, services)}
-                cms={{ titre: str(block.titre), sousTitre: str(block.sousTitre), ctaTexte: str(block.ctaTexte) }}
+                cms={{
+                  titre:     str(block.titre),
+                  sousTitre: str(block.sousTitre),
+                  ctaTexte:  str(block.ctaTexte),
+                  layout:    (str(block.layout) as 'grille' | 'liste' | 'carrousel' | null),
+                }}
               />
             )
 
@@ -339,7 +344,11 @@ export function BlockRenderer({
             return (
               <MapBlock
                 key={key}
-                cms={{ titre: str(block.titre), sousTitre: str(block.sousTitre) }}
+                cms={{
+                  titre:     str(block.titre),
+                  sousTitre: str(block.sousTitre),
+                  mode:      (str(block.mode) as 'tunisie' | 'europe' | 'complet' | null),
+                }}
                 villes={adaptVilles(block, villes)}
                 pays={adaptPays(block, pays)}
               />
