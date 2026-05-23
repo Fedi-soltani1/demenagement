@@ -1,30 +1,34 @@
-import NextAuth from 'next-auth'
-import { authConfig } from './auth.config'
 import createMiddleware from 'next-intl/middleware'
 import { routing } from './i18n/routing'
-import { NextResponse } from 'next/server'
-
-// Auth Edge-safe — utilise authConfig (pas de DrizzleAdapter, pas de postgres)
-const { auth } = NextAuth(authConfig)
+import { type NextRequest, NextResponse } from 'next/server'
 
 const intlMiddleware = createMiddleware(routing)
 
-const PROTECTED_PATTERNS = [
-  /^\/espace-client/,
-]
+const PROTECTED_PATTERNS = [/^\/espace-client/]
 
-export default auth((req) => {
+// Vérifie la présence du cookie de session NextAuth (dev ou prod HTTPS)
+function hasSessionCookie(req: NextRequest): boolean {
+  return !!(
+    req.cookies.get('next-auth.session-token') ||
+    req.cookies.get('__Secure-next-auth.session-token') ||
+    req.cookies.get('authjs.session-token') ||
+    req.cookies.get('__Secure-authjs.session-token')
+  )
+}
+
+export default function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
+
   const isProtected = PROTECTED_PATTERNS.some((p) => p.test(pathname))
 
-  if (isProtected && !req.auth) {
+  if (isProtected && !hasSessionCookie(req)) {
     const loginUrl = new URL('/connexion', req.url)
     loginUrl.searchParams.set('callbackUrl', req.nextUrl.href)
     return NextResponse.redirect(loginUrl)
   }
 
   return intlMiddleware(req)
-})
+}
 
 export const config = {
   matcher: ['/((?!admin|api|_next|.*\\..*).*)',],
