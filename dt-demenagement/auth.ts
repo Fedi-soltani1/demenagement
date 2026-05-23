@@ -5,7 +5,7 @@ import { DrizzleAdapter } from '@auth/drizzle-adapter'
 import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
 import { env } from '@/lib/env'
-import { DEFAULT_LOCALE } from '@/lib/constants'
+import { authConfig } from './auth.config'
 import {
   authUsers,
   authAccounts,
@@ -37,20 +37,18 @@ if (!globalWithAuthPg._authPgClient) {
 const authDb = drizzle(globalWithAuthPg._authPgClient)
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  ...authConfig,
   adapter: DrizzleAdapter(authDb, {
     usersTable: authUsers,
     accountsTable: authAccounts,
     sessionsTable: authSessions,
     verificationTokensTable: authVerificationTokens,
   }),
-  session: { strategy: 'jwt' },
   providers: [
     Resend({
       apiKey: env.RESEND_API_KEY,
       from: env.EMAIL_FROM,
       name: 'Magic Link',
-      // Dev local : lien affiché dans le terminal — marche avec n'importe quelle adresse
-      // En prod : undefined → Resend envoie un vrai email (domaine vérifié requis)
       sendVerificationRequest: process.env.NODE_ENV === 'development'
         ? async ({ url, identifier }: { url: string; identifier: string }) => {
             console.log('\n🔑 MAGIC LINK ────────────────────────────────')
@@ -61,16 +59,4 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         : undefined,
     }),
   ],
-  pages: {
-    signIn: `/${DEFAULT_LOCALE}/connexion`,
-    verifyRequest: `/${DEFAULT_LOCALE}/connexion?verify=1`,
-    error: `/${DEFAULT_LOCALE}/connexion`,
-  },
-  callbacks: {
-    session({ session, token }) {
-      if (token?.sub) session.user.id = token.sub
-      return session
-    },
-  },
-
 })

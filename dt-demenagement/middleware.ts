@@ -1,12 +1,15 @@
-import { auth } from '@/auth'
+import NextAuth from 'next-auth'
+import { authConfig } from './auth.config'
 import createMiddleware from 'next-intl/middleware'
 import { routing } from './i18n/routing'
 import { NextResponse } from 'next/server'
 import { LOCALES, DEFAULT_LOCALE } from '@/lib/constants'
 
+// Auth Edge-safe — utilise authConfig (pas de DrizzleAdapter, pas de postgres)
+const { auth } = NextAuth(authConfig)
+
 const intlMiddleware = createMiddleware(routing)
 
-// Routes qui requièrent une session NextAuth valide
 const PROTECTED_PATTERNS = [
   /^\/(?:fr|ar|en)\/espace-client/,
 ]
@@ -16,7 +19,6 @@ export default auth((req) => {
   const isProtected = PROTECTED_PATTERNS.some((p) => p.test(pathname))
 
   if (isProtected && !req.auth) {
-    // Extraire la locale du pathname (ex: /ar/espace-client → ar)
     const segment = pathname.split('/')[1] ?? ''
     const locale = (LOCALES as readonly string[]).includes(segment)
       ? segment
@@ -26,11 +28,9 @@ export default auth((req) => {
     return NextResponse.redirect(loginUrl)
   }
 
-  // next-intl gère le routing i18n pour toutes les autres routes
   return intlMiddleware(req)
 })
 
 export const config = {
-  // Exclure : /admin (Payload CMS), /api, /_next, fichiers statiques
   matcher: ['/((?!admin|api|_next|.*\\..*).*)',],
 }
