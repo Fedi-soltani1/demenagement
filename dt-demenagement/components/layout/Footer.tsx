@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { PhoneLink } from '@/components/ui/PhoneLink'
 import { COMPANY, SERVICES, VILLES, PAYS } from '@/lib/constants'
-import type { NavService } from '@/components/layout/Navbar'
+import type { NavService, NavVille, NavPays, NavSettings } from '@/components/layout/Navbar'
 
 // ─── Icons ────────────────────────────────────────────────────────────────────
 
@@ -50,30 +50,59 @@ function IconMail() {
 
 // ─── Footer ───────────────────────────────────────────────────────────────────
 
-function Footer({ services: cmsServices }: { services?: NavService[] }) {
+function Footer({
+  services: cmsServices,
+  villes:   villesProp,
+  pays:     paysProp,
+  settings: settingsProp,
+}: {
+  services?:  NavService[]
+  villes?:    NavVille[]
+  pays?:      NavPays[]
+  settings?:  NavSettings
+}) {
   const t = useTranslations('Footer')
 
   const displayServices: NavService[] = (cmsServices && cmsServices.length > 0)
     ? cmsServices
     : SERVICES.map((s) => ({ nom: s.nom, slug: s.slug }))
 
+  const villes = (villesProp && villesProp.length > 0)
+    ? villesProp
+    : VILLES.map((v) => ({ nom: v.nom, slug: v.slug }))
+
+  const pays = (paysProp && paysProp.length > 0)
+    ? paysProp
+    : PAYS.map((p) => ({ nom: p.nom, slug: p.slug, drapeau: p.drapeau }))
+
+  const phone1          = settingsProp?.telephone1      ?? COMPANY.phone1
+  const phone2          = settingsProp?.telephone2      ?? COMPANY.phone2
+  const email           = settingsProp?.email           ?? COMPANY.email
+  const adresse         = settingsProp?.adresse         ?? COMPANY.address
+  const horaires        = settingsProp?.horaires        ?? null
+  const facebook        = settingsProp?.facebook        ?? COMPANY.facebook
+  const instagram       = settingsProp?.instagram       ?? COMPANY.instagram
+  const whatsapp        = settingsProp?.whatsapp        ?? COMPANY.whatsapp
+  const whatsappMessage = settingsProp?.whatsappMessage ?? COMPANY.whatsappMessage
+  const tagline         = settingsProp?.tagline         ?? null
+
   const currentYear = new Date().getFullYear()
 
   const socialLinks = [
     {
-      href: COMPANY.facebook,
+      href:  facebook,
       label: t('followFacebook'),
-      icon: <IconFacebook />,
+      icon:  <IconFacebook />,
     },
     {
-      href: COMPANY.instagram,
+      href:  instagram,
       label: t('followInstagram'),
-      icon: <IconInstagram />,
+      icon:  <IconInstagram />,
     },
     {
-      href: `https://wa.me/${COMPANY.whatsapp.replace('+', '')}?text=${encodeURIComponent(COMPANY.whatsappMessage)}`,
+      href:  `https://wa.me/${whatsapp.replace('+', '')}?text=${encodeURIComponent(whatsappMessage)}`,
       label: t('contactWhatsapp'),
-      icon: <IconWhatsApp />,
+      icon:  <IconWhatsApp />,
     },
   ] as const
 
@@ -98,27 +127,37 @@ function Footer({ services: cmsServices }: { services?: NavService[] }) {
               </span>
             </div>
             <p className="text-sm text-[var(--color-text-muted)] leading-relaxed mb-5">
-              {t('tagline')}
+              {tagline ?? t('tagline')}
             </p>
 
             {/* Contact info */}
             <div className="space-y-2 mb-5">
-              <div className="flex items-start gap-2 text-sm text-[var(--color-text-muted)]">
-                <IconMapPin />
-                <span>{t('address')}</span>
-              </div>
+              {adresse && (
+                <div className="flex items-start gap-2 text-sm text-[var(--color-text-muted)]">
+                  <IconMapPin />
+                  <span>{adresse}</span>
+                </div>
+              )}
+              {horaires && (
+                <div className="flex items-start gap-2 text-sm text-[var(--color-text-muted)]">
+                  <span className="shrink-0 mt-0.5">🕐</span>
+                  <span className="whitespace-pre-line">{horaires}</span>
+                </div>
+              )}
               <div className="flex items-center gap-2">
-                <PhoneLink numero={COMPANY.phone1} source="footer" />
+                <PhoneLink numero={phone1} source="footer" />
               </div>
-              <div className="flex items-center gap-2">
-                <PhoneLink numero={COMPANY.phone2} source="footer" />
-              </div>
+              {phone2 && (
+                <div className="flex items-center gap-2">
+                  <PhoneLink numero={phone2} source="footer" />
+                </div>
+              )}
               <a
-                href={`mailto:${COMPANY.email}`}
+                href={`mailto:${email}`}
                 className="flex items-center gap-2 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-red)] transition-colors"
               >
                 <IconMail />
-                <span>{COMPANY.email}</span>
+                <span>{email}</span>
               </a>
             </div>
 
@@ -167,7 +206,7 @@ function Footer({ services: cmsServices }: { services?: NavService[] }) {
               {t('tunisiaLabel')}
             </p>
             <ul className="space-y-2 mb-4">
-              {VILLES.slice(0, 6).map((ville) => (
+              {villes.slice(0, 6).map((ville) => (
                 <li key={ville.slug}>
                   <Link
                     href={`/villes/${ville.slug}`}
@@ -190,13 +229,13 @@ function Footer({ services: cmsServices }: { services?: NavService[] }) {
               {t('europeLabel')}
             </p>
             <ul className="space-y-2">
-              {PAYS.slice(0, 4).map((pays) => (
-                <li key={pays.slug}>
+              {pays.slice(0, 4).map((p) => (
+                <li key={p.slug}>
                   <Link
                     href="/zones"
                     className="text-sm text-[var(--color-text-muted)] hover:text-[var(--color-red)] transition-colors"
                   >
-                    {pays.drapeau} {pays.nom}
+                    {p.drapeau} {p.nom}
                   </Link>
                 </li>
               ))}
@@ -252,7 +291,7 @@ function Footer({ services: cmsServices }: { services?: NavService[] }) {
       <div className="border-t border-[var(--color-border)]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-xs text-[var(--color-text-muted)] text-center sm:text-start">
-            © {currentYear} {COMPANY.name}. {t('rights')}
+            © {currentYear} DT Déménagement Tunisie. {t('rights')}
           </p>
           <nav
             aria-label={t('legalNav')}

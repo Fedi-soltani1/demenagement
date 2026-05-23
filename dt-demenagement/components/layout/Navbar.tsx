@@ -10,7 +10,21 @@ import { MenuToggleIcon } from '@/components/ui/MenuToggleIcon'
 import { COMPANY, VILLES, PAYS } from '@/lib/constants'
 import { useDevisModal } from '@/components/layout/DevisModal'
 
-export type NavService = { nom: string; slug: string }
+export type NavService  = { nom: string; slug: string }
+export type NavVille    = { nom: string; slug: string }
+export type NavPays     = { nom: string; slug: string; drapeau: string }
+export type NavSettings = {
+  telephone1:       string
+  telephone2?:      string | null
+  whatsapp:         string
+  whatsappMessage:  string
+  email:            string
+  adresse?:         string | null
+  horaires?:        string | null
+  facebook?:        string | null
+  instagram?:       string | null
+  tagline?:         string | null
+}
 
 // ─── Icons ────────────────────────────────────────────────────────────────────
 
@@ -86,7 +100,21 @@ const ctaClass =
 
 // ─── Navbar ───────────────────────────────────────────────────────────────────
 
-function Navbar({ services = [] }: { services?: NavService[] }) {
+function Navbar({
+  services = [],
+  villes:   villesProp,
+  pays:     paysProp,
+  settings: settingsProp,
+}: {
+  services?:  NavService[]
+  villes?:    NavVille[]
+  pays?:      NavPays[]
+  settings?:  NavSettings
+}) {
+  const villes   = villesProp  ?? VILLES.map((v) => ({ nom: v.nom, slug: v.slug }))
+  const pays     = paysProp    ?? PAYS.map((p) => ({ nom: p.nom, slug: p.slug, drapeau: p.drapeau }))
+  const phone1   = settingsProp?.telephone1 ?? COMPANY.phone1
+  const phone2   = settingsProp?.telephone2 ?? COMPANY.phone2
   const t = useTranslations('Navbar')
   const pathname = usePathname()
 
@@ -255,7 +283,7 @@ function Navbar({ services = [] }: { services?: NavService[] }) {
                       {t('tunisiaLabel')}
                     </p>
                     <div className="grid grid-cols-2 gap-0.5 mb-4">
-                      {VILLES.slice(0, 8).map((ville) => (
+                      {villes.slice(0, 8).map((ville) => (
                         <Link
                           key={ville.slug}
                           href={`/villes/${ville.slug}`}
@@ -270,14 +298,14 @@ function Navbar({ services = [] }: { services?: NavService[] }) {
                       {t('europeLabel')}
                     </p>
                     <div className="flex flex-wrap gap-x-1 gap-y-0.5 mb-3">
-                      {PAYS.map((pays) => (
+                      {pays.map((p) => (
                         <Link
-                          key={pays.slug}
+                          key={p.slug}
                           href="/zones"
                           role="menuitem"
                           className="px-2 py-1 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text-light)] hover:bg-white/5 rounded transition-colors"
                         >
-                          {pays.drapeau} {pays.nom}
+                          {p.drapeau} {p.nom}
                         </Link>
                       ))}
                     </div>
@@ -308,7 +336,7 @@ function Navbar({ services = [] }: { services?: NavService[] }) {
 
             {/* ── Desktop right actions ── */}
             <div className="hidden lg:flex items-center gap-2 ms-auto ps-4">
-              <PhoneLink numero={COMPANY.phone1} source="navbar" />
+              <PhoneLink numero={phone1} source="navbar" />
               <ThemeToggle labelDark={t('switchToDark')} labelLight={t('switchToLight')} />
               <button
                 type="button"
@@ -387,7 +415,7 @@ function Navbar({ services = [] }: { services?: NavService[] }) {
                       {t('tunisiaLabel')}
                     </p>
                     <div className="grid grid-cols-2 gap-1 mb-3">
-                      {VILLES.slice(0, 8).map((ville) => (
+                      {villes.slice(0, 8).map((ville) => (
                         <Link
                           key={ville.slug}
                           href={`/villes/${ville.slug}`}
@@ -401,13 +429,13 @@ function Navbar({ services = [] }: { services?: NavService[] }) {
                       {t('europeLabel')}
                     </p>
                     <div className="space-y-1 mb-2">
-                      {PAYS.map((pays) => (
+                      {pays.map((p) => (
                         <Link
-                          key={pays.slug}
+                          key={p.slug}
                           href="/zones"
                           className="block py-1 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text-light)] transition-colors"
                         >
-                          {pays.drapeau} {pays.nom}
+                          {p.drapeau} {p.nom}
                         </Link>
                       ))}
                     </div>
@@ -436,8 +464,8 @@ function Navbar({ services = [] }: { services?: NavService[] }) {
             {/* Mobile bottom actions */}
             <div className="px-4 py-4 border-t border-[var(--color-border)] space-y-3">
               <div className="flex flex-col gap-2">
-                <PhoneLink numero={COMPANY.phone1} source="navbar-mobile" />
-                <PhoneLink numero={COMPANY.phone2} source="navbar-mobile" />
+                <PhoneLink numero={phone1} source="navbar-mobile" />
+                {phone2 && <PhoneLink numero={phone2} source="navbar-mobile" />}
               </div>
               <button
                 type="button"

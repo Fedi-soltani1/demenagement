@@ -99,6 +99,14 @@ const Settings: GlobalConfig = {
 
     // ── Options du site ───────────────────────────────────────────────────────
     {
+      name: 'tagline',
+      label: '💬 Accroche footer (slogan court)',
+      type: 'text',
+      localized: true,
+      defaultValue: 'N°1 du déménagement en Tunisie depuis plus de 15 ans. Fiabilité, soin et ponctualité à chaque déménagement.',
+      admin: { description: 'Texte affiché sous le logo dans le footer.' },
+    },
+    {
       name: 'bandeauAlerte',
       label: '🔔 Bandeau d\'annonce en haut du site (optionnel)',
       type: 'text',
