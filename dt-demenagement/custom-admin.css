@@ -847,7 +847,7 @@ label.field-label {
 .collapsible {
   border: 1px solid var(--dt-border) !important;
   border-radius: 10px !important;
-  overflow: visible !important;
+  overflow: hidden !important;
   margin-bottom: 16px !important;
   box-shadow: 0 1px 2px rgba(0,0,0,0.03) !important;
 }
@@ -862,7 +862,6 @@ label.field-label {
   letter-spacing: 0.3px !important;
   border-bottom: none !important;
   margin-bottom: 0 !important;
-  border-radius: 10px 10px 0 0 !important;
 }
 
 .collapsible__content {
@@ -1779,8 +1778,16 @@ input[type='radio']:checked {
   border: 1px solid var(--dt-border) !important;
   border-radius: 8px !important;
   box-shadow: 0 8px 24px rgba(0,0,0,0.12) !important;
-  z-index: 300 !important;
-  overflow: visible !important;
+  z-index: 9999 !important;
+  overflow: hidden !important;
+}
+
+/* Quand ReactSelect utilise un portal (menuPortalTarget) — échappe overflow:hidden */
+.rs__menu-portal,
+.ReactSelect__menu-portal,
+[class$='__menu-portal'],
+[class*='-menu-portal'] {
+  z-index: 9999 !important;
 }
 
 .rs__menu-list,
