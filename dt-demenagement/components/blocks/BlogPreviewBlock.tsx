@@ -76,7 +76,7 @@ function normalizeArticle(a: BlogArticleData): NormalizedArticle {
   }
 }
 
-interface BlogCms { titre?: string | null; sousTitre?: string | null; ctaTexte?: string | null }
+interface BlogCms { titre?: string | null; sousTitre?: string | null; ctaTexte?: string | null; nombreArticles?: number | null }
 
 export function BlogPreviewBlock({ articles = [], cms }: { articles?: BlogArticleData[]; cms?: BlogCms }) {
   const t = useTranslations('Home.blog')
@@ -109,6 +109,11 @@ export function BlogPreviewBlock({ articles = [], cms }: { articles?: BlogArticl
             >
               {cms?.titre ?? t('title')}
             </h2>
+            {(cms?.sousTitre) && (
+              <p className="font-body text-[var(--color-text-muted)] mt-3 text-base leading-relaxed max-w-2xl">
+                {cms.sousTitre}
+              </p>
+            )}
           </div>
           <Link
             href={`/${locale}/blog`}

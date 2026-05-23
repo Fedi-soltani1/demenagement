@@ -5,13 +5,13 @@ import { setRequestLocale } from 'next-intl/server'
 import Image from 'next/image'
 import Link from 'next/link'
 import config from '@payload-config'
+import { unstable_noStore as noStore } from 'next/cache'
 import { COMPANY, LOCALES } from '@/lib/constants'
 import { buildMetadata } from '@/lib/seo'
 import { Breadcrumb } from '@/components/layout/Breadcrumb'
 import { Clock, Calendar, User, ArrowLeft, Share2 } from 'lucide-react'
 
-// ISR — articles mis à jour régulièrement
-export const revalidate = 3600
+export const dynamic = 'force-dynamic'
 
 interface BlogPageProps {
   params: Promise<{ locale: string; slug: string }>
@@ -40,6 +40,7 @@ type ArticleDoc = {
 }
 
 async function getArticle(slug: string, locale: string): Promise<ArticleDoc | null> {
+  noStore()
   const payload = await getPayload({ config })
   const result = await payload.find({
     collection: 'blog',

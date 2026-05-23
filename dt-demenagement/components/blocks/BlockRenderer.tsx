@@ -322,14 +322,47 @@ export function BlockRenderer({
               />
             )
 
-          case 'blog-preview':
+          case 'blog-preview': {
+            type RawArticle = {
+              id?: string | number
+              titre?: string
+              slug?: string
+              extrait?: string | null
+              imageAlaUne?: { url?: string | null } | null
+              tempsLecture?: number | null
+              datePublication?: string | null
+              categories?: { id?: string; nom?: string }[] | null
+            }
+            const rawArticles = arr<RawArticle>(block.articles)
+            const manualArticles: BlogArticleData[] = rawArticles
+              .filter((a) => a && typeof a === 'object' && typeof a.slug === 'string')
+              .map((a) => ({
+                id:              String(a.id ?? ''),
+                titre:           a.titre ?? '',
+                slug:            a.slug ?? '',
+                extrait:         a.extrait ?? null,
+                imageAlaUne:     a.imageAlaUne ?? null,
+                tempsLecture:    a.tempsLecture ?? null,
+                datePublication: a.datePublication ?? null,
+                categories:      a.categories ?? null,
+              }))
+            const nombreArticles = num(block.nombreArticles) ?? 3
+            const articlesToShow = manualArticles.length > 0
+              ? manualArticles
+              : blog.slice(0, nombreArticles)
             return (
               <BlogPreviewBlock
                 key={key}
-                articles={blog}
-                cms={{ titre: str(block.titre), sousTitre: str(block.sousTitre), ctaTexte: str(block.ctaTexte) }}
+                articles={articlesToShow}
+                cms={{
+                  titre:          str(block.titre),
+                  sousTitre:      str(block.sousTitre),
+                  ctaTexte:       str(block.ctaTexte),
+                  nombreArticles: nombreArticles,
+                }}
               />
             )
+          }
 
           case 'cta':
             return <CTAFinalBlock key={key} cms={adaptCta(block)} />

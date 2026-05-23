@@ -80,16 +80,17 @@ export default buildConfig({
         const base = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
         const slug = data.slug ?? ''
         const loc  = locale.code
+        const col  = collectionConfig?.slug
 
-        if (collectionConfig?.slug === 'services') {
-          return `${base}/${loc}/services/${slug}`
-        }
+        if (col === 'services') return `${base}/${loc}/services/${slug}`
+        if (col === 'blog')     return `${base}/${loc}/blog/${slug}`
+        if (col === 'villes')   return `${base}/${loc}/villes/${slug}`
 
         // Pages collection
         if (slug === 'accueil' || slug === '') return `${base}/${loc}`
         return `${base}/${loc}/${slug}`
       },
-      collections: ['pages', 'services'],
+      collections: ['pages', 'services', 'blog', 'villes'],
       breakpoints: [
         { label: 'Mobile',   name: 'mobile',  width: 375,  height: 812  },
         { label: 'Tablette', name: 'tablet',  width: 768,  height: 1024 },

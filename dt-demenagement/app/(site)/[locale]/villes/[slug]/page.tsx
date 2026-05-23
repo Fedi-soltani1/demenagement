@@ -2,36 +2,83 @@ import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { setRequestLocale } from 'next-intl/server'
 import { getTranslations } from 'next-intl/server'
+import { unstable_noStore as noStore } from 'next/cache'
+import { getPayload } from 'payload'
+import config from '@payload-config'
 import Link from 'next/link'
-import { COMPANY, LOCALES, VILLES, SERVICES } from '@/lib/constants'
+import { COMPANY, LOCALES } from '@/lib/constants'
 import { buildMetadata } from '@/lib/seo'
 import { PhoneLink } from '@/components/ui/PhoneLink'
 import { Breadcrumb } from '@/components/layout/Breadcrumb'
 import { MapPin, CheckCircle } from 'lucide-react'
 
-export const revalidate = 604800
+export const dynamic = 'force-dynamic'
 
 interface VillePageProps {
   params: Promise<{ locale: string; slug: string }>
 }
 
-function getVille(slug: string) {
-  return VILLES.find((v) => v.slug === slug) ?? null
+type VilleDoc = {
+  id: string | number
+  nom: string
+  slug: string
+  region: string
+  servicesDisponibles?: string[] | null
+  seo?: { metaTitle?: string | null; metaDescription?: string | null } | null
 }
 
-export function generateStaticParams() {
-  return LOCALES.flatMap((locale) =>
-    VILLES.map((v) => ({ locale, slug: v.slug }))
-  )
+type ServiceDoc = { id: string | number; nom: string; slug: string }
+
+async function getVilleData(slug: string, locale: string) {
+  noStore()
+  const payload = await getPayload({ config })
+  const loc = locale as 'fr' | 'ar' | 'en'
+
+  const [villeRes, servicesRes] = await Promise.all([
+    payload.find({
+      collection: 'villes',
+      where: { slug: { equals: slug }, publie: { equals: true } },
+      locale: loc,
+      limit: 1,
+      depth: 0,
+    }),
+    payload.find({
+      collection: 'services',
+      where: { publie: { equals: true } },
+      sort: 'ordre',
+      locale: loc,
+      limit: 20,
+      select: { nom: true, slug: true },
+      depth: 0,
+    }),
+  ])
+
+  const ville = (villeRes.docs[0] as VilleDoc) ?? null
+  const allServices = servicesRes.docs as ServiceDoc[]
+
+  if (!ville) return null
+
+  // Filtrer les services selon servicesDisponibles si défini
+  const selectedSlugs = ville.servicesDisponibles ?? []
+  const services = selectedSlugs.length > 0
+    ? allServices.filter((s) => selectedSlugs.includes(s.slug))
+    : allServices
+
+  return { ville, services }
+}
+
+export async function generateStaticParams() {
+  return LOCALES.flatMap((locale) => [{ locale, slug: 'tunis' }])
 }
 
 export async function generateMetadata({ params }: VillePageProps): Promise<Metadata> {
   const { locale, slug } = await params
-  const ville = getVille(slug)
-  if (!ville) return { title: 'Ville introuvable' }
+  const data = await getVilleData(slug, locale)
+  if (!data) return { title: 'Ville introuvable' }
+  const { ville } = data
 
-  const title       = `Déménagement ${ville.nom} — ${COMPANY.name}`
-  const description = `DT Déménagement assure tous vos déménagements à ${ville.nom} et dans toute la région ${ville.region}. Devis gratuit en 24h.`
+  const title       = ville.seo?.metaTitle       ?? `Déménagement ${ville.nom} — ${COMPANY.name}`
+  const description = ville.seo?.metaDescription ?? `DT Déménagement assure tous vos déménagements à ${ville.nom} et dans toute la région ${ville.region}. Devis gratuit en 24h.`
 
   return buildMetadata({ title, description, path: `/villes/${slug}`, locale })
 }
@@ -40,9 +87,10 @@ export default async function VillePage({ params }: VillePageProps) {
   const { locale, slug } = await params
   setRequestLocale(locale)
 
-  const ville = getVille(slug)
-  if (!ville) notFound()
+  const data = await getVilleData(slug, locale)
+  if (!data) notFound()
 
+  const { ville, services } = data
   const t = await getTranslations({ locale, namespace: 'Villes' })
 
   return (
@@ -106,27 +154,29 @@ export default async function VillePage({ params }: VillePageProps) {
       </section>
 
       {/* Services disponibles */}
-      <section className="py-section px-container bg-[var(--color-bg-dark2)]">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="font-heading font-bold text-[var(--color-text-light)] mb-8 text-2xl">
-            {t('servicesTitle', { name: ville.nom })}
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {SERVICES.map((service) => (
-              <Link
-                key={service.slug}
-                href={`/${locale}/services/${service.slug}`}
-                className="group flex items-center gap-3 p-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-card)] hover:border-[var(--color-red)]/30 hover:bg-[var(--color-red)]/5 transition-all duration-200"
-              >
-                <CheckCircle className="w-5 h-5 text-[var(--color-red)] flex-shrink-0" aria-hidden="true" />
-                <span className="font-body text-[var(--color-text-muted)] group-hover:text-[var(--color-text-light)] transition-colors duration-200">
-                  {service.nom}
-                </span>
-              </Link>
-            ))}
+      {services.length > 0 && (
+        <section className="py-section px-container bg-[var(--color-bg-dark2)]">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="font-heading font-bold text-[var(--color-text-light)] mb-8 text-2xl">
+              {t('servicesTitle', { name: ville.nom })}
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {services.map((service) => (
+                <Link
+                  key={service.slug}
+                  href={`/${locale}/services/${service.slug}`}
+                  className="group flex items-center gap-3 p-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-card)] hover:border-[var(--color-red)]/30 hover:bg-[var(--color-red)]/5 transition-all duration-200"
+                >
+                  <CheckCircle className="w-5 h-5 text-[var(--color-red)] flex-shrink-0" aria-hidden="true" />
+                  <span className="font-body text-[var(--color-text-muted)] group-hover:text-[var(--color-text-light)] transition-colors duration-200">
+                    {service.nom}
+                  </span>
+                </Link>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* CTA */}
       <section className="py-16 px-container bg-[var(--color-bg-dark)] border-t border-[var(--color-border)]">
