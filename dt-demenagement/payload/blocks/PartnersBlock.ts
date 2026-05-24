@@ -1,5 +1,7 @@
 import type { Block } from 'payload'
 import { actifField } from '../fields/actifField'
+import { sectionOptionsFields } from './shared/sectionOptionsFields'
+import { typographieTitreField } from './shared/typographyFields'
 
 export const PartnersBlock: Block = {
   slug: 'partners',
@@ -32,5 +34,7 @@ export const PartnersBlock: Block = {
         { label: 'Grille statique — logos fixes et espacés',              value: 'grille' },
       ],
     },
+    typographieTitreField,
+    ...sectionOptionsFields,
   ],
 }

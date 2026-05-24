@@ -1,11 +1,17 @@
 'use client'
 
 import React, { useRef } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion'
 import { Truck, Building2, Construction, Warehouse, Package, Wrench, ArrowRight, type LucideIcon } from 'lucide-react'
 import { ShineBorderEffect } from '@/components/ui/ShineBorder'
+import type { SectionOptions, TypographieOptions } from '@/lib/sectionOptions'
+import {
+  resolveBg, resolveSpacing, resolveHeight, resolveVisibility, resolveAnchorId,
+  resolveOverlay, resolveTitleTypography, resolveTextTypography, resolveHeadingTag, cx,
+} from '@/lib/sectionOptions'
 
 export type ServiceData = {
   id: string
@@ -136,18 +142,43 @@ interface ServicesCms {
   layout?:    'grille' | 'liste' | 'carrousel' | null
 }
 
-export function ServicesBlock({ services = [], cms }: { services?: ServiceData[]; cms?: ServicesCms }) {
+export function ServicesBlock({ services = [], cms, sectionOptions, typoTitre, typoTexte }: {
+  services?: ServiceData[]
+  cms?: ServicesCms
+  sectionOptions?: SectionOptions | null
+  typoTitre?: TypographieOptions | null
+  typoTexte?: TypographieOptions | null
+}) {
   const t = useTranslations('Home.services')
 
   const displayServices = services.length > 0 ? services : SERVICES_FALLBACK
   const layout = cms?.layout ?? 'grille'
 
+  const sectionBg  = sectionOptions?.imageFond ? '' : resolveBg(sectionOptions, 'sombre')
+  const sectionPy  = sectionOptions?.espacement ? resolveSpacing(sectionOptions) : 'py-section'
+  const sectionH   = resolveHeight(sectionOptions)
+  const sectionVis = resolveVisibility(sectionOptions)
+  const anchorId   = resolveAnchorId(sectionOptions)
+  const overlay    = sectionOptions?.imageFond ? resolveOverlay(sectionOptions) : ''
+  const hasImgFond = !!sectionOptions?.imageFond
+  const innerClass = hasImgFond ? 'relative z-10' : ''
+  const titleTypo  = resolveTitleTypography(typoTitre)
+  const textTypo   = resolveTextTypography(typoTexte)
+  const HeadingTag = resolveHeadingTag(sectionOptions)
+
   return (
     <section
-      className="py-section px-container bg-[var(--color-bg-dark)]"
+      id={anchorId}
+      className={cx('relative px-container', sectionBg, sectionPy, sectionH, sectionVis)}
       aria-labelledby="services-title"
     >
-      <div className="max-w-7xl mx-auto">
+      {hasImgFond && (
+        <>
+          <Image src={sectionOptions!.imageFond!} alt="" fill className="object-cover" sizes="100vw" aria-hidden="true" />
+          {overlay && <div className={cx('absolute inset-0', overlay)} aria-hidden="true" />}
+        </>
+      )}
+      <div className={cx('max-w-7xl mx-auto', innerClass)}>
         <motion.div
           className="text-center max-w-2xl mx-auto mb-16"
           initial={{ opacity: 0, y: 30 }}
@@ -158,14 +189,14 @@ export function ServicesBlock({ services = [], cms }: { services?: ServiceData[]
           <span className="inline-block mb-4 px-4 py-1.5 rounded-full border border-[var(--color-red)]/30 bg-[var(--color-red)]/8 text-[var(--color-red)] text-xs font-body font-semibold uppercase tracking-widest">
             {t('badge')}
           </span>
-          <h2
+          <HeadingTag
             id="services-title"
-            className="font-heading font-bold text-[var(--color-text-light)] mb-4"
-            style={{ fontSize: 'clamp(1.8rem, 3.5vw, 3rem)' }}
+            className={cx('font-heading font-bold text-[var(--color-text-light)] mb-4', titleTypo)}
+            style={typoTitre?.tailleTexte ? undefined : { fontSize: 'clamp(1.8rem, 3.5vw, 3rem)' }}
           >
             {cms?.titre ?? t('title')}
-          </h2>
-          <p className="font-body text-[var(--color-text-muted)] leading-relaxed">
+          </HeadingTag>
+          <p className={cx('font-body text-[var(--color-text-muted)] leading-relaxed', textTypo)}>
             {cms?.sousTitre ?? t('subtitle')}
           </p>
         </motion.div>

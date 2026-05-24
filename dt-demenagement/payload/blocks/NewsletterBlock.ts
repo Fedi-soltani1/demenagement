@@ -1,5 +1,7 @@
 import type { Block } from 'payload'
 import { actifField } from '../fields/actifField'
+import { sectionOptionsFields } from './shared/sectionOptionsFields'
+import { typographieTitreField, typographieTexteField } from './shared/typographyFields'
 
 export const NewsletterBlock: Block = {
   slug: 'newsletter',
@@ -44,5 +46,8 @@ export const NewsletterBlock: Block = {
       localized: true,
       admin: { description: 'Ex: En vous inscrivant, vous acceptez de recevoir nos emails. Désinscription possible à tout moment. — Requis légalement pour collecter des emails.' },
     },
+    typographieTitreField,
+    typographieTexteField,
+    ...sectionOptionsFields,
   ],
 }

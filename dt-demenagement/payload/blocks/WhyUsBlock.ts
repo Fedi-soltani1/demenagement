@@ -1,5 +1,7 @@
 import type { Block } from 'payload'
 import { actifField } from '../fields/actifField'
+import { sectionOptionsFields } from './shared/sectionOptionsFields'
+import { typographieTitreField, typographieTexteField } from './shared/typographyFields'
 
 export const WhyUsBlock: Block = {
   slug: 'why-us',
@@ -54,5 +56,8 @@ export const WhyUsBlock: Block = {
         },
       ],
     },
+    typographieTitreField,
+    typographieTexteField,
+    ...sectionOptionsFields,
   ],
 }

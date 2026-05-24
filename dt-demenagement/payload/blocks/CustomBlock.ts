@@ -1,5 +1,7 @@
 import type { Block } from 'payload'
 import { actifField } from '../fields/actifField'
+import { sectionOptionsFields } from './shared/sectionOptionsFields'
+import { typographieTitreField, typographieTexteField } from './shared/typographyFields'
 
 export const CustomBlock: Block = {
   slug: 'custom',
@@ -94,6 +96,8 @@ export const CustomBlock: Block = {
         { label: 'Pleine largeur — occupe toute la page',       value: 'pleine-largeur' },
       ],
     },
+    typographieTitreField,
+    typographieTexteField,
     {
       name: 'espacement',
       label: 'Espacement vertical (marges haut/bas)',
@@ -105,5 +109,6 @@ export const CustomBlock: Block = {
         { label: 'Compact — moins d\'espace, section dense', value: 'compact' },
       ],
     },
+    ...sectionOptionsFields,
   ],
 }

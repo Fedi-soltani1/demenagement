@@ -71,22 +71,23 @@ export default buildConfig({
       url: ({
         data,
         collectionConfig,
+        locale,
       }: {
         data: { slug?: string }
         locale: { code: string }
         collectionConfig?: { slug: string }
       }) => {
-        const base = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
-        const slug = data.slug ?? ''
-        const col  = collectionConfig?.slug
+        const base   = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
+        const secret = process.env.PAYLOAD_SECRET ?? ''
+        const slug   = data.slug ?? ''
+        const col    = collectionConfig?.slug
+        const loc    = locale?.code ?? 'fr'
+        const draft  = `${base}/api/draft?secret=${secret}&locale=${loc}`
 
-        if (col === 'services') return `${base}/services/${slug}`
-        if (col === 'blog')     return `${base}/blog/${slug}`
-        if (col === 'villes')   return `${base}/villes/${slug}`
-
-        // Pages collection
-        if (slug === 'accueil' || slug === '') return base
-        return `${base}/${slug}`
+        if (col === 'services') return `${draft}&collection=services&slug=${slug}`
+        if (col === 'blog')     return `${draft}&collection=blog&slug=${slug}`
+        if (col === 'villes')   return `${draft}&collection=villes&slug=${slug}`
+        return `${draft}&collection=pages&slug=${slug}`
       },
       collections: ['pages', 'services', 'blog', 'villes'],
       breakpoints: [

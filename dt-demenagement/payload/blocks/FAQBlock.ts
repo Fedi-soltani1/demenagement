@@ -1,5 +1,7 @@
 import type { Block } from 'payload'
 import { actifField } from '../fields/actifField'
+import { sectionOptionsFields } from './shared/sectionOptionsFields'
+import { typographieTitreField } from './shared/typographyFields'
 
 export const FAQBlock: Block = {
   slug: 'faq',
@@ -43,5 +45,7 @@ export const FAQBlock: Block = {
       defaultValue: 8,
       admin: { description: 'Ex: 8 questions. Les questions sont triées par ordre de publication.' },
     },
+    typographieTitreField,
+    ...sectionOptionsFields,
   ],
 }

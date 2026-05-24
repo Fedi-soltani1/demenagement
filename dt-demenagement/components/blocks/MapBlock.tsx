@@ -1,11 +1,17 @@
 'use client'
 
 import React from 'react'
+import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { motion } from 'framer-motion'
 import { MapPin } from 'lucide-react'
 import { ZonesMapClient } from '@/components/blocks/ZonesMapClient'
 import type { MapVille, MapPays } from '@/components/blocks/ZonesMap'
+import type { SectionOptions, TypographieOptions } from '@/lib/sectionOptions'
+import {
+  resolveBg, resolveSpacing, resolveHeight, resolveVisibility, resolveAnchorId,
+  resolveOverlay, resolveTitleTypography, resolveTextTypography, resolveHeadingTag, cx,
+} from '@/lib/sectionOptions'
 
 export type { MapVille, MapPays }
 
@@ -19,20 +25,42 @@ interface MapBlockProps {
   cms?: MapCms
   villes?: MapVille[]
   pays?: MapPays[]
+  sectionOptions?: SectionOptions | null
+  typoTitre?: TypographieOptions | null
+  typoTexte?: TypographieOptions | null
 }
 
-export function MapBlock({ cms, villes = [], pays = [] }: MapBlockProps = {}) {
+export function MapBlock({ cms, villes = [], pays = [], sectionOptions, typoTitre, typoTexte }: MapBlockProps = {}) {
   const t = useTranslations('Home.map')
   const mode = cms?.mode ?? 'complet'
   const displayVilles = mode === 'europe' ? [] : villes
   const displayPays   = mode === 'tunisie' ? [] : pays
 
+  const sectionBg  = sectionOptions?.imageFond ? '' : resolveBg(sectionOptions, 'sombre2')
+  const sectionPy  = sectionOptions?.espacement ? resolveSpacing(sectionOptions) : 'py-section'
+  const sectionH   = resolveHeight(sectionOptions)
+  const sectionVis = resolveVisibility(sectionOptions)
+  const anchorId   = resolveAnchorId(sectionOptions)
+  const overlay    = sectionOptions?.imageFond ? resolveOverlay(sectionOptions) : ''
+  const hasImgFond = !!sectionOptions?.imageFond
+  const innerClass = hasImgFond ? 'relative z-10' : ''
+  const titleTypo  = resolveTitleTypography(typoTitre)
+  const textTypo   = resolveTextTypography(typoTexte)
+  const HeadingTag = resolveHeadingTag(sectionOptions)
+
   return (
     <section
-      className="py-section px-container bg-[var(--color-bg-dark2)]"
+      id={anchorId}
+      className={cx('relative px-container', sectionBg, sectionPy, sectionH, sectionVis)}
       aria-labelledby="map-title"
     >
-      <div className="max-w-7xl mx-auto">
+      {hasImgFond && (
+        <>
+          <Image src={sectionOptions!.imageFond!} alt="" fill className="object-cover" sizes="100vw" aria-hidden="true" />
+          {overlay && <div className={cx('absolute inset-0', overlay)} aria-hidden="true" />}
+        </>
+      )}
+      <div className={cx('max-w-7xl mx-auto', innerClass)}>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           {/* Texte */}
           <motion.div
@@ -44,14 +72,14 @@ export function MapBlock({ cms, villes = [], pays = [] }: MapBlockProps = {}) {
             <span className="inline-block mb-4 px-4 py-1.5 rounded-full border border-[var(--color-red)]/30 bg-[var(--color-red)]/8 text-[var(--color-red)] text-xs font-body font-semibold uppercase tracking-widest">
               {t('badge')}
             </span>
-            <h2
+            <HeadingTag
               id="map-title"
-              className="font-heading font-bold text-[var(--color-text-light)] mb-5"
-              style={{ fontSize: 'clamp(1.8rem, 3.5vw, 3rem)' }}
+              className={cx('font-heading font-bold text-[var(--color-text-light)] mb-5', titleTypo)}
+              style={typoTitre?.tailleTexte ? undefined : { fontSize: 'clamp(1.8rem, 3.5vw, 3rem)' }}
             >
               {cms?.titre ?? t('title')}
-            </h2>
-            <p className="font-body text-[var(--color-text-muted)] leading-relaxed mb-8">
+            </HeadingTag>
+            <p className={cx('font-body text-[var(--color-text-muted)] leading-relaxed mb-8', textTypo)}>
               {cms?.sousTitre ?? t('subtitle')}
             </p>
 

@@ -1,5 +1,7 @@
 import type { Block } from 'payload'
 import { actifField } from '../fields/actifField'
+import { sectionOptionsFields } from './shared/sectionOptionsFields'
+import { typographieTitreField, typographieTexteField } from './shared/typographyFields'
 
 export const CTABlock: Block = {
   slug: 'cta',
@@ -82,5 +84,8 @@ export const CTABlock: Block = {
       relationTo: 'media',
       admin: { description: 'Photo affichée derrière le texte avec une semi-transparence. Ex: photo de camion, d\'équipe, de ville.' },
     },
+    typographieTitreField,
+    typographieTexteField,
+    ...sectionOptionsFields,
   ],
 }

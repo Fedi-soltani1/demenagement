@@ -18,7 +18,13 @@ const Services: CollectionConfig = {
     useAsTitle: 'nom',
     defaultColumns: ['nom', 'tarifDepuis', 'publie', 'ordre'],
     description: 'Services proposés par DT Déménagement. Modifier le nom, la description, le tarif et l\'icône.',
-    preview: (doc) => `${process.env.NEXT_PUBLIC_SITE_URL}/fr/services/${doc.slug as string}`,
+    preview: (doc, { locale }) => {
+      const base   = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
+      const secret = process.env.PAYLOAD_SECRET ?? ''
+      const slug   = (doc.slug as string) ?? ''
+      const loc    = (locale as string) ?? 'fr'
+      return `${base}/api/draft?secret=${secret}&collection=services&slug=${slug}&locale=${loc}`
+    },
   },
 
   fields: [

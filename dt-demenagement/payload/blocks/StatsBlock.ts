@@ -1,5 +1,7 @@
 import type { Block } from 'payload'
 import { actifField } from '../fields/actifField'
+import { sectionOptionsFields } from './shared/sectionOptionsFields'
+import { typographieTitreField } from './shared/typographyFields'
 
 export const StatsBlock: Block = {
   slug: 'stats',
@@ -57,5 +59,7 @@ export const StatsBlock: Block = {
       defaultValue: true,
       admin: { description: 'Si coché, les chiffres s\'animent de 0 à leur valeur finale quand la section apparaît à l\'écran.' },
     },
+    typographieTitreField,
+    ...sectionOptionsFields,
   ],
 }

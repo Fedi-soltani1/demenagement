@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 import { getPayload } from 'payload'
+import { draftMode } from 'next/headers'
 import type { Metadata } from 'next'
 import { setRequestLocale } from 'next-intl/server'
 import { getTranslations } from 'next-intl/server'
@@ -57,10 +58,14 @@ function getIcon(name: string | null | undefined, fallback: string = 'Check'): L
 
 async function getService(slug: string, locale: string): Promise<ServiceDoc | null> {
   noStore()
+  const { isEnabled: isDraft } = await draftMode()
   const payload = await getPayload({ config })
   const result = await payload.find({
     collection: 'services',
-    where: { slug: { equals: slug }, publie: { equals: true } },
+    draft: isDraft,
+    where: isDraft
+      ? { slug: { equals: slug } }
+      : { and: [{ slug: { equals: slug } }, { publie: { equals: true } }] },
     locale: locale as 'fr' | 'ar' | 'en',
     limit: 1,
   })

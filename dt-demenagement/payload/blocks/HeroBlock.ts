@@ -1,5 +1,7 @@
 import type { Block } from 'payload'
 import { actifField } from '../fields/actifField'
+import { sectionOptionsFields } from './shared/sectionOptionsFields'
+import { typographieTitreField, typographieTexteField } from './shared/typographyFields'
 
 export const HeroBlock: Block = {
   slug: 'hero',
@@ -75,5 +77,8 @@ export const HeroBlock: Block = {
       defaultValue: true,
       admin: { description: 'Désactivée automatiquement sur mobile. Décocher pour afficher la vidéo ou l\'image à la place.' },
     },
+    typographieTitreField,
+    typographieTexteField,
+    ...sectionOptionsFields,
   ],
 }

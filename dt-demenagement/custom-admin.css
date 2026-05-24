@@ -787,7 +787,18 @@ label.field-label {
 .field-type input[type='url'],
 .field-type input[type='date'],
 .field-type input[type='time'],
-.field-type textarea,
+.field-type textarea {
+  border: 1px solid var(--dt-border) !important;
+  border-radius: 8px !important;
+  font-size: 13px !important;
+  background: var(--dt-surface) !important;
+  color: var(--dt-text) !important;
+  padding: 8px 12px !important;
+  transition: border-color 0.15s, box-shadow 0.15s !important;
+  width: 100% !important;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04) !important;
+}
+
 .rs__control,
 .ReactSelect__control {
   border: 1px solid var(--dt-border) !important;
@@ -795,7 +806,6 @@ label.field-label {
   font-size: 13px !important;
   background: var(--dt-surface) !important;
   color: var(--dt-text) !important;
-  padding: 8px 12px !important;
   transition: border-color 0.15s, box-shadow 0.15s !important;
   width: 100% !important;
   box-shadow: 0 1px 2px rgba(0,0,0,0.04) !important;
@@ -852,9 +862,10 @@ label.field-label {
   box-shadow: 0 1px 2px rgba(0,0,0,0.03) !important;
 }
 
-/* Quand le collapsible est ouvert : overflow visible pour que les dropdowns
-   (ReactSelect, popups) puissent s'afficher hors des limites du conteneur */
-.collapsible--is-open {
+/* Quand le collapsible est ouvert (pas de classe --collapsed) : overflow visible
+   pour que les dropdowns ReactSelect s'affichent hors des limites du conteneur.
+   Payload v3 utilise --collapsed (fermé), pas --is-open (ouvert). */
+.collapsible:not(.collapsible--collapsed) {
   overflow: visible !important;
 }
 
@@ -884,6 +895,14 @@ label.field-label {
 /* ═══════════════════════════════════════════
    ARRAY / BLOCKS
    ═══════════════════════════════════════════ */
+
+/* Le container parent des blocs doit laisser passer les dropdowns ReactSelect */
+.blocks-field__rows,
+.array-field__rows,
+.render-fields,
+.blocks-field__block .collapsible__content {
+  overflow: visible !important;
+}
 
 .array-field__row,
 .blocks-field__block {

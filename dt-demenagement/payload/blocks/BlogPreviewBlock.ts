@@ -1,5 +1,7 @@
 import type { Block } from 'payload'
 import { actifField } from '../fields/actifField'
+import { sectionOptionsFields } from './shared/sectionOptionsFields'
+import { typographieTitreField, typographieTexteField } from './shared/typographyFields'
 
 export const BlogPreviewBlock: Block = {
   slug: 'blog-preview',
@@ -43,5 +45,8 @@ export const BlogPreviewBlock: Block = {
       localized: true,
       admin: { description: 'Ex: Voir tous nos articles. Laisser vide pour masquer le bouton.' },
     },
+    typographieTitreField,
+    typographieTexteField,
+    ...sectionOptionsFields,
   ],
 }

@@ -1,9 +1,15 @@
 'use client'
 
 import React, { useState } from 'react'
+import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Send, CheckCircle2 } from 'lucide-react'
+import type { SectionOptions, TypographieOptions } from '@/lib/sectionOptions'
+import {
+  resolveBg, resolveSpacing, resolveHeight, resolveVisibility, resolveAnchorId,
+  resolveOverlay, resolveTitleTypography, resolveTextTypography, resolveHeadingTag, cx,
+} from '@/lib/sectionOptions'
 
 interface NewsletterCms {
   titre?:          string | null
@@ -13,7 +19,12 @@ interface NewsletterCms {
   texteRgpd?:      string | null
 }
 
-export function NewsletterBlock({ cms }: { cms?: NewsletterCms } = {}) {
+export function NewsletterBlock({ cms, sectionOptions, typoTitre, typoTexte }: {
+  cms?: NewsletterCms
+  sectionOptions?: SectionOptions | null
+  typoTitre?: TypographieOptions | null
+  typoTexte?: TypographieOptions | null
+} = {}) {
   const t = useTranslations('Home.newsletter')
   const [email, setEmail] = useState('')
   const [rgpd, setRgpd] = useState(false)
@@ -43,11 +54,29 @@ export function NewsletterBlock({ cms }: { cms?: NewsletterCms } = {}) {
     }
   }
 
+  const sectionBg  = sectionOptions?.imageFond ? '' : resolveBg(sectionOptions, 'rouge')
+  const sectionPy  = sectionOptions?.espacement ? resolveSpacing(sectionOptions) : 'py-section'
+  const sectionH   = resolveHeight(sectionOptions)
+  const sectionVis = resolveVisibility(sectionOptions)
+  const anchorId   = resolveAnchorId(sectionOptions)
+  const overlay    = sectionOptions?.imageFond ? resolveOverlay(sectionOptions) : ''
+  const hasImgFond = !!sectionOptions?.imageFond
+  const titleTypo  = resolveTitleTypography(typoTitre)
+  const textTypo   = resolveTextTypography(typoTexte)
+  const HeadingTag = resolveHeadingTag(sectionOptions)
+
   return (
     <section
-      className="py-section px-container bg-[var(--color-red)] relative overflow-hidden"
+      id={anchorId}
+      className={cx('relative px-container overflow-hidden', sectionBg, sectionPy, sectionH, sectionVis)}
       aria-labelledby="newsletter-title"
     >
+      {hasImgFond && (
+        <>
+          <Image src={sectionOptions!.imageFond!} alt="" fill className="object-cover" sizes="100vw" aria-hidden="true" />
+          {overlay && <div className={cx('absolute inset-0', overlay)} aria-hidden="true" />}
+        </>
+      )}
       {/* Grain */}
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.06]"
@@ -69,14 +98,14 @@ export function NewsletterBlock({ cms }: { cms?: NewsletterCms } = {}) {
           <span className="inline-block mb-4 px-4 py-1.5 rounded-full border border-white/30 bg-white/10 text-white text-xs font-body font-semibold uppercase tracking-widest">
             {t('badge')}
           </span>
-          <h2
+          <HeadingTag
             id="newsletter-title"
-            className="font-heading font-bold text-white mb-4"
-            style={{ fontSize: 'clamp(1.8rem, 3.5vw, 3rem)' }}
+            className={cx('font-heading font-bold text-white mb-4', titleTypo)}
+            style={typoTitre?.tailleTexte ? undefined : { fontSize: 'clamp(1.8rem, 3.5vw, 3rem)' }}
           >
             {cms?.titre ?? t('title')}
-          </h2>
-          <p className="font-body text-white/80 leading-relaxed mb-8">
+          </HeadingTag>
+          <p className={cx('font-body text-white/80 leading-relaxed mb-8', textTypo)}>
             {cms?.sousTitre ?? t('subtitle')}
           </p>
         </motion.div>

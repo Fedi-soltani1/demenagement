@@ -4,6 +4,11 @@ import React from 'react'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { motion } from 'framer-motion'
+import type { SectionOptions, TypographieOptions } from '@/lib/sectionOptions'
+import {
+  resolveBg, resolveSpacing, resolveHeight, resolveVisibility, resolveAnchorId,
+  resolveOverlay, resolveTitleTypography, resolveHeadingTag, cx,
+} from '@/lib/sectionOptions'
 
 export type PartnerData = {
   id: string
@@ -83,7 +88,12 @@ function PartnerCard({ partner, grille }: { partner: PartnerData; grille?: boole
   return <div className={className}>{inner}</div>
 }
 
-export function PartnersBlock({ partners = [], cms }: { partners?: PartnerData[]; cms?: PartnersCms }) {
+export function PartnersBlock({ partners = [], cms, sectionOptions, typoTitre }: {
+  partners?: PartnerData[]
+  cms?: PartnersCms
+  sectionOptions?: SectionOptions | null
+  typoTitre?: TypographieOptions | null
+}) {
   const t = useTranslations('Home.partners')
   const affichage = cms?.affichage ?? 'defilement'
 
@@ -91,12 +101,30 @@ export function PartnersBlock({ partners = [], cms }: { partners?: PartnerData[]
   // Doubler les éléments pour le slider infini
   const items = hasPayloadData ? [...partners, ...partners] : [...PARTNERS_FALLBACK, ...PARTNERS_FALLBACK]
 
+  const sectionBg  = sectionOptions?.imageFond ? '' : resolveBg(sectionOptions, 'sombre')
+  const sectionPy  = sectionOptions?.espacement ? resolveSpacing(sectionOptions) : 'py-section'
+  const sectionH   = resolveHeight(sectionOptions)
+  const sectionVis = resolveVisibility(sectionOptions)
+  const anchorId   = resolveAnchorId(sectionOptions)
+  const overlay    = sectionOptions?.imageFond ? resolveOverlay(sectionOptions) : ''
+  const hasImgFond = !!sectionOptions?.imageFond
+  const innerClass = hasImgFond ? 'relative z-10' : ''
+  const titleTypo  = resolveTitleTypography(typoTitre)
+  const HeadingTag = resolveHeadingTag(sectionOptions)
+
   return (
     <section
-      className="py-section bg-[var(--color-bg-dark)] overflow-hidden"
+      id={anchorId}
+      className={cx('relative overflow-hidden', sectionBg, sectionPy, sectionH, sectionVis)}
       aria-labelledby="partners-title"
     >
-      <div className="max-w-7xl mx-auto px-container mb-10">
+      {hasImgFond && (
+        <>
+          <Image src={sectionOptions!.imageFond!} alt="" fill className="object-cover" sizes="100vw" aria-hidden="true" />
+          {overlay && <div className={cx('absolute inset-0', overlay)} aria-hidden="true" />}
+        </>
+      )}
+      <div className={cx('max-w-7xl mx-auto px-container mb-10', innerClass)}>
         <motion.div
           className="text-center"
           initial={{ opacity: 0, y: 20 }}
@@ -107,19 +135,19 @@ export function PartnersBlock({ partners = [], cms }: { partners?: PartnerData[]
           <span className="inline-block mb-3 px-4 py-1.5 rounded-full border border-[var(--color-red)]/30 bg-[var(--color-red)]/8 text-[var(--color-red)] text-xs font-body font-semibold uppercase tracking-widest">
             {t('badge')}
           </span>
-          <h2
+          <HeadingTag
             id="partners-title"
-            className="font-heading font-bold text-[var(--color-text-light)]"
-            style={{ fontSize: 'clamp(1.5rem, 2.5vw, 2.2rem)' }}
+            className={cx('font-heading font-bold text-[var(--color-text-light)]', titleTypo)}
+            style={typoTitre?.tailleTexte ? undefined : { fontSize: 'clamp(1.5rem, 2.5vw, 2.2rem)' }}
           >
             {cms?.titre ?? t('title')}
-          </h2>
+          </HeadingTag>
         </motion.div>
       </div>
 
       {/* Mode grille statique */}
       {affichage === 'grille' && hasPayloadData && (
-        <div className="max-w-7xl mx-auto px-container">
+        <div className={cx('max-w-7xl mx-auto px-container', innerClass)}>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
             {partners.map((partner, i) => (
               <motion.div
@@ -138,7 +166,7 @@ export function PartnersBlock({ partners = [], cms }: { partners?: PartnerData[]
 
       {/* Mode grille statique — fallback texte */}
       {affichage === 'grille' && !hasPayloadData && (
-        <div className="max-w-7xl mx-auto px-container">
+        <div className={cx('max-w-7xl mx-auto px-container', innerClass)}>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
             {PARTNERS_FALLBACK.map((name, i) => (
               <div
@@ -154,7 +182,7 @@ export function PartnersBlock({ partners = [], cms }: { partners?: PartnerData[]
 
       {/* Mode défilement (défaut) */}
       {affichage !== 'grille' && (
-        <div className="relative" aria-hidden="false">
+        <div className={cx('relative', innerClass)} aria-hidden="false">
           {/* Dégradés bords */}
           <div className="pointer-events-none absolute inset-y-0 start-0 w-24 bg-gradient-to-e from-[var(--color-bg-dark)] to-transparent z-10" aria-hidden="true" />
           <div className="pointer-events-none absolute inset-y-0 end-0 w-24 bg-gradient-to-s from-[var(--color-bg-dark)] to-transparent z-10" aria-hidden="true" />

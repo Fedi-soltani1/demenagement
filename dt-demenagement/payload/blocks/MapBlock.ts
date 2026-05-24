@@ -1,5 +1,7 @@
 import type { Block } from 'payload'
 import { actifField } from '../fields/actifField'
+import { sectionOptionsFields } from './shared/sectionOptionsFields'
+import { typographieTitreField, typographieTexteField } from './shared/typographyFields'
 
 export const MapBlock: Block = {
   slug: 'map',
@@ -49,5 +51,8 @@ export const MapBlock: Block = {
       hasMany: true,
       admin: { description: 'Laisser vide pour afficher automatiquement tous les pays publiés.' },
     },
+    typographieTitreField,
+    typographieTexteField,
+    ...sectionOptionsFields,
   ],
 }

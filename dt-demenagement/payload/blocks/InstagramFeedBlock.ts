@@ -1,5 +1,7 @@
 import type { Block } from 'payload'
 import { actifField } from '../fields/actifField'
+import { sectionOptionsFields } from './shared/sectionOptionsFields'
+import { typographieTitreField } from './shared/typographyFields'
 
 export const InstagramFeedBlock: Block = {
   slug: 'instagram-feed',
@@ -26,5 +28,7 @@ export const InstagramFeedBlock: Block = {
       type: 'text',
       admin: { description: 'Ex: https://www.instagram.com/dtdemenagement — Utilisé pour le bouton "Nous suivre sur Instagram".' },
     },
+    typographieTitreField,
+    ...sectionOptionsFields,
   ],
 }

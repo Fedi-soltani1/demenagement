@@ -9,6 +9,10 @@ import { PhoneLink } from '@/components/ui/PhoneLink'
 import { ShineBorderEffect } from '@/components/ui/ShineBorder'
 import { COMPANY } from '@/lib/constants'
 import { useDevisModal } from '@/components/layout/DevisModal'
+import type { SectionOptions, TypographieOptions } from '@/lib/sectionOptions'
+import {
+  resolveBg, resolveSpacing, resolveVisibility, resolveAnchorId, resolveTitleTypography, resolveTextTypography, cx,
+} from '@/lib/sectionOptions'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -199,7 +203,12 @@ export type CmsHero = {
 
 // ─── HeroBlock ────────────────────────────────────────────────────────────────
 
-export function HeroBlock({ cms }: { cms?: CmsHero }) {
+export function HeroBlock({ cms, sectionOptions, typoTitre, typoTexte }: {
+  cms?: CmsHero
+  sectionOptions?: SectionOptions | null
+  typoTitre?: TypographieOptions | null
+  typoTexte?: TypographieOptions | null
+}) {
   const t      = useTranslations('Home.hero')
   const locale = useLocale()
   const { open: openDevisModal } = useDevisModal()
@@ -227,9 +236,20 @@ export function HeroBlock({ cms }: { cms?: CmsHero }) {
     { value: cms?.stat3Valeur ?? t('stat3Value'), label: cms?.stat3Label ?? t('stat3Label') },
   ]
 
+  const sectionBg  = resolveBg(sectionOptions, 'sombre')
+  const sectionPy  = sectionOptions?.espacement ? resolveSpacing(sectionOptions) : ''
+  const sectionH   = sectionOptions?.hauteurMin && sectionOptions.hauteurMin !== 'auto'
+    ? (sectionOptions.hauteurMin === 'plein' ? 'min-h-screen' : 'min-h-[50vh]')
+    : 'min-h-[100svh]'
+  const sectionVis = resolveVisibility(sectionOptions)
+  const anchorId   = resolveAnchorId(sectionOptions)
+  const titleTypo  = resolveTitleTypography(typoTitre)
+  const textTypo   = resolveTextTypography(typoTexte)
+
   return (
     <section
-      className="relative isolate flex min-h-[100svh] w-full items-center justify-center overflow-hidden bg-[var(--color-bg-dark)]"
+      id={anchorId}
+      className={cx('relative isolate flex w-full items-center justify-center overflow-hidden', sectionBg, sectionH, sectionPy, sectionVis)}
       aria-label="Section principale"
     >
       {/* Canvas toujours dans le DOM — masqué si image de fond active */}
@@ -325,8 +345,8 @@ export function HeroBlock({ cms }: { cms?: CmsHero }) {
         {/* Titre */}
         <motion.h1
           variants={itemVariants}
-          className="mb-6 font-display font-bold text-[var(--color-text-light)] leading-[1.05]"
-          style={{ fontSize: 'clamp(2.6rem, 7vw, 7rem)' }}
+          className={cx('mb-6 font-display font-bold text-[var(--color-text-light)] leading-[1.05]', titleTypo)}
+          style={typoTitre?.tailleTexte ? undefined : { fontSize: 'clamp(2.6rem, 7vw, 7rem)' }}
         >
           {titre}
         </motion.h1>
@@ -334,8 +354,8 @@ export function HeroBlock({ cms }: { cms?: CmsHero }) {
         {/* Sous-titre */}
         <motion.p
           variants={itemVariants}
-          className="mx-auto mb-8 max-w-2xl font-body text-[var(--color-text-muted)] leading-relaxed"
-          style={{ fontSize: 'clamp(1rem, 1.5vw, 1.2rem)' }}
+          className={cx('mx-auto mb-8 max-w-2xl font-body text-[var(--color-text-muted)] leading-relaxed', textTypo)}
+          style={typoTexte?.tailleTexte ? undefined : { fontSize: 'clamp(1rem, 1.5vw, 1.2rem)' }}
         >
           {sousTitre}
         </motion.p>

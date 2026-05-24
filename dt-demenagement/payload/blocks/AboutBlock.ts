@@ -1,5 +1,7 @@
 import type { Block } from 'payload'
 import { actifField } from '../fields/actifField'
+import { sectionOptionsFields } from './shared/sectionOptionsFields'
+import { typographieTitreField, typographieTexteField } from './shared/typographyFields'
 
 export const AboutBlock: Block = {
   slug: 'about',
@@ -96,5 +98,8 @@ export const AboutBlock: Block = {
         { label: 'Texte à gauche, photo à droite', value: 'droite' },
       ],
     },
+    typographieTitreField,
+    typographieTexteField,
+    ...sectionOptionsFields,
   ],
 }

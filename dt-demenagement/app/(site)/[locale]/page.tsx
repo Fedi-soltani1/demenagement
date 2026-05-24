@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { draftMode } from 'next/headers'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { setRequestLocale, getTranslations } from 'next-intl/server'
@@ -37,6 +38,7 @@ export default async function HomePage({ params }: HomePageProps) {
   const { locale } = await params
   setRequestLocale(locale)
 
+  const { isEnabled: isDraft } = await draftMode()
   const payload = await getPayload({ config })
   const loc = locale as 'fr' | 'ar' | 'en'
 
@@ -55,12 +57,10 @@ export default async function HomePage({ params }: HomePageProps) {
     // depth: 3 pour peupler les relationships imbriquées dans les blocs
     payload.find({
       collection: 'pages',
-      where: {
-        and: [
-          { slug:   { equals: 'accueil' } },
-          { publie: { equals: true }      },
-        ],
-      },
+      draft: isDraft,
+      where: isDraft
+        ? { slug: { equals: 'accueil' } }
+        : { and: [{ slug: { equals: 'accueil' } }, { publie: { equals: true } }] },
       locale: loc,
       depth: 3,
       limit: 1,

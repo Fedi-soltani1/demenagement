@@ -7,6 +7,11 @@ import { useTranslations } from 'next-intl'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Play, X, ArrowRight } from 'lucide-react'
 import { CounterAnimation } from '@/components/ui/CounterAnimation'
+import type { SectionOptions, TypographieOptions } from '@/lib/sectionOptions'
+import {
+  resolveBg, resolveSpacing, resolveHeight, resolveVisibility, resolveAnchorId,
+  resolveOverlay, resolveTitleTypography, resolveTextTypography, resolveHeadingTag, cx,
+} from '@/lib/sectionOptions'
 
 function extractYoutubeId(url: string): string | null {
   try {
@@ -40,7 +45,12 @@ export type CmsApropos = {
   stat4Label?: string | null
 }
 
-export function StatsAboutBlock({ cms }: { cms?: CmsApropos }) {
+export function StatsAboutBlock({ cms, sectionOptions, typoTitre, typoTexte }: {
+  cms?: CmsApropos
+  sectionOptions?: SectionOptions | null
+  typoTitre?: TypographieOptions | null
+  typoTexte?: TypographieOptions | null
+}) {
   const t = useTranslations('Home.about')
   const [videoOpen, setVideoOpen]       = useState(false)
   const [videoStarted, setVideoStarted] = useState(false)
@@ -58,6 +68,18 @@ export function StatsAboutBlock({ cms }: { cms?: CmsApropos }) {
   // Le bouton play s'affiche si une vidéo MP4 OU un lien YouTube est configuré
   const hasVideo = Boolean(videoFichierUrl || videoUrl)
 
+  const sectionBg  = sectionOptions?.imageFond ? '' : resolveBg(sectionOptions, 'sombre')
+  const sectionPy  = sectionOptions?.espacement ? resolveSpacing(sectionOptions) : 'py-section'
+  const sectionH   = resolveHeight(sectionOptions)
+  const sectionVis = resolveVisibility(sectionOptions)
+  const anchorId   = resolveAnchorId(sectionOptions)
+  const overlay    = sectionOptions?.imageFond ? resolveOverlay(sectionOptions) : ''
+  const hasImgFond = !!sectionOptions?.imageFond
+  const innerClass = hasImgFond ? 'relative z-10' : ''
+  const titleTypo  = resolveTitleTypography(typoTitre)
+  const textTypo   = resolveTextTypography(typoTexte)
+  const HeadingTag = resolveHeadingTag(sectionOptions)
+
   const STATS = [
     { target: cms?.stat1Valeur ?? parseInt(t('stat1Value'), 10), suffix: cms?.stat1Suffixe ?? t('stat1Suffix'), label: cms?.stat1Label ?? t('stat1Label') },
     { target: cms?.stat2Valeur ?? parseInt(t('stat2Value'), 10), suffix: cms?.stat2Suffixe ?? t('stat2Suffix'), label: cms?.stat2Label ?? t('stat2Label') },
@@ -67,10 +89,17 @@ export function StatsAboutBlock({ cms }: { cms?: CmsApropos }) {
 
   return (
     <section
-      className="py-section px-container bg-[var(--color-bg-dark)] overflow-hidden"
+      id={anchorId}
+      className={cx('relative px-container overflow-hidden', sectionBg, sectionPy, sectionH, sectionVis)}
       aria-labelledby="about-title"
     >
-      <div className={`max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center ${imagePositionEnd ? 'lg:[&>*:first-child]:order-2' : ''}`}>
+      {hasImgFond && (
+        <>
+          <Image src={sectionOptions!.imageFond!} alt="" fill className="object-cover" sizes="100vw" aria-hidden="true" />
+          {overlay && <div className={cx('absolute inset-0', overlay)} aria-hidden="true" />}
+        </>
+      )}
+      <div className={cx(`max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center${imagePositionEnd ? ' lg:[&>*:first-child]:order-2' : ''}`, innerClass)}>
 
         {/* Colonne image — peut être à gauche ou à droite selon imagePosition */}
         <motion.div
@@ -125,15 +154,15 @@ export function StatsAboutBlock({ cms }: { cms?: CmsApropos }) {
             {badge}
           </span>
 
-          <h2
+          <HeadingTag
             id="about-title"
-            className="font-heading font-bold text-[var(--color-text-light)] mb-6 leading-tight"
-            style={{ fontSize: 'clamp(1.8rem, 3vw, 2.8rem)' }}
+            className={cx('font-heading font-bold text-[var(--color-text-light)] mb-6 leading-tight', titleTypo)}
+            style={typoTitre?.tailleTexte ? undefined : { fontSize: 'clamp(1.8rem, 3vw, 2.8rem)' }}
           >
             {titre}
-          </h2>
+          </HeadingTag>
 
-          <p className="font-body text-[var(--color-text-muted)] leading-relaxed mb-10 text-base">
+          <p className={cx('font-body text-[var(--color-text-muted)] leading-relaxed mb-10 text-base', textTypo)}>
             {texte}
           </p>
 

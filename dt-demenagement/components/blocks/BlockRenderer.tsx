@@ -15,6 +15,8 @@ import { InstagramFeedBlock }                          from '@/components/blocks
 import { NewsletterBlock }                             from '@/components/blocks/NewsletterBlock'
 import { BlogPreviewBlock,   type BlogArticleData }   from '@/components/blocks/BlogPreviewBlock'
 import { CTAFinalBlock,      type CmsCtaFinal }       from '@/components/blocks/CTAFinalBlock'
+import { SectionWrapper }                              from '@/components/blocks/SectionWrapper'
+import type { SectionOptions, TypographieOptions }    from '@/lib/sectionOptions'
 
 // ─── Types Payload (structure brute retournée par l'API) ──────────────────────
 
@@ -107,6 +109,34 @@ function mediaUrl(v: unknown): string | null {
 
 function arr<T>(v: unknown): T[] {
   return Array.isArray(v) ? (v as T[]) : []
+}
+
+// ─── Extracteurs sectionOptions & typographie ─────────────────────────────────
+
+function extractSectionOptions(b: PayloadBlock): SectionOptions {
+  const raw = b.sectionOptions as Record<string, unknown> | null | undefined
+  if (!raw) return {}
+  return {
+    fond:           str(raw.fond)           as SectionOptions['fond'],
+    imageFond:      mediaUrl(raw.imageFond),
+    overlayOpacite: str(raw.overlayOpacite) as SectionOptions['overlayOpacite'],
+    espacement:     str(raw.espacement)     as SectionOptions['espacement'],
+    largeurContenu: str(raw.largeurContenu) as SectionOptions['largeurContenu'],
+    hauteurMin:     str(raw.hauteurMin)     as SectionOptions['hauteurMin'],
+    visibilite:     str(raw.visibilite)     as SectionOptions['visibilite'],
+    ancreId:        str(raw.ancreId),
+    niveauTitre:    str(raw.niveauTitre)    as SectionOptions['niveauTitre'],
+  }
+}
+
+function extractTypographie(raw: unknown): TypographieOptions {
+  const r = raw as Record<string, unknown> | null | undefined
+  if (!r) return {}
+  return {
+    tailleTexte: str(r.tailleTexte) as TypographieOptions['tailleTexte'],
+    alignement:  str(r.alignement)  as TypographieOptions['alignement'],
+    poids:       str(r.poids)       as TypographieOptions['poids'],
+  }
 }
 
 // ─── Adaptateurs bloc Payload → props React ───────────────────────────────────
@@ -312,22 +342,45 @@ export function BlockRenderer({
 
         if (block.actif === false) return null
 
+        const sectionOpts = extractSectionOptions(block)
+        const typoTitre   = extractTypographie(block.typographieTitre)
+        const typoTexte   = extractTypographie(block.typographieTexte)
+
         switch (block.blockType) {
 
           case 'hero':
-            return <HeroBlock key={key} cms={adaptHero(block)} />
+            return (
+              <HeroBlock
+                key={key}
+                cms={adaptHero(block)}
+                sectionOptions={sectionOpts}
+                typoTitre={typoTitre}
+                typoTexte={typoTexte}
+              />
+            )
 
           case 'mini-features':
-            return <MiniFeaturesBlock key={key} cms={adaptMiniFeatures(block)} />
+            return <MiniFeaturesBlock key={key} cms={adaptMiniFeatures(block)} sectionOptions={sectionOpts} />
 
           case 'about':
-            return <StatsAboutBlock key={key} cms={adaptAbout(block)} />
+            return (
+              <StatsAboutBlock
+                key={key}
+                cms={adaptAbout(block)}
+                sectionOptions={sectionOpts}
+                typoTitre={typoTitre}
+                typoTexte={typoTexte}
+              />
+            )
 
           case 'services':
             return (
               <ServicesBlock
                 key={key}
                 services={adaptServices(block, services)}
+                sectionOptions={sectionOpts}
+                typoTitre={typoTitre}
+                typoTexte={typoTexte}
                 cms={{
                   titre:     str(block.titre),
                   sousTitre: str(block.sousTitre),
@@ -338,12 +391,23 @@ export function BlockRenderer({
             )
 
           case 'why-us':
-            return <WhyUsBlock key={key} cms={adaptWhyUs(block)} />
+            return (
+              <WhyUsBlock
+                key={key}
+                cms={adaptWhyUs(block)}
+                sectionOptions={sectionOpts}
+                typoTitre={typoTitre}
+                typoTexte={typoTexte}
+              />
+            )
 
           case 'map':
             return (
               <MapBlock
                 key={key}
+                sectionOptions={sectionOpts}
+                typoTitre={typoTitre}
+                typoTexte={typoTexte}
                 cms={{
                   titre:     str(block.titre),
                   sousTitre: str(block.sousTitre),
@@ -359,6 +423,9 @@ export function BlockRenderer({
               <TestimonialsBlock
                 key={key}
                 testimonials={adaptTestimonials(block, testimonials)}
+                sectionOptions={sectionOpts}
+                typoTitre={typoTitre}
+                typoTexte={typoTexte}
                 cms={{
                   titre:     str(block.titre),
                   sousTitre: str(block.sousTitre),
@@ -375,6 +442,8 @@ export function BlockRenderer({
               <PartnersBlock
                 key={key}
                 partners={adaptPartners(block, partners)}
+                sectionOptions={sectionOpts}
+                typoTitre={typoTitre}
                 cms={{
                   titre:     str(block.titre),
                   affichage: (str(block.affichage) as 'defilement' | 'grille' | null),
@@ -383,12 +452,22 @@ export function BlockRenderer({
             )
 
           case 'instagram-feed':
-            return <InstagramFeedBlock key={key} cms={{ titre: str(block.titre), lienProfil: str(block.lienProfil) }} />
+            return (
+              <InstagramFeedBlock
+                key={key}
+                sectionOptions={sectionOpts}
+                typoTitre={typoTitre}
+                cms={{ titre: str(block.titre), lienProfil: str(block.lienProfil) }}
+              />
+            )
 
           case 'newsletter':
             return (
               <NewsletterBlock
                 key={key}
+                sectionOptions={sectionOpts}
+                typoTitre={typoTitre}
+                typoTexte={typoTexte}
                 cms={{
                   titre:            str(block.titre),
                   sousTitre:        str(block.sousTitre),
@@ -431,6 +510,9 @@ export function BlockRenderer({
               <BlogPreviewBlock
                 key={key}
                 articles={articlesToShow}
+                sectionOptions={sectionOpts}
+                typoTitre={typoTitre}
+                typoTexte={typoTexte}
                 cms={{
                   titre:          str(block.titre),
                   sousTitre:      str(block.sousTitre),
@@ -442,7 +524,15 @@ export function BlockRenderer({
           }
 
           case 'cta':
-            return <CTAFinalBlock key={key} cms={adaptCta(block)} />
+            return (
+              <CTAFinalBlock
+                key={key}
+                cms={adaptCta(block)}
+                sectionOptions={sectionOpts}
+                typoTitre={typoTitre}
+                typoTexte={typoTexte}
+              />
+            )
 
           case 'stats': {
             // Bloc stats autonome → StatsAboutBlock avec seulement les chiffres
@@ -453,7 +543,7 @@ export function BlockRenderer({
             if (statsArr[1]) { statsCms.stat2Valeur = num(statsArr[1].valeur); statsCms.stat2Suffixe = str(statsArr[1].suffixe); statsCms.stat2Label = str(statsArr[1].libelle) }
             if (statsArr[2]) { statsCms.stat3Valeur = num(statsArr[2].valeur); statsCms.stat3Suffixe = str(statsArr[2].suffixe); statsCms.stat3Label = str(statsArr[2].libelle) }
             if (statsArr[3]) { statsCms.stat4Valeur = num(statsArr[3].valeur); statsCms.stat4Suffixe = str(statsArr[3].suffixe); statsCms.stat4Label = str(statsArr[3].libelle) }
-            return <StatsAboutBlock key={key} cms={statsCms} />
+            return <StatsAboutBlock key={key} cms={statsCms} sectionOptions={sectionOpts} />
           }
 
           case 'faq': {
@@ -461,14 +551,16 @@ export function BlockRenderer({
             type FAQRaw = { id?: string; question?: string | null; reponse?: unknown }
             const faqItems = arr<FAQRaw>(block.questions)
             if (!faqItems.length) return null
+            const faqTag = (sectionOpts.niveauTitre ?? 'h2') as 'h1' | 'h2' | 'h3' | 'h4'
+            const FaqHeading = faqTag
             return (
-              <section key={key} className="py-section px-container bg-[var(--color-bg-dark2)]">
+              <SectionWrapper key={key} options={sectionOpts} defaultFond="sombre2" defaultEspacement="normal">
                 <div className="max-w-3xl mx-auto">
                   {str(block.titre) && (
-                    <h2 className="font-heading font-bold text-[var(--color-text-light)] mb-10 text-center"
+                    <FaqHeading className="font-heading font-bold text-[var(--color-text-light)] mb-10 text-center"
                         style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)' }}>
                       {str(block.titre)}
-                    </h2>
+                    </FaqHeading>
                   )}
                   <dl className="space-y-4">
                     {faqItems.map((q, qi) => (
@@ -478,7 +570,7 @@ export function BlockRenderer({
                     ))}
                   </dl>
                 </div>
-              </section>
+              </SectionWrapper>
             )
           }
 
@@ -489,14 +581,16 @@ export function BlockRenderer({
             const embedUrl = urlRaw.includes('watch?v=')
               ? urlRaw.replace('watch?v=', 'embed/')
               : urlRaw
+            const videoTag = (sectionOpts.niveauTitre ?? 'h2') as 'h1' | 'h2' | 'h3' | 'h4'
+            const VideoHeading = videoTag
             return (
-              <section key={key} className="py-section px-container bg-[var(--color-bg-dark)]">
+              <SectionWrapper key={key} options={sectionOpts} defaultFond="sombre" defaultEspacement="normal">
                 <div className="max-w-4xl mx-auto">
                   {str(block.titre) && (
-                    <h2 className="font-heading font-bold text-[var(--color-text-light)] mb-8 text-center"
+                    <VideoHeading className="font-heading font-bold text-[var(--color-text-light)] mb-8 text-center"
                         style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)' }}>
                       {str(block.titre)}
-                    </h2>
+                    </VideoHeading>
                   )}
                   <div className="relative aspect-video rounded-2xl overflow-hidden bg-black">
                     <iframe
@@ -513,7 +607,7 @@ export function BlockRenderer({
                     </p>
                   )}
                 </div>
-              </section>
+              </SectionWrapper>
             )
           }
 
@@ -523,14 +617,16 @@ export function BlockRenderer({
             if (!images.length) return null
             const cols = str(block.colonnes) ?? '3'
             const gridCols = cols === '2' ? 'grid-cols-2' : cols === '4' ? 'grid-cols-2 md:grid-cols-4' : 'grid-cols-2 md:grid-cols-3'
+            const galleryTag = (sectionOpts.niveauTitre ?? 'h2') as 'h1' | 'h2' | 'h3' | 'h4'
+            const GalleryHeading = galleryTag
             return (
-              <section key={key} className="py-section px-container bg-[var(--color-bg-dark2)]">
+              <SectionWrapper key={key} options={sectionOpts} defaultFond="sombre2" defaultEspacement="normal">
                 <div className="max-w-7xl mx-auto">
                   {str(block.titre) && (
-                    <h2 className="font-heading font-bold text-[var(--color-text-light)] mb-10 text-center"
+                    <GalleryHeading className="font-heading font-bold text-[var(--color-text-light)] mb-10 text-center"
                         style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)' }}>
                       {str(block.titre)}
-                    </h2>
+                    </GalleryHeading>
                   )}
                   <div className={`grid ${gridCols} gap-4`}>
                     {images.map((img, gi) => (
@@ -546,31 +642,49 @@ export function BlockRenderer({
                     ))}
                   </div>
                 </div>
-              </section>
+              </SectionWrapper>
             )
           }
 
           case 'custom': {
-            const bgMap: Record<string, string> = {
-              noir:   'bg-[var(--color-bg-dark)]',
-              fonce:  'bg-[var(--color-bg-dark2)]',
-              rouge:  'bg-[var(--color-red)]',
-              blanc:  'bg-[var(--color-text-light)]',
+            // Map block's own couleurFond → SectionFond (new sectionOptions system takes priority)
+            const customFondMap: Record<string, SectionOptions['fond']> = {
+              noir:  'sombre',
+              fonce: 'sombre2',
+              rouge: 'rouge',
+              blanc: 'transparent',
             }
-            const bgClass  = bgMap[str(block.couleurFond) ?? 'noir'] ?? 'bg-[var(--color-bg-dark)]'
-            const textClass = str(block.couleurFond) === 'blanc' ? 'text-[var(--color-bg-dark)]' : 'text-[var(--color-text-light)]'
-            const mutedClass = str(block.couleurFond) === 'blanc' ? 'text-[var(--color-bg-dark)]/70' : 'text-[var(--color-text-muted)]'
+            const customEspMap: Record<string, SectionOptions['espacement']> = {
+              compact: 'serre',
+              normal:  'normal',
+              large:   'large',
+            }
+            const couleurFond = str(block.couleurFond) ?? 'noir'
+            const isLegacyBlanc = couleurFond === 'blanc' && !sectionOpts.fond
+            const mergedOpts: SectionOptions = {
+              ...sectionOpts,
+              fond: sectionOpts.fond ?? customFondMap[couleurFond] ?? 'sombre',
+              espacement: sectionOpts.espacement ?? customEspMap[str(block.espacement) ?? 'normal'] ?? 'normal',
+            }
+            const textClass  = isLegacyBlanc ? 'text-[var(--color-bg-dark)]'    : 'text-[var(--color-text-light)]'
+            const mutedClass = isLegacyBlanc ? 'text-[var(--color-bg-dark)]/70' : 'text-[var(--color-text-muted)]'
             const btnHref = str((block.cta as Record<string, unknown> | null | undefined)?.lien)
             const btnTxt  = str((block.cta as Record<string, unknown> | null | undefined)?.texte)
             const imgUrl  = mediaUrl(block.imagePrincipale)
+            const customTag = (mergedOpts.niveauTitre ?? 'h2') as 'h1' | 'h2' | 'h3' | 'h4'
+            const CustomHeading = customTag
             return (
-              <section key={key} className={`py-section px-container ${bgClass}`}>
+              <SectionWrapper
+                key={key}
+                options={mergedOpts}
+                className={isLegacyBlanc ? 'bg-[var(--color-text-light)]' : ''}
+              >
                 <div className="max-w-4xl mx-auto text-center">
                   {str(block.titre) && (
-                    <h2 className={`font-heading font-bold mb-4 ${textClass}`}
+                    <CustomHeading className={`font-heading font-bold mb-4 ${textClass}`}
                         style={{ fontSize: 'clamp(1.5rem, 3vw, 2.5rem)' }}>
                       {str(block.titre)}
-                    </h2>
+                    </CustomHeading>
                   )}
                   {str(block.sousTitre) && (
                     <p className={`font-body text-lg mb-6 ${mutedClass}`}>{str(block.sousTitre)}</p>
@@ -589,7 +703,7 @@ export function BlockRenderer({
                     </a>
                   )}
                 </div>
-              </section>
+              </SectionWrapper>
             )
           }
 

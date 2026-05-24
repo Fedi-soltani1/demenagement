@@ -66,6 +66,16 @@ CONSÉQUENCE : Les nouvelles colonnes ajoutées dans les collections Payload NE 
 ## 🤖 DERNIÈRE MISE À JOUR PAR CLAUDE CODE
 
 ```
+Date        : 2026-05-24 — MIGRATION SCHEMA sectionOptions + typographie
+Session     : Dev 1 (schema sync Neon via push:true)
+Commit      : aucun (session sans push/commit)
+Fichier     : payload/blocks/shared/sectionOptionsFields.ts + typographyFields.ts + payload.config.ts
+Étape       : Post-Phase 6 — DB sync terminé
+Statut      : ✅ Toutes colonnes sectionOptions + typographie en base Neon
+Prochain    : Déploiement production Vercel
+Reprendre à : "Ouvrir Claude Code dans dt-demenagement/, lire SUIVI-PROJET.md,
+               reprendre à Déploiement production Vercel"
+
 Date        : 2026-05-22 — FIX HERO IMAGE DE FOND
 Session     : Dev 1 (HeroBlock imageHero + afficher3D)
 Commit      : 6a7fb1a — fix: hero — wire imageHero + afficher3D from Payload CMS to component
@@ -377,9 +387,45 @@ Reprendre à : "Déploiement production Vercel + Railway"
 > Elle lui dit exactement où reprendre sans poser de questions.
 
 ```
-PHASE ACTUELLE    : Post-Phase 6 — AUTH + MESSAGERIE OPÉRATIONNELS
-ÉTAPE ACTUELLE    : ✅ Espace client complet — Magic Link + Clients Payload + Messagerie
-STATUT            : ✅ Code complet — TypeScript 0 erreur — Serveur sur http://localhost:3000
+PHASE ACTUELLE    : Post-Phase 6 — SCHÉMA DB SYNCRONISÉ
+ÉTAPE ACTUELLE    : ✅ sectionOptions + typographie — colonnes Neon en production
+STATUT            : ✅ push: false restauré — serveur propre sur http://localhost:3000
+
+─── SESSION 2026-05-24 — MIGRATION SCHEMA sectionOptions + typographie ──────
+  RÉSUMÉ : Tous les blocs Payload ont maintenant sectionOptions + typographie
+    en base Neon. Le push drizzle a réussi (API GET /api/pages 200).
+
+  FICHIERS MODIFIÉS :
+    dt-demenagement/payload/blocks/shared/sectionOptionsFields.ts
+      → dbName: 'overlay' sur overlayOpacite (63-char limit PostgreSQL)
+      → dbName: 'largeur' sur largeurContenu (63-char limit)
+      → dbName: 'niveau'  sur niveauTitre   (63-char limit)
+    dt-demenagement/payload/blocks/shared/typographyFields.ts
+      → dbName: 'taille' sur tailleTexte (63-char limit)
+      → dbName: 'align'  sur alignement  (63-char limit)
+    dt-demenagement/payload.config.ts
+      → push: true  (schema sync) → push: false (restauré après sync)
+    dt-demenagement/components/blocks/BlockRenderer.tsx
+      → Suppression de la variable videoTitleTypo inutilisée (dead code)
+
+  TECHNIQUE :
+    • Node v26 + tsx@4.21.0 (payload interne) incompatibles → `payload migrate:create` impossible
+    • Contournement : push: true dans drizzle adapter → sync direct Neon
+    • dbName sur SELECT = raccourcit le nom de l'ENUM PostgreSQL (pas le nom de groupe)
+    • _pages_v (versioning table) ajoute 3 chars aux identifiants → besoin de dbName courts
+
+  COLONNES AJOUTÉES EN BASE (sur les 18 blocs × pages + _pages_v) :
+    section_options_fond, section_options_image_fond_id, section_options_overlay,
+    section_options_espacement, section_options_largeur, section_options_hauteur_min,
+    section_options_visibilite, section_options_ancre_id, section_options_niveau,
+    typographie_titre_taille, typographie_titre_align, typographie_titre_poids,
+    typographie_texte_taille, typographie_texte_align, typographie_texte_poids
+
+  BUG ACTIF section toujours valide :
+    push: false est requis (bug drizzle-orm 0.45.2 params[])
+    → La prochaine migration manuelle devra soit attendre un fix drizzle,
+       soit passer par SQL direct sur console.neon.tech
+
 DERNIERS FICHIERS MODIFIÉS (session 2026-05-20 soir) :
   dt-demenagement/auth.ts
     → session: { strategy: 'jwt' }

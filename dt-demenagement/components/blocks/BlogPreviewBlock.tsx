@@ -7,6 +7,11 @@ import { useTranslations } from 'next-intl'
 import { motion } from 'framer-motion'
 import { ArrowRight, Clock } from 'lucide-react'
 import { ShineBorderEffect } from '@/components/ui/ShineBorder'
+import type { SectionOptions, TypographieOptions } from '@/lib/sectionOptions'
+import {
+  resolveBg, resolveSpacing, resolveHeight, resolveVisibility, resolveAnchorId,
+  resolveOverlay, resolveTitleTypography, resolveTextTypography, resolveHeadingTag, cx,
+} from '@/lib/sectionOptions'
 
 export type BlogArticleData = {
   id: string
@@ -78,17 +83,42 @@ function normalizeArticle(a: BlogArticleData): NormalizedArticle {
 
 interface BlogCms { titre?: string | null; sousTitre?: string | null; ctaTexte?: string | null; nombreArticles?: number | null }
 
-export function BlogPreviewBlock({ articles = [], cms }: { articles?: BlogArticleData[]; cms?: BlogCms }) {
+export function BlogPreviewBlock({ articles = [], cms, sectionOptions, typoTitre, typoTexte }: {
+  articles?: BlogArticleData[]
+  cms?: BlogCms
+  sectionOptions?: SectionOptions | null
+  typoTitre?: TypographieOptions | null
+  typoTexte?: TypographieOptions | null
+}) {
   const t = useTranslations('Home.blog')
 
   const displayArticles = articles.length > 0 ? articles.map(normalizeArticle) : MOCK_ARTICLES
 
+  const sectionBg  = sectionOptions?.imageFond ? '' : resolveBg(sectionOptions, 'sombre')
+  const sectionPy  = sectionOptions?.espacement ? resolveSpacing(sectionOptions) : 'py-section'
+  const sectionH   = resolveHeight(sectionOptions)
+  const sectionVis = resolveVisibility(sectionOptions)
+  const anchorId   = resolveAnchorId(sectionOptions)
+  const overlay    = sectionOptions?.imageFond ? resolveOverlay(sectionOptions) : ''
+  const hasImgFond = !!sectionOptions?.imageFond
+  const innerClass = hasImgFond ? 'relative z-10' : ''
+  const titleTypo  = resolveTitleTypography(typoTitre)
+  const textTypo   = resolveTextTypography(typoTexte)
+  const HeadingTag = resolveHeadingTag(sectionOptions)
+
   return (
     <section
-      className="py-section px-container bg-[var(--color-bg-dark)]"
+      id={anchorId}
+      className={cx('relative px-container', sectionBg, sectionPy, sectionH, sectionVis)}
       aria-labelledby="blog-title"
     >
-      <div className="max-w-7xl mx-auto">
+      {hasImgFond && (
+        <>
+          <Image src={sectionOptions!.imageFond!} alt="" fill className="object-cover" sizes="100vw" aria-hidden="true" />
+          {overlay && <div className={cx('absolute inset-0', overlay)} aria-hidden="true" />}
+        </>
+      )}
+      <div className={cx('max-w-7xl mx-auto', innerClass)}>
         {/* En-tête */}
         <motion.div
           className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-6 mb-14"
@@ -101,15 +131,15 @@ export function BlogPreviewBlock({ articles = [], cms }: { articles?: BlogArticl
             <span className="inline-block mb-3 px-4 py-1.5 rounded-full border border-[var(--color-red)]/30 bg-[var(--color-red)]/8 text-[var(--color-red)] text-xs font-body font-semibold uppercase tracking-widest">
               {t('badge')}
             </span>
-            <h2
+            <HeadingTag
               id="blog-title"
-              className="font-heading font-bold text-[var(--color-text-light)]"
-              style={{ fontSize: 'clamp(1.8rem, 3.5vw, 3rem)' }}
+              className={cx('font-heading font-bold text-[var(--color-text-light)]', titleTypo)}
+              style={typoTitre?.tailleTexte ? undefined : { fontSize: 'clamp(1.8rem, 3.5vw, 3rem)' }}
             >
               {cms?.titre ?? t('title')}
-            </h2>
+            </HeadingTag>
             {(cms?.sousTitre) && (
-              <p className="font-body text-[var(--color-text-muted)] mt-3 text-base leading-relaxed max-w-2xl">
+              <p className={cx('font-body text-[var(--color-text-muted)] mt-3 text-base leading-relaxed max-w-2xl', textTypo)}>
                 {cms.sousTitre}
               </p>
             )}

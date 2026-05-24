@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation'
+import { draftMode } from 'next/headers'
 import type { Metadata } from 'next'
 import { setRequestLocale } from 'next-intl/server'
 import { getTranslations } from 'next-intl/server'
@@ -31,13 +32,17 @@ type ServiceDoc = { id: string | number; nom: string; slug: string }
 
 async function getVilleData(slug: string, locale: string) {
   noStore()
+  const { isEnabled: isDraft } = await draftMode()
   const payload = await getPayload({ config })
   const loc = locale as 'fr' | 'ar' | 'en'
 
   const [villeRes, servicesRes] = await Promise.all([
     payload.find({
       collection: 'villes',
-      where: { slug: { equals: slug }, publie: { equals: true } },
+      draft: isDraft,
+      where: isDraft
+        ? { slug: { equals: slug } }
+        : { and: [{ slug: { equals: slug } }, { publie: { equals: true } }] },
       locale: loc,
       limit: 1,
       depth: 0,

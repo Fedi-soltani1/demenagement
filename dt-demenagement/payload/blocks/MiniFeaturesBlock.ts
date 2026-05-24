@@ -1,5 +1,6 @@
 import type { Block } from 'payload'
 import { actifField } from '../fields/actifField'
+import { sectionOptionsFields } from './shared/sectionOptionsFields'
 
 export const MiniFeaturesBlock: Block = {
   slug: 'mini-features',
@@ -38,5 +39,6 @@ export const MiniFeaturesBlock: Block = {
         },
       ],
     },
+    ...sectionOptionsFields,
   ],
 }

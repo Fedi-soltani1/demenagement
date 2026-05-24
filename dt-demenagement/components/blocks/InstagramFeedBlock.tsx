@@ -5,6 +5,11 @@ import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { motion } from 'framer-motion'
 import { ExternalLink } from 'lucide-react'
+import type { SectionOptions, TypographieOptions } from '@/lib/sectionOptions'
+import {
+  resolveBg, resolveSpacing, resolveHeight, resolveVisibility, resolveAnchorId,
+  resolveOverlay, resolveTitleTypography, resolveHeadingTag, cx,
+} from '@/lib/sectionOptions'
 
 function InstagramIcon({ className }: { className?: string }) {
   return (
@@ -29,16 +34,38 @@ const INSTAGRAM_URL_DEFAULT = 'https://www.instagram.com/dt.demenagement'
 
 interface InstagramCms { titre?: string | null; lienProfil?: string | null }
 
-export function InstagramFeedBlock({ cms }: { cms?: InstagramCms } = {}) {
+export function InstagramFeedBlock({ cms, sectionOptions, typoTitre }: {
+  cms?: InstagramCms
+  sectionOptions?: SectionOptions | null
+  typoTitre?: TypographieOptions | null
+} = {}) {
   const t = useTranslations('Home.instagram')
   const INSTAGRAM_URL = cms?.lienProfil ?? INSTAGRAM_URL_DEFAULT
 
+  const sectionBg  = sectionOptions?.imageFond ? '' : resolveBg(sectionOptions, 'sombre2')
+  const sectionPy  = sectionOptions?.espacement ? resolveSpacing(sectionOptions) : 'py-section'
+  const sectionH   = resolveHeight(sectionOptions)
+  const sectionVis = resolveVisibility(sectionOptions)
+  const anchorId   = resolveAnchorId(sectionOptions)
+  const overlay    = sectionOptions?.imageFond ? resolveOverlay(sectionOptions) : ''
+  const hasImgFond = !!sectionOptions?.imageFond
+  const innerClass = hasImgFond ? 'relative z-10' : ''
+  const titleTypo  = resolveTitleTypography(typoTitre)
+  const HeadingTag = resolveHeadingTag(sectionOptions)
+
   return (
     <section
-      className="py-section bg-[var(--color-bg-dark2)]"
+      id={anchorId}
+      className={cx('relative', sectionBg, sectionPy, sectionH, sectionVis)}
       aria-labelledby="instagram-title"
     >
-      <div className="max-w-7xl mx-auto px-container mb-10">
+      {hasImgFond && (
+        <>
+          <Image src={sectionOptions!.imageFond!} alt="" fill className="object-cover" sizes="100vw" aria-hidden="true" />
+          {overlay && <div className={cx('absolute inset-0', overlay)} aria-hidden="true" />}
+        </>
+      )}
+      <div className={cx('max-w-7xl mx-auto px-container mb-10', innerClass)}>
         <motion.div
           className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-6"
           initial={{ opacity: 0, y: 30 }}
@@ -50,13 +77,13 @@ export function InstagramFeedBlock({ cms }: { cms?: InstagramCms } = {}) {
             <span className="inline-block mb-3 px-4 py-1.5 rounded-full border border-[var(--color-red)]/30 bg-[var(--color-red)]/8 text-[var(--color-red)] text-xs font-body font-semibold uppercase tracking-widest">
               {t('badge')}
             </span>
-            <h2
+            <HeadingTag
               id="instagram-title"
-              className="font-heading font-bold text-[var(--color-text-light)]"
-              style={{ fontSize: 'clamp(1.8rem, 3.5vw, 3rem)' }}
+              className={cx('font-heading font-bold text-[var(--color-text-light)]', titleTypo)}
+              style={typoTitre?.tailleTexte ? undefined : { fontSize: 'clamp(1.8rem, 3.5vw, 3rem)' }}
             >
               {cms?.titre ?? t('title')}
-            </h2>
+            </HeadingTag>
           </div>
 
           <a
@@ -74,7 +101,7 @@ export function InstagramFeedBlock({ cms }: { cms?: InstagramCms } = {}) {
       </div>
 
       {/* Grille photos */}
-      <div className="max-w-7xl mx-auto px-container">
+      <div className={cx('max-w-7xl mx-auto px-container', innerClass)}>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 lg:gap-3">
           {MOCK_POSTS.map((post, i) => (
             <motion.a

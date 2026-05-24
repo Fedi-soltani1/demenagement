@@ -1,5 +1,7 @@
 import type { Block } from 'payload'
 import { actifField } from '../fields/actifField'
+import { sectionOptionsFields } from './shared/sectionOptionsFields'
+import { typographieTitreField, typographieTexteField } from './shared/typographyFields'
 
 export const ServicesBlock: Block = {
   slug: 'services',
@@ -48,5 +50,8 @@ export const ServicesBlock: Block = {
         { label: 'Carrousel — défilement gauche/droite',    value: 'carrousel' },
       ],
     },
+    typographieTitreField,
+    typographieTexteField,
+    ...sectionOptionsFields,
   ],
 }

@@ -36,11 +36,12 @@ const Pages: CollectionConfig = {
     useAsTitle: 'slug',
     defaultColumns: ['titre', 'slug', 'publie'],
     description: 'Pages du site (accueil, à propos, contact…). Cliquer sur une page pour modifier ses blocs.',
-    preview: (doc) => {
-        const base = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
-        const slug = doc.slug as string
-        if (slug === 'accueil' || !slug) return `${base}/fr`
-        return `${base}/fr/${slug}`
+    preview: (doc, { locale }) => {
+        const base   = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
+        const secret = process.env.PAYLOAD_SECRET ?? ''
+        const slug   = (doc.slug as string) ?? ''
+        const loc    = (locale as string) ?? 'fr'
+        return `${base}/api/draft?secret=${secret}&collection=pages&slug=${slug}&locale=${loc}`
       },
   },
 

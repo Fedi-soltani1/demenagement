@@ -18,6 +18,13 @@ const Villes: CollectionConfig = {
     useAsTitle: 'nom',
     defaultColumns: ['nom', 'region', 'publie'],
     description: 'Les 24 villes tunisiennes couvertes. Modifier le texte SEO ou l\'image de chaque ville.',
+    preview: (doc, { locale }) => {
+      const base   = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
+      const secret = process.env.PAYLOAD_SECRET ?? ''
+      const slug   = (doc.slug as string) ?? ''
+      const loc    = (locale as string) ?? 'fr'
+      return `${base}/api/draft?secret=${secret}&collection=villes&slug=${slug}&locale=${loc}`
+    },
   },
 
   fields: [

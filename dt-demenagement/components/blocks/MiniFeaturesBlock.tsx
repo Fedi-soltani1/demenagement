@@ -1,9 +1,12 @@
 'use client'
 
 import React from 'react'
+import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { motion } from 'framer-motion'
 import { Users, Truck, Package, Shield, Star, Zap, type LucideIcon } from 'lucide-react'
+import type { SectionOptions } from '@/lib/sectionOptions'
+import { resolveBg, resolveSpacing, resolveHeight, resolveVisibility, resolveAnchorId, resolveOverlay, cx } from '@/lib/sectionOptions'
 
 const ICON_MAP: Record<string, LucideIcon> = {
   users: Users, truck: Truck, package: Package,
@@ -20,7 +23,7 @@ const FALLBACK = [
   { icon: Package, keyTitle: 'item3Title', keyDesc: 'item3Desc' },
 ] as const
 
-export function MiniFeaturesBlock({ cms }: { cms?: CmsPointsForts }) {
+export function MiniFeaturesBlock({ cms, sectionOptions }: { cms?: CmsPointsForts; sectionOptions?: SectionOptions | null }) {
   const t = useTranslations('Home.miniFeatures')
 
   const items = cms?.items?.length
@@ -35,12 +38,27 @@ export function MiniFeaturesBlock({ cms }: { cms?: CmsPointsForts }) {
         desc: t(keyDesc),
       }))
 
+  const sectionBg  = sectionOptions?.imageFond ? '' : resolveBg(sectionOptions, 'sombre2')
+  const sectionPy  = resolveSpacing(sectionOptions)
+  const sectionH   = resolveHeight(sectionOptions)
+  const sectionVis = resolveVisibility(sectionOptions)
+  const anchorId   = resolveAnchorId(sectionOptions)
+  const overlay    = sectionOptions?.imageFond ? resolveOverlay(sectionOptions) : ''
+  const hasImgFond = !!sectionOptions?.imageFond
+
   return (
     <section
-      className="relative z-10 bg-[var(--color-bg-dark2)]"
+      id={anchorId}
+      className={cx('relative z-10', sectionBg, sectionPy, sectionH, sectionVis)}
       aria-label="Points forts"
     >
-      <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-[var(--color-border)]">
+      {hasImgFond && (
+        <>
+          <Image src={sectionOptions!.imageFond!} alt="" fill className="object-cover" sizes="100vw" aria-hidden="true" />
+          {overlay && <div className={cx('absolute inset-0', overlay)} aria-hidden="true" />}
+        </>
+      )}
+      <div className={cx('grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-[var(--color-border)]', hasImgFond ? 'relative z-10' : '')}>
         {items.map(({ Icon, titre, desc }, i) => (
           <motion.div
             key={i}

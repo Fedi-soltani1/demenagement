@@ -1,5 +1,7 @@
 import type { Block } from 'payload'
 import { actifField } from '../fields/actifField'
+import { sectionOptionsFields } from './shared/sectionOptionsFields'
+import { typographieTitreField, typographieTexteField } from './shared/typographyFields'
 
 export const TestimonialsBlock: Block = {
   slug: 'testimonials',
@@ -48,5 +50,8 @@ export const TestimonialsBlock: Block = {
       defaultValue: 6,
       admin: { description: 'S\'applique uniquement si aucune sélection manuelle n\'est faite. Ex: 6' },
     },
+    typographieTitreField,
+    typographieTexteField,
+    ...sectionOptionsFields,
   ],
 }

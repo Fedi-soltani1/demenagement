@@ -1,10 +1,16 @@
 'use client'
 
 import React from 'react'
+import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { motion } from 'framer-motion'
 import { ShineBorderEffect } from '@/components/ui/ShineBorder'
 import { Zap, Headphones, ShieldCheck, Users, type LucideIcon } from 'lucide-react'
+import type { SectionOptions, TypographieOptions } from '@/lib/sectionOptions'
+import {
+  resolveBg, resolveSpacing, resolveHeight, resolveVisibility, resolveAnchorId,
+  resolveOverlay, resolveTitleTypography, resolveTextTypography, resolveHeadingTag, cx,
+} from '@/lib/sectionOptions'
 
 export type CmsPourquoiNous = {
   badge?: string | null
@@ -25,12 +31,29 @@ const FALLBACK = [
   { icon: Users,       keyTitle: 'item4Title', keyDesc: 'item4Desc' },
 ] as const
 
-export function WhyUsBlock({ cms }: { cms?: CmsPourquoiNous }) {
+export function WhyUsBlock({ cms, sectionOptions, typoTitre, typoTexte }: {
+  cms?: CmsPourquoiNous
+  sectionOptions?: SectionOptions | null
+  typoTitre?: TypographieOptions | null
+  typoTexte?: TypographieOptions | null
+}) {
   const t = useTranslations('Home.whyUs')
 
   const badge     = cms?.badge    ?? t('badge')
   const titre     = cms?.titre    ?? t('title')
   const sousTitre = cms?.sousTitre ?? t('subtitle')
+
+  const sectionBg  = sectionOptions?.imageFond ? '' : resolveBg(sectionOptions, 'sombre2')
+  const sectionPy  = sectionOptions?.espacement ? resolveSpacing(sectionOptions) : 'py-section'
+  const sectionH   = resolveHeight(sectionOptions)
+  const sectionVis = resolveVisibility(sectionOptions)
+  const anchorId   = resolveAnchorId(sectionOptions)
+  const overlay    = sectionOptions?.imageFond ? resolveOverlay(sectionOptions) : ''
+  const hasImgFond = !!sectionOptions?.imageFond
+  const innerClass = hasImgFond ? 'relative z-10' : ''
+  const titleTypo  = resolveTitleTypography(typoTitre)
+  const textTypo   = resolveTextTypography(typoTexte)
+  const HeadingTag = resolveHeadingTag(sectionOptions)
 
   const items = cms?.items?.length
     ? cms.items.map((item, i) => ({
@@ -44,10 +67,17 @@ export function WhyUsBlock({ cms }: { cms?: CmsPourquoiNous }) {
 
   return (
     <section
-      className="py-section px-container bg-[var(--color-bg-dark2)]"
+      id={anchorId}
+      className={cx('relative px-container', sectionBg, sectionPy, sectionH, sectionVis)}
       aria-labelledby="why-us-title"
     >
-      <div className="max-w-7xl mx-auto">
+      {hasImgFond && (
+        <>
+          <Image src={sectionOptions!.imageFond!} alt="" fill className="object-cover" sizes="100vw" aria-hidden="true" />
+          {overlay && <div className={cx('absolute inset-0', overlay)} aria-hidden="true" />}
+        </>
+      )}
+      <div className={cx('max-w-7xl mx-auto', innerClass)}>
         {/* En-tête section */}
         <motion.div
           className="text-center max-w-2xl mx-auto mb-16"
@@ -59,14 +89,14 @@ export function WhyUsBlock({ cms }: { cms?: CmsPourquoiNous }) {
           <span className="inline-block mb-4 px-4 py-1.5 rounded-full border border-[var(--color-red)]/30 bg-[var(--color-red)]/8 text-[var(--color-red)] text-xs font-body font-semibold uppercase tracking-widest">
             {badge}
           </span>
-          <h2
+          <HeadingTag
             id="why-us-title"
-            className="font-heading font-bold text-[var(--color-text-light)] mb-4"
-            style={{ fontSize: 'clamp(1.8rem, 3.5vw, 3rem)' }}
+            className={cx('font-heading font-bold text-[var(--color-text-light)] mb-4', titleTypo)}
+            style={typoTitre?.tailleTexte ? undefined : { fontSize: 'clamp(1.8rem, 3.5vw, 3rem)' }}
           >
             {titre}
-          </h2>
-          <p className="font-body text-[var(--color-text-muted)] leading-relaxed">
+          </HeadingTag>
+          <p className={cx('font-body text-[var(--color-text-muted)] leading-relaxed', textTypo)}>
             {sousTitre}
           </p>
         </motion.div>

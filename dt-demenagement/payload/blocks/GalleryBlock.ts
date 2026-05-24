@@ -1,5 +1,7 @@
 import type { Block } from 'payload'
 import { actifField } from '../fields/actifField'
+import { sectionOptionsFields } from './shared/sectionOptionsFields'
+import { typographieTitreField } from './shared/typographyFields'
 
 export const GalleryBlock: Block = {
   slug: 'gallery',
@@ -57,5 +59,7 @@ export const GalleryBlock: Block = {
       defaultValue: true,
       admin: { description: 'Si coché, un clic sur une photo l\'affiche en grand avec navigation gauche/droite.' },
     },
+    typographieTitreField,
+    ...sectionOptionsFields,
   ],
 }

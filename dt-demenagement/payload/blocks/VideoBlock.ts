@@ -1,5 +1,7 @@
 import type { Block } from 'payload'
 import { actifField } from '../fields/actifField'
+import { sectionOptionsFields } from './shared/sectionOptionsFields'
+import { typographieTitreField, typographieTexteField } from './shared/typographyFields'
 
 export const VideoBlock: Block = {
   slug: 'video',
@@ -41,5 +43,8 @@ export const VideoBlock: Block = {
       defaultValue: false,
       admin: { description: '⚠️ La lecture automatique est bloquée par la plupart des navigateurs et peut gêner les visiteurs. Laisser décoché.' },
     },
+    typographieTitreField,
+    typographieTexteField,
+    ...sectionOptionsFields,
   ],
 }

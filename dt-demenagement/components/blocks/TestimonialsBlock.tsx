@@ -5,6 +5,11 @@ import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { motion, AnimatePresence } from 'framer-motion'
 import { StarRating } from '@/components/ui/StarRating'
+import type { SectionOptions, TypographieOptions } from '@/lib/sectionOptions'
+import {
+  resolveBg, resolveSpacing, resolveHeight, resolveVisibility, resolveAnchorId,
+  resolveOverlay, resolveTitleTypography, resolveTextTypography, resolveHeadingTag, cx,
+} from '@/lib/sectionOptions'
 
 export type TestimonialData = {
   id: string
@@ -77,7 +82,13 @@ function TestimonialCard({ item }: { item: NormalizedTestimonial }) {
   )
 }
 
-export function TestimonialsBlock({ testimonials = [], cms }: { testimonials?: TestimonialData[]; cms?: TestimonialsCms }) {
+export function TestimonialsBlock({ testimonials = [], cms, sectionOptions, typoTitre, typoTexte }: {
+  testimonials?: TestimonialData[]
+  cms?: TestimonialsCms
+  sectionOptions?: SectionOptions | null
+  typoTitre?: TypographieOptions | null
+  typoTexte?: TypographieOptions | null
+}) {
   const t = useTranslations('Home.testimonials')
   const [current, setCurrent] = useState(0)
   const [paused, setPaused] = useState(false)
@@ -87,6 +98,18 @@ export function TestimonialsBlock({ testimonials = [], cms }: { testimonials?: T
     : MOCK_TESTIMONIALS
 
   const affichage = cms?.affichage ?? 'carrousel'
+
+  const sectionBg  = sectionOptions?.imageFond ? '' : resolveBg(sectionOptions, 'sombre')
+  const sectionPy  = sectionOptions?.espacement ? resolveSpacing(sectionOptions) : 'py-section'
+  const sectionH   = resolveHeight(sectionOptions)
+  const sectionVis = resolveVisibility(sectionOptions)
+  const anchorId   = resolveAnchorId(sectionOptions)
+  const overlay    = sectionOptions?.imageFond ? resolveOverlay(sectionOptions) : ''
+  const hasImgFond = !!sectionOptions?.imageFond
+  const innerClass = hasImgFond ? 'relative z-10' : ''
+  const titleTypo  = resolveTitleTypography(typoTitre)
+  const textTypo   = resolveTextTypography(typoTexte)
+  const HeadingTag = resolveHeadingTag(sectionOptions)
 
   const next = useCallback(() => {
     setCurrent((c) => (c + 1) % displayTestimonials.length)
@@ -100,12 +123,19 @@ export function TestimonialsBlock({ testimonials = [], cms }: { testimonials?: T
 
   return (
     <section
-      className="py-section px-container bg-[var(--color-bg-dark)] overflow-hidden"
+      id={anchorId}
+      className={cx('relative px-container overflow-hidden', sectionBg, sectionPy, sectionH, sectionVis)}
       aria-labelledby="testimonials-title"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      <div className="max-w-6xl mx-auto">
+      {hasImgFond && (
+        <>
+          <Image src={sectionOptions!.imageFond!} alt="" fill className="object-cover" sizes="100vw" aria-hidden="true" />
+          {overlay && <div className={cx('absolute inset-0', overlay)} aria-hidden="true" />}
+        </>
+      )}
+      <div className={cx('max-w-6xl mx-auto', innerClass)}>
         {/* En-tête */}
         <motion.div
           className="text-center mb-14"
@@ -117,14 +147,14 @@ export function TestimonialsBlock({ testimonials = [], cms }: { testimonials?: T
           <span className="inline-block mb-4 px-4 py-1.5 rounded-full border border-[var(--color-red)]/30 bg-[var(--color-red)]/8 text-[var(--color-red)] text-xs font-body font-semibold uppercase tracking-widest">
             {t('badge')}
           </span>
-          <h2
+          <HeadingTag
             id="testimonials-title"
-            className="font-heading font-bold text-[var(--color-text-light)] mb-3"
-            style={{ fontSize: 'clamp(1.8rem, 3.5vw, 3rem)' }}
+            className={cx('font-heading font-bold text-[var(--color-text-light)] mb-3', titleTypo)}
+            style={typoTitre?.tailleTexte ? undefined : { fontSize: 'clamp(1.8rem, 3.5vw, 3rem)' }}
           >
             {cms?.titre ?? t('title')}
-          </h2>
-          <p className="font-body text-[var(--color-text-muted)]">{cms?.sousTitre ?? t('subtitle')}</p>
+          </HeadingTag>
+          <p className={cx('font-body text-[var(--color-text-muted)]', textTypo)}>{cms?.sousTitre ?? t('subtitle')}</p>
         </motion.div>
 
         {/* Mode grille */}

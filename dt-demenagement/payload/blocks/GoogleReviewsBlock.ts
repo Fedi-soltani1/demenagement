@@ -1,5 +1,7 @@
 import type { Block } from 'payload'
 import { actifField } from '../fields/actifField'
+import { sectionOptionsFields } from './shared/sectionOptionsFields'
+import { typographieTitreField } from './shared/typographyFields'
 
 export const GoogleReviewsBlock: Block = {
   slug: 'google-reviews',
@@ -41,5 +43,7 @@ export const GoogleReviewsBlock: Block = {
         { label: '5 étoiles uniquement (excellent)',   value: '5' },
       ],
     },
+    typographieTitreField,
+    ...sectionOptionsFields,
   ],
 }

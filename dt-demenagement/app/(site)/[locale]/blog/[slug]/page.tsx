@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 import { getPayload } from 'payload'
+import { draftMode } from 'next/headers'
 import type { Metadata } from 'next'
 import { setRequestLocale } from 'next-intl/server'
 import Image from 'next/image'
@@ -41,10 +42,14 @@ type ArticleDoc = {
 
 async function getArticle(slug: string, locale: string): Promise<ArticleDoc | null> {
   noStore()
+  const { isEnabled: isDraft } = await draftMode()
   const payload = await getPayload({ config })
   const result = await payload.find({
     collection: 'blog',
-    where: { slug: { equals: slug }, statut: { equals: 'publie' } },
+    draft: isDraft,
+    where: isDraft
+      ? { slug: { equals: slug } }
+      : { and: [{ slug: { equals: slug } }, { statut: { equals: 'publie' } }] },
     locale: locale as 'fr' | 'ar' | 'en',
     limit: 1,
     depth: 1,

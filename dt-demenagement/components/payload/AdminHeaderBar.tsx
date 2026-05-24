@@ -63,6 +63,39 @@ export default function AdminHeaderBar() {
     return () => document.removeEventListener('mousedown', onOutside)
   }, [menuOpen, localeOpen])
 
+  /* auto-flip ReactSelect menus upward when not enough space below */
+  useEffect(() => {
+    function flipIfNeeded(menu: HTMLElement) {
+      requestAnimationFrame(() => {
+        const control = menu.parentElement?.querySelector('.rs__control') as HTMLElement | null
+        if (!control) return
+        const ctrlRect   = control.getBoundingClientRect()
+        const menuH      = menu.scrollHeight || 240
+        const spaceBelow = window.innerHeight - ctrlRect.bottom
+        const spaceAbove = ctrlRect.top
+        if (spaceBelow < menuH + 8 && spaceAbove > menuH + 8) {
+          menu.style.setProperty('top',           'auto', 'important')
+          menu.style.setProperty('bottom',        '100%', 'important')
+          menu.style.setProperty('margin-top',    '0',    'important')
+          menu.style.setProperty('margin-bottom', '4px',  'important')
+        }
+      })
+    }
+
+    const observer = new MutationObserver((mutations) => {
+      for (const mut of mutations) {
+        for (const node of Array.from(mut.addedNodes)) {
+          if (!(node instanceof HTMLElement)) continue
+          if (node.classList.contains('rs__menu')) flipIfNeeded(node)
+          node.querySelectorAll('.rs__menu').forEach(el => flipIfNeeded(el as HTMLElement))
+        }
+      }
+    })
+
+    observer.observe(document.body, { childList: true, subtree: true })
+    return () => observer.disconnect()
+  }, [])
+
   const localeCode  = (typeof localeData === 'string' ? localeData : (localeData as {code?:string})?.code ?? 'fr').toUpperCase()
   const initial     = (user as {email?:string}|null)?.email?.charAt(0).toUpperCase() ?? 'A'
   const displayName = (user as {email?:string}|null)?.email ?? 'Administrateur'
