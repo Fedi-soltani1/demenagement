@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, memo } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
@@ -12,6 +12,8 @@ import {
   resolveBg, resolveSpacing, resolveHeight, resolveVisibility, resolveAnchorId,
   resolveOverlay, resolveTitleTypography, resolveTextTypography, resolveHeadingTag, cx,
 } from '@/lib/sectionOptions'
+
+const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
 
 function extractYoutubeId(url: string): string | null {
   try {
@@ -45,7 +47,7 @@ export type CmsApropos = {
   stat4Label?: string | null
 }
 
-export function StatsAboutBlock({ cms, sectionOptions, typoTitre, typoTexte }: {
+export const StatsAboutBlock = memo(function StatsAboutBlock({ cms, sectionOptions, typoTitre, typoTexte }: {
   cms?: CmsApropos
   sectionOptions?: SectionOptions | null
   typoTitre?: TypographieOptions | null
@@ -107,7 +109,7 @@ export function StatsAboutBlock({ cms, sectionOptions, typoTitre, typoTexte }: {
           initial={{ opacity: 0, x: imagePositionEnd ? 60 : -60 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true, margin: '-80px' }}
-          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.7, ease: EASE }}
         >
           {/* Image principale — déborde légèrement de la grille */}
           <div className="relative rounded-2xl overflow-hidden -ms-4 lg:-ms-12 aspect-[4/3]">
@@ -148,7 +150,7 @@ export function StatsAboutBlock({ cms, sectionOptions, typoTitre, typoTexte }: {
           initial={{ opacity: 0, x: 60 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true, margin: '-80px' }}
-          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
+          transition={{ duration: 0.7, ease: EASE, delay: 0.1 }}
         >
           <span className="inline-block mb-4 px-4 py-1.5 rounded-full border border-[var(--color-red)]/30 bg-[var(--color-red)]/8 text-[var(--color-red)] text-xs font-body font-semibold uppercase tracking-widest">
             {badge}
@@ -214,7 +216,7 @@ export function StatsAboutBlock({ cms, sectionOptions, typoTitre, typoTexte }: {
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.3, ease: EASE }}
               onClick={(e) => e.stopPropagation()}
             >
               {videoStarted ? (
@@ -276,4 +278,4 @@ export function StatsAboutBlock({ cms, sectionOptions, typoTitre, typoTexte }: {
       </AnimatePresence>
     </section>
   )
-}
+})

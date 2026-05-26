@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { memo } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
@@ -83,7 +83,7 @@ function normalizeArticle(a: BlogArticleData): NormalizedArticle {
 
 interface BlogCms { titre?: string | null; sousTitre?: string | null; ctaTexte?: string | null; nombreArticles?: number | null }
 
-export function BlogPreviewBlock({ articles = [], cms, sectionOptions, typoTitre, typoTexte }: {
+export const BlogPreviewBlock = memo(function BlogPreviewBlock({ articles = [], cms, sectionOptions, typoTitre, typoTexte }: {
   articles?: BlogArticleData[]
   cms?: BlogCms
   sectionOptions?: SectionOptions | null
@@ -215,4 +215,4 @@ export function BlogPreviewBlock({ articles = [], cms, sectionOptions, typoTitre
       </div>
     </section>
   )
-}
+})

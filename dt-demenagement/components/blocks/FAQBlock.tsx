@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, memo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronDown } from 'lucide-react'
 import { SectionWrapper } from '@/components/blocks/SectionWrapper'
@@ -111,7 +111,7 @@ function FaqItem({
 
 // ─── Composant principal ──────────────────────────────────────────────────────
 
-export function FAQBlock({ cms, sectionOptions, typoTitre, typoTexte }: FAQBlockProps) {
+export const FAQBlock = memo(function FAQBlock({ cms, sectionOptions, typoTitre, typoTexte }: FAQBlockProps) {
   const questions = (cms?.questions ?? []).filter((q) => q.actif !== false && q.question)
   if (questions.length === 0) return null
 
@@ -150,7 +150,7 @@ export function FAQBlock({ cms, sectionOptions, typoTitre, typoTexte }: FAQBlock
       <div className="max-w-3xl mx-auto space-y-3">
         {questions.map((q, i) => (
           <FaqItem
-            key={i}
+            key={q.question || i}
             question={q.question}
             reponse={q.reponse}
             index={i}
@@ -160,4 +160,4 @@ export function FAQBlock({ cms, sectionOptions, typoTitre, typoTexte }: FAQBlock
       </div>
     </SectionWrapper>
   )
-}
+})

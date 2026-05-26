@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, memo } from 'react'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -19,12 +19,12 @@ interface NewsletterCms {
   texteRgpd?:      string | null
 }
 
-export function NewsletterBlock({ cms, sectionOptions, typoTitre, typoTexte }: {
+export const NewsletterBlock = memo(function NewsletterBlock({ cms, sectionOptions, typoTitre, typoTexte }: {
   cms?: NewsletterCms
   sectionOptions?: SectionOptions | null
   typoTitre?: TypographieOptions | null
   typoTexte?: TypographieOptions | null
-} = {}) {
+}) {
   const t = useTranslations('Home.newsletter')
   const [email, setEmail] = useState('')
   const [rgpd, setRgpd] = useState(false)
@@ -187,4 +187,4 @@ export function NewsletterBlock({ cms, sectionOptions, typoTitre, typoTexte }: {
       </div>
     </section>
   )
-}
+})

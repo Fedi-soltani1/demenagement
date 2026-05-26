@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, memo } from 'react'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -28,6 +28,8 @@ type NormalizedTestimonial = {
   texte: string
   photo?: { url?: string | null } | null
 }
+
+const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
 
 const MOCK_TESTIMONIALS: NormalizedTestimonial[] = [
   { id: '1', nom: 'Khaled Ben Ali',  ville: 'Tunis',    note: 5, texte: 'Service exceptionnel ! L\'équipe DT a géré notre déménagement de Tunis à Sousse en un temps record. Très professionnels, soigneux avec nos affaires. Je recommande vivement !' },
@@ -82,7 +84,7 @@ function TestimonialCard({ item }: { item: NormalizedTestimonial }) {
   )
 }
 
-export function TestimonialsBlock({ testimonials = [], cms, sectionOptions, typoTitre, typoTexte }: {
+export const TestimonialsBlock = memo(function TestimonialsBlock({ testimonials = [], cms, sectionOptions, typoTitre, typoTexte }: {
   testimonials?: TestimonialData[]
   cms?: TestimonialsCms
   sectionOptions?: SectionOptions | null
@@ -204,7 +206,7 @@ export function TestimonialsBlock({ testimonials = [], cms, sectionOptions, typo
                       initial={{ opacity: 0, x: 40 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -40 }}
-                      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                      transition={{ duration: 0.4, ease: EASE }}
                     >
                       <span className="font-display text-8xl text-[var(--color-red)]/20 leading-none mb-2 select-none" aria-hidden="true">&ldquo;</span>
 
@@ -253,4 +255,4 @@ export function TestimonialsBlock({ testimonials = [], cms, sectionOptions, typo
       </div>
     </section>
   )
-}
+})

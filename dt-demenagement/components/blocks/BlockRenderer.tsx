@@ -2,28 +2,80 @@
 
 import React from 'react'
 import Image from 'next/image'
+import dynamic from 'next/dynamic'
 
-import { HeroBlock,          type CmsHero }          from '@/components/blocks/HeroBlock'
-import { MiniFeaturesBlock,  type CmsPointsForts }    from '@/components/blocks/MiniFeaturesBlock'
-import { StatsAboutBlock,    type CmsApropos }        from '@/components/blocks/StatsAboutBlock'
-import { WhyUsBlock,         type CmsPourquoiNous }   from '@/components/blocks/WhyUsBlock'
-import { ServicesBlock,      type ServiceData }       from '@/components/blocks/ServicesBlock'
-import { MapBlock,            type MapVille, type MapPays } from '@/components/blocks/MapBlock'
-import { TestimonialsBlock,  type TestimonialData }   from '@/components/blocks/TestimonialsBlock'
-import { PartnersBlock,      type PartnerData }       from '@/components/blocks/PartnersBlock'
-import { InstagramFeedBlock }                          from '@/components/blocks/InstagramFeedBlock'
-import { NewsletterBlock }                             from '@/components/blocks/NewsletterBlock'
-import { BlogPreviewBlock,   type BlogArticleData }   from '@/components/blocks/BlogPreviewBlock'
-import { CTAFinalBlock,      type CmsCtaFinal }       from '@/components/blocks/CTAFinalBlock'
-import { ProcessBlock,      type ProcessCms }         from '@/components/blocks/ProcessBlock'
-import { PricingBlock,      type PricingCms }         from '@/components/blocks/PricingBlock'
-import { FAQBlock,          type FaqCms }             from '@/components/blocks/FAQBlock'
-import { SectionWrapper }                              from '@/components/blocks/SectionWrapper'
-import { CounterAnimation }                            from '@/components/ui/CounterAnimation'
-import type { SectionOptions, TypographieOptions }    from '@/lib/sectionOptions'
+import { BlockSkeleton }                                from '@/components/blocks/BlockSkeleton'
+import { SectionWrapper }                               from '@/components/blocks/SectionWrapper'
+import { CounterAnimation }                             from '@/components/ui/CounterAnimation'
+import type { SectionOptions, TypographieOptions }      from '@/lib/sectionOptions'
 import {
   resolveHeadingTag, resolveTitleTypography, resolveTextTypography, cx,
 } from '@/lib/sectionOptions'
+
+// ─── Dynamic imports — un chunk par bloc ─────────────────────────────────────
+
+const sk = (h: 'sm' | 'md' | 'lg' | 'xl') => () => <BlockSkeleton height={h} />
+
+const HeroBlock = dynamic(
+  () => import('@/components/blocks/HeroBlock').then((m) => ({ default: m.HeroBlock })),
+  { loading: sk('xl') },
+)
+const MiniFeaturesBlock = dynamic(
+  () => import('@/components/blocks/MiniFeaturesBlock').then((m) => ({ default: m.MiniFeaturesBlock })),
+  { loading: sk('sm') },
+)
+const StatsAboutBlock = dynamic(
+  () => import('@/components/blocks/StatsAboutBlock').then((m) => ({ default: m.StatsAboutBlock })),
+  { loading: sk('lg') },
+)
+const WhyUsBlock = dynamic(
+  () => import('@/components/blocks/WhyUsBlock').then((m) => ({ default: m.WhyUsBlock })),
+  { loading: sk('lg') },
+)
+const ServicesBlock = dynamic(
+  () => import('@/components/blocks/ServicesBlock').then((m) => ({ default: m.ServicesBlock })),
+  { loading: sk('lg') },
+)
+const MapBlock = dynamic(
+  () => import('@/components/blocks/MapBlock').then((m) => ({ default: m.MapBlock })),
+  { loading: sk('xl') },
+)
+const TestimonialsBlock = dynamic(
+  () => import('@/components/blocks/TestimonialsBlock').then((m) => ({ default: m.TestimonialsBlock })),
+  { loading: sk('lg') },
+)
+const PartnersBlock = dynamic(
+  () => import('@/components/blocks/PartnersBlock').then((m) => ({ default: m.PartnersBlock })),
+  { loading: sk('sm') },
+)
+const InstagramFeedBlock = dynamic(
+  () => import('@/components/blocks/InstagramFeedBlock').then((m) => ({ default: m.InstagramFeedBlock })),
+  { loading: sk('lg') },
+)
+const NewsletterBlock = dynamic(
+  () => import('@/components/blocks/NewsletterBlock').then((m) => ({ default: m.NewsletterBlock })),
+  { loading: sk('md') },
+)
+const BlogPreviewBlock = dynamic(
+  () => import('@/components/blocks/BlogPreviewBlock').then((m) => ({ default: m.BlogPreviewBlock })),
+  { loading: sk('lg') },
+)
+const CTAFinalBlock = dynamic(
+  () => import('@/components/blocks/CTAFinalBlock').then((m) => ({ default: m.CTAFinalBlock })),
+  { loading: sk('md') },
+)
+const ProcessBlock = dynamic(
+  () => import('@/components/blocks/ProcessBlock').then((m) => ({ default: m.ProcessBlock })),
+  { loading: sk('lg') },
+)
+const PricingBlock = dynamic(
+  () => import('@/components/blocks/PricingBlock').then((m) => ({ default: m.PricingBlock })),
+  { loading: sk('xl') },
+)
+const FAQBlock = dynamic(
+  () => import('@/components/blocks/FAQBlock').then((m) => ({ default: m.FAQBlock })),
+  { loading: sk('md') },
+)
 
 // ─── Types Payload (structure brute retournée par l'API) ──────────────────────
 
@@ -84,6 +136,22 @@ type PaysPayload = {
   drapeau?: string | null
   coordonnees?: { lat?: number | null; lng?: number | null } | null
 }
+
+// ─── Types de blocs (uniquement pour les props du renderer et les adaptateurs) ─
+
+import type { CmsHero }          from '@/components/blocks/HeroBlock'
+import type { CmsPointsForts }   from '@/components/blocks/MiniFeaturesBlock'
+import type { CmsApropos }       from '@/components/blocks/StatsAboutBlock'
+import type { CmsPourquoiNous }  from '@/components/blocks/WhyUsBlock'
+import type { ServiceData }      from '@/components/blocks/ServicesBlock'
+import type { MapVille, MapPays } from '@/components/blocks/MapBlock'
+import type { TestimonialData }  from '@/components/blocks/TestimonialsBlock'
+import type { PartnerData }      from '@/components/blocks/PartnersBlock'
+import type { BlogArticleData }  from '@/components/blocks/BlogPreviewBlock'
+import type { CmsCtaFinal }      from '@/components/blocks/CTAFinalBlock'
+import type { ProcessCms }       from '@/components/blocks/ProcessBlock'
+import type { PricingCms }       from '@/components/blocks/PricingBlock'
+import type { FaqCms }           from '@/components/blocks/FAQBlock'
 
 // ─── Props du renderer ────────────────────────────────────────────────────────
 
@@ -152,11 +220,11 @@ function adaptHero(b: PayloadBlock): CmsHero {
   const ctaPrimaire   = b.ctaPrimaire   as Record<string, unknown> | null | undefined
   const ctaSecondaire = b.ctaSecondaire as Record<string, unknown> | null | undefined
   return {
-    badge:      str(b.badge),
-    titre:      str(b.titre),
-    sousTitre:  str(b.sousTitre),
-    cta1Texte:  str(ctaPrimaire?.texte)   ?? null,
-    cta2Texte:  str(ctaSecondaire?.texte) ?? null,
+    badge:        str(b.badge),
+    titre:        str(b.titre),
+    sousTitre:    str(b.sousTitre),
+    cta1Texte:    str(ctaPrimaire?.texte)   ?? null,
+    cta2Texte:    str(ctaSecondaire?.texte) ?? null,
     videoFichier: mediaUrl(b.videoFichier),
     videoYoutube: str(b.videoYoutube),
     imageHero:    mediaUrl(b.imageHero),
@@ -182,9 +250,9 @@ function adaptAbout(b: PayloadBlock): CmsApropos {
   const stats = arr<StatRaw>(b.stats)
 
   const cms: CmsApropos = {
-    badge:     str(b.badge),
-    titre:     str(b.titre),
-    texte:     str(b.texte),
+    badge:         str(b.badge),
+    titre:         str(b.titre),
+    texte:         str(b.texte),
     image:         b.image ? { url: mediaUrl(b.image) } : null,
     videoFichier:  mediaUrl(b.videoFichier),
     videoUrl:      str(b.videoUrl),
@@ -192,27 +260,10 @@ function adaptAbout(b: PayloadBlock): CmsApropos {
     imagePosition: (str(b.imagePosition) as 'gauche' | 'droite') || null,
   }
 
-  // Injecter les 4 stats si définies dans Payload
-  if (stats[0]) {
-    cms.stat1Valeur  = num(stats[0].valeur)
-    cms.stat1Suffixe = str(stats[0].suffixe)
-    cms.stat1Label   = str(stats[0].label)
-  }
-  if (stats[1]) {
-    cms.stat2Valeur  = num(stats[1].valeur)
-    cms.stat2Suffixe = str(stats[1].suffixe)
-    cms.stat2Label   = str(stats[1].label)
-  }
-  if (stats[2]) {
-    cms.stat3Valeur  = num(stats[2].valeur)
-    cms.stat3Suffixe = str(stats[2].suffixe)
-    cms.stat3Label   = str(stats[2].label)
-  }
-  if (stats[3]) {
-    cms.stat4Valeur  = num(stats[3].valeur)
-    cms.stat4Suffixe = str(stats[3].suffixe)
-    cms.stat4Label   = str(stats[3].label)
-  }
+  if (stats[0]) { cms.stat1Valeur = num(stats[0].valeur); cms.stat1Suffixe = str(stats[0].suffixe); cms.stat1Label = str(stats[0].label) }
+  if (stats[1]) { cms.stat2Valeur = num(stats[1].valeur); cms.stat2Suffixe = str(stats[1].suffixe); cms.stat2Label = str(stats[1].label) }
+  if (stats[2]) { cms.stat3Valeur = num(stats[2].valeur); cms.stat3Suffixe = str(stats[2].suffixe); cms.stat3Label = str(stats[2].label) }
+  if (stats[3]) { cms.stat4Valeur = num(stats[3].valeur); cms.stat4Suffixe = str(stats[3].suffixe); cms.stat4Label = str(stats[3].label) }
 
   return cms
 }
@@ -221,14 +272,10 @@ function adaptWhyUs(b: PayloadBlock): CmsPourquoiNous {
   type ArgRaw = { icone?: string | null; titre?: string | null; texte?: string | null }
   const args = arr<ArgRaw>(b.arguments)
   return {
-    titre:      str(b.titre),
-    sousTitre:  str(b.sousTitre),
+    titre:     str(b.titre),
+    sousTitre: str(b.sousTitre),
     items: args.length
-      ? args.map((a) => ({
-          icone:       a.icone ?? null,
-          titre:       a.titre ?? '',
-          description: a.texte ?? '',
-        }))
+      ? args.map((a) => ({ icone: a.icone ?? null, titre: a.titre ?? '', description: a.texte ?? '' }))
       : null,
   }
 }
@@ -244,51 +291,33 @@ function adaptCta(b: PayloadBlock): CmsCtaFinal {
   }
 }
 
-function adaptServices(
-  b: PayloadBlock,
-  fallback: ServiceData[],
-): ServiceData[] {
+function adaptServices(b: PayloadBlock, fallback: ServiceData[]): ServiceData[] {
   const rel = b.services
   if (Array.isArray(rel) && rel.length > 0) {
-    const mapped: ServiceData[] = (rel as ServicePayload[]).map((s) => ({
-      id:    s.id,
-      nom:   s.nom   ?? '',
-      slug:  s.slug  ?? '',
-      icone: s.icone ?? null,
+    return (rel as ServicePayload[]).map((s) => ({
+      id: s.id, nom: s.nom ?? '', slug: s.slug ?? '', icone: s.icone ?? null,
     }))
-    return mapped
   }
   return fallback
 }
 
-function adaptTestimonials(
-  b: PayloadBlock,
-  fallback: TestimonialData[],
-): TestimonialData[] {
+function adaptTestimonials(b: PayloadBlock, fallback: TestimonialData[]): TestimonialData[] {
   const rel = b.temoignages
   if (Array.isArray(rel) && rel.length > 0) {
     const nombreMax = typeof b.nombreMax === 'number' ? b.nombreMax : 20
     return (rel as TestimonialPayload[]).slice(0, nombreMax).map((t) => ({
-      id:    t.id,
-      nom:   t.nom   ?? '',
-      ville: t.ville ?? '',
-      note:  String(t.note ?? 5),
-      texte: t.texte ?? '',
-      photo: t.photo ?? null,
+      id: t.id, nom: t.nom ?? '', ville: t.ville ?? '',
+      note: String(t.note ?? 5), texte: t.texte ?? '', photo: t.photo ?? null,
     }))
   }
   return fallback
 }
 
-function adaptPartners(
-  b: PayloadBlock,
-  fallback: PartnerData[],
-): PartnerData[] {
+function adaptPartners(b: PayloadBlock, fallback: PartnerData[]): PartnerData[] {
   const rel = b.partenaires
   if (Array.isArray(rel) && rel.length > 0) {
     return (rel as PartnerPayload[]).map((p) => ({
-      id:   p.id,
-      nom:  p.nom  ?? '',
+      id: p.id, nom: p.nom ?? '',
       logo: p.logo ? { url: mediaUrl(p.logo) } : null,
       lien: p.lien ?? null,
     }))
@@ -302,11 +331,7 @@ function adaptVilles(b: PayloadBlock, fallback: MapVille[]): MapVille[] {
     return (rel as VillePayload[])
       .filter((v) => v.nom && v.slug && v.coordonnees?.lat != null && v.coordonnees?.lng != null)
       .map((v) => ({
-        nom:    v.nom!,
-        slug:   v.slug!,
-        lat:    v.coordonnees!.lat!,
-        lng:    v.coordonnees!.lng!,
-        region: v.region ?? '',
+        nom: v.nom!, slug: v.slug!, lat: v.coordonnees!.lat!, lng: v.coordonnees!.lng!, region: v.region ?? '',
       }))
   }
   return fallback
@@ -318,11 +343,7 @@ function adaptPays(b: PayloadBlock, fallback: MapPays[]): MapPays[] {
     return (rel as PaysPayload[])
       .filter((p) => p.nom && p.slug && p.coordonnees?.lat != null && p.coordonnees?.lng != null)
       .map((p) => ({
-        nom:     p.nom!,
-        slug:    p.slug!,
-        drapeau: p.drapeau ?? '',
-        lat:     p.coordonnees!.lat!,
-        lng:     p.coordonnees!.lng!,
+        nom: p.nom!, slug: p.slug!, drapeau: p.drapeau ?? '', lat: p.coordonnees!.lat!, lng: p.coordonnees!.lng!,
       }))
   }
   return fallback
@@ -367,7 +388,13 @@ export function BlockRenderer({
             )
 
           case 'mini-features':
-            return <MiniFeaturesBlock key={key} cms={adaptMiniFeatures(block)} sectionOptions={sectionOpts} />
+            return (
+              <MiniFeaturesBlock
+                key={key}
+                cms={adaptMiniFeatures(block)}
+                sectionOptions={sectionOpts}
+              />
+            )
 
           case 'about':
             return (
@@ -496,23 +523,21 @@ export function BlockRenderer({
               datePublication?: string | null
               categories?: { id?: string; nom?: string }[] | null
             }
-            const rawArticles = arr<RawArticle>(block.articles)
+            const rawArticles     = arr<RawArticle>(block.articles)
             const manualArticles: BlogArticleData[] = rawArticles
               .filter((a) => a && typeof a === 'object' && typeof a.slug === 'string')
               .map((a) => ({
                 id:              String(a.id ?? ''),
                 titre:           a.titre ?? '',
-                slug:            a.slug ?? '',
-                extrait:         a.extrait ?? null,
-                imageAlaUne:     a.imageAlaUne ?? null,
-                tempsLecture:    a.tempsLecture ?? null,
+                slug:            a.slug  ?? '',
+                extrait:         a.extrait         ?? null,
+                imageAlaUne:     a.imageAlaUne     ?? null,
+                tempsLecture:    a.tempsLecture    ?? null,
                 datePublication: a.datePublication ?? null,
-                categories:      a.categories ?? null,
+                categories:      a.categories      ?? null,
               }))
             const nombreArticles = num(block.nombreArticles) ?? 3
-            const articlesToShow = manualArticles.length > 0
-              ? manualArticles
-              : blog.slice(0, nombreArticles)
+            const articlesToShow = manualArticles.length > 0 ? manualArticles : blog.slice(0, nombreArticles)
             return (
               <BlogPreviewBlock
                 key={key}
@@ -545,11 +570,11 @@ export function BlockRenderer({
             type StatRaw = { valeur?: number | null; suffixe?: string | null; libelle?: string | null }
             const statsArr = arr<StatRaw>(block.stats).filter((s) => s.valeur != null).slice(0, 4)
             if (!statsArr.length) return null
-            const StatsH         = resolveHeadingTag(sectionOpts)
+            const StatsH = resolveHeadingTag(sectionOpts)
             const statsTitleTypo = resolveTitleTypography(typoTitre)
-            const desktopCols    = statsArr.length === 2 ? 'md:grid-cols-2'
-                                 : statsArr.length === 3 ? 'md:grid-cols-3'
-                                 : 'md:grid-cols-4'
+            const desktopCols = statsArr.length === 2 ? 'md:grid-cols-2'
+                              : statsArr.length === 3 ? 'md:grid-cols-3'
+                              : 'md:grid-cols-4'
             return (
               <SectionWrapper key={key} options={sectionOpts} defaultFond="sombre" defaultEspacement="normal">
                 {str(block.titre) && (
@@ -563,13 +588,11 @@ export function BlockRenderer({
                 <div className={cx('grid grid-cols-2 gap-8 max-w-5xl mx-auto', desktopCols)}>
                   {statsArr.map((stat, i) => (
                     <div key={i} className="text-center border-t-2 border-[var(--color-red)] pt-6">
-                      <div className="flex items-baseline justify-center gap-0.5">
-                        <CounterAnimation
-                          target={stat.valeur!}
-                          suffix={stat.suffixe ?? ''}
-                          className="font-mono text-4xl font-bold text-[var(--color-gold)]"
-                        />
-                      </div>
+                      <CounterAnimation
+                        target={stat.valeur!}
+                        suffix={stat.suffixe ?? ''}
+                        className="font-mono text-4xl font-bold text-[var(--color-gold)]"
+                      />
                       {stat.libelle && (
                         <p className="font-body text-xs text-[var(--color-text-muted)] uppercase tracking-wide mt-2">
                           {stat.libelle}
@@ -590,7 +613,7 @@ export function BlockRenderer({
               questions: arr<FAQItemRaw>(block.questions).map((q) => ({
                 actif:    typeof q.actif === 'boolean' ? q.actif : true,
                 question: q.question ?? '',
-                reponse:  q.reponse ?? null,
+                reponse:  q.reponse  ?? null,
               })),
             }
             return (
@@ -607,7 +630,6 @@ export function BlockRenderer({
           case 'video': {
             const urlRaw = str(block.urlVideo)
             if (!urlRaw) return null
-            // Convertit https://youtube.com/watch?v=ID → https://youtube.com/embed/ID
             const embedUrl = urlRaw.includes('watch?v=')
               ? urlRaw.replace('watch?v=', 'embed/')
               : urlRaw
@@ -619,8 +641,11 @@ export function BlockRenderer({
                 <div className="max-w-4xl mx-auto">
                   {str(block.titre) && (
                     <VideoHeading
-                      className={cx('font-heading font-bold text-[var(--color-text-light)] mb-8',
-                        !typoTitre?.alignement && 'text-center', videoTitleTypo)}
+                      className={cx(
+                        'font-heading font-bold text-[var(--color-text-light)] mb-8',
+                        !typoTitre?.alignement && 'text-center',
+                        videoTitleTypo,
+                      )}
                       style={typoTitre?.tailleTexte ? undefined : { fontSize: 'clamp(1.5rem, 3vw, 2.25rem)' }}
                     >
                       {str(block.titre)}
@@ -636,8 +661,11 @@ export function BlockRenderer({
                     />
                   </div>
                   {str(block.sousTitre) && (
-                    <p className={cx('font-body text-[var(--color-text-muted)] text-sm mt-4',
-                      !typoTexte?.alignement && 'text-center', videoTextTypo)}>
+                    <p className={cx(
+                      'font-body text-[var(--color-text-muted)] text-sm mt-4',
+                      !typoTexte?.alignement && 'text-center',
+                      videoTextTypo,
+                    )}>
                       {str(block.sousTitre)}
                     </p>
                   )}
@@ -651,7 +679,9 @@ export function BlockRenderer({
             const images = arr<ImgRaw>(block.images).filter((i) => i.image?.url)
             if (!images.length) return null
             const cols = str(block.colonnes) ?? '3'
-            const gridCols = cols === '2' ? 'grid-cols-2' : cols === '4' ? 'grid-cols-2 md:grid-cols-4' : 'grid-cols-2 md:grid-cols-3'
+            const gridCols = cols === '2' ? 'grid-cols-2'
+                           : cols === '4' ? 'grid-cols-2 md:grid-cols-4'
+                           :               'grid-cols-2 md:grid-cols-3'
             const GalleryHeading   = resolveHeadingTag(sectionOpts)
             const galleryTitleTypo = resolveTitleTypography(typoTitre)
             return (
@@ -659,8 +689,11 @@ export function BlockRenderer({
                 <div className="max-w-7xl mx-auto">
                   {str(block.titre) && (
                     <GalleryHeading
-                      className={cx('font-heading font-bold text-[var(--color-text-light)] mb-10',
-                        !typoTitre?.alignement && 'text-center', galleryTitleTypo)}
+                      className={cx(
+                        'font-heading font-bold text-[var(--color-text-light)] mb-10',
+                        !typoTitre?.alignement && 'text-center',
+                        galleryTitleTypo,
+                      )}
                       style={typoTitre?.tailleTexte ? undefined : { fontSize: 'clamp(1.5rem, 3vw, 2.25rem)' }}
                     >
                       {str(block.titre)}
@@ -685,30 +718,25 @@ export function BlockRenderer({
           }
 
           case 'custom': {
-            // Map block's own couleurFond → SectionFond (new sectionOptions system takes priority)
             const customFondMap: Record<string, SectionOptions['fond']> = {
-              noir:  'sombre',
-              fonce: 'sombre2',
-              rouge: 'rouge',
-              blanc: 'transparent',
+              noir: 'sombre', fonce: 'sombre2', rouge: 'rouge', blanc: 'transparent',
             }
             const customEspMap: Record<string, SectionOptions['espacement']> = {
-              compact: 'serre',
-              normal:  'normal',
-              large:   'large',
+              compact: 'serre', normal: 'normal', large: 'large',
             }
-            const couleurFond = str(block.couleurFond) ?? 'noir'
+            const couleurFond  = str(block.couleurFond) ?? 'noir'
             const isLegacyBlanc = couleurFond === 'blanc' && !sectionOpts.fond
             const mergedOpts: SectionOptions = {
               ...sectionOpts,
-              fond: sectionOpts.fond ?? customFondMap[couleurFond] ?? 'sombre',
+              fond:       sectionOpts.fond      ?? customFondMap[couleurFond] ?? 'sombre',
               espacement: sectionOpts.espacement ?? customEspMap[str(block.espacement) ?? 'normal'] ?? 'normal',
             }
             const textClass  = isLegacyBlanc ? 'text-[var(--color-bg-dark)]'    : 'text-[var(--color-text-light)]'
             const mutedClass = isLegacyBlanc ? 'text-[var(--color-bg-dark)]/70' : 'text-[var(--color-text-muted)]'
-            const btnHref = str((block.cta as Record<string, unknown> | null | undefined)?.lien)
-            const btnTxt  = str((block.cta as Record<string, unknown> | null | undefined)?.texte)
-            const imgUrl  = mediaUrl(block.imagePrincipale)
+            const ctaBlock   = block.cta as Record<string, unknown> | null | undefined
+            const btnHref    = str(ctaBlock?.lien)
+            const btnTxt     = str(ctaBlock?.texte)
+            const imgUrl     = mediaUrl(block.imagePrincipale)
             const CustomHeading   = resolveHeadingTag(mergedOpts)
             const customTitleTypo = resolveTitleTypography(typoTitre)
             const customTextTypo  = resolveTextTypography(typoTexte)
@@ -728,7 +756,9 @@ export function BlockRenderer({
                     </CustomHeading>
                   )}
                   {str(block.sousTitre) && (
-                    <p className={cx('font-body text-lg mb-6', mutedClass, customTextTypo)}>{str(block.sousTitre)}</p>
+                    <p className={cx('font-body text-lg mb-6', mutedClass, customTextTypo)}>
+                      {str(block.sousTitre)}
+                    </p>
                   )}
                   {imgUrl && (
                     <div className="relative aspect-video rounded-2xl overflow-hidden mb-8 mx-auto max-w-2xl">
@@ -773,18 +803,13 @@ export function BlockRenderer({
           }
 
           case 'pricing': {
-            type CaracRaw = { texte?: string | null; inclus?: boolean | null }
+            type CaracRaw  = { texte?: string | null; inclus?: boolean | null }
             type FormuleRaw = {
-              nom?: string | null
-              prix?: string | null
-              description?: string | null
-              caracteristiques?: CaracRaw[]
-              misEnAvant?: boolean | null
-              badgeTexte?: string | null
-              ctaTexte?: string | null
-              ctaLien?: string | null
+              nom?: string | null; prix?: string | null; description?: string | null
+              caracteristiques?: CaracRaw[]; misEnAvant?: boolean | null
+              badgeTexte?: string | null; ctaTexte?: string | null; ctaLien?: string | null
             }
-            const formules = arr<FormuleRaw>(block.formules)
+            const formules   = arr<FormuleRaw>(block.formules)
             const pricingCms: PricingCms = {
               titre:      str(block.titre),
               sousTitre:  str(block.sousTitre),
@@ -798,8 +823,7 @@ export function BlockRenderer({
                 ctaTexte:    f.ctaTexte    ?? null,
                 ctaLien:     f.ctaLien     ?? null,
                 caracteristiques: arr<CaracRaw>(f.caracteristiques).map((c) => ({
-                  texte:  c.texte  ?? '',
-                  inclus: c.inclus ?? true,
+                  texte: c.texte ?? '', inclus: c.inclus ?? true,
                 })),
               })),
             }

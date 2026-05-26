@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { memo } from 'react'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { motion } from 'framer-motion'
@@ -34,11 +34,11 @@ const INSTAGRAM_URL_DEFAULT = 'https://www.instagram.com/dt.demenagement'
 
 interface InstagramCms { titre?: string | null; lienProfil?: string | null }
 
-export function InstagramFeedBlock({ cms, sectionOptions, typoTitre }: {
+export const InstagramFeedBlock = memo(function InstagramFeedBlock({ cms, sectionOptions, typoTitre }: {
   cms?: InstagramCms
   sectionOptions?: SectionOptions | null
   typoTitre?: TypographieOptions | null
-} = {}) {
+}) {
   const t = useTranslations('Home.instagram')
   const INSTAGRAM_URL = cms?.lienProfil ?? INSTAGRAM_URL_DEFAULT
 
@@ -137,4 +137,4 @@ export function InstagramFeedBlock({ cms, sectionOptions, typoTitre }: {
       </div>
     </section>
   )
-}
+})

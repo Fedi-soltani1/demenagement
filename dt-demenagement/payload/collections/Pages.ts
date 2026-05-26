@@ -19,6 +19,8 @@ import { VideoBlock }          from '../blocks/VideoBlock'
 import { InstagramFeedBlock }  from '../blocks/InstagramFeedBlock'
 import { NewsletterBlock }     from '../blocks/NewsletterBlock'
 import { CustomBlock }         from '../blocks/CustomBlock'
+import { ProcessBlock }        from '../blocks/ProcessBlock'
+import { PricingBlock }        from '../blocks/PricingBlock'
 
 const Pages: CollectionConfig = {
   slug: 'pages',
@@ -86,6 +88,8 @@ const Pages: CollectionConfig = {
         InstagramFeedBlock,
         NewsletterBlock,
         CustomBlock,
+        ProcessBlock,
+        PricingBlock,
       ],
     },
     {

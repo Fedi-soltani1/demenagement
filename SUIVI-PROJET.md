@@ -66,23 +66,30 @@ CONSÉQUENCE : Les nouvelles colonnes ajoutées dans les collections Payload NE 
 ## 🤖 DERNIÈRE MISE À JOUR PAR CLAUDE CODE
 
 ```
-Date        : 2026-05-26 — FAQ INLINE + MIGRATION DB COMPLÈTE
-Session     : Dev 1 (FAQ configurable par page + migration directe SQL)
-Fichiers    : payload/blocks/FAQBlock.ts (refonte complète inline)
-              lib/lexical-to-html.ts (nouveau — sérializer Lexical → HTML)
-              components/blocks/FAQBlock.tsx (nouveau — accordéon animé)
-              components/blocks/BlockRenderer.tsx (cleanup : faq, stats)
-              components/blocks/ServiceLivePreviewWrapper.tsx (badge statique supprimé)
-              payload/blocks/StatsBlock.ts (maxRows 6→4)
-Étape       : FAQ inline — DB synchronisée via script Node.js direct (40/40 OK)
-Statut      : ✅ Code complet, 0 erreur TypeScript
-              ✅ DB Neon synchronisée (40 objets créés : enums, colonnes, tables, index)
-              ✅ API /api/services répond correctement
-Prochain    : Tester FAQ dans l'admin Services/Pages (ajouter un bloc FAQ → questions inline)
+Date        : 2026-05-26 — REFACTOR PERF : DYNAMIC IMPORTS + REACT.MEMO + EASE CONSTANTS
+Session     : Dev 1 (architecture modulaire — tous les blocs dynamiques + optimisations React)
+Fichiers    : components/blocks/BlockSkeleton.tsx (NOUVEAU — skeleton loader unifié)
+              components/blocks/BlockRenderer.tsx (REFACTORÉ — 15 dynamic imports + sk())
+              components/blocks/PricingBlock.tsx (NOUVEAU — formules, highlight, CTA)
+              components/blocks/ProcessBlock.tsx (NOUVEAU — 3 layouts : horizontal/vertical/cartes)
+              payload/blocks/PricingBlock.ts (NOUVEAU — schéma Payload)
+              payload/blocks/ProcessBlock.ts (NOUVEAU — schéma Payload)
+              payload/collections/Pages.ts (ProcessBlock + PricingBlock ajoutés)
+              payload/collections/Services.ts (refonte page builder complet)
+              app/(site)/[locale]/services/[slug]/page.tsx (refondue)
+              + 13 blocs individuels : FAQBlock, HeroBlock, StatsAboutBlock, WhyUsBlock,
+                MiniFeaturesBlock, ServicesBlock, TestimonialsBlock, MapBlock,
+                BlogPreviewBlock, InstagramFeedBlock, PartnersBlock, CTAFinalBlock,
+                NewsletterBlock — memo() + EASE constant module-level
+Étape       : Refactor architecture modulaire + perf ✅ TERMINÉ
+Statut      : ✅ TypeScript compile sans erreur
+              ✅ Tous les blocs : export const X = memo(function X(...) { ... })
+              ✅ const EASE: [number,number,number,number] = [0.22,1,0.36,1] module-level sur tous
+              ✅ BlockRenderer : 15 dynamic() + BlockSkeleton — zéro import statique de bloc
 BRANCHE ACTIVE    : main
 BLOQUEURS         : Aucun
 Reprendre à : "Ouvrir Claude Code dans dt-demenagement/, lire SUIVI-PROJET.md,
-               reprendre à : tester le bloc FAQ dans l'admin + prochaine fonctionnalité"
+               reprendre à : déploiement Vercel ou prochaine fonctionnalité admin"
 
 ─── CE QUI A ÉTÉ FAIT DANS CETTE SESSION ────────────────────────────────────
 
@@ -532,8 +539,8 @@ Reprendre à : "Déploiement production Vercel + Railway"
 > Elle lui dit exactement où reprendre sans poser de questions.
 
 ```
-PHASE ACTUELLE    : Post-Phase 6 — SCHÉMA DB SYNCRONISÉ
-ÉTAPE ACTUELLE    : ✅ sectionOptions + typographie — colonnes Neon en production
+PHASE ACTUELLE    : Post-Phase 6 — REFACTOR ARCHITECTURE MODULAIRE TERMINÉ
+ÉTAPE ACTUELLE    : ✅ Dynamic imports + React.memo + EASE constants — tous blocs
 STATUT            : ✅ push: false restauré — serveur propre sur http://localhost:3000
 
 ─── SESSION 2026-05-24 — MIGRATION SCHEMA sectionOptions + typographie ──────

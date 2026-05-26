@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { memo } from 'react'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { motion } from 'framer-motion'
@@ -17,13 +17,15 @@ export type CmsPointsForts = {
   items?: { icone?: string | null; titre: string; description: string }[] | null
 }
 
+const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
+
 const FALLBACK = [
   { icon: Users,   keyTitle: 'item1Title', keyDesc: 'item1Desc' },
   { icon: Truck,   keyTitle: 'item2Title', keyDesc: 'item2Desc' },
   { icon: Package, keyTitle: 'item3Title', keyDesc: 'item3Desc' },
 ] as const
 
-export function MiniFeaturesBlock({ cms, sectionOptions }: { cms?: CmsPointsForts; sectionOptions?: SectionOptions | null }) {
+export const MiniFeaturesBlock = memo(function MiniFeaturesBlock({ cms, sectionOptions }: { cms?: CmsPointsForts; sectionOptions?: SectionOptions | null }) {
   const t = useTranslations('Home.miniFeatures')
 
   const items = cms?.items?.length
@@ -66,7 +68,7 @@ export function MiniFeaturesBlock({ cms, sectionOptions }: { cms?: CmsPointsFort
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-50px' }}
-            transition={{ duration: 0.5, delay: i * 0.12, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.5, delay: i * 0.12, ease: EASE }}
           >
             {/* Bordure rouge gauche — accent graphique */}
             <div
@@ -101,4 +103,4 @@ export function MiniFeaturesBlock({ cms, sectionOptions }: { cms?: CmsPointsFort
       </div>
     </section>
   )
-}
+})

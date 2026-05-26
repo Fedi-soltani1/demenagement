@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { memo } from 'react'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { motion } from 'framer-motion'
@@ -24,6 +24,8 @@ const ICON_MAP: Record<string, LucideIcon> = {
   shield: ShieldCheck,
 }
 
+const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
+
 const FALLBACK = [
   { icon: Zap,         keyTitle: 'item1Title', keyDesc: 'item1Desc' },
   { icon: Headphones,  keyTitle: 'item2Title', keyDesc: 'item2Desc' },
@@ -31,7 +33,7 @@ const FALLBACK = [
   { icon: Users,       keyTitle: 'item4Title', keyDesc: 'item4Desc' },
 ] as const
 
-export function WhyUsBlock({ cms, sectionOptions, typoTitre, typoTexte }: {
+export const WhyUsBlock = memo(function WhyUsBlock({ cms, sectionOptions, typoTitre, typoTexte }: {
   cms?: CmsPourquoiNous
   sectionOptions?: SectionOptions | null
   typoTitre?: TypographieOptions | null
@@ -84,7 +86,7 @@ export function WhyUsBlock({ cms, sectionOptions, typoTitre, typoTexte }: {
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-80px' }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.6, ease: EASE }}
         >
           <span className="inline-block mb-4 px-4 py-1.5 rounded-full border border-[var(--color-red)]/30 bg-[var(--color-red)]/8 text-[var(--color-red)] text-xs font-body font-semibold uppercase tracking-widest">
             {badge}
@@ -110,7 +112,7 @@ export function WhyUsBlock({ cms, sectionOptions, typoTitre, typoTexte }: {
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-60px' }}
-              transition={{ duration: 0.55, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.55, delay: i * 0.1, ease: EASE }}
               whileHover={{ y: -6, transition: { duration: 0.25 } }}
             >
               {/* Glow rouge sur hover */}
@@ -145,4 +147,4 @@ export function WhyUsBlock({ cms, sectionOptions, typoTitre, typoTexte }: {
       </div>
     </section>
   )
-}
+})

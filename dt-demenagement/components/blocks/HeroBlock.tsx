@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, memo } from 'react'
 import Image from 'next/image'
 import { useTranslations, useLocale } from 'next-intl'
 import { motion, type Variants } from 'framer-motion'
@@ -40,6 +40,8 @@ interface WaveConfig {
 }
 
 // ─── Wave palette — couleurs charte DT Déménagement ──────────────────────────
+
+const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
 
 const WAVES: WaveConfig[] = [
   { offset: 0,              amplitude: 70, frequency: 0.003,  color: 'rgba(181, 32, 39, 0.8)',   opacity: 0.45 },
@@ -203,7 +205,7 @@ export type CmsHero = {
 
 // ─── HeroBlock ────────────────────────────────────────────────────────────────
 
-export function HeroBlock({ cms, sectionOptions, typoTitre, typoTexte }: {
+export const HeroBlock = memo(function HeroBlock({ cms, sectionOptions, typoTitre, typoTexte }: {
   cms?: CmsHero
   sectionOptions?: SectionOptions | null
   typoTitre?: TypographieOptions | null
@@ -322,7 +324,7 @@ export function HeroBlock({ cms, sectionOptions, typoTitre, typoTexte }: {
         className="absolute start-8 top-1/4 bottom-1/4 w-px bg-gradient-to-b from-transparent via-[var(--color-red)] to-transparent hidden lg:block z-20"
         initial={{ scaleY: 0 }}
         animate={{ scaleY: 1 }}
-        transition={{ duration: 1.2, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 1.2, delay: 0.5, ease: EASE }}
         aria-hidden="true"
       />
 
@@ -447,4 +449,4 @@ export function HeroBlock({ cms, sectionOptions, typoTitre, typoTexte }: {
       </motion.div>
     </section>
   )
-}
+})

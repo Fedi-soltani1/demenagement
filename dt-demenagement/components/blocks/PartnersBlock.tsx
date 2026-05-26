@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { memo } from 'react'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { motion } from 'framer-motion'
@@ -88,7 +88,7 @@ function PartnerCard({ partner, grille }: { partner: PartnerData; grille?: boole
   return <div className={className}>{inner}</div>
 }
 
-export function PartnersBlock({ partners = [], cms, sectionOptions, typoTitre }: {
+export const PartnersBlock = memo(function PartnersBlock({ partners = [], cms, sectionOptions, typoTitre }: {
   partners?: PartnerData[]
   cms?: PartnersCms
   sectionOptions?: SectionOptions | null
@@ -221,4 +221,4 @@ export function PartnersBlock({ partners = [], cms, sectionOptions, typoTitre }:
       )}
     </section>
   )
-}
+})

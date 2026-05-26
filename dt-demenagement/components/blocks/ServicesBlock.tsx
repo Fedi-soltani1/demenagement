@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useRef } from 'react'
+import React, { useRef, memo } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
@@ -19,6 +19,8 @@ export type ServiceData = {
   slug: string
   icone?: string | null
 }
+
+const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
 
 const ICON_MAP: Record<string, LucideIcon> = {
   truck: Truck,
@@ -99,7 +101,7 @@ function ServiceCard({
       initial={{ opacity: 0, y: 40 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-60px' }}
-      transition={{ duration: 0.55, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.55, delay: index * 0.08, ease: EASE }}
     >
       {/* Ombre rouge dramatique au hover */}
       <div
@@ -142,7 +144,7 @@ interface ServicesCms {
   layout?:    'grille' | 'liste' | 'carrousel' | null
 }
 
-export function ServicesBlock({ services = [], cms, sectionOptions, typoTitre, typoTexte }: {
+export const ServicesBlock = memo(function ServicesBlock({ services = [], cms, sectionOptions, typoTitre, typoTexte }: {
   services?: ServiceData[]
   cms?: ServicesCms
   sectionOptions?: SectionOptions | null
@@ -184,7 +186,7 @@ export function ServicesBlock({ services = [], cms, sectionOptions, typoTitre, t
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-80px' }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.6, ease: EASE }}
         >
           <span className="inline-block mb-4 px-4 py-1.5 rounded-full border border-[var(--color-red)]/30 bg-[var(--color-red)]/8 text-[var(--color-red)] text-xs font-body font-semibold uppercase tracking-widest">
             {t('badge')}
@@ -251,4 +253,4 @@ export function ServicesBlock({ services = [], cms, sectionOptions, typoTitre, t
       </div>
     </section>
   )
-}
+})

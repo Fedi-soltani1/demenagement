@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { memo } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useTranslations, useLocale } from 'next-intl'
@@ -15,6 +15,8 @@ import {
   resolveOverlay, resolveTitleTypography, resolveTextTypography, resolveHeadingTag, cx,
 } from '@/lib/sectionOptions'
 
+const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
+
 export type CmsCtaFinal = {
   titre?: string | null
   sousTitre?: string | null
@@ -23,7 +25,7 @@ export type CmsCtaFinal = {
   garanties?: { texte: string }[] | null
 }
 
-export function CTAFinalBlock({ cms, sectionOptions, typoTitre, typoTexte }: {
+export const CTAFinalBlock = memo(function CTAFinalBlock({ cms, sectionOptions, typoTitre, typoTexte }: {
   cms?: CmsCtaFinal
   sectionOptions?: SectionOptions | null
   typoTitre?: TypographieOptions | null
@@ -100,7 +102,7 @@ export function CTAFinalBlock({ cms, sectionOptions, typoTitre, typoTexte }: {
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-80px' }}
-          transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.65, ease: EASE }}
         >
           {/* Icône */}
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white/15 border border-white/20 mb-8">
@@ -172,4 +174,4 @@ export function CTAFinalBlock({ cms, sectionOptions, typoTitre, typoTexte }: {
       </div>
     </section>
   )
-}
+})

@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { memo } from 'react'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { motion } from 'framer-motion'
@@ -12,6 +12,8 @@ import {
   resolveBg, resolveSpacing, resolveHeight, resolveVisibility, resolveAnchorId,
   resolveOverlay, resolveTitleTypography, resolveTextTypography, resolveHeadingTag, cx,
 } from '@/lib/sectionOptions'
+
+const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
 
 export type { MapVille, MapPays }
 
@@ -30,7 +32,7 @@ interface MapBlockProps {
   typoTexte?: TypographieOptions | null
 }
 
-export function MapBlock({ cms, villes = [], pays = [], sectionOptions, typoTitre, typoTexte }: MapBlockProps = {}) {
+export const MapBlock = memo(function MapBlock({ cms, villes = [], pays = [], sectionOptions, typoTitre, typoTexte }: MapBlockProps) {
   const t = useTranslations('Home.map')
   const mode = cms?.mode ?? 'complet'
   const displayVilles = mode === 'europe' ? [] : villes
@@ -67,7 +69,7 @@ export function MapBlock({ cms, villes = [], pays = [], sectionOptions, typoTitr
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: '-80px' }}
-            transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.65, ease: EASE }}
           >
             <span className="inline-block mb-4 px-4 py-1.5 rounded-full border border-[var(--color-red)]/30 bg-[var(--color-red)]/8 text-[var(--color-red)] text-xs font-body font-semibold uppercase tracking-widest">
               {t('badge')}
@@ -108,7 +110,7 @@ export function MapBlock({ cms, villes = [], pays = [], sectionOptions, typoTitr
             initial={{ opacity: 0, x: 50 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: '-80px' }}
-            transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
+            transition={{ duration: 0.65, ease: EASE, delay: 0.1 }}
           >
             <ZonesMapClient villes={displayVilles} pays={displayPays} />
           </motion.div>
@@ -116,4 +118,4 @@ export function MapBlock({ cms, villes = [], pays = [], sectionOptions, typoTitr
       </div>
     </section>
   )
-}
+})
