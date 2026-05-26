@@ -15,8 +15,15 @@ import { InstagramFeedBlock }                          from '@/components/blocks
 import { NewsletterBlock }                             from '@/components/blocks/NewsletterBlock'
 import { BlogPreviewBlock,   type BlogArticleData }   from '@/components/blocks/BlogPreviewBlock'
 import { CTAFinalBlock,      type CmsCtaFinal }       from '@/components/blocks/CTAFinalBlock'
+import { ProcessBlock,      type ProcessCms }         from '@/components/blocks/ProcessBlock'
+import { PricingBlock,      type PricingCms }         from '@/components/blocks/PricingBlock'
+import { FAQBlock,          type FaqCms }             from '@/components/blocks/FAQBlock'
 import { SectionWrapper }                              from '@/components/blocks/SectionWrapper'
+import { CounterAnimation }                            from '@/components/ui/CounterAnimation'
 import type { SectionOptions, TypographieOptions }    from '@/lib/sectionOptions'
+import {
+  resolveHeadingTag, resolveTitleTypography, resolveTextTypography, cx,
+} from '@/lib/sectionOptions'
 
 // ─── Types Payload (structure brute retournée par l'API) ──────────────────────
 
@@ -535,42 +542,65 @@ export function BlockRenderer({
             )
 
           case 'stats': {
-            // Bloc stats autonome → StatsAboutBlock avec seulement les chiffres
             type StatRaw = { valeur?: number | null; suffixe?: string | null; libelle?: string | null }
-            const statsArr = arr<StatRaw>(block.stats)
-            const statsCms: CmsApropos = {}
-            if (statsArr[0]) { statsCms.stat1Valeur = num(statsArr[0].valeur); statsCms.stat1Suffixe = str(statsArr[0].suffixe); statsCms.stat1Label = str(statsArr[0].libelle) }
-            if (statsArr[1]) { statsCms.stat2Valeur = num(statsArr[1].valeur); statsCms.stat2Suffixe = str(statsArr[1].suffixe); statsCms.stat2Label = str(statsArr[1].libelle) }
-            if (statsArr[2]) { statsCms.stat3Valeur = num(statsArr[2].valeur); statsCms.stat3Suffixe = str(statsArr[2].suffixe); statsCms.stat3Label = str(statsArr[2].libelle) }
-            if (statsArr[3]) { statsCms.stat4Valeur = num(statsArr[3].valeur); statsCms.stat4Suffixe = str(statsArr[3].suffixe); statsCms.stat4Label = str(statsArr[3].libelle) }
-            return <StatsAboutBlock key={key} cms={statsCms} sectionOptions={sectionOpts} />
+            const statsArr = arr<StatRaw>(block.stats).filter((s) => s.valeur != null).slice(0, 4)
+            if (!statsArr.length) return null
+            const StatsH         = resolveHeadingTag(sectionOpts)
+            const statsTitleTypo = resolveTitleTypography(typoTitre)
+            const desktopCols    = statsArr.length === 2 ? 'md:grid-cols-2'
+                                 : statsArr.length === 3 ? 'md:grid-cols-3'
+                                 : 'md:grid-cols-4'
+            return (
+              <SectionWrapper key={key} options={sectionOpts} defaultFond="sombre" defaultEspacement="normal">
+                {str(block.titre) && (
+                  <StatsH
+                    className={cx('font-heading font-bold text-center text-[var(--color-text-light)] mb-12', statsTitleTypo)}
+                    style={typoTitre?.tailleTexte ? undefined : { fontSize: 'clamp(1.5rem, 3vw, 2.25rem)' }}
+                  >
+                    {str(block.titre)}
+                  </StatsH>
+                )}
+                <div className={cx('grid grid-cols-2 gap-8 max-w-5xl mx-auto', desktopCols)}>
+                  {statsArr.map((stat, i) => (
+                    <div key={i} className="text-center border-t-2 border-[var(--color-red)] pt-6">
+                      <div className="flex items-baseline justify-center gap-0.5">
+                        <CounterAnimation
+                          target={stat.valeur!}
+                          suffix={stat.suffixe ?? ''}
+                          className="font-mono text-4xl font-bold text-[var(--color-gold)]"
+                        />
+                      </div>
+                      {stat.libelle && (
+                        <p className="font-body text-xs text-[var(--color-text-muted)] uppercase tracking-wide mt-2">
+                          {stat.libelle}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </SectionWrapper>
+            )
           }
 
           case 'faq': {
-            // Bloc FAQ inline — rend un simple accordéon avec les questions du bloc
-            type FAQRaw = { id?: string; question?: string | null; reponse?: unknown }
-            const faqItems = arr<FAQRaw>(block.questions)
-            if (!faqItems.length) return null
-            const faqTag = (sectionOpts.niveauTitre ?? 'h2') as 'h1' | 'h2' | 'h3' | 'h4'
-            const FaqHeading = faqTag
+            type FAQItemRaw = { actif?: boolean | null; question?: string | null; reponse?: unknown }
+            const faqCms: FaqCms = {
+              titre:     str(block.titre),
+              sousTitre: str(block.sousTitre),
+              questions: arr<FAQItemRaw>(block.questions).map((q) => ({
+                actif:    typeof q.actif === 'boolean' ? q.actif : true,
+                question: q.question ?? '',
+                reponse:  q.reponse ?? null,
+              })),
+            }
             return (
-              <SectionWrapper key={key} options={sectionOpts} defaultFond="sombre2" defaultEspacement="normal">
-                <div className="max-w-3xl mx-auto">
-                  {str(block.titre) && (
-                    <FaqHeading className="font-heading font-bold text-[var(--color-text-light)] mb-10 text-center"
-                        style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)' }}>
-                      {str(block.titre)}
-                    </FaqHeading>
-                  )}
-                  <dl className="space-y-4">
-                    {faqItems.map((q, qi) => (
-                      <div key={q.id ?? qi} className="rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-card)] p-6">
-                        <dt className="font-heading font-semibold text-[var(--color-text-light)] mb-3">{q.question}</dt>
-                      </div>
-                    ))}
-                  </dl>
-                </div>
-              </SectionWrapper>
+              <FAQBlock
+                key={key}
+                cms={faqCms}
+                sectionOptions={sectionOpts}
+                typoTitre={typoTitre}
+                typoTexte={typoTexte}
+              />
             )
           }
 
@@ -581,14 +611,18 @@ export function BlockRenderer({
             const embedUrl = urlRaw.includes('watch?v=')
               ? urlRaw.replace('watch?v=', 'embed/')
               : urlRaw
-            const videoTag = (sectionOpts.niveauTitre ?? 'h2') as 'h1' | 'h2' | 'h3' | 'h4'
-            const VideoHeading = videoTag
+            const VideoHeading   = resolveHeadingTag(sectionOpts)
+            const videoTitleTypo = resolveTitleTypography(typoTitre)
+            const videoTextTypo  = resolveTextTypography(typoTexte)
             return (
               <SectionWrapper key={key} options={sectionOpts} defaultFond="sombre" defaultEspacement="normal">
                 <div className="max-w-4xl mx-auto">
                   {str(block.titre) && (
-                    <VideoHeading className="font-heading font-bold text-[var(--color-text-light)] mb-8 text-center"
-                        style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)' }}>
+                    <VideoHeading
+                      className={cx('font-heading font-bold text-[var(--color-text-light)] mb-8',
+                        !typoTitre?.alignement && 'text-center', videoTitleTypo)}
+                      style={typoTitre?.tailleTexte ? undefined : { fontSize: 'clamp(1.5rem, 3vw, 2.25rem)' }}
+                    >
                       {str(block.titre)}
                     </VideoHeading>
                   )}
@@ -602,7 +636,8 @@ export function BlockRenderer({
                     />
                   </div>
                   {str(block.sousTitre) && (
-                    <p className="font-body text-center text-[var(--color-text-muted)] text-sm mt-4">
+                    <p className={cx('font-body text-[var(--color-text-muted)] text-sm mt-4',
+                      !typoTexte?.alignement && 'text-center', videoTextTypo)}>
                       {str(block.sousTitre)}
                     </p>
                   )}
@@ -617,14 +652,17 @@ export function BlockRenderer({
             if (!images.length) return null
             const cols = str(block.colonnes) ?? '3'
             const gridCols = cols === '2' ? 'grid-cols-2' : cols === '4' ? 'grid-cols-2 md:grid-cols-4' : 'grid-cols-2 md:grid-cols-3'
-            const galleryTag = (sectionOpts.niveauTitre ?? 'h2') as 'h1' | 'h2' | 'h3' | 'h4'
-            const GalleryHeading = galleryTag
+            const GalleryHeading   = resolveHeadingTag(sectionOpts)
+            const galleryTitleTypo = resolveTitleTypography(typoTitre)
             return (
               <SectionWrapper key={key} options={sectionOpts} defaultFond="sombre2" defaultEspacement="normal">
                 <div className="max-w-7xl mx-auto">
                   {str(block.titre) && (
-                    <GalleryHeading className="font-heading font-bold text-[var(--color-text-light)] mb-10 text-center"
-                        style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)' }}>
+                    <GalleryHeading
+                      className={cx('font-heading font-bold text-[var(--color-text-light)] mb-10',
+                        !typoTitre?.alignement && 'text-center', galleryTitleTypo)}
+                      style={typoTitre?.tailleTexte ? undefined : { fontSize: 'clamp(1.5rem, 3vw, 2.25rem)' }}
+                    >
                       {str(block.titre)}
                     </GalleryHeading>
                   )}
@@ -671,23 +709,26 @@ export function BlockRenderer({
             const btnHref = str((block.cta as Record<string, unknown> | null | undefined)?.lien)
             const btnTxt  = str((block.cta as Record<string, unknown> | null | undefined)?.texte)
             const imgUrl  = mediaUrl(block.imagePrincipale)
-            const customTag = (mergedOpts.niveauTitre ?? 'h2') as 'h1' | 'h2' | 'h3' | 'h4'
-            const CustomHeading = customTag
+            const CustomHeading   = resolveHeadingTag(mergedOpts)
+            const customTitleTypo = resolveTitleTypography(typoTitre)
+            const customTextTypo  = resolveTextTypography(typoTexte)
             return (
               <SectionWrapper
                 key={key}
                 options={mergedOpts}
                 className={isLegacyBlanc ? 'bg-[var(--color-text-light)]' : ''}
               >
-                <div className="max-w-4xl mx-auto text-center">
+                <div className={cx('max-w-4xl mx-auto', !typoTitre?.alignement && 'text-center')}>
                   {str(block.titre) && (
-                    <CustomHeading className={`font-heading font-bold mb-4 ${textClass}`}
-                        style={{ fontSize: 'clamp(1.5rem, 3vw, 2.5rem)' }}>
+                    <CustomHeading
+                      className={cx('font-heading font-bold mb-4', textClass, customTitleTypo)}
+                      style={typoTitre?.tailleTexte ? undefined : { fontSize: 'clamp(1.5rem, 3vw, 2.5rem)' }}
+                    >
                       {str(block.titre)}
                     </CustomHeading>
                   )}
                   {str(block.sousTitre) && (
-                    <p className={`font-body text-lg mb-6 ${mutedClass}`}>{str(block.sousTitre)}</p>
+                    <p className={cx('font-body text-lg mb-6', mutedClass, customTextTypo)}>{str(block.sousTitre)}</p>
                   )}
                   {imgUrl && (
                     <div className="relative aspect-video rounded-2xl overflow-hidden mb-8 mx-auto max-w-2xl">
@@ -704,6 +745,72 @@ export function BlockRenderer({
                   )}
                 </div>
               </SectionWrapper>
+            )
+          }
+
+          case 'process': {
+            type EtapeRaw = { titre?: string | null; description?: string | null; icone?: string | null }
+            const etapes = arr<EtapeRaw>(block.etapes)
+            const processCms: ProcessCms = {
+              titre:     str(block.titre),
+              sousTitre: str(block.sousTitre),
+              layout:    (str(block.layout) as ProcessCms['layout']),
+              etapes:    etapes.map((e) => ({
+                titre:       e.titre       ?? '',
+                description: e.description ?? null,
+                icone:       e.icone       ?? null,
+              })),
+            }
+            return (
+              <ProcessBlock
+                key={key}
+                cms={processCms}
+                sectionOptions={sectionOpts}
+                typoTitre={typoTitre}
+                typoTexte={typoTexte}
+              />
+            )
+          }
+
+          case 'pricing': {
+            type CaracRaw = { texte?: string | null; inclus?: boolean | null }
+            type FormuleRaw = {
+              nom?: string | null
+              prix?: string | null
+              description?: string | null
+              caracteristiques?: CaracRaw[]
+              misEnAvant?: boolean | null
+              badgeTexte?: string | null
+              ctaTexte?: string | null
+              ctaLien?: string | null
+            }
+            const formules = arr<FormuleRaw>(block.formules)
+            const pricingCms: PricingCms = {
+              titre:      str(block.titre),
+              sousTitre:  str(block.sousTitre),
+              noteDeBase: str(block.noteDeBase),
+              formules: formules.map((f) => ({
+                nom:         f.nom         ?? '',
+                prix:        f.prix        ?? null,
+                description: f.description ?? null,
+                misEnAvant:  f.misEnAvant  ?? false,
+                badgeTexte:  f.badgeTexte  ?? null,
+                ctaTexte:    f.ctaTexte    ?? null,
+                ctaLien:     f.ctaLien     ?? null,
+                caracteristiques: arr<CaracRaw>(f.caracteristiques).map((c) => ({
+                  texte:  c.texte  ?? '',
+                  inclus: c.inclus ?? true,
+                })),
+              })),
+            }
+            return (
+              <PricingBlock
+                key={key}
+                cms={pricingCms}
+                sectionOptions={sectionOpts}
+                typoTitre={typoTitre}
+                typoTexte={typoTexte}
+              />
             )
           }
 

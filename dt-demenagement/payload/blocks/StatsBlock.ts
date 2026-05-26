@@ -20,8 +20,8 @@ export const StatsBlock: Block = {
       label: 'Liste des statistiques',
       type: 'array',
       minRows: 1,
-      maxRows: 6,
-      admin: { description: 'Ajouter entre 2 et 6 chiffres clés. Ils s\'affichent en ligne sur desktop.' },
+      maxRows: 4,
+      admin: { description: 'Ajouter entre 1 et 4 chiffres clés. Ils s\'affichent en ligne sur desktop.' },
       fields: [
         {
           name: 'valeur',

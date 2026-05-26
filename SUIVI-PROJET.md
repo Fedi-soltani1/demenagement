@@ -66,15 +66,161 @@ CONSÉQUENCE : Les nouvelles colonnes ajoutées dans les collections Payload NE 
 ## 🤖 DERNIÈRE MISE À JOUR PAR CLAUDE CODE
 
 ```
-Date        : 2026-05-24 — MIGRATION SCHEMA sectionOptions + typographie
-Session     : Dev 1 (schema sync Neon via push:true)
-Commit      : aucun (session sans push/commit)
-Fichier     : payload/blocks/shared/sectionOptionsFields.ts + typographyFields.ts + payload.config.ts
-Étape       : Post-Phase 6 — DB sync terminé
-Statut      : ✅ Toutes colonnes sectionOptions + typographie en base Neon
-Prochain    : Déploiement production Vercel
+Date        : 2026-05-26 — FAQ INLINE + FULL CLEANUP BLOCKRENDERER
+Session     : Dev 1 (FAQ configurable par page + nettoyage complet)
+Fichiers    : payload/blocks/FAQBlock.ts (refonte complète inline)
+              lib/lexical-to-html.ts (nouveau — sérializer Lexical → HTML)
+              components/blocks/FAQBlock.tsx (nouveau — accordéon animé)
+              components/blocks/BlockRenderer.tsx (cleanup : faq, stats)
+              components/blocks/ServiceLivePreviewWrapper.tsx (badge statique supprimé)
+              payload/blocks/StatsBlock.ts (maxRows 6→4)
+Étape       : FAQ inline — à synchroniser en base (voir instructions DB sync ci-dessous)
+Statut      : ✅ Code complet, 0 erreur TypeScript
+              ⏳ DB sync Neon requis avant test (voir section ci-dessous)
+Prochain    : 1) Exécuter SQL Neon (drop _rels + colonnes supprimées)
+              2) push: true → pnpm dev → curl → push: false
+              3) Tester FAQ dans l'admin Services/Pages
+BRANCHE ACTIVE    : main
+BLOQUEURS         : DB sync requis (tables FAQ à migrer)
 Reprendre à : "Ouvrir Claude Code dans dt-demenagement/, lire SUIVI-PROJET.md,
-               reprendre à Déploiement production Vercel"
+               reprendre à : DB sync FAQ inline + test admin"
+
+─── CE QUI A ÉTÉ FAIT DANS CETTE SESSION ────────────────────────────────────
+
+FAQ INLINE — Refonte complète (au lieu d'un relationship vers la collection faq)
+  AVANT : questions = relationship → faq collection (admin devait aller dans une autre page)
+          → réponses jamais affichées (bug critique)
+          → mode auto cassé
+          → pas d'accordéon
+  APRÈS : questions = array inline dans le bloc, par page/service
+          → chaque page a SA propre FAQ indépendante
+          → admin peut ajouter/modifier/désactiver/réordonner DANS le document
+          → actif (par question) + actif global (champ bloc existant)
+          → accordéon animé Framer Motion avec richText Lexical sérialisé en HTML
+
+lib/lexical-to-html.ts (NOUVEAU)
+  → Sérializer Lexical JSON → HTML sécurisé (escapeHtml)
+  → Gère : paragraphes, gras/italique/souligné/barré/code, listes ul/ol, liens, headings, br
+
+components/blocks/FAQBlock.tsx (NOUVEAU)
+  → Accordéon animé open/close par question (AnimatePresence + motion)
+  → Filtre actif === false côté frontend
+  → titre + sousTitre + sectionOptions + typographie
+
+BlockRenderer cleanup :
+  case 'faq' → utilise le nouveau FAQBlock (adapter inline)
+  case 'stats' → renderer propre sans fallbacks i18n de StatsAboutBlock
+               → titre de section enfin affiché
+               → CounterAnimation standalone
+               → slice(0, 4) pour respecter le plafond visuel
+
+ServiceLivePreviewWrapper :
+  → Badge "Nos prestations" statique supprimé (texte générique non pertinent par page)
+
+StatsBlock.ts :
+  → maxRows: 6 → 4 (aligné avec le renderer)
+
+─── DB SYNC REQUIS ───────────────────────────────────────────────────────────
+
+TABLES À DROPPER MANUELLEMENT SUR NEON AVANT push: true :
+
+  1. Aller sur console.neon.tech → SQL Editor
+
+  2. Exécuter :
+
+  -- Tables relationship FAQ (remplacées par array inline)
+  DROP TABLE IF EXISTS "pages_blocks_faq_questions_rels";
+  DROP TABLE IF EXISTS "services_blocks_faq_questions_rels";
+  DROP TABLE IF EXISTS "_pages_v_blocks_faq_questions_rels";
+  DROP TABLE IF EXISTS "_services_v_blocks_faq_questions_rels";
+
+  -- Colonnes supprimées (évite le prompt DATA LOSS de Drizzle)
+  ALTER TABLE "pages_blocks_faq"       DROP COLUMN IF EXISTS "categorie_filtre";
+  ALTER TABLE "pages_blocks_faq"       DROP COLUMN IF EXISTS "nombre_max";
+  ALTER TABLE "services_blocks_faq"    DROP COLUMN IF EXISTS "categorie_filtre";
+  ALTER TABLE "services_blocks_faq"    DROP COLUMN IF EXISTS "nombre_max";
+  ALTER TABLE "_pages_v_blocks_faq"    DROP COLUMN IF EXISTS "categorie_filtre";
+  ALTER TABLE "_pages_v_blocks_faq"    DROP COLUMN IF EXISTS "nombre_max";
+  ALTER TABLE "_services_v_blocks_faq" DROP COLUMN IF EXISTS "categorie_filtre";
+  ALTER TABLE "_services_v_blocks_faq" DROP COLUMN IF EXISTS "nombre_max";
+
+  3. Dans payload.config.ts : push: true
+  4. pnpm dev → attendre démarrage
+  5. curl http://localhost:3000/api/services?limit=1 → attendre ~60s
+  6. curl http://localhost:3000/api/pages?limit=1 → attendre ~60s
+  7. Dans payload.config.ts : push: false
+  8. Tester /admin → Services → ouvrir un service → ajouter bloc FAQ
+
+─────────────────────────────────────────────────────────────────────────────
+
+Date        : 2026-05-25 — DB SYNC SERVICES REDESIGN (Étape 10 du plan Services)
+Session     : Dev 1 (Services collection : blocks + drafts + DB sync)
+Commit      : aucun (user teste avant commit)
+Fichiers    : payload/collections/Services.ts
+              payload/blocks/shared/sectionOptionsFields.ts (revert dbName esp/haut/vis)
+              payload.config.ts (push: false — DB sync complété)
+              payload/blocks/PricingBlock.ts + components/blocks/PricingBlock.tsx (Steps 4-5)
+              components/blocks/BlockRenderer.tsx (Step 6)
+              payload/collections/Pages.ts (Step 7)
+              components/blocks/ServiceLivePreviewWrapper.tsx (Step 9)
+              app/(site)/[locale]/services/[slug]/page.tsx (Step 9)
+Étape       : Étape 10 — DB sync Services ✅ TERMINÉE
+Statut      : ✅ Nouveau schéma Services (blocks + _status + _services_v_*) en base Neon
+              API /api/services?depth=0 → 200 OK, retourne _status="draft" et blocks=[]
+Prochain    : User teste Payload Admin → Services → ajouter des blocs → tester Live Preview
+Reprendre à : "Ouvrir Claude Code dans dt-demenagement/, lire SUIVI-PROJET.md,
+               reprendre à : tester Services en production / Déploiement Vercel"
+
+─── CE QUI A ÉTÉ FAIT DANS CETTE SESSION ────────────────────────────────────
+
+Étapes 1-3 (sessions précédentes) — architecture Services
+- Steps 1-3 : analyse + pages services frontend (page.tsx, ServiceCard, etc.)
+
+Étape 4 — PricingBlock.ts (nouveau bloc Payload)
+  payload/blocks/PricingBlock.ts : slug='pricing', champs titre/sousTitre,
+  formules[] (nom/prix/description/caracteristiques[]/misEnAvant/badge/cta),
+  noteDeBase, typographie, sectionOptions
+
+Étape 5 — PricingBlock.tsx (composant frontend)
+  components/blocks/PricingBlock.tsx : PricingCard avec CheckCircle/XCircle,
+  grid adaptatif 1-4 formules, badge "Recommandé", highlight misEnAvant
+
+Étape 6 — BlockRenderer.tsx
+  Ajout cases 'process' et 'pricing' avec adapters complets
+
+Étape 7 — Pages.ts
+  Ajout ProcessBlock + PricingBlock dans la collection Pages (20 blocs total)
+
+Étape 8 — Services.ts REFONTE COMPLÈTE
+  - versions: { drafts: true } → Live Preview activé
+  - 20 blocs (page builder Elementor-like)
+  - Suppression : caracteristiques, avantages, contenu
+  - Gardé : nom, slug, description, icone, image, tarifDepuis, ordre, publie, seo+robots
+  - withShortSectionOptions() helper : injecte dbName esp/haut/vis sur les 20 blocs
+    → empêche enum names > 63 chars sur les tables _services_v_*
+
+Étape 9 — ServiceLivePreviewWrapper + page service refondue
+  - components/blocks/ServiceLivePreviewWrapper.tsx : useLivePreview sur blocks
+  - app/(site)/[locale]/services/[slug]/page.tsx : revalidate=60, hero auto,
+    BlockRenderer, ServiceLivePreviewWrapper en mode draft, JSON-LD
+
+Étape 10 — DB sync
+  TECHNIQUE : push: true → pnpm dev → premier hit API → push auto → push: false
+  PROBLÈMES RENCONTRÉS ET RÉSOLUS :
+  1. Enum > 63 chars sur _services_v_ → résolu par withShortSectionOptions()
+  2. Drizzle disambiguation prompt (create table vs rename from old tables) →
+     résolu en droppant manuellement :
+     services_avantages / services_avantages_locales
+     services_caracteristiques / services_caracteristiques_locales
+  3. Data loss warning (contenu column dans services_locales) →
+     résolu en droppant la colonne manuellement : ALTER TABLE services_locales
+     DROP COLUMN IF EXISTS contenu
+  RÉSULTAT : 200 OK en 57s, schéma en base, push: false restauré
+
+BRANCHE ACTIVE    : main
+BLOQUEURS         : Aucun — tester l'Admin avant commit
+Reprendre à : "Ouvrir Claude Code dans dt-demenagement/, lire SUIVI-PROJET.md,
+               reprendre à : commit Steps 4-10 Services perfection"
 
 Date        : 2026-05-22 — FIX HERO IMAGE DE FOND
 Session     : Dev 1 (HeroBlock imageHero + afficher3D)
