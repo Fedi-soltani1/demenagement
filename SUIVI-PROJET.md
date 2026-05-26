@@ -66,24 +66,23 @@ CONSÉQUENCE : Les nouvelles colonnes ajoutées dans les collections Payload NE 
 ## 🤖 DERNIÈRE MISE À JOUR PAR CLAUDE CODE
 
 ```
-Date        : 2026-05-26 — FAQ INLINE + FULL CLEANUP BLOCKRENDERER
-Session     : Dev 1 (FAQ configurable par page + nettoyage complet)
+Date        : 2026-05-26 — FAQ INLINE + MIGRATION DB COMPLÈTE
+Session     : Dev 1 (FAQ configurable par page + migration directe SQL)
 Fichiers    : payload/blocks/FAQBlock.ts (refonte complète inline)
               lib/lexical-to-html.ts (nouveau — sérializer Lexical → HTML)
               components/blocks/FAQBlock.tsx (nouveau — accordéon animé)
               components/blocks/BlockRenderer.tsx (cleanup : faq, stats)
               components/blocks/ServiceLivePreviewWrapper.tsx (badge statique supprimé)
               payload/blocks/StatsBlock.ts (maxRows 6→4)
-Étape       : FAQ inline — à synchroniser en base (voir instructions DB sync ci-dessous)
+Étape       : FAQ inline — DB synchronisée via script Node.js direct (40/40 OK)
 Statut      : ✅ Code complet, 0 erreur TypeScript
-              ⏳ DB sync Neon requis avant test (voir section ci-dessous)
-Prochain    : 1) Exécuter SQL Neon (drop _rels + colonnes supprimées)
-              2) push: true → pnpm dev → curl → push: false
-              3) Tester FAQ dans l'admin Services/Pages
+              ✅ DB Neon synchronisée (40 objets créés : enums, colonnes, tables, index)
+              ✅ API /api/services répond correctement
+Prochain    : Tester FAQ dans l'admin Services/Pages (ajouter un bloc FAQ → questions inline)
 BRANCHE ACTIVE    : main
-BLOQUEURS         : DB sync requis (tables FAQ à migrer)
+BLOQUEURS         : Aucun
 Reprendre à : "Ouvrir Claude Code dans dt-demenagement/, lire SUIVI-PROJET.md,
-               reprendre à : DB sync FAQ inline + test admin"
+               reprendre à : tester le bloc FAQ dans l'admin + prochaine fonctionnalité"
 
 ─── CE QUI A ÉTÉ FAIT DANS CETTE SESSION ────────────────────────────────────
 
