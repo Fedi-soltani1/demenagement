@@ -121,6 +121,38 @@ const Services: CollectionConfig = {
       admin: { description: 'Décocher pour masquer ce service du site (garde le brouillon)' },
     },
 
+    // ── Boutons Hero ─────────────────────────────────────────────────────────
+    {
+      name: 'heroCtaGroupe',
+      label: '🎯 Boutons d\'appel à l\'action (Hero)',
+      type: 'group',
+      admin: {
+        description: 'Personnalise les deux boutons affichés dans le hero de la page service. Laisser vide = valeurs par défaut.',
+      },
+      fields: [
+        {
+          name: 'cta1Texte',
+          label: 'Bouton principal — texte',
+          type: 'text',
+          localized: true,
+          admin: { description: 'Ex: Demander un devis gratuit. Vide = texte par défaut.' },
+        },
+        {
+          name: 'cta1Lien',
+          label: 'Bouton principal — lien (optionnel)',
+          type: 'text',
+          admin: { description: 'Ex: /devis?service=demenagement-tunisie. Vide = /devis?service=[slug].' },
+        },
+        {
+          name: 'cta2Texte',
+          label: 'Bouton téléphone — texte affiché',
+          type: 'text',
+          localized: true,
+          admin: { description: 'Texte affiché à côté du numéro. Vide = numéro brut.' },
+        },
+      ],
+    },
+
     // ── Blocs de contenu libre (Elementor-like) ──────────────────────────────
     {
       name: 'blocks',

@@ -164,6 +164,7 @@ interface BlockRendererProps {
   villes:             MapVille[]
   pays:               MapPays[]
   googleReviewsNode?: React.ReactNode
+  telephone?:         string
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -360,6 +361,7 @@ export function BlockRenderer({
   villes,
   pays,
   googleReviewsNode,
+  telephone,
 }: BlockRendererProps) {
   if (!blocks.length) return null
 
@@ -384,6 +386,7 @@ export function BlockRenderer({
                 sectionOptions={sectionOpts}
                 typoTitre={typoTitre}
                 typoTexte={typoTexte}
+                telephone={telephone}
               />
             )
 
@@ -563,6 +566,7 @@ export function BlockRenderer({
                 sectionOptions={sectionOpts}
                 typoTitre={typoTitre}
                 typoTexte={typoTexte}
+                telephone={telephone}
               />
             )
 

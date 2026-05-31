@@ -119,6 +119,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
     partnersRes,
     villesRes,
     paysRes,
+    settingsRes,
   ] = await Promise.all([
     fetchService(slug, locale, isDraft),
 
@@ -171,9 +172,14 @@ export default async function ServicePage({ params }: ServicePageProps) {
       limit: 30,
       depth: 0,
     }).catch(() => ({ docs: [] as unknown[] })),
+
+    payload.findGlobal({ slug: 'settings', locale: loc, depth: 0 })
+      .catch(() => null),
   ])
 
   if (!service) notFound()
+
+  const telephone = (settingsRes as { telephone1?: string | null } | null)?.telephone1 ?? COMPANY.phone1
 
   const villes: MapVille[] = (villesRes.docs as VilleDoc[])
     .filter((v) => v.nom && v.slug && v.coordonnees?.lat != null && v.coordonnees?.lng != null)
@@ -250,6 +256,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
         initialService={service}
         locale={locale}
         slug={slug}
+        telephone={telephone}
         googleReviewsNode={googleReviewsNode}
         {...sharedProps}
       />

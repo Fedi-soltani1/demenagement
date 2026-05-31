@@ -23,12 +23,18 @@ type ServiceDoc = {
   image?: { url?: string | null; alt?: string | null } | null
   tarifDepuis?: number | null
   blocks?: unknown[]
+  heroCtaGroupe?: {
+    cta1Texte?: string | null
+    cta1Lien?: string | null
+    cta2Texte?: string | null
+  } | null
 }
 
 interface ServiceLivePreviewWrapperProps {
   initialService:    ServiceDoc
   locale:            string
   slug:              string
+  telephone?:        string
   services:          ServiceData[]
   testimonials:      TestimonialData[]
   blog:              BlogArticleData[]
@@ -42,6 +48,7 @@ export function ServiceLivePreviewWrapper({
   initialService,
   locale,
   slug,
+  telephone,
   services,
   testimonials,
   blog,
@@ -62,6 +69,9 @@ export function ServiceLivePreviewWrapper({
   const nom         = data?.nom         ?? ''
   const description = data?.description ?? ''
   const image       = data?.image
+  const cta1Texte   = data?.heroCtaGroupe?.cta1Texte ?? null
+  const cta1Lien    = data?.heroCtaGroupe?.cta1Lien  ?? null
+  const cta2Texte   = data?.heroCtaGroupe?.cta2Texte ?? null
 
   return (
     <>
@@ -110,13 +120,14 @@ export function ServiceLivePreviewWrapper({
 
           <div className="flex flex-col sm:flex-row gap-4">
             <Link
-              href={`/${locale}/devis?service=${slug}`}
+              href={cta1Lien ?? `/${locale}/devis?service=${slug}`}
               className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[var(--color-red)] text-white font-body font-bold text-sm uppercase tracking-wider hover:bg-[var(--color-red-dark)] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)]"
             >
-              {t('ctaDevis')}
+              {cta1Texte ?? t('ctaDevis')}
             </Link>
             <PhoneLink
-              numero={COMPANY.phone1}
+              numero={telephone ?? COMPANY.phone1}
+              display={cta2Texte ?? undefined}
               className="inline-flex items-center gap-2 px-8 py-4 rounded-full border border-[var(--color-text-light)]/20 text-[var(--color-text-muted)] font-body text-sm hover:border-[var(--color-text-light)]/40 hover:text-[var(--color-text-light)] transition-all duration-200"
               showIcon
             />
@@ -134,6 +145,7 @@ export function ServiceLivePreviewWrapper({
         villes={villes}
         pays={pays}
         googleReviewsNode={googleReviewsNode}
+        telephone={telephone}
       />
     </>
   )

@@ -205,11 +205,12 @@ export type CmsHero = {
 
 // ─── HeroBlock ────────────────────────────────────────────────────────────────
 
-export const HeroBlock = memo(function HeroBlock({ cms, sectionOptions, typoTitre, typoTexte }: {
+export const HeroBlock = memo(function HeroBlock({ cms, sectionOptions, typoTitre, typoTexte, telephone }: {
   cms?: CmsHero
   sectionOptions?: SectionOptions | null
   typoTitre?: TypographieOptions | null
   typoTexte?: TypographieOptions | null
+  telephone?: string
 }) {
   const t      = useTranslations('Home.hero')
   const locale = useLocale()
@@ -383,7 +384,7 @@ export const HeroBlock = memo(function HeroBlock({ cms, sectionOptions, typoTitr
           </button>
 
           <PhoneLink
-            numero={COMPANY.phone1}
+            numero={telephone ?? COMPANY.phone1}
             display={cta2}
             source="hero"
             className="group flex items-center gap-2 rounded-full px-8 py-4 border border-[var(--color-text-light)]/20 text-[var(--color-text-light)] font-body font-semibold text-sm uppercase tracking-wider transition-all duration-300 hover:border-[var(--color-text-light)]/50 hover:bg-[var(--color-text-light)]/5 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-text-light)]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-bg-dark)]"

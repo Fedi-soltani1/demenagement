@@ -13,17 +13,19 @@ import { useDevisModal } from '@/components/layout/DevisModal'
 export type NavService  = { nom: string; slug: string }
 export type NavVille    = { nom: string; slug: string }
 export type NavPays     = { nom: string; slug: string; drapeau: string }
+export type NavLien     = { libelle: string; chemin: string }
 export type NavSettings = {
-  telephone1:       string
-  telephone2?:      string | null
-  whatsapp:         string
-  whatsappMessage:  string
-  email:            string
-  adresse?:         string | null
-  horaires?:        string | null
-  facebook?:        string | null
-  instagram?:       string | null
-  tagline?:         string | null
+  telephone1:         string
+  telephone2?:        string | null
+  whatsapp:           string
+  whatsappMessage:    string
+  email:              string
+  adresse?:           string | null
+  horaires?:          string | null
+  facebook?:          string | null
+  instagram?:         string | null
+  tagline?:           string | null
+  liensNavigation?:   NavLien[] | null
 }
 
 // ─── Icons ────────────────────────────────────────────────────────────────────
@@ -169,12 +171,15 @@ function Navbar({
     setMobileExpanded((prev) => (prev === name ? null : name))
   }, [])
 
-  const navLinks = [
-    { key: 'blog',    path: '/blog' },
-    { key: 'faq',     path: '/faq' },
-    { key: 'about',   path: '/a-propos' },
-    { key: 'contact', path: '/contact' },
-  ] as const
+  const defaultNavLinks: NavLien[] = [
+    { libelle: t('blog'),    chemin: '/blog' },
+    { libelle: t('faq'),     chemin: '/faq' },
+    { libelle: t('about'),   chemin: '/a-propos' },
+    { libelle: t('contact'), chemin: '/contact' },
+  ]
+  const navLinks: NavLien[] = (settingsProp?.liensNavigation && settingsProp.liensNavigation.length > 0)
+    ? settingsProp.liensNavigation
+    : defaultNavLinks
 
   return (
     <>
@@ -323,13 +328,13 @@ function Navbar({
               </div>
 
               {/* Static nav links */}
-              {navLinks.map(({ key, path }) => (
+              {navLinks.map(({ libelle, chemin }) => (
                 <Link
-                  key={key}
-                  href={path}
+                  key={chemin}
+                  href={chemin}
                   className="px-3 py-2 text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-text-light)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)] rounded"
                 >
-                  {t(key)}
+                  {libelle}
                 </Link>
               ))}
             </nav>
@@ -450,13 +455,13 @@ function Navbar({
               </div>
 
               {/* Static links */}
-              {navLinks.map(({ key, path }) => (
+              {navLinks.map(({ libelle, chemin }) => (
                 <Link
-                  key={key}
-                  href={path}
+                  key={chemin}
+                  href={chemin}
                   className="block px-3 py-3 text-base font-medium text-[var(--color-text-light)] hover:text-[var(--color-red)] transition-colors rounded"
                 >
-                  {t(key)}
+                  {libelle}
                 </Link>
               ))}
             </nav>

@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { PhoneLink } from '@/components/ui/PhoneLink'
 import { COMPANY, SERVICES, VILLES, PAYS } from '@/lib/constants'
-import type { NavService, NavVille, NavPays, NavSettings } from '@/components/layout/Navbar'
+import type { NavService, NavVille, NavPays, NavSettings, NavLien } from '@/components/layout/Navbar'
 
 // ─── Icons ────────────────────────────────────────────────────────────────────
 
@@ -256,21 +256,22 @@ function Footer({
               {t('linksTitle')}
             </h3>
             <ul className="space-y-2.5 mb-6">
-              {(
-                [
-                  { key: 'blog',    path: '/blog' },
-                  { key: 'about',   path: '/a-propos' },
-                  { key: 'contact', path: '/contact' },
-                  { key: 'faq',     path: '/faq' },
-                  { key: 'careers', path: '/recrutement' },
-                ] as const
-              ).map(({ key, path }) => (
-                <li key={key}>
+              {((settingsProp?.liensNavigation && settingsProp.liensNavigation.length > 0)
+                ? settingsProp.liensNavigation
+                : ([
+                    { libelle: t('blog'),    chemin: '/blog' },
+                    { libelle: t('about'),   chemin: '/a-propos' },
+                    { libelle: t('contact'), chemin: '/contact' },
+                    { libelle: t('faq'),     chemin: '/faq' },
+                    { libelle: t('careers'), chemin: '/recrutement' },
+                  ] as NavLien[])
+              ).map(({ libelle, chemin }) => (
+                <li key={chemin}>
                   <Link
-                    href={path}
+                    href={chemin}
                     className="text-sm text-[var(--color-text-muted)] hover:text-[var(--color-red)] transition-colors"
                   >
-                    {t(key)}
+                    {libelle}
                   </Link>
                 </li>
               ))}

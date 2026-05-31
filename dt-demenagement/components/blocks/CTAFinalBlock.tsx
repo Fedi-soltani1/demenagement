@@ -25,11 +25,12 @@ export type CmsCtaFinal = {
   garanties?: { texte: string }[] | null
 }
 
-export const CTAFinalBlock = memo(function CTAFinalBlock({ cms, sectionOptions, typoTitre, typoTexte }: {
+export const CTAFinalBlock = memo(function CTAFinalBlock({ cms, sectionOptions, typoTitre, typoTexte, telephone }: {
   cms?: CmsCtaFinal
   sectionOptions?: SectionOptions | null
   typoTitre?: TypographieOptions | null
   typoTexte?: TypographieOptions | null
+  telephone?: string
 }) {
   const t = useTranslations('Home.ctaFinal')
   const locale = useLocale()
@@ -148,7 +149,7 @@ export const CTAFinalBlock = memo(function CTAFinalBlock({ cms, sectionOptions, 
 
             {/* Bouton téléphone */}
             <PhoneLink
-              numero={COMPANY.phone1}
+              numero={telephone ?? COMPANY.phone1}
               display={btn2}
               className="inline-flex items-center gap-3 px-8 py-4 rounded-full border-2 border-white/40 text-white font-body font-semibold text-sm hover:bg-white/10 hover:border-white/70 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-red)]"
               showIcon

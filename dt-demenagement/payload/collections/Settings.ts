@@ -136,6 +136,37 @@ const Settings: GlobalConfig = {
       },
       admin: { description: '⚠️ ATTENTION — Cocher cette case rend le site inaccessible à tous les visiteurs. Réservé aux super-admins.' },
     },
+
+    // ── Navigation ────────────────────────────────────────────────────────────
+    {
+      name: 'liensNavigation',
+      label: '🔗 Liens de navigation personnalisés',
+      type: 'array',
+      admin: {
+        description: 'Liens affichés dans la navbar et le footer. Laissez vide pour utiliser les liens par défaut (Blog, FAQ, À propos, Contact).',
+      },
+      fields: [
+        {
+          name: 'libelle',
+          label: 'Libellé',
+          type: 'text',
+          required: true,
+          localized: true,
+        },
+        {
+          name: 'chemin',
+          label: 'Chemin URL (ex: /blog)',
+          type: 'text',
+          required: true,
+        },
+        {
+          name: 'actif',
+          label: 'Actif',
+          type: 'checkbox',
+          defaultValue: true,
+        },
+      ],
+    },
   ],
 }
 

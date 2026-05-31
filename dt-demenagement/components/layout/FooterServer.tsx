@@ -2,23 +2,24 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 import { unstable_noStore as noStore } from 'next/cache'
 import { Footer } from '@/components/layout/Footer'
-import type { NavService, NavVille, NavPays, NavSettings } from '@/components/layout/Navbar'
+import type { NavService, NavVille, NavPays, NavSettings, NavLien } from '@/components/layout/Navbar'
 import { COMPANY, VILLES, PAYS } from '@/lib/constants'
 
 type ServiceDoc = { id: string; nom?: string | null; slug?: string | null }
 type VilleDoc   = { id: string; nom?: string | null; slug?: string | null }
 type PaysDoc    = { id: string; nom?: string | null; slug?: string | null; drapeau?: string | null }
 type SettingsDoc = {
-  telephone1?:      string | null
-  telephone2?:      string | null
-  whatsapp?:        string | null
-  whatsappMessage?: string | null
-  email?:           string | null
-  adresse?:         string | null
-  horaires?:        string | null
-  facebook?:        string | null
-  instagram?:       string | null
-  tagline?:         string | null
+  telephone1?:       string | null
+  telephone2?:       string | null
+  whatsapp?:         string | null
+  whatsappMessage?:  string | null
+  email?:            string | null
+  adresse?:          string | null
+  horaires?:         string | null
+  facebook?:         string | null
+  instagram?:        string | null
+  tagline?:          string | null
+  liensNavigation?:  Array<{ libelle?: string | null; chemin?: string | null; actif?: boolean | null }> | null
 }
 
 async function fetchAll(): Promise<{
@@ -123,17 +124,23 @@ async function fetchAll(): Promise<{
   }
   try {
     const s = await payload.findGlobal({ slug: 'settings', locale: 'fr', depth: 0 }) as SettingsDoc
+    const liensNavigation: NavLien[] = Array.isArray(s.liensNavigation)
+      ? (s.liensNavigation as Array<{ libelle?: string | null; chemin?: string | null; actif?: boolean | null }>)
+          .filter((l) => l?.actif !== false && l?.libelle && l?.chemin)
+          .map((l) => ({ libelle: l.libelle!, chemin: l.chemin! }))
+      : []
     settings = {
-      telephone1:      s.telephone1      || COMPANY.phone1,
-      telephone2:      s.telephone2      || COMPANY.phone2,
-      whatsapp:        s.whatsapp        || COMPANY.whatsapp,
-      whatsappMessage: s.whatsappMessage || COMPANY.whatsappMessage,
-      email:           s.email           || COMPANY.email,
-      adresse:         s.adresse         || COMPANY.address,
-      horaires:        s.horaires        ?? null,
-      facebook:        s.facebook        || COMPANY.facebook,
-      instagram:       s.instagram       || COMPANY.instagram,
-      tagline:         s.tagline         ?? null,
+      telephone1:       s.telephone1      || COMPANY.phone1,
+      telephone2:       s.telephone2      || COMPANY.phone2,
+      whatsapp:         s.whatsapp        || COMPANY.whatsapp,
+      whatsappMessage:  s.whatsappMessage || COMPANY.whatsappMessage,
+      email:            s.email           || COMPANY.email,
+      adresse:          s.adresse         || COMPANY.address,
+      horaires:         s.horaires        ?? null,
+      facebook:         s.facebook        || COMPANY.facebook,
+      instagram:        s.instagram       || COMPANY.instagram,
+      tagline:          s.tagline         ?? null,
+      liensNavigation:  liensNavigation.length > 0 ? liensNavigation : null,
     }
   } catch { /* garde les fallbacks */ }
 
