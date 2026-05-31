@@ -66,6 +66,46 @@ CONSÉQUENCE : Les nouvelles colonnes ajoutées dans les collections Payload NE 
 ## 🤖 DERNIÈRE MISE À JOUR PAR CLAUDE CODE
 
 ```
+Date        : 2026-05-31 — ZÉRO HARDCODE : tout configurable depuis Payload CMS
+Session     : Dev 1
+Fichiers    :
+  payload/collections/Settings.ts     → ajout liensNavigation (navbar/footer dynamiques)
+  payload/collections/Services.ts     → ajout heroCtaGroupe (cta1Texte/cta1Lien/cta2Texte)
+  components/layout/Navbar.tsx        → NavLien type + navLinks dynamiques depuis settings
+  components/layout/NavbarServer.tsx  → fetch + pass liensNavigation
+  components/layout/FooterServer.tsx  → fetch + pass liensNavigation
+  components/layout/Footer.tsx        → quick links dynamiques depuis settings
+  components/blocks/BlockRenderer.tsx → prop telephone? → HeroBlock + CTAFinalBlock
+  components/blocks/HeroBlock.tsx     → telephone ?? COMPANY.phone1
+  components/blocks/CTAFinalBlock.tsx → telephone ?? COMPANY.phone1
+  app/(site)/[locale]/services/[slug]/page.tsx → fetch settings + pass telephone
+  components/blocks/ServiceLivePreviewWrapper.tsx → hero CTA branché heroCtaGroupe
+
+Étape       : Post-Phase 6 — Architecture zéro-hardcode
+Statut      : ✅ Terminé — 0 erreur TypeScript — commité 9625379
+Prochain    : Déploiement production Vercel + Railway
+Reprendre à : "Ouvrir Claude Code dans dt-demenagement/, lire SUIVI-PROJET.md, déploiement"
+
+MIGRATION NEON REQUISE (push:false — nouvelles colonnes pas créées automatiquement) :
+  Pour heroCtaGroupe sur la table services :
+    ALTER TABLE services ADD COLUMN IF NOT EXISTS hero_cta_groupe_cta_1_texte varchar;
+    ALTER TABLE services ADD COLUMN IF NOT EXISTS hero_cta_groupe_cta_1_lien varchar;
+    ALTER TABLE services ADD COLUMN IF NOT EXISTS hero_cta_groupe_cta_2_texte varchar;
+  Pour liensNavigation sur settings (table array) :
+    CREATE TABLE IF NOT EXISTS settings_liens_navigation (
+      id serial PRIMARY KEY,
+      _order integer NOT NULL,
+      _parent_id integer NOT NULL,
+      libelle varchar,
+      chemin varchar,
+      actif boolean DEFAULT true
+    );
+    → Exécuter dans console.neon.tech → SQL Editor
+
+COMMIT : 9625379 — feat: zéro hardcode — tout configurable depuis Payload CMS
+```
+
+```
 Date        : 2026-05-26 — REFACTOR PERF : DYNAMIC IMPORTS + REACT.MEMO + EASE CONSTANTS
 Session     : Dev 1 (architecture modulaire — tous les blocs dynamiques + optimisations React)
 Fichiers    : components/blocks/BlockSkeleton.tsx (NOUVEAU — skeleton loader unifié)
@@ -657,7 +697,14 @@ FIX HERO SECTION (session 2026-05-22 soir) :
      → Si afficher3D=true (défaut) → canvas ondes animées
      → Si afficher3D=false + imageHero uploadée → image de fond statique
 
+DERNIÈRE SESSION (2026-05-31) : ZÉRO HARDCODE ✅
+  Tout est maintenant configurable depuis Payload sans toucher au code :
+  ✅ Liens navbar/footer → Settings → Liens de navigation
+  ✅ Boutons hero page service → Services → Hero CTA
+  ✅ Téléphone dans blocs Hero + CTAFinal → Settings → Téléphone principal
+
 PROCHAINE ACTION  : Déploiement production
+  0. MIGRATION NEON REQUISE (voir section DERNIÈRE MISE À JOUR ci-dessus)
   1. Ajouter NEXT_PUBLIC_PAYLOAD_URL=https://[ton-domaine-vercel] dans .env Vercel
   2. Vérifier domaine demenagement.tn sur resend.com/domains
      → Changer EMAIL_FROM=noreply@demenagement.tn
@@ -669,6 +716,7 @@ PROCHAINE ACTION  : Déploiement production
 BRANCHE ACTIVE    : main
 BLOQUEURS         : Resend en mode test (envoie uniquement vers fedi.soltani1@esprit.tn)
                     → vérifier domaine demenagement.tn sur resend.com pour lever ce blocage
+                    Migration Neon manuelle requise (cf. section DERNIÈRE MISE À JOUR)
 ```
 
 ---
