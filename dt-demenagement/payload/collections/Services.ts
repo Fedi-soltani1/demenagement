@@ -21,6 +21,10 @@ import { NewsletterBlock }     from '../blocks/NewsletterBlock'
 import { CustomBlock }         from '../blocks/CustomBlock'
 import { ProcessBlock }        from '../blocks/ProcessBlock'
 import { PricingBlock }        from '../blocks/PricingBlock'
+import { BadgeBlock }          from '../blocks/BadgeBlock'
+import { TitreBlock }          from '../blocks/TitreBlock'
+import { TexteBlock }          from '../blocks/TexteBlock'
+import { BoutonsBlock }        from '../blocks/BoutonsBlock'
 
 // Adds dbName shortcuts so _services_v_ enum names stay ≤ 63 chars (PostgreSQL limit).
 function withShortSectionOptions(block: Block): Block {
@@ -162,6 +166,10 @@ const Services: CollectionConfig = {
         description: 'Construire le contenu de la page service bloc par bloc. L\'admin peut ajouter, supprimer, réordonner et activer/désactiver chaque bloc individuellement. Prévisualisation en temps réel disponible avec le bouton "Aperçu".',
       },
       blocks: [
+        BadgeBlock,
+        TitreBlock,
+        TexteBlock,
+        BoutonsBlock,
         HeroBlock,
         MiniFeaturesBlock,
         ServicesBlock,
