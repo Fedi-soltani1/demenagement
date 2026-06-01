@@ -16,8 +16,27 @@ function hasSessionCookie(req: NextRequest): boolean {
   )
 }
 
-export default function middleware(req: NextRequest) {
+export default async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
+
+  // Maintenance mode check — avant toute autre logique
+  const isAdminRoute = pathname.startsWith('/admin') || pathname.startsWith('/api')
+  const isMaintenancePage = pathname.startsWith('/maintenance')
+
+  if (!isAdminRoute && !isMaintenancePage) {
+    try {
+      const settingsRes = await fetch(
+        new URL('/api/globals/settings?depth=0', req.url).toString(),
+        { next: { revalidate: 60 } }
+      )
+      if (settingsRes.ok) {
+        const settings = await settingsRes.json() as { maintenanceMode?: boolean }
+        if (settings.maintenanceMode === true) {
+          return NextResponse.redirect(new URL('/maintenance', req.url))
+        }
+      }
+    } catch { /* ne pas bloquer si fetch échoue */ }
+  }
 
   const isProtected = PROTECTED_PATTERNS.some((p) => p.test(pathname))
 

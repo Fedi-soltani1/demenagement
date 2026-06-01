@@ -11,6 +11,9 @@ import { WhatsAppButton } from '@/components/layout/WhatsAppButton'
 import { CookieBanner } from '@/components/layout/CookieBanner'
 import { DevisModalProvider } from '@/components/layout/DevisModal'
 import { Analytics, GTMNoScript } from '@/components/analytics/Analytics'
+import { BandeauAnnonceServer } from '@/components/layout/BandeauAnnonceServer'
+import { getPayload } from 'payload'
+import config from '@payload-config'
 import { LOCALES } from '@/lib/constants'
 
 interface LocaleLayoutProps {
@@ -32,6 +35,14 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
   // Charge les messages pour ce locale (lus depuis messages/{locale}.json)
   const messages = await getMessages()
 
+  // Récupère whatsappActif depuis Settings (défaut: actif si erreur)
+  let whatsappActif = true
+  try {
+    const payload = await getPayload({ config })
+    const settings = await payload.findGlobal({ slug: 'settings', depth: 0 }) as { whatsappActif?: boolean }
+    whatsappActif = settings.whatsappActif !== false
+  } catch { /* défaut: actif */ }
+
   return (
     <NextIntlClientProvider messages={messages}>
       <ThemeProvider>
@@ -44,13 +55,14 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
           />
           <CustomCursor />
           <PageLoader />
+          <BandeauAnnonceServer locale={locale} />
           <NavbarServer />
           <main id="main-content">
             {children}
           </main>
           <FooterServer />
           <ScrollToTop />
-          <WhatsAppButton />
+          {whatsappActif && <WhatsAppButton />}
           <CookieBanner />
           <LivePreviewListener serverURL={process.env.NEXT_PUBLIC_PAYLOAD_URL ?? 'http://localhost:3000'} />
         </DevisModalProvider>
