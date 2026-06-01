@@ -13,6 +13,7 @@ import {
   resolveVisibility,
   resolveOverlay,
   resolveAnchorId,
+  resolveTextColor,
   cx,
 } from '@/lib/sectionOptions'
 
@@ -46,6 +47,7 @@ export function SectionWrapper({
   const contentW   = resolveContentWidth(options, defaultLargeur)
   const anchorId   = resolveAnchorId(options)
   const overlay    = resolveOverlay(options)
+  const textColor  = resolveTextColor(options)
   const hasImage   = !!options?.imageFond
 
   return (
@@ -69,7 +71,7 @@ export function SectionWrapper({
         </>
       )}
 
-      <div className={cx('px-container relative z-10', contentW)}>
+      <div className={cx('px-container relative z-10', contentW, textColor)}>
         {children}
       </div>
     </section>

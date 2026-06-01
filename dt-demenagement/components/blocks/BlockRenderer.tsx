@@ -202,6 +202,7 @@ function extractSectionOptions(b: PayloadBlock): SectionOptions {
     visibilite:     str(raw.visibilite)     as SectionOptions['visibilite'],
     ancreId:        str(raw.ancreId),
     niveauTitre:    str(raw.niveauTitre)    as SectionOptions['niveauTitre'],
+    couleurTexte:   str(raw.couleurTexte)   as SectionOptions['couleurTexte'],
   }
 }
 
@@ -423,6 +424,7 @@ export function BlockRenderer({
                   sousTitre: str(block.sousTitre),
                   ctaTexte:  str(block.ctaTexte),
                   layout:    (str(block.layout) as 'grille' | 'liste' | 'carrousel' | null),
+                  colonnes:  str(block.colonnes),
                 }}
               />
             )
