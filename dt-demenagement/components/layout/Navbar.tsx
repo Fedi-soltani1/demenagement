@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { useTheme } from 'next-themes'
 import { useTranslations } from 'next-intl'
@@ -26,6 +27,10 @@ export type NavSettings = {
   instagram?:         string | null
   tagline?:           string | null
   liensNavigation?:   NavLien[] | null
+  logoUrl?:           string | null
+  copyright?:         string | null
+  navbarCtaTexte?:    string | null
+  navbarCtaLien?:     string | null
 }
 
 // ─── Icons ────────────────────────────────────────────────────────────────────
@@ -208,13 +213,25 @@ function Navbar({
               className="flex items-center gap-3 shrink-0 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)] rounded"
               aria-label={t('logoAlt')}
             >
-              {/* Placeholder logo — remplacer par <Image src="/logo.svg"> quand le fichier est disponible */}
-              <div className="w-9 h-9 rounded-lg bg-[var(--color-red)] flex items-center justify-center transition-opacity group-hover:opacity-90 shrink-0">
-                <span className="font-display text-white text-sm font-bold select-none">DT</span>
-              </div>
-              <span className="font-display text-[var(--color-text-light)] font-bold text-lg leading-none hidden sm:block">
-                DT Déménagement
-              </span>
+              {settingsProp?.logoUrl ? (
+                <Image
+                  src={settingsProp.logoUrl}
+                  alt="DT Déménagement"
+                  width={140}
+                  height={40}
+                  className="h-10 w-auto object-contain"
+                  priority
+                />
+              ) : (
+                <>
+                  <div className="w-9 h-9 rounded-lg bg-[var(--color-red)] flex items-center justify-center transition-opacity group-hover:opacity-90 shrink-0">
+                    <span className="font-display text-white text-sm font-bold select-none">DT</span>
+                  </div>
+                  <span className="font-heading font-bold text-[var(--color-red)] text-xl tracking-wider hidden sm:block">
+                    DT DÉMÉNAGEMENT
+                  </span>
+                </>
+              )}
             </Link>
 
             {/* ── Desktop navigation ── */}
@@ -343,13 +360,22 @@ function Navbar({
             <div className="hidden lg:flex items-center gap-2 ms-auto ps-4">
               <PhoneLink numero={phone1} source="navbar" />
               <ThemeToggle labelDark={t('switchToDark')} labelLight={t('switchToLight')} />
-              <button
-                type="button"
-                onClick={openDevisModal}
-                className={ctaClass}
-              >
-                {t('devis')}
-              </button>
+              {settingsProp?.navbarCtaLien ? (
+                <Link
+                  href={settingsProp.navbarCtaLien}
+                  className={ctaClass}
+                >
+                  {settingsProp.navbarCtaTexte ?? t('devis')}
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  onClick={openDevisModal}
+                  className={ctaClass}
+                >
+                  {settingsProp?.navbarCtaTexte ?? t('devis')}
+                </button>
+              )}
             </div>
 
             {/* ── Mobile hamburger ── */}
@@ -472,13 +498,23 @@ function Navbar({
                 <PhoneLink numero={phone1} source="navbar-mobile" />
                 {phone2 && <PhoneLink numero={phone2} source="navbar-mobile" />}
               </div>
-              <button
-                type="button"
-                onClick={() => { setIsMobileOpen(false); openDevisModal() }}
-                className={[ctaClass, 'w-full justify-center py-3 text-base'].join(' ')}
-              >
-                {t('devis')}
-              </button>
+              {settingsProp?.navbarCtaLien ? (
+                <Link
+                  href={settingsProp.navbarCtaLien}
+                  onClick={() => setIsMobileOpen(false)}
+                  className={[ctaClass, 'w-full justify-center py-3 text-base'].join(' ')}
+                >
+                  {settingsProp.navbarCtaTexte ?? t('devis')}
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => { setIsMobileOpen(false); openDevisModal() }}
+                  className={[ctaClass, 'w-full justify-center py-3 text-base'].join(' ')}
+                >
+                  {settingsProp?.navbarCtaTexte ?? t('devis')}
+                </button>
+              )}
               <div className="flex items-center justify-end pt-1">
                 <ThemeToggle labelDark={t('switchToDark')} labelLight={t('switchToLight')} />
               </div>

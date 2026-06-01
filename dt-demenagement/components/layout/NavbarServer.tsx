@@ -20,6 +20,9 @@ type SettingsDoc = {
   instagram?:        string | null
   tagline?:          string | null
   liensNavigation?:  Array<{ libelle?: string | null; chemin?: string | null; actif?: boolean | null }> | null
+  logoImage?:        { url?: string | null } | null
+  navbarCtaTexte?:   string | null
+  navbarCtaLien?:    string | null
 }
 
 async function fetchAll(): Promise<{
@@ -141,6 +144,9 @@ async function fetchAll(): Promise<{
       instagram:        s.instagram       || COMPANY.instagram,
       tagline:          s.tagline         ?? null,
       liensNavigation:  liensNavigation.length > 0 ? liensNavigation : null,
+      logoUrl:          s.logoImage?.url  ?? null,
+      navbarCtaTexte:   s.navbarCtaTexte  ?? null,
+      navbarCtaLien:    s.navbarCtaLien   ?? '/devis',
     }
   } catch { /* garde les fallbacks */ }
 
