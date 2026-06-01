@@ -76,6 +76,22 @@ const FAQBlock = dynamic(
   () => import('@/components/blocks/FAQBlock').then((m) => ({ default: m.FAQBlock })),
   { loading: sk('md') },
 )
+const BadgeBlock = dynamic(
+  () => import('@/components/blocks/BadgeBlock').then((m) => ({ default: m.BadgeBlock })),
+  { loading: sk('sm') },
+)
+const TitreBlock = dynamic(
+  () => import('@/components/blocks/TitreBlock').then((m) => ({ default: m.TitreBlock })),
+  { loading: sk('sm') },
+)
+const TexteBlock = dynamic(
+  () => import('@/components/blocks/TexteBlock').then((m) => ({ default: m.TexteBlock })),
+  { loading: sk('sm') },
+)
+const BoutonsBlock = dynamic(
+  () => import('@/components/blocks/BoutonsBlock').then((m) => ({ default: m.BoutonsBlock })),
+  { loading: sk('sm') },
+)
 
 // ─── Types Payload (structure brute retournée par l'API) ──────────────────────
 
@@ -844,6 +860,51 @@ export function BlockRenderer({
                 sectionOptions={sectionOpts}
                 typoTitre={typoTitre}
                 typoTexte={typoTexte}
+              />
+            )
+          }
+
+          case 'badge':
+            return (
+              <BadgeBlock key={key}
+                texte={str(block.texte) ?? ''}
+                couleur={str(block.couleur) as 'rouge' | 'or' | 'blanc' | null}
+                alignement={str(block.alignement) as 'gauche' | 'centre' | 'droite' | null}
+                sectionOptions={sectionOpts}
+              />
+            )
+
+          case 'titre':
+            return (
+              <TitreBlock key={key}
+                texte={str(block.texte) ?? ''}
+                sectionOptions={sectionOpts}
+                typoTitre={typoTitre}
+              />
+            )
+
+          case 'texte':
+            return (
+              <TexteBlock key={key}
+                texte={str(block.texte) ?? ''}
+                sectionOptions={sectionOpts}
+                typoTexte={typoTexte}
+              />
+            )
+
+          case 'boutons': {
+            type BoutonRaw = { texte?: unknown; lien?: unknown; style?: unknown }
+            const boutonItems = arr<BoutonRaw>(block.boutons).map((b) => ({
+              texte: str(b.texte),
+              lien:  str(b.lien),
+              style: str(b.style) as 'primaire' | 'secondaire' | 'telephone' | null,
+            }))
+            return (
+              <BoutonsBlock key={key}
+                boutons={boutonItems}
+                alignement={str(block.alignement) as 'gauche' | 'centre' | 'droite' | null}
+                sectionOptions={sectionOpts}
+                telephone={telephone}
               />
             )
           }
