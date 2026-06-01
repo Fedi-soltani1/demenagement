@@ -408,6 +408,7 @@ export function BlockRenderer({
                 sectionOptions={sectionOpts}
                 typoTitre={typoTitre}
                 typoTexte={typoTexte}
+                couleurAccent={str(block.couleurAccent) as 'rouge' | 'or' | null}
               />
             )
 
@@ -581,6 +582,9 @@ export function BlockRenderer({
             const desktopCols = statsArr.length === 2 ? 'md:grid-cols-2'
                               : statsArr.length === 3 ? 'md:grid-cols-3'
                               : 'md:grid-cols-4'
+            const statsAccent = str(block.couleurAccent) === 'rouge'
+              ? 'text-[var(--color-red)]'
+              : 'text-[var(--color-gold)]'
             return (
               <SectionWrapper key={key} options={sectionOpts} defaultFond="sombre" defaultEspacement="normal">
                 {str(block.titre) && (
@@ -597,7 +601,7 @@ export function BlockRenderer({
                       <CounterAnimation
                         target={stat.valeur!}
                         suffix={stat.suffixe ?? ''}
-                        className="font-mono text-4xl font-bold text-[var(--color-gold)]"
+                        className={cx('font-mono text-4xl font-bold', statsAccent)}
                       />
                       {stat.libelle && (
                         <p className="font-body text-xs text-[var(--color-text-muted)] uppercase tracking-wide mt-2">

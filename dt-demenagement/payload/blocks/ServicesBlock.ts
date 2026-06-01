@@ -50,6 +50,17 @@ export const ServicesBlock: Block = {
         { label: 'Carrousel — défilement gauche/droite',    value: 'carrousel' },
       ],
     },
+    {
+      name: 'colonnes',
+      type: 'select',
+      label: 'Colonnes (desktop)',
+      defaultValue: '3',
+      options: [
+        { label: '2 colonnes', value: '2' },
+        { label: '3 colonnes (défaut)', value: '3' },
+        { label: '4 colonnes', value: '4' },
+      ],
+    },
     typographieTitreField,
     typographieTexteField,
     ...sectionOptionsFields,

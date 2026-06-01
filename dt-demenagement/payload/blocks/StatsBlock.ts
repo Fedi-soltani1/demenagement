@@ -59,6 +59,16 @@ export const StatsBlock: Block = {
       defaultValue: true,
       admin: { description: 'Si coché, les chiffres s\'animent de 0 à leur valeur finale quand la section apparaît à l\'écran.' },
     },
+    {
+      name: 'couleurAccent',
+      type: 'select',
+      label: 'Couleur des chiffres',
+      defaultValue: 'rouge',
+      options: [
+        { label: 'Rouge (défaut)', value: 'rouge' },
+        { label: 'Or',             value: 'or'    },
+      ],
+    },
     typographieTitreField,
     ...sectionOptionsFields,
   ],

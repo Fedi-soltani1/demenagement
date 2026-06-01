@@ -142,6 +142,7 @@ interface ServicesCms {
   sousTitre?: string | null
   ctaTexte?:  string | null
   layout?:    'grille' | 'liste' | 'carrousel' | null
+  colonnes?:  string | null
 }
 
 export const ServicesBlock = memo(function ServicesBlock({ services = [], cms, sectionOptions, typoTitre, typoTexte }: {
@@ -155,6 +156,9 @@ export const ServicesBlock = memo(function ServicesBlock({ services = [], cms, s
 
   const displayServices = services.length > 0 ? services : SERVICES_FALLBACK
   const layout = cms?.layout ?? 'grille'
+  const colsClass = cms?.colonnes === '2' ? 'lg:grid-cols-2'
+                  : cms?.colonnes === '4' ? 'lg:grid-cols-4'
+                  :                        'lg:grid-cols-3'
 
   const sectionBg  = sectionOptions?.imageFond ? '' : resolveBg(sectionOptions, 'sombre')
   const sectionPy  = sectionOptions?.espacement ? resolveSpacing(sectionOptions) : 'py-section'
@@ -205,7 +209,7 @@ export const ServicesBlock = memo(function ServicesBlock({ services = [], cms, s
 
         {/* Grille 3 colonnes (défaut) */}
         {layout === 'grille' && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-grid mb-12">
+          <div className={cx('grid grid-cols-1 sm:grid-cols-2 gap-grid mb-12', colsClass)}>
             {displayServices.map((service, i) => (
               <ServiceCard key={service.id} service={service} index={i} />
             ))}
