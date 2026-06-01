@@ -35,23 +35,37 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
   // Charge les messages pour ce locale (lus depuis messages/{locale}.json)
   const messages = await getMessages()
 
-  // Récupère whatsappActif depuis Settings (défaut: actif si erreur)
+  // Récupère whatsappActif et les IDs analytics depuis Settings (défaut: .env si erreur)
   let whatsappActif = true
+  let analyticsIds = {
+    gtmId:       process.env.NEXT_PUBLIC_GTM_ID        ?? '',
+    metaPixelId: process.env.NEXT_PUBLIC_META_PIXEL_ID ?? '',
+    clarityId:   process.env.NEXT_PUBLIC_CLARITY_ID    ?? '',
+  }
   try {
     const payload = await getPayload({ config })
-    const settings = await payload.findGlobal({ slug: 'settings', depth: 0 }) as { whatsappActif?: boolean }
+    const settings = await payload.findGlobal({ slug: 'settings', depth: 0 }) as {
+      whatsappActif?: boolean
+      gtmId?: string | null
+      metaPixelId?: string | null
+      clarityId?: string | null
+    }
     whatsappActif = settings.whatsappActif !== false
-  } catch { /* défaut: actif */ }
+    // Settings values override .env (admin can set without code deploy)
+    if (settings.gtmId)       analyticsIds.gtmId       = settings.gtmId
+    if (settings.metaPixelId) analyticsIds.metaPixelId = settings.metaPixelId
+    if (settings.clarityId)   analyticsIds.clarityId   = settings.clarityId
+  } catch { /* defaults */ }
 
   return (
     <NextIntlClientProvider messages={messages}>
       <ThemeProvider>
         <DevisModalProvider>
-          <GTMNoScript gtmId={process.env.NEXT_PUBLIC_GTM_ID} />
+          <GTMNoScript gtmId={analyticsIds.gtmId || undefined} />
           <Analytics
-            gtmId={process.env.NEXT_PUBLIC_GTM_ID}
-            metaPixelId={process.env.NEXT_PUBLIC_META_PIXEL_ID}
-            clarityId={process.env.NEXT_PUBLIC_CLARITY_ID}
+            gtmId={analyticsIds.gtmId || undefined}
+            metaPixelId={analyticsIds.metaPixelId || undefined}
+            clarityId={analyticsIds.clarityId || undefined}
           />
           <CustomCursor />
           <PageLoader />
