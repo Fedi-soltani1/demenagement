@@ -20,6 +20,8 @@ type SettingsDoc = {
   instagram?:        string | null
   tagline?:          string | null
   liensNavigation?:  Array<{ libelle?: string | null; chemin?: string | null; actif?: boolean | null }> | null
+  logoImage?:        { url?: string | null } | null
+  copyright?:        string | null
 }
 
 async function fetchAll(): Promise<{
@@ -123,7 +125,7 @@ async function fetchAll(): Promise<{
     instagram:       COMPANY.instagram,
   }
   try {
-    const s = await payload.findGlobal({ slug: 'settings', locale: 'fr', depth: 0 }) as SettingsDoc
+    const s = await payload.findGlobal({ slug: 'settings', locale: 'fr', depth: 1 }) as SettingsDoc
     const liensNavigation: NavLien[] = Array.isArray(s.liensNavigation)
       ? (s.liensNavigation as Array<{ libelle?: string | null; chemin?: string | null; actif?: boolean | null }>)
           .filter((l) => l?.actif !== false && l?.libelle && l?.chemin)
@@ -141,6 +143,8 @@ async function fetchAll(): Promise<{
       instagram:        s.instagram       || COMPANY.instagram,
       tagline:          s.tagline         ?? null,
       liensNavigation:  liensNavigation.length > 0 ? liensNavigation : null,
+      logoUrl:          s.logoImage?.url  ?? null,
+      copyright:        s.copyright       ?? null,
     }
   } catch { /* garde les fallbacks */ }
 
