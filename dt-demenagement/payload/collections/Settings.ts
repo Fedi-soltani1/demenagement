@@ -126,6 +126,78 @@ const Settings: GlobalConfig = {
       type: 'checkbox',
       defaultValue: true,
     },
+
+    // ── Identité visuelle ────────────────────────────────────────────────────────
+    {
+      name: 'logoImage',
+      label: '🖼 Logo du site (image)',
+      type: 'upload',
+      relationTo: 'media',
+      admin: {
+        description: 'Logo affiché dans la navbar et le footer. Formats recommandés : SVG ou PNG transparent. Si absent : texte "DT Déménagement" affiché.',
+      },
+    },
+    {
+      name: 'copyright',
+      label: '©️ Texte copyright (footer)',
+      type: 'text',
+      localized: true,
+      defaultValue: '© 2026 DT Déménagement Tunisie. Tous droits réservés.',
+      admin: { description: 'Affiché en bas du footer. Mettre à jour chaque année.' },
+    },
+
+    // ── Navbar ────────────────────────────────────────────────────────────────────
+    {
+      name: 'navbarCtaTexte',
+      label: '🔘 Bouton CTA navbar — texte',
+      type: 'text',
+      localized: true,
+      defaultValue: 'Devis gratuit',
+      admin: { description: 'Texte du bouton rouge en haut à droite de la navbar.' },
+    },
+    {
+      name: 'navbarCtaLien',
+      label: '🔘 Bouton CTA navbar — lien',
+      type: 'text',
+      defaultValue: '/devis',
+      admin: { description: 'URL du bouton CTA navbar. Ex: /devis ou #contact' },
+    },
+
+    // ── Comportement ──────────────────────────────────────────────────────────────
+    {
+      name: 'animationsActives',
+      label: '✨ Animations activées',
+      type: 'checkbox',
+      defaultValue: true,
+      admin: { description: 'Décocher pour désactiver toutes les animations scroll et transition sur le site.' },
+    },
+
+    // ── Analytics ─────────────────────────────────────────────────────────────────
+    {
+      name: 'gtmId',
+      label: '📊 Google Tag Manager ID',
+      type: 'text',
+      admin: { description: 'Ex: GTM-XXXXXXX. Prioritaire sur NEXT_PUBLIC_GTM_ID dans .env.' },
+    },
+    {
+      name: 'ga4Id',
+      label: '📊 Google Analytics 4 ID',
+      type: 'text',
+      admin: { description: 'Ex: G-XXXXXXXXXX.' },
+    },
+    {
+      name: 'metaPixelId',
+      label: '📊 Meta Pixel ID',
+      type: 'text',
+      admin: { description: 'Ex: 123456789.' },
+    },
+    {
+      name: 'clarityId',
+      label: '📊 Microsoft Clarity ID',
+      type: 'text',
+      admin: { description: 'Ex: abcdefghij.' },
+    },
+
     {
       name: 'maintenanceMode',
       label: '🚧 Mode maintenance (site inaccessible aux visiteurs)',
