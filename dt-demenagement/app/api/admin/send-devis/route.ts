@@ -96,7 +96,10 @@ export async function POST(request: NextRequest): Promise<Response> {
   await payload.update({
     collection: 'demenagements',
     id: parsed.data.dossierId,
-    data: { devisStatut: 'envoye' },
+    data: {
+      devisStatut:   'envoye',
+      devisEnvoyeLe: new Date().toISOString(),
+    },
   })
 
   // Auto-post a system message in the dossier chat to trace the event
