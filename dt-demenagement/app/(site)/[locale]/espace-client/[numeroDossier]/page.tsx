@@ -10,6 +10,7 @@ import { COMPANY } from '@/lib/constants'
 import { Breadcrumb } from '@/components/layout/Breadcrumb'
 import { StatusBadge, StatusProgress } from '@/components/espace-client/StatusBadge'
 import { MessageThread } from '@/components/espace-client/MessageThread'
+import { DevisSection, type DevisLabels } from '@/components/espace-client/DevisSection'
 import { MapPin, Calendar, Package, FileText, ArrowLeft, Phone } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
@@ -39,14 +40,24 @@ type DemenagementDoc = {
   id: string | number
   numeroDossier: string
   statut: string
-  dateDemenagement?: string
   clientId: string
+  nomComplet?: string
+  dateDemenagement?: string
   adresseDepart?:  { adresse?: string; ville?: string; etage?: string; ascenseur?: boolean }
   adresseArrivee?: { adresse?: string; ville?: string; etage?: string; ascenseur?: boolean }
   servicesInclus?: string[]
   volumeM3?: number
   demenageur?: { nom?: string; telephone?: string }
   documents?: { id: string; nom: string; type: string; fichier?: { url?: string } }[]
+  // Champs devis
+  lignesDevis?:            { designation?: string; quantite?: number; prixUnitaire?: number }[]
+  prixTotalTTC?:           number
+  devisValiditeJours?:     number
+  devisNotes?:             string
+  devisStatut?:            'brouillon' | 'envoye' | 'accepte' | 'refuse'
+  devisEnvoyeLe?:          string
+  devisReponduLe?:         string
+  devisCommentaireClient?: string
 }
 
 const SERVICES_LABELS: Record<string, string> = {
@@ -129,6 +140,56 @@ export default async function DossierPage({ params }: PageProps) {
 
             {/* Colonne principale */}
             <div className="lg:col-span-2 space-y-6">
+
+              {/* Devis — section prioritaire */}
+              <DevisSection
+                numeroDossier={dossier.numeroDossier}
+                prixTotalTTC={dossier.prixTotalTTC}
+                lignesDevis={dossier.lignesDevis}
+                devisValiditeJours={dossier.devisValiditeJours}
+                devisNotes={dossier.devisNotes}
+                devisStatut={dossier.devisStatut}
+                devisEnvoyeLe={dossier.devisEnvoyeLe}
+                devisReponduLe={dossier.devisReponduLe}
+                devisCommentaireClient={dossier.devisCommentaireClient}
+                nomComplet={dossier.nomComplet}
+                labels={{
+                  sectionTitle:            t('devisSectionTitle'),
+                  statusEnvoye:            t('devisStatusEnvoye'),
+                  statusAccepte:           t('devisStatusAccepte'),
+                  statusRefuse:            t('devisStatusRefuse'),
+                  prixLabel:               t('devisPrixLabel'),
+                  validiteLabel:           t('devisValiditeLabel'),
+                  expiresOn:               t('devisExpiresOn'),
+                  expiresIn:               t('devisExpiresIn'),
+                  expired:                 t('devisExpired'),
+                  daysUnit:                t('devisDaysUnit'),
+                  urgentWarning:           t('devisUrgentWarning'),
+                  lignesTitle:             t('devisLignesTitle'),
+                  designation:             t('devisDesignation'),
+                  qty:                     t('devisQty'),
+                  pu:                      t('devisPU'),
+                  total:                   t('devisTotal'),
+                  totalTTC:                t('devisTotalTTC'),
+                  notesTitle:              t('devisNotesTitle'),
+                  downloadPDF:             t('devisDownloadPDF'),
+                  acceptTitle:             t('devisAcceptTitle'),
+                  refuseTitle:             t('devisRefuseTitle'),
+                  commentairePlaceholder:  t('devisCommentairePlaceholder'),
+                  commentaireLabel:        t('devisCommentaireLabel'),
+                  signatureCheckbox:       t('devisSignatureCheckbox'),
+                  acceptBtn:               t('devisAcceptBtn'),
+                  refuseBtn:               t('devisRefuseBtn'),
+                  accepting:               t('devisAccepting'),
+                  refusing:                t('devisRefusing'),
+                  acceptedTitle:           t('devisAcceptedTitle'),
+                  acceptedSubtitle:        t('devisAcceptedSubtitle'),
+                  refusedTitle:            t('devisRefusedTitle'),
+                  refusedSubtitle:         t('devisRefusedSubtitle'),
+                  respondedOn:             t('devisRespondedOn'),
+                  cancelBtn:               t('devisCancelBtn'),
+                } as DevisLabels}
+              />
 
               {/* Adresses */}
               <Card title={t('addressesTitle')}>
