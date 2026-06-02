@@ -5,6 +5,26 @@ import config from '@payload-config'
 import { auth } from '@/auth'
 import { env } from '@/lib/env'
 
+type DevisDoc = {
+  id:                      string | number
+  numeroDossier:           string
+  nomComplet?:             string
+  devisStatut?:            string
+  devisEnvoyeLe?:          string
+  devisReponduLe?:         string
+  devisCommentaireClient?: string
+}
+
+function escapeHtml(str: string | undefined): string {
+  if (!str) return '—'
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
 const schema = z.object({
   numeroDossier:    z.string().min(1),
   action:           z.enum(['accepte', 'refuse']),
@@ -59,7 +79,7 @@ export async function POST(request: Request): Promise<NextResponse> {
     return NextResponse.json({ error: 'Dossier introuvable' }, { status: 404 })
   }
 
-  const dossier = found.docs[0] as Record<string, unknown>
+  const dossier = found.docs[0] as unknown as DevisDoc
 
   // 5. Vérification que le devis est bien en statut "envoye"
   if (dossier.devisStatut !== 'envoye') {
@@ -88,7 +108,7 @@ export async function POST(request: Request): Promise<NextResponse> {
   })
 
   // Données d'affichage communes
-  const nomComplet = (dossier.nomComplet as string | undefined) ?? session.user.email
+  const nomComplet = dossier.nomComplet ?? session.user.email
   const dateFr = new Date(now).toLocaleDateString('fr-FR', {
     day:   '2-digit',
     month: 'long',
@@ -137,7 +157,7 @@ export async function POST(request: Request): Promise<NextResponse> {
        </tr>
        <tr>
          <td style="padding:4px 24px 16px;font-size:14px;color:#f8f5f0;white-space:pre-wrap;">
-           ${commentaire.replace(/</g, '&lt;').replace(/>/g, '&gt;')}
+           ${escapeHtml(commentaire)}
          </td>
        </tr>`
     : ''
@@ -173,7 +193,7 @@ export async function POST(request: Request): Promise<NextResponse> {
           <!-- Titre -->
           <tr>
             <td style="padding:8px 24px 16px;font-size:20px;font-weight:bold;color:#f8f5f0;">
-              Réponse au devis ${numeroDossier}
+              Réponse au devis ${escapeHtml(numeroDossier)}
             </td>
           </tr>
 
@@ -185,7 +205,7 @@ export async function POST(request: Request): Promise<NextResponse> {
           </tr>
           <tr>
             <td style="padding:4px 24px 16px;font-size:14px;color:#f8f5f0;">
-              ${numeroDossier}
+              ${escapeHtml(numeroDossier)}
             </td>
           </tr>
 
@@ -197,7 +217,7 @@ export async function POST(request: Request): Promise<NextResponse> {
           </tr>
           <tr>
             <td style="padding:4px 24px 16px;font-size:14px;color:#f8f5f0;">
-              ${nomComplet}
+              ${escapeHtml(nomComplet)}
             </td>
           </tr>
 
