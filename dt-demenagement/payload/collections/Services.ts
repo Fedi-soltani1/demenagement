@@ -72,112 +72,123 @@ const Services: CollectionConfig = {
     drafts: true,
   },
 
+  // Onglets PRÉSENTATIONNELS (sans name) → séparent visuellement DONNÉES et PAGE
+  // dans l'admin, SANS changer la structure de la base (champs au niveau racine).
   fields: [
-    // ── Champs de listing (SEO + cartes) ────────────────────────────────────
     {
-      name: 'nom',
-      type: 'text',
-      required: true,
-      localized: true,
-      admin: { description: 'Nom du service — affiché dans les cartes et la navbar' },
-    },
-    {
-      name: 'slug',
-      type: 'text',
-      required: true,
-      unique: true,
-      admin: { description: "Identifiant URL (ex: transporteur-en-tunisie)" },
-    },
-    {
-      name: 'description',
-      type: 'textarea',
-      required: true,
-      localized: true,
-      admin: { description: 'Court résumé (1-2 phrases) — affiché dans les cartes et méta description par défaut' },
-    },
-    {
-      name: 'icone',
-      type: 'text',
-      required: true,
-      admin: { description: "Nom icône Lucide (ex: truck, building, crane, warehouse, package, wrench) — lucide.dev" },
-    },
-    {
-      name: 'image',
-      type: 'upload',
-      relationTo: 'media',
-      admin: { description: 'Image héro automatique en haut de la page service (16:9 recommandé)' },
-    },
-    {
-      name: 'tarifDepuis',
-      type: 'number',
-      admin: { description: 'Prix de départ en TND (optionnel — affiché sur la carte de listing)' },
-    },
-    {
-      name: 'ordre',
-      type: 'number',
-      defaultValue: 0,
-      admin: { description: 'Ordre d\'affichage dans les listes (plus petit = en premier)' },
-    },
-    {
-      name: 'publie',
-      type: 'checkbox',
-      defaultValue: true,
-      admin: { description: 'Décocher pour masquer ce service du site (garde le brouillon)' },
-    },
-
-    // ── Blocs de contenu libre (Elementor-like) ──────────────────────────────
-    // Note : l'ancien groupe heroCtaGroupe a été supprimé — remplacé par le bloc
-    // Boutons (atomique) dans le page builder ci-dessous. Zéro doublon.
-    {
-      name: 'blocks',
-      type: 'blocks',
-      label: '🧱 Blocs de contenu de la page',
-      admin: {
-        description: 'Construire le contenu de la page service bloc par bloc. L\'admin peut ajouter, supprimer, réordonner et activer/désactiver chaque bloc individuellement. Prévisualisation en temps réel disponible avec le bouton "Aperçu".',
-      },
-      blocks: [
-        BadgeBlock,
-        TitreBlock,
-        TexteBlock,
-        BoutonsBlock,
-        HeroBlock,
-        MiniFeaturesBlock,
-        ServicesBlock,
-        AboutBlock,
-        StatsBlock,
-        WhyUsBlock,
-        TestimonialsBlock,
-        GoogleReviewsBlock,
-        PartnersBlock,
-        BlogPreviewBlock,
-        CTABlock,
-        FAQBlock,
-        MapBlock,
-        GalleryBlock,
-        VideoBlock,
-        InstagramFeedBlock,
-        NewsletterBlock,
-        CustomBlock,
-        ProcessBlock,
-        PricingBlock,
-      ].map(withShortSectionOptions),
-    },
-
-    // ── SEO ──────────────────────────────────────────────────────────────────
-    {
-      name: 'seo',
-      type: 'group',
-      label: 'SEO & Partage',
-      fields: [
-        { name: 'metaTitle',       type: 'text',     localized: true },
-        { name: 'metaDescription', type: 'textarea', localized: true },
-        { name: 'ogImage',         type: 'upload',   relationTo: 'media' },
+      type: 'tabs',
+      tabs: [
+        // ─────────────────────────────────────────────────────────────────────
         {
-          name: 'robots',
-          type: 'group',
+          label: '📊 Infos & SEO',
+          description: 'Données du service — utilisées dans les cartes (listes), le SEO Google et le fil d\'ariane. Ce n\'est PAS la mise en page : la page visible se construit dans l\'onglet « Page ».',
           fields: [
-            { name: 'index',  type: 'checkbox', defaultValue: true },
-            { name: 'follow', type: 'checkbox', defaultValue: true },
+            {
+              name: 'nom',
+              type: 'text',
+              required: true,
+              localized: true,
+              admin: { description: 'Nom du service — affiché dans les cartes et la navbar' },
+            },
+            {
+              name: 'slug',
+              type: 'text',
+              required: true,
+              unique: true,
+              admin: { description: "Identifiant URL (ex: transporteur-en-tunisie)" },
+            },
+            {
+              name: 'description',
+              type: 'textarea',
+              required: true,
+              localized: true,
+              admin: { description: 'Court résumé (1-2 phrases) — affiché dans les cartes et méta description par défaut' },
+            },
+            {
+              name: 'icone',
+              type: 'text',
+              required: true,
+              admin: { description: "Nom icône Lucide (ex: truck, building, crane, warehouse, package, wrench) — lucide.dev" },
+            },
+            {
+              name: 'image',
+              type: 'upload',
+              relationTo: 'media',
+              admin: { description: 'Image de partage / carte (16:9 recommandé)' },
+            },
+            {
+              name: 'tarifDepuis',
+              type: 'number',
+              admin: { description: 'Prix de départ en TND (optionnel — affiché sur la carte de listing)' },
+            },
+            {
+              name: 'ordre',
+              type: 'number',
+              defaultValue: 0,
+              admin: { description: 'Ordre d\'affichage dans les listes (plus petit = en premier)' },
+            },
+            {
+              name: 'publie',
+              type: 'checkbox',
+              defaultValue: true,
+              admin: { description: 'Décocher pour masquer ce service du site (garde le brouillon)' },
+            },
+            {
+              name: 'seo',
+              type: 'group',
+              label: 'SEO & Partage',
+              fields: [
+                { name: 'metaTitle',       type: 'text',     localized: true },
+                { name: 'metaDescription', type: 'textarea', localized: true },
+                { name: 'ogImage',         type: 'upload',   relationTo: 'media' },
+                {
+                  name: 'robots',
+                  type: 'group',
+                  fields: [
+                    { name: 'index',  type: 'checkbox', defaultValue: true },
+                    { name: 'follow', type: 'checkbox', defaultValue: true },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        // ─────────────────────────────────────────────────────────────────────
+        {
+          label: '🧱 Page',
+          description: 'La page visible, composée bloc par bloc (Elementor-like). Ajouter, supprimer, réordonner et activer/désactiver chaque bloc. Aperçu temps réel via le bouton « Aperçu ».',
+          fields: [
+            {
+              name: 'blocks',
+              type: 'blocks',
+              label: 'Blocs de contenu de la page',
+              blocks: [
+                BadgeBlock,
+                TitreBlock,
+                TexteBlock,
+                BoutonsBlock,
+                HeroBlock,
+                MiniFeaturesBlock,
+                ServicesBlock,
+                AboutBlock,
+                StatsBlock,
+                WhyUsBlock,
+                TestimonialsBlock,
+                GoogleReviewsBlock,
+                PartnersBlock,
+                BlogPreviewBlock,
+                CTABlock,
+                FAQBlock,
+                MapBlock,
+                GalleryBlock,
+                VideoBlock,
+                InstagramFeedBlock,
+                NewsletterBlock,
+                CustomBlock,
+                ProcessBlock,
+                PricingBlock,
+              ].map(withShortSectionOptions),
+            },
           ],
         },
       ],
