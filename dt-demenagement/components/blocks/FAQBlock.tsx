@@ -95,8 +95,7 @@ function FaqItem({
           >
             <div
               className={cx(
-                'px-6 pb-6 font-body text-[var(--color-text-muted)] text-sm leading-relaxed',
-                'prose-faq',
+                'px-6 pb-6 lex-rich text-sm',
                 textTypo,
               )}
               // HTML sécurisé généré par lexicalToHtml (pas d'entrée utilisateur directe)

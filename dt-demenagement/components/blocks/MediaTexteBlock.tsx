@@ -143,7 +143,7 @@ export const MediaTexteBlock = memo(function MediaTexteBlock({
 
           {html && (
             <div
-              className={cx('font-body text-[var(--color-text-muted)] leading-relaxed prose-faq', textTypo)}
+              className={cx('lex-rich', textTypo)}
               // HTML sécurisé généré par lexicalToHtml côté serveur (pas d'entrée utilisateur directe)
               dangerouslySetInnerHTML={{ __html: html }}
             />

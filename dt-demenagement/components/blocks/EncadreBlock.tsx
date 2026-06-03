@@ -55,7 +55,7 @@ export const EncadreBlock = memo(function EncadreBlock({
           )}
           {html && (
             <div
-              className="font-body text-[var(--color-text-muted)]"
+              className="lex-rich"
               // HTML sécurisé généré par lexicalToHtml (pas d'entrée utilisateur directe)
               dangerouslySetInnerHTML={{ __html: html }}
             />

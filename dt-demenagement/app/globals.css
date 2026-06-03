@@ -335,3 +335,100 @@ section[style*="bg-dark2"] {
   will-change: background-position;
   animation: shine var(--shine-duration, 10s) infinite linear;
 }
+
+/* ───────────────────────────────────────────────────────────────────────────
+   .lex-rich — styles du contenu « texte riche » (sortie de lexicalToHtml)
+   Rend visible TOUT le formatage : titres, listes, checklist, citation, hr…
+   (remplace @tailwindcss/typography qui n'est pas installé)
+   ─────────────────────────────────────────────────────────────────────────── */
+.lex-rich { color: var(--color-text-muted); line-height: 1.7; font-size: 1rem; }
+.lex-rich > *:first-child { margin-top: 0; }
+.lex-rich > *:last-child  { margin-bottom: 0; }
+
+.lex-rich p { margin: 0 0 1rem; }
+
+.lex-rich h1, .lex-rich h2, .lex-rich h3, .lex-rich h4, .lex-rich h5, .lex-rich h6 {
+  color: var(--color-text-light);
+  font-family: var(--font-heading, inherit);
+  font-weight: 700;
+  line-height: 1.25;
+  margin: 1.8rem 0 0.8rem;
+}
+.lex-rich h1 { font-size: 2rem; }
+.lex-rich h2 { font-size: 1.6rem; }
+.lex-rich h3 { font-size: 1.3rem; }
+.lex-rich h4 { font-size: 1.1rem; }
+.lex-rich h5, .lex-rich h6 { font-size: 1rem; }
+
+.lex-rich strong { color: var(--color-text-light); font-weight: 700; }
+.lex-rich em { font-style: italic; }
+.lex-rich u { text-decoration: underline; }
+.lex-rich s { text-decoration: line-through; opacity: 0.8; }
+.lex-rich code {
+  font-family: var(--font-mono, monospace);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  padding: 0.1em 0.4em;
+  font-size: 0.9em;
+}
+
+.lex-rich a {
+  color: var(--color-red);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color 0.2s;
+}
+.lex-rich a:hover { color: var(--color-red-light); }
+
+.lex-rich ul, .lex-rich ol { margin: 0 0 1rem; padding-inline-start: 1.5rem; }
+.lex-rich ul { list-style: disc; }
+.lex-rich ol { list-style: decimal; }
+.lex-rich li { margin: 0.35rem 0; }
+
+/* Liste à cocher */
+.lex-rich ul.lex-checklist { list-style: none; padding-inline-start: 0; }
+.lex-rich ul.lex-checklist li.lex-check {
+  position: relative;
+  padding-inline-start: 1.9rem;
+  margin: 0.45rem 0;
+}
+.lex-rich ul.lex-checklist li.lex-check::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: 0;
+  top: 0.15em;
+  width: 1.15rem;
+  height: 1.15rem;
+  border: 2px solid var(--color-border);
+  border-radius: 5px;
+  background: var(--color-bg-card);
+}
+.lex-rich ul.lex-checklist li.lex-check--done::before {
+  background: var(--color-red);
+  border-color: var(--color-red);
+}
+.lex-rich ul.lex-checklist li.lex-check--done::after {
+  content: "✓";
+  position: absolute;
+  inset-inline-start: 0.18rem;
+  top: 0.05em;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.lex-rich blockquote {
+  border-inline-start: 3px solid var(--color-red);
+  padding: 0.4rem 0 0.4rem 1.2rem;
+  margin: 1.2rem 0;
+  color: var(--color-text-light);
+  font-style: italic;
+}
+
+.lex-rich hr {
+  border: 0;
+  height: 1px;
+  background: var(--color-border);
+  margin: 2rem 0;
+}

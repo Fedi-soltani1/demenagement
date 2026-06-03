@@ -20,7 +20,7 @@ export const RichTextBlock = memo(function RichTextBlock({
     <SectionWrapper options={sectionOptions} defaultEspacement="normal">
       <div
         className={cx(
-          'prose prose-invert max-w-none font-body text-[var(--color-text-light)]',
+          'lex-rich max-w-none',
           typoClass,
         )}
         // HTML sérialisé en amont par serializeLexical (pas d'entrée utilisateur directe)

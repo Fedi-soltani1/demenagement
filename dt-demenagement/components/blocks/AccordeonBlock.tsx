@@ -87,7 +87,7 @@ function AccordeonItem({
             className="overflow-hidden"
           >
             <div
-              className="px-6 pb-6 font-body text-[var(--color-text-muted)] text-sm leading-relaxed prose-faq"
+              className="px-6 pb-6 lex-rich text-sm"
               // HTML sécurisé généré par lexicalToHtml côté serveur (pas d'entrée utilisateur directe)
               dangerouslySetInnerHTML={{ __html: html }}
             />
