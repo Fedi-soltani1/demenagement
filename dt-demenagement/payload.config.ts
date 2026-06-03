@@ -3,7 +3,7 @@ import { fileURLToPath } from 'url'
 import sharp from 'sharp'
 import { buildConfig } from 'payload'
 import { postgresAdapter } from '@payloadcms/db-postgres'
-import { lexicalEditor, FixedToolbarFeature } from '@payloadcms/richtext-lexical'
+import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { resendAdapter } from '@payloadcms/email-resend'
 
 import Admins from './payload/collections/Admins'
@@ -60,14 +60,7 @@ export default buildConfig({
     ],
   }),
 
-  // Barre d'outils FIXE toujours visible (gras, titres, listes, liens…) en plus des
-  // fonctionnalités par défaut → l'admin n'a plus besoin du menu flottant « + ».
-  editor: lexicalEditor({
-    features: ({ defaultFeatures }) => [
-      ...defaultFeatures,
-      FixedToolbarFeature(),
-    ],
-  }),
+  editor: lexicalEditor({}),
 
   admin: {
     user: 'admins',
