@@ -5,19 +5,50 @@ import { typographieTitreField, typographieTexteField } from './shared/typograph
 
 export const MediaTexteBlock: Block = {
   slug: 'media-texte',
-  labels: { singular: '🖼 Image + Texte', plural: 'Blocs Image + Texte' },
+  labels: { singular: '🖼 Média + Texte', plural: 'Blocs Média + Texte' },
   fields: [
     actifField,
+    {
+      name: 'typeMedia',
+      label: 'Type de média',
+      type: 'select',
+      defaultValue: 'image',
+      dbName: 'tmed',
+      admin: { description: 'Choisir une image ou une vidéo à afficher à côté du texte.' },
+      options: [
+        { label: 'Image', value: 'image' },
+        { label: 'Vidéo', value: 'video' },
+      ],
+    },
     {
       name: 'image',
       label: 'Image',
       type: 'upload',
       relationTo: 'media',
-      required: true,
+      admin: { condition: (_, sibling) => sibling?.typeMedia !== 'video' },
+    },
+    {
+      name: 'videoFichier',
+      label: 'Vidéo — fichier MP4',
+      type: 'upload',
+      relationTo: 'media',
+      admin: {
+        condition: (_, sibling) => sibling?.typeMedia === 'video',
+        description: 'Fichier MP4 uploadé. Prioritaire sur le lien YouTube.',
+      },
+    },
+    {
+      name: 'videoYoutube',
+      label: 'Vidéo — lien YouTube',
+      type: 'text',
+      admin: {
+        condition: (_, sibling) => sibling?.typeMedia === 'video',
+        description: 'Ex : https://www.youtube.com/watch?v=XXXX (si pas de fichier MP4).',
+      },
     },
     {
       name: 'position',
-      label: 'Position de l\'image',
+      label: 'Position du média',
       type: 'select',
       defaultValue: 'gauche',
       dbName: 'pos',
@@ -30,7 +61,7 @@ export const MediaTexteBlock: Block = {
     },
     {
       name: 'tailleImage',
-      label: 'Taille de l\'image',
+      label: 'Taille du média',
       type: 'select',
       defaultValue: 'moyenne',
       dbName: 'timg',

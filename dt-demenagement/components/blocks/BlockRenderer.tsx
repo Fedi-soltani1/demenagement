@@ -1046,6 +1046,8 @@ export function BlockRenderer({
               <MediaTexteBlock
                 key={key}
                 imageUrl={mediaUrl(block.image)}
+                videoUrl={mediaUrl(block.videoFichier)}
+                videoYoutube={str(block.videoYoutube)}
                 alt={str((block.image as Record<string, unknown> | null)?.alt) ?? str(block.titre)}
                 position={str(block.position) as 'gauche' | 'droite' | 'haut' | 'bas' | null}
                 tailleImage={str(block.tailleImage) as 'petite' | 'moyenne' | 'grande' | null}

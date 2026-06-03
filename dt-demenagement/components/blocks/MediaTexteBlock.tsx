@@ -21,6 +21,8 @@ interface MediaBouton {
 
 interface MediaTexteBlockProps {
   imageUrl?:       string | null
+  videoUrl?:       string | null   // fichier MP4
+  videoYoutube?:   string | null   // lien YouTube
   alt?:            string | null
   position?:       MediaTextePosition | null
   tailleImage?:    MediaTexteTaille   | null
@@ -32,6 +34,12 @@ interface MediaTexteBlockProps {
   sectionOptions?: SectionOptions     | null
   typoTitre?:      TypographieOptions | null
   typoTexte?:      TypographieOptions | null
+}
+
+// Transforme un lien YouTube en URL d'embed
+function youtubeEmbed(url: string): string | null {
+  const m = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([\w-]{11})/)
+  return m ? `https://www.youtube.com/embed/${m[1]}` : null
 }
 
 // ─── Maps Tailwind (jamais d'interpolation de chaîne) ──────────────────────────
@@ -56,6 +64,8 @@ const CLS_SECONDARY = 'inline-flex items-center gap-2 px-8 py-4 rounded-full bor
 
 export const MediaTexteBlock = memo(function MediaTexteBlock({
   imageUrl,
+  videoUrl,
+  videoYoutube,
   alt,
   position = 'gauche',
   tailleImage = 'moyenne',
@@ -76,20 +86,40 @@ export const MediaTexteBlock = memo(function MediaTexteBlock({
   const taille   = tailleImage ?? 'moyenne'
   const isStacked = pos === 'haut' || pos === 'bas'
 
+  const ytEmbed  = videoYoutube ? youtubeEmbed(videoYoutube) : null
+  const hasMedia = !!(videoUrl || ytEmbed || imageUrl)
+
   return (
     <SectionWrapper options={sectionOptions} defaultFond="sombre" defaultEspacement="large">
       <div className={cx(LAYOUT[pos], 'gap-8 md:gap-12 items-center')}>
-        {/* Côté image */}
-        {imageUrl && (
+        {/* Côté média — vidéo MP4, vidéo YouTube, ou image */}
+        {hasMedia && (
           <div className={cx('w-full', isStacked ? '' : IMAGE_WIDTH[taille])}>
-            <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden border border-[var(--color-border)]">
-              <Image
-                src={imageUrl}
-                alt={alt ?? ''}
-                fill
-                className="object-cover"
-                sizes="(max-width: 768px) 100vw, 50vw"
-              />
+            <div className="relative w-full aspect-video rounded-2xl overflow-hidden border border-[var(--color-border)]">
+              {videoUrl ? (
+                <video
+                  src={videoUrl}
+                  controls
+                  className="absolute inset-0 w-full h-full object-cover"
+                  preload="metadata"
+                />
+              ) : ytEmbed ? (
+                <iframe
+                  src={ytEmbed}
+                  title={titre ?? 'Vidéo'}
+                  className="absolute inset-0 w-full h-full"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              ) : imageUrl ? (
+                <Image
+                  src={imageUrl}
+                  alt={alt ?? ''}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
+              ) : null}
             </div>
           </div>
         )}
