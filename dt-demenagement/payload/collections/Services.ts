@@ -25,6 +25,18 @@ import { BadgeBlock }          from '../blocks/BadgeBlock'
 import { TitreBlock }          from '../blocks/TitreBlock'
 import { TexteBlock }          from '../blocks/TexteBlock'
 import { BoutonsBlock }        from '../blocks/BoutonsBlock'
+import { ImageBlock }          from '../blocks/ImageBlock'
+import { RichTextBlock }       from '../blocks/RichTextBlock'
+import { ListeBlock }          from '../blocks/ListeBlock'
+import { EspaceurBlock }       from '../blocks/EspaceurBlock'
+import { SeparateurBlock }     from '../blocks/SeparateurBlock'
+import { MediaTexteBlock }     from '../blocks/MediaTexteBlock'
+import { CartesBlock }         from '../blocks/CartesBlock'
+import { EncadreBlock }        from '../blocks/EncadreBlock'
+import { AccordeonBlock }      from '../blocks/AccordeonBlock'
+import { CoordonneesBlock }    from '../blocks/CoordonneesBlock'
+import { ReseauxBlock }        from '../blocks/ReseauxBlock'
+import { FormulaireBlock }     from '../blocks/FormulaireBlock'
 
 // Adds dbName shortcuts so _services_v_ enum names stay ≤ 63 chars (PostgreSQL limit).
 function withShortSectionOptions(block: Block): Block {
@@ -167,6 +179,18 @@ const Services: CollectionConfig = {
                 TitreBlock,
                 TexteBlock,
                 BoutonsBlock,
+                ImageBlock,
+                RichTextBlock,
+                ListeBlock,
+                EspaceurBlock,
+                SeparateurBlock,
+                MediaTexteBlock,
+                CartesBlock,
+                EncadreBlock,
+                AccordeonBlock,
+                CoordonneesBlock,
+                ReseauxBlock,
+                FormulaireBlock,
                 HeroBlock,
                 MiniFeaturesBlock,
                 ServicesBlock,

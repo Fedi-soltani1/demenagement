@@ -7,6 +7,7 @@ import dynamic from 'next/dynamic'
 import { BlockSkeleton }                                from '@/components/blocks/BlockSkeleton'
 import { SectionWrapper }                               from '@/components/blocks/SectionWrapper'
 import { CounterAnimation }                             from '@/components/ui/CounterAnimation'
+import { lexicalToHtml }                                from '@/lib/lexical-to-html'
 import type { SectionOptions, TypographieOptions }      from '@/lib/sectionOptions'
 import {
   resolveHeadingTag, resolveTitleTypography, resolveTextTypography, cx,
@@ -91,6 +92,54 @@ const TexteBlock = dynamic(
 const BoutonsBlock = dynamic(
   () => import('@/components/blocks/BoutonsBlock').then((m) => ({ default: m.BoutonsBlock })),
   { loading: sk('sm') },
+)
+const ImageBlock = dynamic(
+  () => import('@/components/blocks/ImageBlock').then((m) => ({ default: m.ImageBlock })),
+  { loading: sk('md') },
+)
+const RichTextBlock = dynamic(
+  () => import('@/components/blocks/RichTextBlock').then((m) => ({ default: m.RichTextBlock })),
+  { loading: sk('sm') },
+)
+const ListeBlock = dynamic(
+  () => import('@/components/blocks/ListeBlock').then((m) => ({ default: m.ListeBlock })),
+  { loading: sk('sm') },
+)
+const EspaceurBlock = dynamic(
+  () => import('@/components/blocks/EspaceurBlock').then((m) => ({ default: m.EspaceurBlock })),
+  { loading: sk('sm') },
+)
+const SeparateurBlock = dynamic(
+  () => import('@/components/blocks/SeparateurBlock').then((m) => ({ default: m.SeparateurBlock })),
+  { loading: sk('sm') },
+)
+const MediaTexteBlock = dynamic(
+  () => import('@/components/blocks/MediaTexteBlock').then((m) => ({ default: m.MediaTexteBlock })),
+  { loading: sk('lg') },
+)
+const CartesBlock = dynamic(
+  () => import('@/components/blocks/CartesBlock').then((m) => ({ default: m.CartesBlock })),
+  { loading: sk('lg') },
+)
+const EncadreBlock = dynamic(
+  () => import('@/components/blocks/EncadreBlock').then((m) => ({ default: m.EncadreBlock })),
+  { loading: sk('sm') },
+)
+const AccordeonBlock = dynamic(
+  () => import('@/components/blocks/AccordeonBlock').then((m) => ({ default: m.AccordeonBlock })),
+  { loading: sk('md') },
+)
+const CoordonneesBlock = dynamic(
+  () => import('@/components/blocks/CoordonneesBlock').then((m) => ({ default: m.CoordonneesBlock })),
+  { loading: sk('sm') },
+)
+const ReseauxBlock = dynamic(
+  () => import('@/components/blocks/ReseauxBlock').then((m) => ({ default: m.ReseauxBlock })),
+  { loading: sk('sm') },
+)
+const FormulaireBlock = dynamic(
+  () => import('@/components/blocks/FormulaireBlock').then((m) => ({ default: m.FormulaireBlock })),
+  { loading: sk('md') },
 )
 
 // ─── Types Payload (structure brute retournée par l'API) ──────────────────────
@@ -181,6 +230,20 @@ interface BlockRendererProps {
   pays:               MapPays[]
   googleReviewsNode?: React.ReactNode
   telephone?:         string
+  settings?:          SiteSettings | null
+}
+
+// Données globales (Settings) passées aux blocs Coordonnées / Réseaux sociaux
+export interface SiteSettings {
+  telephone?: string | null
+  email?:     string | null
+  adresse?:   string | null
+  horaires?:  string | null
+  facebook?:  string | null
+  instagram?: string | null
+  linkedin?:  string | null
+  tiktok?:    string | null
+  whatsapp?:  string | null
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -379,6 +442,7 @@ export function BlockRenderer({
   pays,
   googleReviewsNode,
   telephone,
+  settings,
 }: BlockRendererProps) {
   if (!blocks.length) return null
 
@@ -908,6 +972,194 @@ export function BlockRenderer({
               />
             )
           }
+
+          case 'image':
+            return (
+              <ImageBlock
+                key={key}
+                imageUrl={mediaUrl(block.image)}
+                alt={str((block.image as Record<string, unknown> | null)?.alt) ?? str(block.legende)}
+                position={str(block.position) as 'gauche' | 'centre' | 'droite' | null}
+                taille={str(block.taille) as 'petite' | 'moyenne' | 'grande' | 'pleine' | null}
+                legende={str(block.legende)}
+                lien={str(block.lien)}
+                sectionOptions={sectionOpts}
+              />
+            )
+
+          case 'richtext':
+            return (
+              <RichTextBlock
+                key={key}
+                html={lexicalToHtml(block.contenu)}
+                sectionOptions={sectionOpts}
+                typoTexte={typoTexte}
+              />
+            )
+
+          case 'liste': {
+            type ListeItemRaw = { texte?: unknown }
+            const items = arr<ListeItemRaw>(block.items).map((i) => ({ texte: str(i.texte) }))
+            return (
+              <ListeBlock
+                key={key}
+                titre={str(block.titre)}
+                style={str(block.style) as 'puces' | 'check' | 'fleche' | null}
+                items={items}
+                sectionOptions={sectionOpts}
+                typoTitre={typoTitre}
+                typoTexte={typoTexte}
+              />
+            )
+          }
+
+          case 'espaceur':
+            return (
+              <EspaceurBlock
+                key={key}
+                hauteur={str(block.hauteur) as 'petit' | 'moyen' | 'grand' | 'geant' | null}
+              />
+            )
+
+          case 'separateur':
+            return (
+              <SeparateurBlock
+                key={key}
+                style={str(block.style) as 'ligne' | 'pointille' | 'degrade' | null}
+                largeur={str(block.largeur) as 'courte' | 'moyenne' | 'pleine' | null}
+                sectionOptions={sectionOpts}
+              />
+            )
+
+          case 'media-texte': {
+            type MediaBoutonRaw = { texte?: unknown; lien?: unknown; style?: unknown }
+            const mtBoutons = arr<MediaBoutonRaw>(block.boutons).map((b) => ({
+              texte: str(b.texte),
+              lien:  str(b.lien),
+              style: str(b.style) as 'primaire' | 'secondaire' | 'telephone' | null,
+            }))
+            return (
+              <MediaTexteBlock
+                key={key}
+                imageUrl={mediaUrl(block.image)}
+                alt={str((block.image as Record<string, unknown> | null)?.alt) ?? str(block.titre)}
+                position={str(block.position) as 'gauche' | 'droite' | 'haut' | 'bas' | null}
+                tailleImage={str(block.tailleImage) as 'petite' | 'moyenne' | 'grande' | null}
+                badge={str(block.badge)}
+                titre={str(block.titre)}
+                html={lexicalToHtml(block.contenu)}
+                boutons={mtBoutons}
+                telephone={telephone}
+                sectionOptions={sectionOpts}
+                typoTitre={typoTitre}
+                typoTexte={typoTexte}
+              />
+            )
+          }
+
+          case 'cartes': {
+            type CarteRaw = { image?: unknown; icone?: unknown; titre?: unknown; texte?: unknown; lien?: unknown; texteLien?: unknown }
+            const cartes = arr<CarteRaw>(block.cartes).map((c) => ({
+              imageUrl:  mediaUrl(c.image),
+              icone:     str(c.icone),
+              titre:     str(c.titre),
+              texte:     str(c.texte),
+              lien:      str(c.lien),
+              texteLien: str(c.texteLien),
+            }))
+            return (
+              <CartesBlock
+                key={key}
+                titre={str(block.titre)}
+                sousTitre={str(block.sousTitre)}
+                colonnes={str(block.colonnes) as '2' | '3' | '4' | null}
+                cartes={cartes}
+                sectionOptions={sectionOpts}
+                typoTitre={typoTitre}
+              />
+            )
+          }
+
+          case 'encadre':
+            return (
+              <EncadreBlock
+                key={key}
+                type={str(block.type) as 'info' | 'succes' | 'attention' | 'erreur' | null}
+                titre={str(block.titre)}
+                html={lexicalToHtml(block.contenu)}
+                sectionOptions={sectionOpts}
+              />
+            )
+
+          case 'accordeon': {
+            type AccElementRaw = { actif?: unknown; titre?: unknown; contenu?: unknown }
+            const elements = arr<AccElementRaw>(block.elements).map((e) => ({
+              actif: typeof e.actif === 'boolean' ? e.actif : true,
+              titre: str(e.titre),
+              html:  lexicalToHtml(e.contenu),
+            }))
+            return (
+              <AccordeonBlock
+                key={key}
+                titre={str(block.titre)}
+                premierOuvert={typeof block.premierOuvert === 'boolean' ? block.premierOuvert : false}
+                elements={elements}
+                sectionOptions={sectionOpts}
+                typoTitre={typoTitre}
+              />
+            )
+          }
+
+          case 'coordonnees':
+            return (
+              <CoordonneesBlock
+                key={key}
+                titre={str(block.titre)}
+                afficherTelephone={typeof block.afficherTelephone === 'boolean' ? block.afficherTelephone : true}
+                afficherEmail={typeof block.afficherEmail === 'boolean' ? block.afficherEmail : true}
+                afficherAdresse={typeof block.afficherAdresse === 'boolean' ? block.afficherAdresse : true}
+                afficherHoraires={typeof block.afficherHoraires === 'boolean' ? block.afficherHoraires : true}
+                layout={str(block.layout) as 'vertical' | 'horizontal' | 'grille' | null}
+                sectionOptions={sectionOpts}
+                typoTitre={typoTitre}
+                settings={settings ? {
+                  telephone: settings.telephone ?? telephone ?? null,
+                  email:     settings.email,
+                  adresse:   settings.adresse,
+                  horaires:  settings.horaires,
+                } : { telephone: telephone ?? null }}
+              />
+            )
+
+          case 'reseaux':
+            return (
+              <ReseauxBlock
+                key={key}
+                titre={str(block.titre)}
+                taille={str(block.taille) as 'petit' | 'moyen' | 'grand' | null}
+                alignement={str(block.alignement) as 'gauche' | 'centre' | 'droite' | null}
+                sectionOptions={sectionOpts}
+                typoTitre={typoTitre}
+                settings={settings ? {
+                  facebook:  settings.facebook,
+                  instagram: settings.instagram,
+                  linkedin:  settings.linkedin,
+                  tiktok:    settings.tiktok,
+                  whatsapp:  settings.whatsapp,
+                } : null}
+              />
+            )
+
+          case 'formulaire':
+            return (
+              <FormulaireBlock
+                key={key}
+                titre={str(block.titre)}
+                sousTitre={str(block.sousTitre)}
+                texteBouton={str(block.texteBouton)}
+                sectionOptions={sectionOpts}
+              />
+            )
 
           default:
             return null

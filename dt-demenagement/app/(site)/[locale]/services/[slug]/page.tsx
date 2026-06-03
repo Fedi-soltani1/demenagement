@@ -179,7 +179,23 @@ export default async function ServicePage({ params }: ServicePageProps) {
 
   if (!service) notFound()
 
-  const telephone = (settingsRes as { telephone1?: string | null } | null)?.telephone1 ?? COMPANY.phone1
+  const s = settingsRes as {
+    telephone1?: string | null; email?: string | null; adresse?: string | null; horaires?: string | null
+    facebook?: string | null; instagram?: string | null; linkedin?: string | null; tiktok?: string | null; whatsapp?: string | null
+  } | null
+  const telephone = s?.telephone1 ?? COMPANY.phone1
+  // Données globales passées aux blocs Coordonnées / Réseaux sociaux
+  const siteSettings = {
+    telephone: s?.telephone1 ?? COMPANY.phone1,
+    email:     s?.email     ?? COMPANY.email,
+    adresse:   s?.adresse   ?? null,
+    horaires:  s?.horaires  ?? null,
+    facebook:  s?.facebook  ?? null,
+    instagram: s?.instagram ?? null,
+    linkedin:  s?.linkedin  ?? null,
+    tiktok:    s?.tiktok    ?? null,
+    whatsapp:  s?.whatsapp  ?? null,
+  }
 
   const villes: MapVille[] = (villesRes.docs as VilleDoc[])
     .filter((v) => v.nom && v.slug && v.coordonnees?.lat != null && v.coordonnees?.lng != null)
@@ -257,6 +273,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
         locale={locale}
         slug={slug}
         telephone={telephone}
+        settings={siteSettings}
         googleReviewsNode={googleReviewsNode}
         {...sharedProps}
       />

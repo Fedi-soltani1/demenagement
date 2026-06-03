@@ -3,6 +3,7 @@
 import { useLivePreview }    from '@payloadcms/live-preview-react'
 
 import { BlockRenderer }     from '@/components/blocks/BlockRenderer'
+import type { SiteSettings } from '@/components/blocks/BlockRenderer'
 import type { ServiceData }  from '@/components/blocks/ServicesBlock'
 import type { TestimonialData } from '@/components/blocks/TestimonialsBlock'
 import type { BlogArticleData } from '@/components/blocks/BlogPreviewBlock'
@@ -20,6 +21,7 @@ interface ServiceLivePreviewWrapperProps {
   locale:            string
   slug:              string
   telephone?:        string
+  settings?:         SiteSettings | null
   services:          ServiceData[]
   testimonials:      TestimonialData[]
   blog:              BlogArticleData[]
@@ -32,6 +34,7 @@ interface ServiceLivePreviewWrapperProps {
 export function ServiceLivePreviewWrapper({
   initialService,
   telephone,
+  settings,
   services,
   testimonials,
   blog,
@@ -59,6 +62,7 @@ export function ServiceLivePreviewWrapper({
       pays={pays}
       googleReviewsNode={googleReviewsNode}
       telephone={telephone}
+      settings={settings}
     />
   )
 }
