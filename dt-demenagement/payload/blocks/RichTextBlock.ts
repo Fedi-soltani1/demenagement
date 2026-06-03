@@ -5,7 +5,7 @@ import { typographieTexteField } from './shared/typographyFields'
 
 export const RichTextBlock: Block = {
   slug: 'richtext',
-  labels: { singular: '📄 Texte riche', plural: 'Textes riches' },
+  labels: { singular: '📝 Texte', plural: 'Textes' },
   fields: [
     actifField,
     {

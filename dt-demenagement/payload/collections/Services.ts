@@ -23,7 +23,6 @@ import { ProcessBlock }        from '../blocks/ProcessBlock'
 import { PricingBlock }        from '../blocks/PricingBlock'
 import { BadgeBlock }          from '../blocks/BadgeBlock'
 import { TitreBlock }          from '../blocks/TitreBlock'
-import { TexteBlock }          from '../blocks/TexteBlock'
 import { BoutonsBlock }        from '../blocks/BoutonsBlock'
 import { ImageBlock }          from '../blocks/ImageBlock'
 import { RichTextBlock }       from '../blocks/RichTextBlock'
@@ -177,7 +176,6 @@ const Services: CollectionConfig = {
               blocks: [
                 BadgeBlock,
                 TitreBlock,
-                TexteBlock,
                 BoutonsBlock,
                 ImageBlock,
                 RichTextBlock,

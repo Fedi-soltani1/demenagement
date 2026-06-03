@@ -3,7 +3,7 @@ import { fileURLToPath } from 'url'
 import sharp from 'sharp'
 import { buildConfig } from 'payload'
 import { postgresAdapter } from '@payloadcms/db-postgres'
-import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import { lexicalEditor, FixedToolbarFeature } from '@payloadcms/richtext-lexical'
 import { resendAdapter } from '@payloadcms/email-resend'
 
 import Admins from './payload/collections/Admins'
@@ -60,7 +60,16 @@ export default buildConfig({
     ],
   }),
 
-  editor: lexicalEditor({}),
+  // Barre d'outils fixe TOUJOURS visible (toute la mise en forme : gras, titres,
+  // alignement, listes, checklist, citation, lien, hr…).
+  // applyToFocusedEditor: true → une seule barre qui suit l'éditeur actif → évite la
+  // boucle « Maximum update depth » des pages à plusieurs éditeurs (notre page builder).
+  editor: lexicalEditor({
+    features: ({ defaultFeatures }) => [
+      ...defaultFeatures,
+      FixedToolbarFeature({ applyToFocusedEditor: true }),
+    ],
+  }),
 
   admin: {
     user: 'admins',

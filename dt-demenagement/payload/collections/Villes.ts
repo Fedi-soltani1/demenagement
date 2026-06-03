@@ -1,10 +1,10 @@
 import type { CollectionConfig } from 'payload'
 import { isAdmin } from '../access/isAdmin'
 import { isEditor } from '../access/isEditor'
-import { BadgeBlock }   from '../blocks/BadgeBlock'
-import { TitreBlock }   from '../blocks/TitreBlock'
-import { TexteBlock }   from '../blocks/TexteBlock'
-import { BoutonsBlock } from '../blocks/BoutonsBlock'
+import { BadgeBlock }    from '../blocks/BadgeBlock'
+import { TitreBlock }    from '../blocks/TitreBlock'
+import { RichTextBlock } from '../blocks/RichTextBlock'
+import { BoutonsBlock }  from '../blocks/BoutonsBlock'
 
 const Villes: CollectionConfig = {
   slug: 'villes',
@@ -85,7 +85,7 @@ const Villes: CollectionConfig = {
       name: 'blocks',
       label: '📦 Blocs de la page ville',
       type: 'blocks',
-      blocks: [BadgeBlock, TitreBlock, TexteBlock, BoutonsBlock],
+      blocks: [BadgeBlock, TitreBlock, RichTextBlock, BoutonsBlock],
       admin: {
         description: 'Construire le hero de la page ville : Badge + Titre + Texte + Boutons. Les sections données (carte, services) s\'affichent automatiquement en dessous.',
       },

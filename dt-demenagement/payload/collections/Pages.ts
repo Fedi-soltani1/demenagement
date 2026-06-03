@@ -23,7 +23,6 @@ import { ProcessBlock }        from '../blocks/ProcessBlock'
 import { PricingBlock }        from '../blocks/PricingBlock'
 import { BadgeBlock }          from '../blocks/BadgeBlock'
 import { TitreBlock }          from '../blocks/TitreBlock'
-import { TexteBlock }          from '../blocks/TexteBlock'
 import { BoutonsBlock }        from '../blocks/BoutonsBlock'
 
 const Pages: CollectionConfig = {
@@ -76,7 +75,6 @@ const Pages: CollectionConfig = {
       blocks: [
         BadgeBlock,
         TitreBlock,
-        TexteBlock,
         BoutonsBlock,
         HeroBlock,
         MiniFeaturesBlock,
