@@ -66,6 +66,40 @@ CONSÉQUENCE : Les nouvelles colonnes ajoutées dans les collections Payload NE 
 ## 🤖 DERNIÈRE MISE À JOUR PAR CLAUDE CODE
 
 ```
+Date        : 2026-06-03 (suite) — BIBLIOTHÈQUE DE 12 NOUVEAUX BLOCS sur SERVICES
+Session     : Dev 1 (Opus) — page builder Elementor complet
+
+12 nouveaux blocs construits, branchés, synchronisés DB et TESTÉS (rendu live OK) :
+  Atomiques : Image · Texte riche (richtext) · Liste · Espaceur · Séparateur
+  Composites: Image+Texte (media-texte) · Grille de cartes (cartes) · Encadré (encadre) · Accordéon (accordeon)
+  Fonctionnels: Formulaire contact (/api/contact) · Coordonnées · Réseaux sociaux
+
+FICHIERS : payload/blocks/{Image,RichText,Liste,Espaceur,Separateur,MediaTexte,Cartes,
+  Encadre,Accordeon,Coordonnees,Reseaux,Formulaire}Block.ts + composants .tsx équivalents
+  + app/api/contact/route.ts (formulaire) + BlockRenderer.tsx (12 imports+cases, lexicalToHtml,
+  prop settings) + Services.ts (12 blocs ajoutés au tableau) + ServiceLivePreviewWrapper +
+  services/[slug]/page.tsx (flux settings pour Coordonnées/Réseaux)
+
+NETTOYAGE Services : heroCtaGroupe mort supprimé (schéma+DB) ; admin réorganisé en 2 ONGLETS
+  présentationnels « 📊 Infos & SEO » | « 🧱 Page » (sans changement de schéma).
+
+SYNC DB : push:true → 32 nouvelles tables services_blocks_* créées SANS PROMPT (auth protégé
+  par beforeSchemaInit = plus d'orphelins = plus de désambiguïsation) → push:false. AUTH PRÉSERVÉE.
+  ⭐ push est désormais SÛR et NON-INTERACTIF pour ajouter des blocs.
+
+VÉRIFIÉ : tsc 0 erreur · eslint 0 warning · 9 blocs testés en rendu live (HTTP 200) sur
+  /services/gardes-meubles · auth_users intacte.
+
+DÉCISION ARCHITECTURE (mémoire) : modèle Elementor = blocs atomiques (widgets) + composites
+  (combos) + données. PAS de fusion à la volée (composites pré-faits). Champs natifs Service
+  = DONNÉES/SEO (cartes, Google, fil d'ariane) ≠ blocs = AFFICHAGE.
+
+PROCHAIN : RÉPLIQUER cette bibliothèque aux Villes (puis Pages/Blog) — ajouter les blocs à la
+  collection + 1 sync DB (rapide). Voir mémoire project-working-approach.
+
+COMMITS : b511054 97b4988 534602d e0fce4f (+coord/reseaux) + wiring + display-name fix
+─────────────────────────────────────────────────────────────────────────────
+
 Date        : 2026-06-03 — BLOCS ATOMIQUES + ADMIN 100% + FIX BUG PUSH HISTORIQUE
 Session     : Dev 1 (Opus) — système Elementor-like universel
 
