@@ -3,7 +3,7 @@ import { fileURLToPath } from 'url'
 import sharp from 'sharp'
 import { buildConfig } from 'payload'
 import { postgresAdapter } from '@payloadcms/db-postgres'
-import { lexicalEditor, FixedToolbarFeature } from '@payloadcms/richtext-lexical'
+import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { resendAdapter } from '@payloadcms/email-resend'
 
 import Admins from './payload/collections/Admins'
@@ -60,16 +60,11 @@ export default buildConfig({
     ],
   }),
 
-  // Barre d'outils fixe TOUJOURS visible (toute la mise en forme : gras, titres,
-  // alignement, listes, checklist, citation, lien, hr…).
-  // applyToFocusedEditor: true → une seule barre qui suit l'éditeur actif → évite la
-  // boucle « Maximum update depth » des pages à plusieurs éditeurs (notre page builder).
-  editor: lexicalEditor({
-    features: ({ defaultFeatures }) => [
-      ...defaultFeatures,
-      FixedToolbarFeature({ applyToFocusedEditor: true }),
-    ],
-  }),
+  // Éditeur par défaut : barre d'outils INLINE (apparaît quand on sélectionne du
+  // texte) + toutes les fonctionnalités. La barre FIXE (FixedToolbarFeature) est
+  // évitée car elle provoque une boucle « Maximum update depth » quand les champs
+  // richText sont dans des blocs imbriqués (notre page builder) — bug confirmé 2×.
+  editor: lexicalEditor({}),
 
   admin: {
     user: 'admins',
