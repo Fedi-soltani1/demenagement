@@ -15,7 +15,11 @@ import {
 
 // ─── Dynamic imports — un chunk par bloc ─────────────────────────────────────
 
-const sk = (h: 'sm' | 'md' | 'lg' | 'xl') => () => <BlockSkeleton height={h} />
+const sk = (h: 'sm' | 'md' | 'lg' | 'xl') => {
+  const SkeletonLoader = () => <BlockSkeleton height={h} />
+  SkeletonLoader.displayName = 'BlockSkeletonLoader'
+  return SkeletonLoader
+}
 
 const HeroBlock = dynamic(
   () => import('@/components/blocks/HeroBlock').then((m) => ({ default: m.HeroBlock })),
