@@ -110,9 +110,11 @@ export const sectionOptionsFields: Field[] = [
         ],
       },
       {
+        // dbName raccourcit l'enum : _services_v_blocks_instagram_feed_section_options_couleur_texte > 63 chars → couleur
         name: 'couleurTexte',
         type: 'select',
         label: 'Couleur du texte',
+        dbName: 'couleur',
         admin: {
           description: 'Auto = texte clair sur fond sombre. Choisir Sombre si le fond est clair/transparent.',
         },
