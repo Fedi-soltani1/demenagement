@@ -66,6 +66,51 @@ CONSÉQUENCE : Les nouvelles colonnes ajoutées dans les collections Payload NE 
 ## 🤖 DERNIÈRE MISE À JOUR PAR CLAUDE CODE
 
 ```
+Date        : 2026-06-03 — BLOCS ATOMIQUES + ADMIN 100% + FIX BUG PUSH HISTORIQUE
+Session     : Dev 1 (Opus) — système Elementor-like universel
+
+OBJECTIF ATTEINT : l'admin contrôle 100% du contenu — zéro section hardcodée.
+  4 nouveaux blocs ATOMIQUES (composables librement comme Elementor) :
+    🏷 BadgeBlock · 📝 TitreBlock · 📄 TexteBlock · 🔘 BoutonsBlock
+  Disponibles dans Pages, Services, Villes. Rendus par l'unique BlockRenderer.
+
+FICHIERS CLÉS :
+  payload/blocks/{Badge,Titre,Texte,Boutons}Block.ts   → NOUVEAUX schémas
+  components/blocks/{Badge,Titre,Texte,Boutons}Block.tsx → NOUVEAUX composants (memo + SectionWrapper)
+  components/blocks/BlockRenderer.tsx   → 4 dynamic imports + 4 cases + couleurTexte
+  components/blocks/ServiceLivePreviewWrapper.tsx → hero hardcodé SUPPRIMÉ → BlockRenderer pur
+  app/(site)/[locale]/villes/[slug]/page.tsx → hero hardcodé SUPPRIMÉ → BlockRenderer
+  lib/sectionOptions.ts + SectionWrapper.tsx → couleurTexte (auto/clair/sombre)
+  payload/collections/Settings.ts → +logoImage, copyright, navbarCTA, animations, gtm/ga4/pixel/clarity
+  components/layout/{Navbar,Footer}.tsx → logo image + CTA + copyright depuis Settings
+  components/layout/BandeauAnnonce(Server).tsx → NOUVEAU bandeau annonce (Settings.bandeauAlerte)
+  app/(site)/[locale]/layout.tsx → bandeau + WhatsApp conditionnel + analytics depuis Settings
+  middleware.ts → mode maintenance depuis Settings
+  payload/blocks/ServicesBlock.ts → colonnes (2/3/4) · StatsBlock.ts → couleurAccent (rouge/or)
+
+✅ FIX BUG PUSH HISTORIQUE (le "BUG ACTIF" #1 de ce fichier est RÉSOLU) :
+  payload.config.ts → beforeSchemaInit déclare les tables NextAuth (auth_users/accounts/
+  sessions/verification_tokens) dans le schéma Drizzle. push NE LES SUPPRIME PLUS.
+  → push:true est désormais SÛR. Procédure de sync DB sans TTY (ce qui a marché) :
+    1. Pré-créer des tables-stub (colonnes de base) pour les nouvelles tables blocs
+       → évite les prompts interactifs "create or rename table" de drizzle.
+    2. Aligner les contraintes auth sur les noms drizzle (auth_users_email_unique, *_fk).
+    3. Retirer colonnes orphelines (faq_id dans pages_rels/_pages_v_rels).
+    4. push:true → curl /api/services → push 100% additif → 200 → push:false.
+
+MIGRATION DONNÉES FAITE : 7 services + 24 villes ont reçu des blocs par défaut
+  (badge+titre+texte+boutons), PUBLIÉS. Pages services + villes rendent ces blocs en live.
+  (migration via route API temporaire getPayload — supprimée après usage car tsx incompatible Node v26)
+
+VÉRIFIÉ : tsc 0 erreur · ESLint 0 warning · /services/[slug] et /villes/[slug] rendent les blocs (HTTP 200)
+
+SUIVI BASSE PRIORITÉ : titre page /faq vient d'une clé i18n (traduisible) — restructuration
+  vers entrée Pages 'faq' non faite (gain mineur, contenu FAQ déjà géré par collection FAQ).
+
+COMMITS : b36d0e3 7b17a90 a2d04f7 4659a45 671a0c7 7410841 a389f17 b69913e 2ba818e
+          a82ec37 468892f ab538e1 f1adf32 3976b8c
+─────────────────────────────────────────────────────────────────────────────
+
 Date        : 2026-05-31 — ZÉRO HARDCODE : tout configurable depuis Payload CMS
 Session     : Dev 1
 Fichiers    :
