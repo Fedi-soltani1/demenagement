@@ -4,6 +4,7 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 import { auth } from '@/auth'
 import { env } from '@/lib/env'
+import { sendMail } from '@/lib/mailer'
 
 type DevisDoc = {
   id:                      string | number
@@ -258,19 +259,7 @@ export async function POST(request: Request): Promise<NextResponse> {
 </html>`
 
   try {
-    await fetch('https://api.resend.com/emails', {
-      method:  'POST',
-      headers: {
-        Authorization:  `Bearer ${env.RESEND_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        from:    env.EMAIL_FROM,
-        to:      env.EMAIL_DEVIS_TO,
-        subject: emailSubject,
-        html:    emailHtml,
-      }),
-    })
+    await sendMail({ to: env.EMAIL_DEVIS_TO, subject: emailSubject, html: emailHtml })
   } catch {
     // Non-bloquant — échec silencieux
   }

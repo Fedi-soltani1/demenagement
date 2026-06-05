@@ -177,7 +177,7 @@ export default async function DossierPage({ params }: PageProps) {
                   refuseTitle:             t('devisRefuseTitle'),
                   commentairePlaceholder:  t('devisCommentairePlaceholder'),
                   commentaireLabel:        t('devisCommentaireLabel'),
-                  signatureCheckbox:       t('devisSignatureCheckbox'),
+                  signatureCheckbox:       t('devisSignatureCheckbox', { nom: dossier.nomComplet ?? '', dossier: dossier.numeroDossier }),
                   acceptBtn:               t('devisAcceptBtn'),
                   refuseBtn:               t('devisRefuseBtn'),
                   accepting:               t('devisAccepting'),

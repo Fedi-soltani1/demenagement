@@ -13,10 +13,13 @@ const envSchema = z.object({
   AUTH_SECRET: z.string().min(32),
   NEXT_PUBLIC_SERVER_URL: z.string().min(1),
 
-  // Emails (Resend) — optionnel en dev local
-  RESEND_API_KEY: z.string().optional().default(''),
-  EMAIL_FROM: z.string().optional().default(''),
-  EMAIL_DEVIS_TO: z.string().optional().default(''),
+  // Emails (Hostinger SMTP)
+  SMTP_HOST: z.string().optional().default('smtp.hostinger.com'),
+  SMTP_PORT: z.coerce.number().optional().default(465),
+  SMTP_USER: z.string().optional().default(''),
+  SMTP_PASS: z.string().optional().default(''),
+  EMAIL_FROM: z.string().optional().default('DT Déménagement <contact@demenagement.tn>'),
+  EMAIL_DEVIS_TO: z.string().optional().default('contact@demenagement.tn'),
 
   // Cloudinary — optionnel en dev local
   CLOUDINARY_CLOUD_NAME: z.string().optional().default(''),

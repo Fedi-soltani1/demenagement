@@ -3,8 +3,8 @@ import { z } from 'zod'
 import { auth } from '@/auth'
 import { getPayload } from 'payload'
 import config from '@payload-config'
-import { Resend } from 'resend'
 import { env } from '@/lib/env'
+import { sendMail } from '@/lib/mailer'
 
 const schema = z.object({
   dossierId:   z.string().min(1),
@@ -58,13 +58,11 @@ export async function POST(request: Request) {
     overrideAccess: true,
   })
 
-  // Send email notification to admin (non-blocking)
-  if (env.RESEND_API_KEY && env.EMAIL_DEVIS_TO) {
-    const dossier = dossierCheck.docs[0]
-    const resend  = new Resend(env.RESEND_API_KEY)
+  // Email de notification admin — non-bloquant
+  if (env.EMAIL_DEVIS_TO) {
+    const dossier  = dossierCheck.docs[0]
     const adminUrl = `${env.NEXT_PUBLIC_SERVER_URL}/admin/collections/demenagements/${dossierId}`
-    await resend.emails.send({
-      from:    env.EMAIL_FROM || 'DT Déménagement <contact@demenagement.tn>',
+    sendMail({
       to:      env.EMAIL_DEVIS_TO,
       subject: `💬 Nouveau message client — Dossier ${(dossier as Record<string, unknown>).numeroDossier ?? dossierId}`,
       html: `

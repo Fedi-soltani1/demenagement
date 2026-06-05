@@ -4,7 +4,7 @@ import sharp from 'sharp'
 import { buildConfig } from 'payload'
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
-import { resendAdapter } from '@payloadcms/email-resend'
+import nodemailer from 'nodemailer'
 
 import Admins from './payload/collections/Admins'
 import Media from './payload/collections/Media'
@@ -165,11 +165,24 @@ export default buildConfig({
 
   sharp,
 
-  email: resendAdapter({
-    defaultFromAddress: process.env.EMAIL_FROM ?? 'onboarding@resend.dev',
-    defaultFromName: 'DT Déménagement Tunisie',
-    apiKey: process.env.RESEND_API_KEY ?? '',
-  }),
+  email: () => {
+    const transport = nodemailer.createTransport({
+      host:   process.env.SMTP_HOST ?? 'smtp.hostinger.com',
+      port:   Number(process.env.SMTP_PORT ?? 465),
+      secure: Number(process.env.SMTP_PORT ?? 465) === 465,
+      auth: {
+        user: process.env.SMTP_USER ?? '',
+        pass: process.env.SMTP_PASS ?? '',
+      },
+    })
+    return {
+      name:               'hostinger-smtp',
+      defaultFromAddress: process.env.SMTP_USER ?? 'contact@demenagement.tn',
+      defaultFromName:    'DT Déménagement Tunisie',
+      sendEmail:          (msg: Parameters<typeof transport.sendMail>[0]) =>
+        transport.sendMail(msg),
+    }
+  },
 
   typescript: {
     outputFile: path.resolve(dirname, 'types/payload-types.ts'),
