@@ -66,6 +66,32 @@ CONSÉQUENCE : Les nouvelles colonnes ajoutées dans les collections Payload NE 
 ## 🤖 DERNIÈRE MISE À JOUR PAR CLAUDE CODE
 
 ```
+Date        : 2026-06-05 (suite) — PARITÉ COMPLÈTE VILLES + PAGES
+Session     : Dev 1 (Opus)
+
+VILLES → parité 100% avec Services :
+  - 2 onglets (Infos & SEO | Page) + SEO robots (index/follow)
+  - versions: { drafts: true } + VilleLivePreviewWrapper (live preview temps réel)
+  - withShortSectionOptions extrait en helper PARTAGÉ (payload/blocks/shared/) + appliqué
+    aux villes (sinon enum _villes_v_ > 63 chars). Tables villes DROPPÉES + recréées
+    proprement (versioning), 23 villes réinjectées + PUBLIÉES.
+  ⚠️ PIÈGE : activer versioning sur une collection existante → ses tables blocs non-versionnées
+     ont des enums longs sur _x_v_. Solution : DROP tables+enums blocs, push recrée avec helper.
+  ⚠️ PIÈGE : avec versioning, payload.find({draft:true}) lit _x_v (vide au début) → 0 docs.
+     Pour réinjecter, utiliser find SANS draft (where publie:true) + data._status:'published'.
+
+PAGES (accueil) → +12 nouveaux blocs (manquait RichText = aucun bloc texte!) → 35 blocs.
+  LivePreviewWrapper + page.tsx : fetch settings + passe telephone/settings au BlockRenderer.
+  Pages avait déjà drafts + live preview. (tabs pas encore — champs natifs minimaux)
+
+BLOG : corps d'article rendu (oubli 'Étape 29') via lexicalToHtml + .lex-rich.
+
+PAYS : PAS de page individuelle (pays/[slug] n'existe pas) → pas de page builder. Données only.
+
+ÉTAT bibliothèque 35 blocs : Services ✅ · Villes ✅ · Pages ✅ · Blog (contenu only) · Pays (data only)
+PROCHAIN : tabs sur Pages (optionnel) · bibliothèque sur Blog ? · pages par pays ? (nouvelles features)
+─────────────────────────────────────────────────────────────────────────────
+
 Date        : 2026-06-05 — TEXTE RICHE COMPLET + VILLES RÉPLIQUÉES + BLOG RÉPARÉ
 Session     : Dev 1 (Opus)
 
