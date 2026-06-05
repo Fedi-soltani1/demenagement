@@ -131,13 +131,6 @@ const Blog: CollectionConfig = {
               admin: { description: '2 à 3 phrases max — accroché qui donne envie de lire l\'article. Max 200 caractères.' },
             },
             {
-              name: 'contenu',
-              label: 'Contenu complet de l\'article',
-              type: 'richText',
-              required: true,
-              localized: true,
-            },
-            {
               name: 'auteur',
               label: 'Auteur de l\'article',
               type: 'text',
