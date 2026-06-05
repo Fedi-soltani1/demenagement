@@ -140,7 +140,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
 
     payload.find({
       collection: 'blog',
-      where: { statut: { equals: 'publie' } },
+      where: { publie: { equals: true } },
       sort: '-datePublication',
       locale: loc,
       limit: 3,

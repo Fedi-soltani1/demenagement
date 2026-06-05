@@ -87,7 +87,7 @@ export default async function HomePage({ params }: HomePageProps) {
     // 3 derniers articles de blog publiés
     payload.find({
       collection: 'blog',
-      where: { statut: { equals: 'publie' } },
+      where: { publie: { equals: true } },
       sort: '-datePublication',
       locale: loc,
       limit: 3,

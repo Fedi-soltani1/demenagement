@@ -156,7 +156,7 @@ export default async function VillePage({ params }: VillePageProps) {
 
     payload.find({
       collection: 'blog',
-      where: { statut: { equals: 'publie' } },
+      where: { publie: { equals: true } },
       sort: '-datePublication',
       locale: loc,
       limit: 3,

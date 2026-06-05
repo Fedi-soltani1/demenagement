@@ -40,7 +40,7 @@ export default async function BlogPage({
   const result  = await payload
     .find({
       collection: 'blog',
-      where: { statut: { equals: 'publie' } },
+      where: { publie: { equals: true } },
       sort: '-datePublication',
       locale: locale as 'fr' | 'ar' | 'en',
       limit: 12,

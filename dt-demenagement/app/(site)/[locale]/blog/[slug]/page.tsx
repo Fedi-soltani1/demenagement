@@ -40,7 +40,7 @@ type ArticleDoc = {
   categories?: CategoryDoc[]
   tags?: { tag: string }[]
   tempsLecture?: number
-  statut?: string
+  publie?: boolean
   datePublication?: string
   seo?: {
     metaTitle?: string
@@ -58,7 +58,7 @@ async function getArticle(slug: string, locale: string): Promise<ArticleDoc | nu
     draft: isDraft,
     where: isDraft
       ? { slug: { equals: slug } }
-      : { and: [{ slug: { equals: slug } }, { statut: { equals: 'publie' } }] },
+      : { and: [{ slug: { equals: slug } }, { publie: { equals: true } }] },
     locale: locale as 'fr' | 'ar' | 'en',
     limit: 1,
     depth: 2,
@@ -70,7 +70,7 @@ async function getRelatedArticles(currentSlug: string, locale: string): Promise<
   const payload = await getPayload({ config })
   const result = await payload.find({
     collection: 'blog',
-    where: { slug: { not_equals: currentSlug }, statut: { equals: 'publie' } },
+    where: { slug: { not_equals: currentSlug }, publie: { equals: true } },
     locale: locale as 'fr' | 'ar' | 'en',
     limit: 3,
     sort: '-datePublication',
@@ -82,7 +82,7 @@ export async function generateStaticParams() {
   const payload = await getPayload({ config })
   const result = await payload.find({
     collection: 'blog',
-    where: { statut: { equals: 'publie' } },
+    where: { publie: { equals: true } },
     limit: 200,
   })
 
@@ -160,7 +160,7 @@ export default async function BlogArticlePage({ params }: BlogPageProps) {
 
     payload.find({
       collection: 'blog',
-      where: { statut: { equals: 'publie' } },
+      where: { publie: { equals: true } },
       sort: '-datePublication',
       locale: loc,
       limit: 3,

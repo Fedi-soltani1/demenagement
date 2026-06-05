@@ -468,11 +468,12 @@ export async function seed(payload: Payload): Promise<void> {
           titre: article.titre,
           slug: article.slug,
           extrait: article.extrait,
-          contenu: lexicalParagraph(article.contenu),
+          // Le corps de l'article est un bloc RichText (modèle page builder uniforme)
+          blocks: [{ blockType: 'richtext', actif: true, contenu: lexicalParagraph(article.contenu) }],
           auteur: 'Équipe DT Déménagement',
           categories: catId ? [catId] : [],
           tempsLecture: article.tempsLecture,
-          statut: 'publie',
+          publie: true,
           datePublication: article.datePublication,
         },
       })

@@ -47,7 +47,7 @@ const Blog: CollectionConfig = {
       if (user && ((user as { role?: string }).role === 'admin' || (user as { role?: string }).role === 'editeur')) {
         return true
       }
-      return { statut: { equals: 'publie' } }
+      return { publie: { equals: true } }
     },
     create: isEditor,
     update: isEditor,
@@ -57,8 +57,8 @@ const Blog: CollectionConfig = {
   admin: {
     group: '📝 Contenu du site',
     useAsTitle: 'titre',
-    defaultColumns: ['titre', 'statut', 'datePublication', 'auteur'],
-    description: 'Articles du blog. Mettre "Statut = Publié" pour qu\'un article apparaisse sur le site. Ajouter une image à la une pour chaque article.',
+    defaultColumns: ['titre', 'publie', 'datePublication', 'auteur'],
+    description: 'Articles du blog. Cocher "Publié sur le site" pour qu\'un article apparaisse. Ajouter une image à la une pour chaque article.',
     preview: (doc, { locale }) => {
       const base   = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
       const secret = process.env.PAYLOAD_SECRET ?? ''
@@ -97,17 +97,11 @@ const Blog: CollectionConfig = {
               admin: { description: 'Ex: conseils-demenagement-tunisie — utilisé dans l\'adresse web de l\'article.' },
             },
             {
-              name: 'statut',
-              label: 'Statut de publication',
-              type: 'select',
-              required: true,
-              defaultValue: 'brouillon',
-              admin: { description: '👆 Mettre sur "Publié" pour que l\'article soit visible sur le site.' },
-              options: [
-                { label: '✏️ Brouillon — non visible sur le site', value: 'brouillon' },
-                { label: '✅ Publié — visible sur le site',         value: 'publie' },
-                { label: '📅 Planifié — publication automatique',   value: 'planifie' },
-              ],
+              name: 'publie',
+              label: 'Publié sur le site',
+              type: 'checkbox',
+              defaultValue: true,
+              admin: { description: 'Décocher pour masquer cet article du site (le garder en brouillon). Modèle uniforme avec Services / Villes / Pages / Pays.' },
             },
             {
               name: 'datePublication',

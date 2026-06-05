@@ -113,8 +113,9 @@ const nextConfig: NextConfig = {
       { source: '/demenagement-tunisie-et-international/demenagement-tunisie-malte', destination: '/zones', permanent: true },
       // Pages générales
       { source: '/devis-gratuit', destination: '/devis', permanent: true },
-      { source: '/contact', destination: '/contact', permanent: true },
-      { source: '/blog', destination: '/blog', permanent: true },
+      // (Pas de redirection /contact ni /blog : ces pages existent et sont servies
+      //  directement par le routing i18n. Une règle source === destination créait une
+      //  boucle de redirection infinie — supprimée.)
     ]
   },
 

@@ -27,7 +27,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     const [servicesRes, blogRes] = await Promise.all([
       payload.find({ collection: 'services', where: { publie: { equals: true } }, limit: 100, select: { slug: true } }),
-      payload.find({ collection: 'blog', where: { statut: { equals: 'publie' } }, limit: 200, select: { slug: true } }),
+      payload.find({ collection: 'blog', where: { publie: { equals: true } }, limit: 200, select: { slug: true } }),
     ])
 
     serviceSlugs = (servicesRes.docs as Array<{ slug?: string }>).map((d) => d.slug ?? '').filter(Boolean)

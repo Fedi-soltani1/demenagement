@@ -149,7 +149,7 @@ export default async function PaysPage({ params }: PaysPageProps) {
 
     payload.find({
       collection: 'blog',
-      where: { statut: { equals: 'publie' } },
+      where: { publie: { equals: true } },
       sort: '-datePublication',
       locale: loc,
       limit: 3,
