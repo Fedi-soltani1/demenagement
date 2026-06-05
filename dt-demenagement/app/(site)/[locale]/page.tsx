@@ -51,6 +51,7 @@ export default async function HomePage({ params }: HomePageProps) {
     partnersRes,
     villesRes,
     paysRes,
+    settingsRes,
   ] = await Promise.all([
 
     // Page accueil depuis la collection Pages (slug = 'accueil')
@@ -121,6 +122,9 @@ export default async function HomePage({ params }: HomePageProps) {
       limit: 30,
       depth: 0,
     }).catch(() => ({ docs: [] as unknown[] })),
+
+    // Paramètres globaux (téléphone, email, réseaux…) pour les blocs Coordonnées/Réseaux
+    payload.findGlobal({ slug: 'settings', locale: loc, depth: 0 }).catch(() => null),
   ])
 
   // Extraire la page accueil depuis Payload
@@ -137,6 +141,24 @@ export default async function HomePage({ params }: HomePageProps) {
   const pays: MapPays[] = (paysRes.docs as PaysDoc[])
     .filter((p) => p.nom && p.slug && p.coordonnees?.lat != null && p.coordonnees?.lng != null)
     .map((p) => ({ nom: p.nom!, slug: p.slug!, drapeau: p.drapeau ?? '', lat: p.coordonnees!.lat!, lng: p.coordonnees!.lng! }))
+
+  // Données globales (Settings) pour les blocs Coordonnées / Réseaux + téléphone des CTA
+  const st = settingsRes as {
+    telephone1?: string | null; email?: string | null; adresse?: string | null; horaires?: string | null
+    facebook?: string | null; instagram?: string | null; linkedin?: string | null; tiktok?: string | null; whatsapp?: string | null
+  } | null
+  const telephone = st?.telephone1 ?? COMPANY.phone1
+  const siteSettings = {
+    telephone: st?.telephone1 ?? COMPANY.phone1,
+    email:     st?.email     ?? COMPANY.email,
+    adresse:   st?.adresse   ?? null,
+    horaires:  st?.horaires  ?? null,
+    facebook:  st?.facebook  ?? null,
+    instagram: st?.instagram ?? null,
+    linkedin:  st?.linkedin  ?? null,
+    tiktok:    st?.tiktok    ?? null,
+    whatsapp:  st?.whatsapp  ?? null,
+  }
 
   const sharedProps = {
     services:     servicesRes.docs     as ServiceData[],
@@ -198,6 +220,8 @@ export default async function HomePage({ params }: HomePageProps) {
         <LivePreviewWrapper
           initialPage={page}
           googleReviewsNode={googleReviewsNode}
+          telephone={telephone}
+          settings={siteSettings}
           {...sharedProps}
         />
       ) : (
@@ -205,6 +229,8 @@ export default async function HomePage({ params }: HomePageProps) {
         <BlockRenderer
           blocks={fallbackBlocks}
           googleReviewsNode={googleReviewsNode}
+          telephone={telephone}
+          settings={siteSettings}
           {...sharedProps}
         />
       )}
