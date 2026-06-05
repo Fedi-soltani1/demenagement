@@ -3,6 +3,7 @@
 import { useLivePreview } from '@payloadcms/live-preview-react'
 
 import { BlockRenderer }                         from '@/components/blocks/BlockRenderer'
+import type { SiteSettings }                     from '@/components/blocks/BlockRenderer'
 import type { ServiceData }                      from '@/components/blocks/ServicesBlock'
 import type { TestimonialData }                  from '@/components/blocks/TestimonialsBlock'
 import type { BlogArticleData }                  from '@/components/blocks/BlogPreviewBlock'
@@ -21,6 +22,8 @@ interface LivePreviewWrapperProps {
   villes:            MapVille[]
   pays:              MapPays[]
   googleReviewsNode: React.ReactNode
+  telephone?:        string
+  settings?:         SiteSettings | null
 }
 
 export function LivePreviewWrapper({
@@ -32,6 +35,8 @@ export function LivePreviewWrapper({
   villes,
   pays,
   googleReviewsNode,
+  telephone,
+  settings,
 }: LivePreviewWrapperProps) {
   const { data } = useLivePreview<PageDoc>({
     initialData: initialPage,
@@ -51,6 +56,8 @@ export function LivePreviewWrapper({
       villes={villes}
       pays={pays}
       googleReviewsNode={googleReviewsNode}
+      telephone={telephone}
+      settings={settings}
     />
   )
 }

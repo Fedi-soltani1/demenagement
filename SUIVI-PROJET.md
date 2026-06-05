@@ -66,6 +66,154 @@ CONSÉQUENCE : Les nouvelles colonnes ajoutées dans les collections Payload NE 
 ## 🤖 DERNIÈRE MISE À JOUR PAR CLAUDE CODE
 
 ```
+Date        : 2026-06-05 (suite) — PARITÉ COMPLÈTE VILLES + PAGES + BLOG
+Session     : Dev 1 (Opus)
+
+VILLES → parité 100% avec Services :
+  - 2 onglets (Infos & SEO | Page) + SEO robots (index/follow)
+  - versions: { drafts: true } + VilleLivePreviewWrapper (live preview temps réel)
+  - withShortSectionOptions extrait en helper PARTAGÉ (payload/blocks/shared/) + appliqué
+    aux villes (sinon enum _villes_v_ > 63 chars). Tables villes DROPPÉES + recréées
+    proprement (versioning), 23 villes réinjectées + PUBLIÉES.
+  ⚠️ PIÈGE : activer versioning sur une collection existante → ses tables blocs non-versionnées
+     ont des enums longs sur _x_v_. Solution : DROP tables+enums blocs, push recrée avec helper.
+  ⚠️ PIÈGE : avec versioning, payload.find({draft:true}) lit _x_v (vide au début) → 0 docs.
+     Pour réinjecter, utiliser find SANS draft (where publie:true) + data._status:'published'.
+
+PAGES (accueil) → +12 nouveaux blocs (manquait RichText = aucun bloc texte!) → 35 blocs.
+  LivePreviewWrapper + page.tsx : fetch settings + passe telephone/settings au BlockRenderer.
+  Pages avait déjà drafts + live preview. (tabs pas encore — champs natifs minimaux)
+
+BLOG → parité 100% avec Services/Villes/Pages (commit e6dcd51) :
+  - Blog.ts : 35 blocs (.map(withShortSectionOptions)) + 2 onglets (📊 Infos & SEO | 🧱 Page)
+    + seo.robots (index/follow) + versions: { drafts: true }.
+  - DB sync : push blog 200 (165s) → blog_blocks_* + _blog_v_blocks_* créées. push:false restauré.
+  - contenu richText des 6 articles MIGRÉ en bloc RichText (route temp /api/migrate-blog, done:6, supprimée).
+  - BlogLivePreviewWrapper.tsx (miroir Villes) : aperçu temps réel des blocs d'article.
+  - page article : rend les blocs via BlockRenderer (draft:isDraft) + données partagées
+    (services/avis/blog/partners/villes/pays/settings) ; header/meta/extrait/tags/JSON-LD conservés.
+  - Test : /fr/blog/demenager-tunis-quartiers-conseils → 200, .lex-rich présent (bloc migré rendu).
+  ⚠️ contenu (champ legacy) conservé sur Blog.ts mais plus rendu (corps = blocs maintenant).
+
+PAYS : PAS de page individuelle (pays/[slug] n'existe pas) → pas de page builder. Données only.
+
+ÉTAT bibliothèque 35 blocs : Services ✅ · Villes ✅ · Pages ✅ · Blog (contenu only) · Pays (data only)
+PROCHAIN : tabs sur Pages (optionnel) · bibliothèque sur Blog ? · pages par pays ? (nouvelles features)
+─────────────────────────────────────────────────────────────────────────────
+
+Date        : 2026-06-05 — TEXTE RICHE COMPLET + VILLES RÉPLIQUÉES + BLOG RÉPARÉ
+Session     : Dev 1 (Opus)
+
+ÉDITEUR TEXTE RICHE :
+  - lib/lexical-to-html.ts COMPLÉTÉ : tous les formats (barré, code, exposant/indice,
+    alignement, indentation, LISTE À COCHER avec état, ligne horizontale, liens Payload)
+  - classe .lex-rich dans app/globals.css : stylise titres/listes/checklist/citation/hr/code
+    (cause racine : @tailwindcss/typography PAS installé → 'prose' ne faisait rien)
+  - appliquée aux 5 blocs richText + à la page Blog
+  - ⚠️ FixedToolbarFeature RETIRÉ : boucle 'Maximum update depth' quand richText dans
+    blocs imbriqués (bug Payload confirmé 2×, même avec applyToFocusedEditor).
+    → barre INLINE par défaut (sur sélection) + menu '+' (CSS débloqué). NE PAS réessayer.
+
+UN SEUL BLOC TEXTE (option A) :
+  - bloc 'texte' simple SUPPRIMÉ, 'richtext' renommé « Texte » → un seul bloc formatable
+  - données migrées : 7 services + 24 villes (texte→richtext, sans perte)
+  - tables/enums 'texte' orphelins droppés. ⚠️ retirer un bloc = enums orphelins →
+    drizzle prompt 'rename enum' : DROP les tables+enums orphelins AVANT push.
+
+VILLES RÉPLIQUÉES (bibliothèque complète) :
+  - Villes.ts : 4 → 35 blocs (miroir Services, PAS de withShortSectionOptions car pas de
+    versioning sur villes)
+  - villes/[slug]/page.tsx : fetch toutes collections + settings + googleReviewsNode → BlockRenderer
+  - 95 tables villes_blocks_* synchronisées (push sûr, sans prompt). auth préservée.
+
+BLOG RÉPARÉ (oubli 'Étape 29' trouvé au balayage) :
+  - blog/[slug]/page.tsx : corps d'article était un PLACEHOLDER jamais rendu
+  - maintenant lexicalToHtml(article.contenu) + .lex-rich → contenu formaté affiché
+
+BALAYAGE Services : 35 blocs câblés 1:1 avec BlockRenderer ✅ · code mort TexteBlock nettoyé ✅
+
+PROCHAIN : répliquer aux Pages/Blog (même schéma) si voulu. FAQ inline déjà sur Services+Villes.
+─────────────────────────────────────────────────────────────────────────────
+
+Date        : 2026-06-03 (suite) — BIBLIOTHÈQUE DE 12 NOUVEAUX BLOCS sur SERVICES
+Session     : Dev 1 (Opus) — page builder Elementor complet
+
+12 nouveaux blocs construits, branchés, synchronisés DB et TESTÉS (rendu live OK) :
+  Atomiques : Image · Texte riche (richtext) · Liste · Espaceur · Séparateur
+  Composites: Image+Texte (media-texte) · Grille de cartes (cartes) · Encadré (encadre) · Accordéon (accordeon)
+  Fonctionnels: Formulaire contact (/api/contact) · Coordonnées · Réseaux sociaux
+
+FICHIERS : payload/blocks/{Image,RichText,Liste,Espaceur,Separateur,MediaTexte,Cartes,
+  Encadre,Accordeon,Coordonnees,Reseaux,Formulaire}Block.ts + composants .tsx équivalents
+  + app/api/contact/route.ts (formulaire) + BlockRenderer.tsx (12 imports+cases, lexicalToHtml,
+  prop settings) + Services.ts (12 blocs ajoutés au tableau) + ServiceLivePreviewWrapper +
+  services/[slug]/page.tsx (flux settings pour Coordonnées/Réseaux)
+
+NETTOYAGE Services : heroCtaGroupe mort supprimé (schéma+DB) ; admin réorganisé en 2 ONGLETS
+  présentationnels « 📊 Infos & SEO » | « 🧱 Page » (sans changement de schéma).
+
+SYNC DB : push:true → 32 nouvelles tables services_blocks_* créées SANS PROMPT (auth protégé
+  par beforeSchemaInit = plus d'orphelins = plus de désambiguïsation) → push:false. AUTH PRÉSERVÉE.
+  ⭐ push est désormais SÛR et NON-INTERACTIF pour ajouter des blocs.
+
+VÉRIFIÉ : tsc 0 erreur · eslint 0 warning · 9 blocs testés en rendu live (HTTP 200) sur
+  /services/gardes-meubles · auth_users intacte.
+
+DÉCISION ARCHITECTURE (mémoire) : modèle Elementor = blocs atomiques (widgets) + composites
+  (combos) + données. PAS de fusion à la volée (composites pré-faits). Champs natifs Service
+  = DONNÉES/SEO (cartes, Google, fil d'ariane) ≠ blocs = AFFICHAGE.
+
+PROCHAIN : RÉPLIQUER cette bibliothèque aux Villes (puis Pages/Blog) — ajouter les blocs à la
+  collection + 1 sync DB (rapide). Voir mémoire project-working-approach.
+
+COMMITS : b511054 97b4988 534602d e0fce4f (+coord/reseaux) + wiring + display-name fix
+─────────────────────────────────────────────────────────────────────────────
+
+Date        : 2026-06-03 — BLOCS ATOMIQUES + ADMIN 100% + FIX BUG PUSH HISTORIQUE
+Session     : Dev 1 (Opus) — système Elementor-like universel
+
+OBJECTIF ATTEINT : l'admin contrôle 100% du contenu — zéro section hardcodée.
+  4 nouveaux blocs ATOMIQUES (composables librement comme Elementor) :
+    🏷 BadgeBlock · 📝 TitreBlock · 📄 TexteBlock · 🔘 BoutonsBlock
+  Disponibles dans Pages, Services, Villes. Rendus par l'unique BlockRenderer.
+
+FICHIERS CLÉS :
+  payload/blocks/{Badge,Titre,Texte,Boutons}Block.ts   → NOUVEAUX schémas
+  components/blocks/{Badge,Titre,Texte,Boutons}Block.tsx → NOUVEAUX composants (memo + SectionWrapper)
+  components/blocks/BlockRenderer.tsx   → 4 dynamic imports + 4 cases + couleurTexte
+  components/blocks/ServiceLivePreviewWrapper.tsx → hero hardcodé SUPPRIMÉ → BlockRenderer pur
+  app/(site)/[locale]/villes/[slug]/page.tsx → hero hardcodé SUPPRIMÉ → BlockRenderer
+  lib/sectionOptions.ts + SectionWrapper.tsx → couleurTexte (auto/clair/sombre)
+  payload/collections/Settings.ts → +logoImage, copyright, navbarCTA, animations, gtm/ga4/pixel/clarity
+  components/layout/{Navbar,Footer}.tsx → logo image + CTA + copyright depuis Settings
+  components/layout/BandeauAnnonce(Server).tsx → NOUVEAU bandeau annonce (Settings.bandeauAlerte)
+  app/(site)/[locale]/layout.tsx → bandeau + WhatsApp conditionnel + analytics depuis Settings
+  middleware.ts → mode maintenance depuis Settings
+  payload/blocks/ServicesBlock.ts → colonnes (2/3/4) · StatsBlock.ts → couleurAccent (rouge/or)
+
+✅ FIX BUG PUSH HISTORIQUE (le "BUG ACTIF" #1 de ce fichier est RÉSOLU) :
+  payload.config.ts → beforeSchemaInit déclare les tables NextAuth (auth_users/accounts/
+  sessions/verification_tokens) dans le schéma Drizzle. push NE LES SUPPRIME PLUS.
+  → push:true est désormais SÛR. Procédure de sync DB sans TTY (ce qui a marché) :
+    1. Pré-créer des tables-stub (colonnes de base) pour les nouvelles tables blocs
+       → évite les prompts interactifs "create or rename table" de drizzle.
+    2. Aligner les contraintes auth sur les noms drizzle (auth_users_email_unique, *_fk).
+    3. Retirer colonnes orphelines (faq_id dans pages_rels/_pages_v_rels).
+    4. push:true → curl /api/services → push 100% additif → 200 → push:false.
+
+MIGRATION DONNÉES FAITE : 7 services + 24 villes ont reçu des blocs par défaut
+  (badge+titre+texte+boutons), PUBLIÉS. Pages services + villes rendent ces blocs en live.
+  (migration via route API temporaire getPayload — supprimée après usage car tsx incompatible Node v26)
+
+VÉRIFIÉ : tsc 0 erreur · ESLint 0 warning · /services/[slug] et /villes/[slug] rendent les blocs (HTTP 200)
+
+SUIVI BASSE PRIORITÉ : titre page /faq vient d'une clé i18n (traduisible) — restructuration
+  vers entrée Pages 'faq' non faite (gain mineur, contenu FAQ déjà géré par collection FAQ).
+
+COMMITS : b36d0e3 7b17a90 a2d04f7 4659a45 671a0c7 7410841 a389f17 b69913e 2ba818e
+          a82ec37 468892f ab538e1 f1adf32 3976b8c
+─────────────────────────────────────────────────────────────────────────────
+
 Date        : 2026-05-31 — ZÉRO HARDCODE : tout configurable depuis Payload CMS
 Session     : Dev 1
 Fichiers    :

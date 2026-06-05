@@ -7,6 +7,7 @@ export type SectionHauteur     = 'auto'   | 'demi'    | 'plein'
 export type SectionVisibilite  = 'toujours' | 'desktop' | 'mobile'
 export type SectionNiveauTitre = 'h1' | 'h2' | 'h3' | 'h4'
 export type SectionOverlay     = 'aucun' | 'leger' | 'moyen' | 'fort'
+export type SectionCouleurTexte = 'auto' | 'clair' | 'sombre'
 export type TypographieTaille  = 'petit' | 'normal' | 'grand'
 export type TypographieAlignement = 'gauche' | 'centre' | 'droite'
 export type TypographiePoids   = 'normal' | 'gras'
@@ -21,6 +22,7 @@ export interface SectionOptions {
   visibilite?:     SectionVisibilite    | null
   ancreId?:        string               | null
   niveauTitre?:    SectionNiveauTitre   | null
+  couleurTexte?:   SectionCouleurTexte  | null
 }
 
 export interface TypographieOptions {
@@ -69,6 +71,16 @@ const OVERLAY_CLASS: Record<SectionOverlay, string> = {
   leger:  'bg-[var(--color-bg-dark)]/30',
   moyen:  'bg-[var(--color-bg-dark)]/50',
   fort:   'bg-[var(--color-bg-dark)]/70',
+}
+
+const COULEUR_TEXTE: Record<SectionCouleurTexte, string> = {
+  auto:   '',
+  clair:  'text-[var(--color-text-light)]',
+  sombre: 'text-[var(--color-bg-dark)]',
+}
+
+export function resolveTextColor(opts?: SectionOptions | null): string {
+  return opts?.couleurTexte ? (COULEUR_TEXTE[opts.couleurTexte] ?? '') : ''
 }
 
 const TAILLE_TITRE: Record<TypographieTaille, string> = {

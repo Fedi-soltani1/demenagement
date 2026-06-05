@@ -9,9 +9,16 @@ import config from '@payload-config'
 import Link from 'next/link'
 import { COMPANY, LOCALES } from '@/lib/constants'
 import { buildMetadata } from '@/lib/seo'
-import { PhoneLink } from '@/components/ui/PhoneLink'
 import { Breadcrumb } from '@/components/layout/Breadcrumb'
-import { MapPin, CheckCircle } from 'lucide-react'
+import { VilleLivePreviewWrapper } from '@/components/blocks/VilleLivePreviewWrapper'
+import { GoogleReviewsBlock } from '@/components/blocks/GoogleReviewsBlock'
+import { CheckCircle } from 'lucide-react'
+
+import type { ServiceData }       from '@/components/blocks/ServicesBlock'
+import type { TestimonialData }   from '@/components/blocks/TestimonialsBlock'
+import type { BlogArticleData }   from '@/components/blocks/BlogPreviewBlock'
+import type { PartnerData }       from '@/components/blocks/PartnersBlock'
+import type { MapVille, MapPays } from '@/components/blocks/MapBlock'
 
 export const dynamic = 'force-dynamic'
 
@@ -25,10 +32,25 @@ type VilleDoc = {
   slug: string
   region: string
   servicesDisponibles?: string[] | null
+  blocks?: unknown[]
   seo?: { metaTitle?: string | null; metaDescription?: string | null } | null
 }
 
 type ServiceDoc = { id: string | number; nom: string; slug: string }
+
+type VilleMapDoc = {
+  nom?: string | null
+  slug?: string | null
+  region?: string | null
+  coordonnees?: { lat?: number | null; lng?: number | null } | null
+}
+
+type PaysDoc = {
+  nom?: string | null
+  slug?: string | null
+  drapeau?: string | null
+  coordonnees?: { lat?: number | null; lng?: number | null } | null
+}
 
 async function getVilleData(slug: string, locale: string) {
   noStore()
@@ -45,7 +67,7 @@ async function getVilleData(slug: string, locale: string) {
         : { and: [{ slug: { equals: slug } }, { publie: { equals: true } }] },
       locale: loc,
       limit: 1,
-      depth: 0,
+      depth: 2,
     }),
     payload.find({
       collection: 'services',
@@ -63,13 +85,19 @@ async function getVilleData(slug: string, locale: string) {
 
   if (!ville) return null
 
+  // Téléphone depuis les réglages globaux (fallback constante)
+  const settings = await payload
+    .findGlobal({ slug: 'settings', depth: 0 })
+    .catch(() => null) as { telephone1?: string | null } | null
+  const telephone = settings?.telephone1 ?? COMPANY.phone1
+
   // Filtrer les services selon servicesDisponibles si défini
   const selectedSlugs = ville.servicesDisponibles ?? []
   const services = selectedSlugs.length > 0
     ? allServices.filter((s) => selectedSlugs.includes(s.slug))
     : allServices
 
-  return { ville, services }
+  return { ville, services, telephone }
 }
 
 export async function generateStaticParams() {
@@ -95,8 +123,115 @@ export default async function VillePage({ params }: VillePageProps) {
   const data = await getVilleData(slug, locale)
   if (!data) notFound()
 
-  const { ville, services } = data
+  const { ville, services, telephone } = data
   const t = await getTranslations({ locale, namespace: 'Villes' })
+
+  // Données partagées passées aux blocs (mirroir de la page Service)
+  const payload = await getPayload({ config })
+  const loc = locale as 'fr' | 'ar' | 'en'
+
+  const [
+    servicesRes,
+    testimonialsRes,
+    blogRes,
+    partnersRes,
+    villesRes,
+    paysRes,
+    settingsRes,
+  ] = await Promise.all([
+    payload.find({
+      collection: 'services',
+      where: { publie: { equals: true } },
+      sort: 'ordre',
+      locale: loc,
+      limit: 12,
+    }).catch(() => ({ docs: [] as unknown[] })),
+
+    payload.find({
+      collection: 'testimonials',
+      where: { publie: { equals: true } },
+      sort: 'ordre',
+      limit: 20,
+    }).catch(() => ({ docs: [] as unknown[] })),
+
+    payload.find({
+      collection: 'blog',
+      where: { statut: { equals: 'publie' } },
+      sort: '-datePublication',
+      locale: loc,
+      limit: 3,
+      depth: 1,
+    }).catch(() => ({ docs: [] as unknown[] })),
+
+    payload.find({
+      collection: 'partners',
+      where: { publie: { equals: true } },
+      sort: 'ordre',
+      limit: 30,
+      depth: 1,
+    }).catch(() => ({ docs: [] as unknown[] })),
+
+    payload.find({
+      collection: 'villes',
+      where: { publie: { equals: true } },
+      sort: 'nom',
+      locale: loc,
+      limit: 50,
+      depth: 0,
+    }).catch(() => ({ docs: [] as unknown[] })),
+
+    payload.find({
+      collection: 'pays',
+      where: { publie: { equals: true } },
+      sort: 'nom',
+      locale: loc,
+      limit: 30,
+      depth: 0,
+    }).catch(() => ({ docs: [] as unknown[] })),
+
+    payload.findGlobal({ slug: 'settings', locale: loc, depth: 0 })
+      .catch(() => null),
+  ])
+
+  const s = settingsRes as {
+    telephone1?: string | null; email?: string | null; adresse?: string | null; horaires?: string | null
+    facebook?: string | null; instagram?: string | null; linkedin?: string | null; tiktok?: string | null; whatsapp?: string | null
+  } | null
+
+  // Données globales passées aux blocs Coordonnées / Réseaux sociaux
+  const siteSettings = {
+    telephone: s?.telephone1 ?? COMPANY.phone1,
+    email:     s?.email     ?? COMPANY.email,
+    adresse:   s?.adresse   ?? null,
+    horaires:  s?.horaires  ?? null,
+    facebook:  s?.facebook  ?? null,
+    instagram: s?.instagram ?? null,
+    linkedin:  s?.linkedin  ?? null,
+    tiktok:    s?.tiktok    ?? null,
+    whatsapp:  s?.whatsapp  ?? null,
+  }
+
+  const villesForMap: MapVille[] = (villesRes.docs as VilleMapDoc[])
+    .filter((v) => v.nom && v.slug && v.coordonnees?.lat != null && v.coordonnees?.lng != null)
+    .map((v) => ({ nom: v.nom!, slug: v.slug!, lat: v.coordonnees!.lat!, lng: v.coordonnees!.lng!, region: v.region ?? '' }))
+
+  const paysForMap: MapPays[] = (paysRes.docs as PaysDoc[])
+    .filter((p) => p.nom && p.slug && p.coordonnees?.lat != null && p.coordonnees?.lng != null)
+    .map((p) => ({ nom: p.nom!, slug: p.slug!, drapeau: p.drapeau ?? '', lat: p.coordonnees!.lat!, lng: p.coordonnees!.lng! }))
+
+  // Pré-rendu du bloc Google Reviews (configuré depuis le bloc présent dans la page)
+  type BlockWithType = { blockType: string; titre?: string | null; afficherNoteGlobale?: boolean | null; nombreAvis?: number | null; noteMinimum?: string | null; [key: string]: unknown }
+  const grBlock = (ville.blocks as BlockWithType[] | undefined)
+    ?.find((b) => b.blockType === 'google-reviews')
+
+  const googleReviewsNode = (
+    <GoogleReviewsBlock cms={{
+      titre:               grBlock?.titre ?? null,
+      afficherNoteGlobale: grBlock?.afficherNoteGlobale ?? null,
+      nombreAvis:          grBlock?.nombreAvis ?? null,
+      noteMinimum:         grBlock?.noteMinimum ? parseInt(grBlock.noteMinimum, 10) : null,
+    }} />
+  )
 
   return (
     <>
@@ -108,55 +243,21 @@ export default async function VillePage({ params }: VillePageProps) {
         ]}
       />
 
-      {/* Hero ville */}
-      <section className="relative py-24 px-container bg-[var(--color-bg-dark)] overflow-hidden">
-        <div
-          className="pointer-events-none absolute inset-0 opacity-[0.04]"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
-            backgroundRepeat: 'repeat',
-            backgroundSize: '128px 128px',
-          }}
-          aria-hidden="true"
-        />
-        <div
-          className="pointer-events-none absolute end-0 top-0 w-1/2 h-full opacity-10"
-          style={{ background: 'radial-gradient(ellipse 80% 80% at 80% 50%, #b52027 0%, transparent 70%)' }}
-          aria-hidden="true"
-        />
-
-        <div className="max-w-4xl mx-auto relative z-10">
-          <div className="flex items-center gap-2 mb-4">
-            <MapPin className="w-4 h-4 text-[var(--color-red)]" aria-hidden="true" />
-            <span className="font-body text-[var(--color-text-muted)] text-sm">{ville.region}</span>
-          </div>
-
-          <h1
-            className="font-heading font-bold text-[var(--color-text-light)] mb-6 leading-tight"
-            style={{ fontSize: 'clamp(2rem, 4vw, 3.5rem)' }}
-          >
-            {t('heroTitle', { name: ville.nom })}
-          </h1>
-
-          <p className="font-body text-[var(--color-text-muted)] text-lg leading-relaxed mb-10 max-w-2xl">
-            {t('heroSubtitle', { name: ville.nom })}
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-4">
-            <Link
-              href={`/devis?ville=${slug}`}
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[var(--color-red)] text-white font-body font-bold text-sm uppercase tracking-wider hover:bg-[var(--color-red-dark)] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)]"
-            >
-              {t('ctaDevis', { name: ville.nom })}
-            </Link>
-            <PhoneLink
-              numero={COMPANY.phone1}
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-full border border-[var(--color-text-light)]/20 text-[var(--color-text-muted)] font-body text-sm hover:border-[var(--color-text-light)]/40 hover:text-[var(--color-text-light)] transition-all duration-200"
-              showIcon
-            />
-          </div>
-        </div>
-      </section>
+      {/* Hero + contenu — entièrement côté client pour le live preview en temps réel */}
+      <VilleLivePreviewWrapper
+        initialVille={ville}
+        locale={locale}
+        slug={slug}
+        services={servicesRes.docs as ServiceData[]}
+        testimonials={testimonialsRes.docs as TestimonialData[]}
+        blog={blogRes.docs as BlogArticleData[]}
+        partners={partnersRes.docs as PartnerData[]}
+        villes={villesForMap}
+        pays={paysForMap}
+        googleReviewsNode={googleReviewsNode}
+        telephone={telephone}
+        settings={siteSettings}
+      />
 
       {/* Services disponibles */}
       {services.length > 0 && (

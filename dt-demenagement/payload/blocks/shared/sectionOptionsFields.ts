@@ -109,6 +109,21 @@ export const sectionOptionsFields: Field[] = [
           { label: 'H4 — Sous-sous-section',          value: 'h4' },
         ],
       },
+      {
+        // dbName raccourcit l'enum : _services_v_blocks_instagram_feed_section_options_couleur_texte > 63 chars → couleur
+        name: 'couleurTexte',
+        type: 'select',
+        label: 'Couleur du texte',
+        dbName: 'couleur',
+        admin: {
+          description: 'Auto = texte clair sur fond sombre. Choisir Sombre si le fond est clair/transparent.',
+        },
+        options: [
+          { label: 'Auto (selon fond)',        value: 'auto'   },
+          { label: 'Clair (blanc/gris clair)', value: 'clair'  },
+          { label: 'Sombre (noir/gris foncé)', value: 'sombre' },
+        ],
+      },
     ],
   },
 ]

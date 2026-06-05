@@ -1953,3 +1953,40 @@ input[type='radio']:checked {
   color: #4a5068 !important;
 }
 
+
+/* ───────────────────────────────────────────────────────────────────────────
+   FIX ÉDITEUR LEXICAL — barre d'outils + menus déroulants jamais clippés
+   (le custom CSS plus haut applique des overflow:hidden qui masquaient les
+    popovers du menu « + » et des dropdowns de la barre d'outils)
+   ─────────────────────────────────────────────────────────────────────────── */
+
+/* Conteneurs de l'éditeur : laisser déborder les menus flottants */
+.rich-text-lexical,
+.rich-text-lexical .editor-container,
+.field-type.richText,
+.field-type.richText .rich-text-lexical {
+  overflow: visible !important;
+}
+
+/* Barre d'outils fixe — toujours visible et cliquable */
+.rich-text-lexical .fixed-toolbar,
+.fixed-toolbar {
+  z-index: 30 !important;
+  pointer-events: auto !important;
+  position: sticky !important;
+  top: 0;
+}
+
+/* Popovers / dropdowns / menu « + » de Lexical au-dessus de tout */
+.toolbar-popup__dropdown,
+.toolbar-popup,
+.lexical-deselect,
+[class*="toolbar-popup"],
+[class*="slash-menu"],
+[class*="ToolbarDropdown"],
+.rich-text-lexical [role="menu"],
+.rich-text-lexical [role="listbox"] {
+  z-index: 10000 !important;
+  pointer-events: auto !important;
+  overflow: visible !important;
+}

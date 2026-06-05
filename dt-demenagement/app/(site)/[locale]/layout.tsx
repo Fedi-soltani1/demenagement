@@ -11,6 +11,9 @@ import { WhatsAppButton } from '@/components/layout/WhatsAppButton'
 import { CookieBanner } from '@/components/layout/CookieBanner'
 import { DevisModalProvider } from '@/components/layout/DevisModal'
 import { Analytics, GTMNoScript } from '@/components/analytics/Analytics'
+import { BandeauAnnonceServer } from '@/components/layout/BandeauAnnonceServer'
+import { getPayload } from 'payload'
+import config from '@payload-config'
 import { LOCALES } from '@/lib/constants'
 
 interface LocaleLayoutProps {
@@ -32,25 +35,48 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
   // Charge les messages pour ce locale (lus depuis messages/{locale}.json)
   const messages = await getMessages()
 
+  // Récupère whatsappActif et les IDs analytics depuis Settings (défaut: .env si erreur)
+  let whatsappActif = true
+  let analyticsIds = {
+    gtmId:       process.env.NEXT_PUBLIC_GTM_ID        ?? '',
+    metaPixelId: process.env.NEXT_PUBLIC_META_PIXEL_ID ?? '',
+    clarityId:   process.env.NEXT_PUBLIC_CLARITY_ID    ?? '',
+  }
+  try {
+    const payload = await getPayload({ config })
+    const settings = await payload.findGlobal({ slug: 'settings', depth: 0 }) as {
+      whatsappActif?: boolean
+      gtmId?: string | null
+      metaPixelId?: string | null
+      clarityId?: string | null
+    }
+    whatsappActif = settings.whatsappActif !== false
+    // Settings values override .env (admin can set without code deploy)
+    if (settings.gtmId)       analyticsIds.gtmId       = settings.gtmId
+    if (settings.metaPixelId) analyticsIds.metaPixelId = settings.metaPixelId
+    if (settings.clarityId)   analyticsIds.clarityId   = settings.clarityId
+  } catch { /* defaults */ }
+
   return (
     <NextIntlClientProvider messages={messages}>
       <ThemeProvider>
         <DevisModalProvider>
-          <GTMNoScript gtmId={process.env.NEXT_PUBLIC_GTM_ID} />
+          <GTMNoScript gtmId={analyticsIds.gtmId || undefined} />
           <Analytics
-            gtmId={process.env.NEXT_PUBLIC_GTM_ID}
-            metaPixelId={process.env.NEXT_PUBLIC_META_PIXEL_ID}
-            clarityId={process.env.NEXT_PUBLIC_CLARITY_ID}
+            gtmId={analyticsIds.gtmId || undefined}
+            metaPixelId={analyticsIds.metaPixelId || undefined}
+            clarityId={analyticsIds.clarityId || undefined}
           />
           <CustomCursor />
           <PageLoader />
+          <BandeauAnnonceServer locale={locale} />
           <NavbarServer />
           <main id="main-content">
             {children}
           </main>
           <FooterServer />
           <ScrollToTop />
-          <WhatsAppButton />
+          {whatsappActif && <WhatsAppButton />}
           <CookieBanner />
           <LivePreviewListener serverURL={process.env.NEXT_PUBLIC_PAYLOAD_URL ?? 'http://localhost:3000'} />
         </DevisModalProvider>

@@ -47,11 +47,12 @@ export type CmsApropos = {
   stat4Label?: string | null
 }
 
-export const StatsAboutBlock = memo(function StatsAboutBlock({ cms, sectionOptions, typoTitre, typoTexte }: {
+export const StatsAboutBlock = memo(function StatsAboutBlock({ cms, sectionOptions, typoTitre, typoTexte, couleurAccent }: {
   cms?: CmsApropos
   sectionOptions?: SectionOptions | null
   typoTitre?: TypographieOptions | null
   typoTexte?: TypographieOptions | null
+  couleurAccent?: 'rouge' | 'or' | null
 }) {
   const t = useTranslations('Home.about')
   const [videoOpen, setVideoOpen]       = useState(false)
@@ -81,6 +82,10 @@ export const StatsAboutBlock = memo(function StatsAboutBlock({ cms, sectionOptio
   const titleTypo  = resolveTitleTypography(typoTitre)
   const textTypo   = resolveTextTypography(typoTexte)
   const HeadingTag = resolveHeadingTag(sectionOptions)
+
+  const accentClass = couleurAccent === 'rouge'
+    ? 'text-[var(--color-red)]'
+    : 'text-[var(--color-gold)]'
 
   const STATS = [
     { target: cms?.stat1Valeur ?? parseInt(t('stat1Value'), 10), suffix: cms?.stat1Suffixe ?? t('stat1Suffix'), label: cms?.stat1Label ?? t('stat1Label') },
@@ -175,9 +180,9 @@ export const StatsAboutBlock = memo(function StatsAboutBlock({ cms, sectionOptio
                 <div className="flex items-baseline gap-0.5">
                   <CounterAnimation
                     target={isNaN(target) ? 0 : target}
-                    className="font-mono text-3xl font-bold text-[var(--color-gold)]"
+                    className={cx('font-mono text-3xl font-bold', accentClass)}
                   />
-                  <span className="font-mono text-xl font-bold text-[var(--color-gold)]">
+                  <span className={cx('font-mono text-xl font-bold', accentClass)}>
                     {suffix}
                   </span>
                 </div>

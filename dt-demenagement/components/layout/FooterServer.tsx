@@ -20,6 +20,8 @@ type SettingsDoc = {
   instagram?:        string | null
   tagline?:          string | null
   liensNavigation?:  Array<{ libelle?: string | null; chemin?: string | null; actif?: boolean | null }> | null
+  logoImage?:        { url?: string | null } | null
+  copyright?:        string | null
 }
 
 async function fetchAll(): Promise<{
@@ -31,48 +33,23 @@ async function fetchAll(): Promise<{
   noStore()
   const payload = await getPayload({ config })
 
-  // ── Services ───────────────────────────────────────────────────────────────
+  // ── Services — TOUJOURS tous les services publiés (indépendant de l'accueil) ──
+  // Un nouveau service publié apparaît automatiquement dans le footer.
   let services: NavService[] = []
   try {
-    const pageRes = await payload.find({
-      collection: 'pages',
-      where: { slug: { equals: 'accueil' } },
-      locale: 'fr',
-      limit: 1,
-      depth: 2,
-      draft: true,
-    })
-    const layout = (pageRes.docs[0] as { layout?: unknown[] } | undefined)?.layout ?? []
-    const block = layout.find(
-      (b): b is { blockType: string; services?: unknown[] } =>
-        typeof b === 'object' && b !== null &&
-        (b as { blockType?: string }).blockType === 'services'
-    )
-    const raw = block?.services ?? []
-    const populated: NavService[] = []
-    for (const s of raw) {
-      if (typeof s === 'object' && s !== null) {
-        const svc = s as { nom?: string | null; slug?: string | null }
-        if (svc.nom && svc.slug) populated.push({ nom: svc.nom, slug: svc.slug })
-      }
-    }
-    if (populated.length > 0) services = populated
-  } catch { /* fallback */ }
-
-  if (services.length === 0) {
     const res = await payload.find({
       collection: 'services',
       where: { publie: { equals: true } },
       sort: 'ordre',
       locale: 'fr',
-      limit: 12,
+      limit: 30,
       select: { nom: true, slug: true },
       depth: 0,
     })
     services = (res.docs as ServiceDoc[])
       .filter((d) => d.nom && d.slug)
       .map((d) => ({ nom: d.nom!, slug: d.slug! }))
-  }
+  } catch { /* garde la liste vide en cas d'erreur */ }
 
   // ── Villes publiées ────────────────────────────────────────────────────────
   let villes: NavVille[] = []
@@ -123,7 +100,7 @@ async function fetchAll(): Promise<{
     instagram:       COMPANY.instagram,
   }
   try {
-    const s = await payload.findGlobal({ slug: 'settings', locale: 'fr', depth: 0 }) as SettingsDoc
+    const s = await payload.findGlobal({ slug: 'settings', locale: 'fr', depth: 1 }) as SettingsDoc
     const liensNavigation: NavLien[] = Array.isArray(s.liensNavigation)
       ? (s.liensNavigation as Array<{ libelle?: string | null; chemin?: string | null; actif?: boolean | null }>)
           .filter((l) => l?.actif !== false && l?.libelle && l?.chemin)
@@ -141,6 +118,8 @@ async function fetchAll(): Promise<{
       instagram:        s.instagram       || COMPANY.instagram,
       tagline:          s.tagline         ?? null,
       liensNavigation:  liensNavigation.length > 0 ? liensNavigation : null,
+      logoUrl:          s.logoImage?.url  ?? null,
+      copyright:        s.copyright       ?? null,
     }
   } catch { /* garde les fallbacks */ }
 

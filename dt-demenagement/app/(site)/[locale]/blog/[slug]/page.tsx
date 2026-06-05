@@ -10,7 +10,15 @@ import { unstable_noStore as noStore } from 'next/cache'
 import { COMPANY, LOCALES } from '@/lib/constants'
 import { buildMetadata } from '@/lib/seo'
 import { Breadcrumb } from '@/components/layout/Breadcrumb'
+import { BlogLivePreviewWrapper } from '@/components/blocks/BlogLivePreviewWrapper'
+import { GoogleReviewsBlock } from '@/components/blocks/GoogleReviewsBlock'
 import { Clock, Calendar, User, ArrowLeft, Share2 } from 'lucide-react'
+
+import type { ServiceData }       from '@/components/blocks/ServicesBlock'
+import type { TestimonialData }   from '@/components/blocks/TestimonialsBlock'
+import type { BlogArticleData }   from '@/components/blocks/BlogPreviewBlock'
+import type { PartnerData }       from '@/components/blocks/PartnersBlock'
+import type { MapVille, MapPays } from '@/components/blocks/MapBlock'
 
 export const dynamic = 'force-dynamic'
 
@@ -26,6 +34,7 @@ type ArticleDoc = {
   titre: string
   extrait: string
   contenu?: unknown
+  blocks?: unknown[]
   imageAlaUne?: { url?: string; alt?: string } | null
   auteur?: string
   categories?: CategoryDoc[]
@@ -52,7 +61,7 @@ async function getArticle(slug: string, locale: string): Promise<ArticleDoc | nu
       : { and: [{ slug: { equals: slug } }, { statut: { equals: 'publie' } }] },
     locale: locale as 'fr' | 'ar' | 'en',
     limit: 1,
-    depth: 1,
+    depth: 2,
   })
   return (result.docs[0] as ArticleDoc) ?? null
 }
@@ -120,6 +129,124 @@ export default async function BlogArticlePage({ params }: BlogPageProps) {
   ])
 
   if (!article) notFound()
+
+  // Données partagées passées aux blocs (mirroir des pages Villes / Services)
+  const payload = await getPayload({ config })
+  const loc = locale as 'fr' | 'ar' | 'en'
+
+  const [
+    servicesRes,
+    testimonialsRes,
+    blogRes,
+    partnersRes,
+    villesRes,
+    paysRes,
+    settingsRes,
+  ] = await Promise.all([
+    payload.find({
+      collection: 'services',
+      where: { publie: { equals: true } },
+      sort: 'ordre',
+      locale: loc,
+      limit: 12,
+    }).catch(() => ({ docs: [] as unknown[] })),
+
+    payload.find({
+      collection: 'testimonials',
+      where: { publie: { equals: true } },
+      sort: 'ordre',
+      limit: 20,
+    }).catch(() => ({ docs: [] as unknown[] })),
+
+    payload.find({
+      collection: 'blog',
+      where: { statut: { equals: 'publie' } },
+      sort: '-datePublication',
+      locale: loc,
+      limit: 3,
+      depth: 1,
+    }).catch(() => ({ docs: [] as unknown[] })),
+
+    payload.find({
+      collection: 'partners',
+      where: { publie: { equals: true } },
+      sort: 'ordre',
+      limit: 30,
+      depth: 1,
+    }).catch(() => ({ docs: [] as unknown[] })),
+
+    payload.find({
+      collection: 'villes',
+      where: { publie: { equals: true } },
+      sort: 'nom',
+      locale: loc,
+      limit: 50,
+      depth: 0,
+    }).catch(() => ({ docs: [] as unknown[] })),
+
+    payload.find({
+      collection: 'pays',
+      where: { publie: { equals: true } },
+      sort: 'nom',
+      locale: loc,
+      limit: 30,
+      depth: 0,
+    }).catch(() => ({ docs: [] as unknown[] })),
+
+    payload.findGlobal({ slug: 'settings', locale: loc, depth: 0 })
+      .catch(() => null),
+  ])
+
+  const s = settingsRes as {
+    telephone1?: string | null; email?: string | null; adresse?: string | null; horaires?: string | null
+    facebook?: string | null; instagram?: string | null; linkedin?: string | null; tiktok?: string | null; whatsapp?: string | null
+  } | null
+
+  // Données globales passées aux blocs Coordonnées / Réseaux sociaux
+  const siteSettings = {
+    telephone: s?.telephone1 ?? COMPANY.phone1,
+    email:     s?.email     ?? COMPANY.email,
+    adresse:   s?.adresse   ?? null,
+    horaires:  s?.horaires  ?? null,
+    facebook:  s?.facebook  ?? null,
+    instagram: s?.instagram ?? null,
+    linkedin:  s?.linkedin  ?? null,
+    tiktok:    s?.tiktok    ?? null,
+    whatsapp:  s?.whatsapp  ?? null,
+  }
+
+  const telephone = siteSettings.telephone
+
+  type VilleMapDoc = {
+    nom?: string | null; slug?: string | null; region?: string | null
+    coordonnees?: { lat?: number | null; lng?: number | null } | null
+  }
+  type PaysDoc = {
+    nom?: string | null; slug?: string | null; drapeau?: string | null
+    coordonnees?: { lat?: number | null; lng?: number | null } | null
+  }
+
+  const villesForMap: MapVille[] = (villesRes.docs as VilleMapDoc[])
+    .filter((v) => v.nom && v.slug && v.coordonnees?.lat != null && v.coordonnees?.lng != null)
+    .map((v) => ({ nom: v.nom!, slug: v.slug!, lat: v.coordonnees!.lat!, lng: v.coordonnees!.lng!, region: v.region ?? '' }))
+
+  const paysForMap: MapPays[] = (paysRes.docs as PaysDoc[])
+    .filter((p) => p.nom && p.slug && p.coordonnees?.lat != null && p.coordonnees?.lng != null)
+    .map((p) => ({ nom: p.nom!, slug: p.slug!, drapeau: p.drapeau ?? '', lat: p.coordonnees!.lat!, lng: p.coordonnees!.lng! }))
+
+  // Pré-rendu du bloc Google Reviews (configuré depuis le bloc présent dans la page)
+  type BlockWithType = { blockType: string; titre?: string | null; afficherNoteGlobale?: boolean | null; nombreAvis?: number | null; noteMinimum?: string | null; [key: string]: unknown }
+  const grBlock = (article.blocks as BlockWithType[] | undefined)
+    ?.find((b) => b.blockType === 'google-reviews')
+
+  const googleReviewsNode = (
+    <GoogleReviewsBlock cms={{
+      titre:               grBlock?.titre ?? null,
+      afficherNoteGlobale: grBlock?.afficherNoteGlobale ?? null,
+      nombreAvis:          grBlock?.nombreAvis ?? null,
+      noteMinimum:         grBlock?.noteMinimum ? parseInt(grBlock.noteMinimum, 10) : null,
+    }} />
+  )
 
   return (
     <>
@@ -201,12 +328,21 @@ export default async function BlogArticlePage({ params }: BlogPageProps) {
             {article.extrait}
           </p>
 
-          {/* Corps de l'article (Lexical → rendu à l'Étape 29) */}
-          <div className="prose prose-invert max-w-none font-body text-[var(--color-text-muted)] leading-relaxed">
-            <p className="text-sm italic opacity-60">
-              Le contenu complet de cet article sera rendu avec le parseur Lexical à l&apos;Étape 29.
-            </p>
-          </div>
+          {/* Corps de l'article — block page-builder + Live Preview en temps réel */}
+          <BlogLivePreviewWrapper
+            initialArticle={article}
+            locale={locale}
+            slug={slug}
+            telephone={telephone}
+            settings={siteSettings}
+            services={servicesRes.docs as ServiceData[]}
+            testimonials={testimonialsRes.docs as TestimonialData[]}
+            blog={blogRes.docs as BlogArticleData[]}
+            partners={partnersRes.docs as PartnerData[]}
+            villes={villesForMap}
+            pays={paysForMap}
+            googleReviewsNode={googleReviewsNode}
+          />
 
           {/* Tags */}
           {article.tags && article.tags.length > 0 && (

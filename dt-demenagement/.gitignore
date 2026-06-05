@@ -48,3 +48,4 @@ storybook-static
 
 # Scripts d'administration DB — contiennent des credentials hardcodés
 scripts/*.mjs
+.superpowers/

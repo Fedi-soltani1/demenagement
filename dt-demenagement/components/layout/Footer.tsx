@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { PhoneLink } from '@/components/ui/PhoneLink'
@@ -117,14 +118,21 @@ function Footer({
 
           {/* ── Col 1 : Brand ── */}
           <div className="sm:col-span-2 lg:col-span-1">
-            {/* Logo placeholder */}
+            {/* Logo — image Payload Settings ou fallback texte */}
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-9 h-9 rounded-lg bg-[var(--color-red)] flex items-center justify-center shrink-0">
-                <span className="font-display text-white text-sm font-bold select-none">DT</span>
-              </div>
-              <span className="font-display text-[var(--color-text-light)] font-bold text-lg leading-none">
-                DT Déménagement
-              </span>
+              {settingsProp?.logoUrl ? (
+                <Image
+                  src={settingsProp.logoUrl}
+                  alt="DT Déménagement"
+                  width={120}
+                  height={36}
+                  className="h-9 w-auto object-contain"
+                />
+              ) : (
+                <span className="font-heading font-bold text-[var(--color-red)] text-lg tracking-wider">
+                  DT DÉMÉNAGEMENT
+                </span>
+              )}
             </div>
             <p className="text-sm text-[var(--color-text-muted)] leading-relaxed mb-5">
               {tagline ?? t('tagline')}
@@ -292,7 +300,7 @@ function Footer({
       <div className="border-t border-[var(--color-border)]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-xs text-[var(--color-text-muted)] text-center sm:text-start">
-            © {currentYear} DT Déménagement Tunisie. {t('rights')}
+            {settingsProp?.copyright ?? `© ${currentYear} DT Déménagement Tunisie. ${t('rights')}`}
           </p>
           <nav
             aria-label={t('legalNav')}

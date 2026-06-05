@@ -25,6 +25,11 @@ import Demenagements from './payload/collections/Demenagements'
 import RendezVous from './payload/collections/RendezVous'
 import Settings from './payload/collections/Settings'
 
+// Tables NextAuth (gérées par @auth/drizzle-adapter, hors Payload).
+// Déclarées dans le schéma Drizzle de Payload pour que `push` ne les supprime JAMAIS.
+// → Corrige le bug historique : push voulait drop auth_users/auth_sessions/etc.
+import { authUsers, authAccounts, authSessions, authVerificationTokens } from './lib/auth-schema'
+
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
@@ -40,8 +45,25 @@ export default buildConfig({
     },
     push: false,
     migrationDir: path.resolve(dirname, 'payload/migrations'),
+    // Enregistre les tables NextAuth dans le schéma Drizzle pour que push ne les drop pas
+    beforeSchemaInit: [
+      ({ schema }) => ({
+        ...schema,
+        tables: {
+          ...schema.tables,
+          authUsers,
+          authAccounts,
+          authSessions,
+          authVerificationTokens,
+        },
+      }),
+    ],
   }),
 
+  // Éditeur par défaut : barre d'outils INLINE (apparaît quand on sélectionne du
+  // texte) + toutes les fonctionnalités. La barre FIXE (FixedToolbarFeature) est
+  // évitée car elle provoque une boucle « Maximum update depth » quand les champs
+  // richText sont dans des blocs imbriqués (notre page builder) — bug confirmé 2×.
   editor: lexicalEditor({}),
 
   admin: {
