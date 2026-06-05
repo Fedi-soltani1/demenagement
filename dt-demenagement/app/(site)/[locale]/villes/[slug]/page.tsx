@@ -10,7 +10,7 @@ import Link from 'next/link'
 import { COMPANY, LOCALES } from '@/lib/constants'
 import { buildMetadata } from '@/lib/seo'
 import { Breadcrumb } from '@/components/layout/Breadcrumb'
-import { BlockRenderer } from '@/components/blocks/BlockRenderer'
+import { VilleLivePreviewWrapper } from '@/components/blocks/VilleLivePreviewWrapper'
 import { GoogleReviewsBlock } from '@/components/blocks/GoogleReviewsBlock'
 import { CheckCircle } from 'lucide-react'
 
@@ -243,9 +243,11 @@ export default async function VillePage({ params }: VillePageProps) {
         ]}
       />
 
-      {/* Hero + contenu — bibliothèque de blocs complète configurée dans l'admin */}
-      <BlockRenderer
-        blocks={(ville.blocks ?? []) as Array<{ blockType: string; id?: string; [key: string]: unknown }>}
+      {/* Hero + contenu — entièrement côté client pour le live preview en temps réel */}
+      <VilleLivePreviewWrapper
+        initialVille={ville}
+        locale={locale}
+        slug={slug}
         services={servicesRes.docs as ServiceData[]}
         testimonials={testimonialsRes.docs as TestimonialData[]}
         blog={blogRes.docs as BlogArticleData[]}

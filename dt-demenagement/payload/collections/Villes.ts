@@ -36,6 +36,7 @@ import { AccordeonBlock }      from '../blocks/AccordeonBlock'
 import { CoordonneesBlock }    from '../blocks/CoordonneesBlock'
 import { ReseauxBlock }        from '../blocks/ReseauxBlock'
 import { FormulaireBlock }     from '../blocks/FormulaireBlock'
+import { withShortSectionOptions } from '../blocks/shared/withShortSectionOptions'
 
 const Villes: CollectionConfig = {
   slug: 'villes',
@@ -60,6 +61,11 @@ const Villes: CollectionConfig = {
       const loc    = (locale as string) ?? 'fr'
       return `${base}/api/draft?secret=${secret}&collection=villes&slug=${slug}&locale=${loc}`
     },
+  },
+
+  // Brouillons + versions → Live Preview temps réel (comme Services)
+  versions: {
+    drafts: true,
   },
 
   // Onglets PRÉSENTATIONNELS (sans name) → séparent DONNÉES/SEO et PAGE dans l'admin,
@@ -205,7 +211,7 @@ const Villes: CollectionConfig = {
                 CustomBlock,
                 ProcessBlock,
                 PricingBlock,
-              ],
+              ].map(withShortSectionOptions),
             },
           ],
         },
