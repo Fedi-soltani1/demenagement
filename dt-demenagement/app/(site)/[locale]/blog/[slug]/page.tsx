@@ -9,6 +9,7 @@ import config from '@payload-config'
 import { unstable_noStore as noStore } from 'next/cache'
 import { COMPANY, LOCALES } from '@/lib/constants'
 import { buildMetadata } from '@/lib/seo'
+import { lexicalToHtml } from '@/lib/lexical-to-html'
 import { Breadcrumb } from '@/components/layout/Breadcrumb'
 import { Clock, Calendar, User, ArrowLeft, Share2 } from 'lucide-react'
 
@@ -201,12 +202,12 @@ export default async function BlogArticlePage({ params }: BlogPageProps) {
             {article.extrait}
           </p>
 
-          {/* Corps de l'article (Lexical → rendu à l'Étape 29) */}
-          <div className="prose prose-invert max-w-none font-body text-[var(--color-text-muted)] leading-relaxed">
-            <p className="text-sm italic opacity-60">
-              Le contenu complet de cet article sera rendu avec le parseur Lexical à l&apos;Étape 29.
-            </p>
-          </div>
+          {/* Corps de l'article — richText Lexical sérialisé en HTML */}
+          <div
+            className="lex-rich max-w-none"
+            // HTML sécurisé généré par lexicalToHtml (échappement intégré)
+            dangerouslySetInnerHTML={{ __html: lexicalToHtml(article.contenu) }}
+          />
 
           {/* Tags */}
           {article.tags && article.tags.length > 0 && (
