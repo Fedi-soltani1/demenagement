@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { env } from '@/lib/env'
+import { sendMail } from '@/lib/mailer'
 
 // Honeypot + rate limiting ultra-simple (sans Redis pour l'instant)
 // ⚠️ TODO: Brancher Upstash Redis quand UPSTASH_REDIS_REST_URL est configuré
@@ -145,22 +146,22 @@ export async function POST(request: Request) {
     meubles: await resolvePhotoUrls(d.photosMeubles ?? []),
   }
 
-  // Email de confirmation via fetch API Resend (sans dépendance SDK)
-  // ⚠️ Configuré quand RESEND_API_KEY est disponible
+  // Emails de confirmation via Hostinger SMTP — non bloquants
   try {
-    const sendEmail = async (to: string, subject: string, html: string) => {
-      await fetch('https://api.resend.com/emails', {
-        method:  'POST',
-        headers: { 'Authorization': `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ from: env.EMAIL_FROM, to, subject, html }),
-      })
-    }
     const emailPromises = [
-      sendEmail(env.EMAIL_DEVIS_TO, `Nouveau devis ${numeroDossier} — ${d.type} — ${d.prenom} ${d.nom}`, buildInternalEmail(d, numeroDossier, photoUrls)),
+      sendMail({
+        to:      env.EMAIL_DEVIS_TO,
+        subject: `Nouveau devis ${numeroDossier} — ${d.type} — ${d.prenom} ${d.nom}`,
+        html:    buildInternalEmail(d, numeroDossier, photoUrls),
+      }),
     ]
     if (d.email) {
       emailPromises.push(
-        sendEmail(d.email, `Votre demande de devis DT Déménagement — ${numeroDossier}`, buildClientEmail(d.prenom, numeroDossier))
+        sendMail({
+          to:      d.email,
+          subject: `Votre demande de devis DT Déménagement — ${numeroDossier}`,
+          html:    buildClientEmail(d.prenom, numeroDossier),
+        })
       )
     }
     await Promise.all(emailPromises)

@@ -4,10 +4,9 @@ import config from '@payload-config'
 import { renderToBuffer } from '@react-pdf/renderer'
 import { createElement, type ReactElement } from 'react'
 import type { DocumentProps } from '@react-pdf/renderer'
-import { Resend } from 'resend'
 import { z } from 'zod'
 import { DevisPDF } from '@/components/pdf/DevisPDF'
-import { env } from '@/lib/env'
+import { sendMail } from '@/lib/mailer'
 
 const ligneSchema = z.object({
   designation:  z.string().nullish(),
@@ -71,32 +70,29 @@ export async function POST(request: NextRequest): Promise<Response> {
     return Response.json({ error: 'Email client introuvable dans le dossier' }, { status: 422 })
   }
 
-  if (!env.RESEND_API_KEY) {
-    return Response.json({ error: 'RESEND_API_KEY non configurée — envoi email désactivé' }, { status: 500 })
-  }
-
   const element   = createElement(DevisPDF, { dossier }) as ReactElement<DocumentProps>
   const pdfBuffer = await renderToBuffer(element)
   const filename  = `Devis-${dossier.numeroDossier ?? parsed.data.dossierId}.pdf`
 
-  const resend = new Resend(env.RESEND_API_KEY)
-
-  const { error } = await resend.emails.send({
-    from: env.EMAIL_FROM || 'DT Déménagement <contact@demenagement.tn>',
-    to: clientEmail,
-    subject: `Votre devis DT Déménagement — ${dossier.numeroDossier ?? ''}`,
-    html: buildEmailHtml(dossier),
-    attachments: [{ filename, content: Buffer.from(pdfBuffer).toString('base64') }],
-  })
-
-  if (error) {
-    return Response.json({ error: error.message }, { status: 500 })
+  try {
+    await sendMail({
+      to:      clientEmail,
+      subject: `Votre devis DT Déménagement — ${dossier.numeroDossier ?? ''}`,
+      html:    buildEmailHtml(dossier),
+      attachments: [{ filename, content: Buffer.from(pdfBuffer) }],
+    })
+  } catch (mailErr) {
+    const msg = mailErr instanceof Error ? mailErr.message : 'Erreur envoi email'
+    return Response.json({ error: msg }, { status: 500 })
   }
 
   await payload.update({
     collection: 'demenagements',
     id: parsed.data.dossierId,
-    data: { devisStatut: 'envoye' },
+    data: {
+      devisStatut:   'envoye',
+      devisEnvoyeLe: new Date().toISOString(),
+    },
   })
 
   // Auto-post a system message in the dossier chat to trace the event

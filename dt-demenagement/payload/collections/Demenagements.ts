@@ -380,6 +380,36 @@ const Demenagements: CollectionConfig = {
       },
     },
     {
+      name: 'devisEnvoyeLe',
+      label: '📅 Devis envoyé le',
+      type: 'text',
+      admin: {
+        readOnly: true,
+        description: 'Rempli automatiquement quand l\'admin envoie le devis au client.',
+        condition: (data: Record<string, unknown>) => Boolean(data.devisEnvoyeLe),
+      },
+    },
+    {
+      name: 'devisReponduLe',
+      label: '✅ Client a répondu le',
+      type: 'text',
+      admin: {
+        readOnly: true,
+        description: 'Rempli automatiquement quand le client accepte ou refuse via l\'espace client.',
+        condition: (data: Record<string, unknown>) => Boolean(data.devisReponduLe),
+      },
+    },
+    {
+      name: 'devisCommentaireClient',
+      label: '💬 Commentaire du client (réponse devis)',
+      type: 'textarea',
+      admin: {
+        readOnly: true,
+        description: 'Commentaire laissé par le client lors de son acceptation ou refus.',
+        condition: (data: Record<string, unknown>) => Boolean(data.devisCommentaireClient),
+      },
+    },
+    {
       name: 'devisGenerateur',
       type: 'ui',
       label: '🚀 Générer et envoyer le devis',
