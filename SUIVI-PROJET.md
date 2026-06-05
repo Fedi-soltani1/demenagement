@@ -109,8 +109,19 @@ PAYS → parité 100% avec Services/Villes/Pages/Blog (commit 5a58d28) — 5e ty
   ⚠️ TECHNIQUE : push voulait supprimer contenu (data-loss) → prompt interactif bloquant.
      Solution : DROP manuel des colonnes en SQL AVANT push → push devient additif (non-interactif).
 
-═══ ÉTAT PAGE BUILDER : 5 types de page 100% synchronisés ═══
-  Services · Villes · Pages · Blog · Pays → tous : 35 blocs + onglets + drafts + Live Preview + SEO robots.
+BLOG — UNIFORMISATION MODÈLE PUBLICATION (commit 12c6ab2) :
+  - Champ statut (select brouillon/publié/planifié) → publie (checkbox), comme les 4 autres.
+    « Planifié » était une option MORTE (aucun cron) ; brouillon = couvert par versioning _status.
+  - 8 fichiers : requêtes blog statut equals publie → publie equals true (homepage/blog/villes/
+    services/pays/sitemap). seed.ts : corps en bloc RichText + publie:true.
+  - DB : migration statut→publie (6 articles + 12 versions, tous publie=true), colonnes statut +
+    enums (enum_blog_statut, enum__blog_v_version_statut) droppés. auth_users préservé (2).
+  - BUG PRÉ-EXISTANT corrigé : next.config avait /blog→/blog et /contact→/contact (source===
+    destination) → boucle redirect 308 infinie, pages inatteignables. Règles supprimées → 200.
+
+═══ ÉTAT PAGE BUILDER : 5 types de page 100% synchronisés + modèle publie uniforme ═══
+  Services · Villes · Pages · Blog · Pays → tous : 35 blocs + onglets + drafts + Live Preview
+  + SEO robots + champ `publie` (checkbox) uniforme. Audit cohérence OK (95 tables blocs chacun).
 
 ÉTAT bibliothèque 35 blocs : Services ✅ · Villes ✅ · Pages ✅ · Blog (contenu only) · Pays (data only)
 PROCHAIN : tabs sur Pages (optionnel) · bibliothèque sur Blog ? · pages par pays ? (nouvelles features)
