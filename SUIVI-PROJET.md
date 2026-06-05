@@ -66,7 +66,7 @@ CONSÉQUENCE : Les nouvelles colonnes ajoutées dans les collections Payload NE 
 ## 🤖 DERNIÈRE MISE À JOUR PAR CLAUDE CODE
 
 ```
-Date        : 2026-06-05 (suite) — PARITÉ COMPLÈTE VILLES + PAGES
+Date        : 2026-06-05 (suite) — PARITÉ COMPLÈTE VILLES + PAGES + BLOG
 Session     : Dev 1 (Opus)
 
 VILLES → parité 100% avec Services :
@@ -84,7 +84,16 @@ PAGES (accueil) → +12 nouveaux blocs (manquait RichText = aucun bloc texte!) �
   LivePreviewWrapper + page.tsx : fetch settings + passe telephone/settings au BlockRenderer.
   Pages avait déjà drafts + live preview. (tabs pas encore — champs natifs minimaux)
 
-BLOG : corps d'article rendu (oubli 'Étape 29') via lexicalToHtml + .lex-rich.
+BLOG → parité 100% avec Services/Villes/Pages (commit e6dcd51) :
+  - Blog.ts : 35 blocs (.map(withShortSectionOptions)) + 2 onglets (📊 Infos & SEO | 🧱 Page)
+    + seo.robots (index/follow) + versions: { drafts: true }.
+  - DB sync : push blog 200 (165s) → blog_blocks_* + _blog_v_blocks_* créées. push:false restauré.
+  - contenu richText des 6 articles MIGRÉ en bloc RichText (route temp /api/migrate-blog, done:6, supprimée).
+  - BlogLivePreviewWrapper.tsx (miroir Villes) : aperçu temps réel des blocs d'article.
+  - page article : rend les blocs via BlockRenderer (draft:isDraft) + données partagées
+    (services/avis/blog/partners/villes/pays/settings) ; header/meta/extrait/tags/JSON-LD conservés.
+  - Test : /fr/blog/demenager-tunis-quartiers-conseils → 200, .lex-rich présent (bloc migré rendu).
+  ⚠️ contenu (champ legacy) conservé sur Blog.ts mais plus rendu (corps = blocs maintenant).
 
 PAYS : PAS de page individuelle (pays/[slug] n'existe pas) → pas de page builder. Données only.
 
