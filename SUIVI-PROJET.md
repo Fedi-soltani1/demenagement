@@ -93,9 +93,24 @@ BLOG → parité 100% avec Services/Villes/Pages (commit e6dcd51) :
   - page article : rend les blocs via BlockRenderer (draft:isDraft) + données partagées
     (services/avis/blog/partners/villes/pays/settings) ; header/meta/extrait/tags/JSON-LD conservés.
   - Test : /fr/blog/demenager-tunis-quartiers-conseils → 200, .lex-rich présent (bloc migré rendu).
-  ⚠️ contenu (champ legacy) conservé sur Blog.ts mais plus rendu (corps = blocs maintenant).
+  ⚠️ contenu (champ legacy) SUPPRIMÉ (commit 5a58d28) : colonnes blog_locales.contenu +
+     _blog_v_locales.version_contenu droppées en base (script ponctuel). Corps = blocs.
 
-PAYS : PAS de page individuelle (pays/[slug] n'existe pas) → pas de page builder. Données only.
+PAYS → parité 100% avec Services/Villes/Pages/Blog (commit 5a58d28) — 5e type COMPLET :
+  - pays/[slug]/page.tsx CRÉÉE (chaque pays a enfin sa page individuelle, miroir Villes).
+  - Pays.ts : 35 blocs (.map(withShortSectionOptions)) + 2 onglets (📊 Infos & SEO | 🧱 Page)
+    + seo.robots + versions: { drafts: true }. Champs legacy conservés (textesSeo, infosPratiques).
+  - PaysLivePreviewWrapper.tsx (miroir Villes) : aperçu temps réel des blocs.
+  - DB sync : push pays 200 (194s) → pays_blocks_* (95) + _pays_v_blocks_* (95) + _pays_v créées,
+    seo_robots (index/follow), auth_users préservé (1). push:false restauré.
+  - Migration textesSeo+infosPratiques → blocs : 9 pays, done:0 (tous vides, rien à migrer).
+    → les 9 pays s'affichent avec header seul ; l'admin compose leur page via les blocs.
+  - Test : /fr/pays/malte → 200. Blog après drop contenu → 200.
+  ⚠️ TECHNIQUE : push voulait supprimer contenu (data-loss) → prompt interactif bloquant.
+     Solution : DROP manuel des colonnes en SQL AVANT push → push devient additif (non-interactif).
+
+═══ ÉTAT PAGE BUILDER : 5 types de page 100% synchronisés ═══
+  Services · Villes · Pages · Blog · Pays → tous : 35 blocs + onglets + drafts + Live Preview + SEO robots.
 
 ÉTAT bibliothèque 35 blocs : Services ✅ · Villes ✅ · Pages ✅ · Blog (contenu only) · Pays (data only)
 PROCHAIN : tabs sur Pages (optionnel) · bibliothèque sur Blog ? · pages par pays ? (nouvelles features)
