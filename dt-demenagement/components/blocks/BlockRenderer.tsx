@@ -89,10 +89,6 @@ const TitreBlock = dynamic(
   () => import('@/components/blocks/TitreBlock').then((m) => ({ default: m.TitreBlock })),
   { loading: sk('sm') },
 )
-const TexteBlock = dynamic(
-  () => import('@/components/blocks/TexteBlock').then((m) => ({ default: m.TexteBlock })),
-  { loading: sk('sm') },
-)
 const BoutonsBlock = dynamic(
   () => import('@/components/blocks/BoutonsBlock').then((m) => ({ default: m.BoutonsBlock })),
   { loading: sk('sm') },
@@ -948,15 +944,6 @@ export function BlockRenderer({
                 texte={str(block.texte) ?? ''}
                 sectionOptions={sectionOpts}
                 typoTitre={typoTitre}
-              />
-            )
-
-          case 'texte':
-            return (
-              <TexteBlock key={key}
-                texte={str(block.texte) ?? ''}
-                sectionOptions={sectionOpts}
-                typoTexte={typoTexte}
               />
             )
 
