@@ -66,6 +66,40 @@ CONSÉQUENCE : Les nouvelles colonnes ajoutées dans les collections Payload NE 
 ## 🤖 DERNIÈRE MISE À JOUR PAR CLAUDE CODE
 
 ```
+Date        : 2026-06-05 — TEXTE RICHE COMPLET + VILLES RÉPLIQUÉES + BLOG RÉPARÉ
+Session     : Dev 1 (Opus)
+
+ÉDITEUR TEXTE RICHE :
+  - lib/lexical-to-html.ts COMPLÉTÉ : tous les formats (barré, code, exposant/indice,
+    alignement, indentation, LISTE À COCHER avec état, ligne horizontale, liens Payload)
+  - classe .lex-rich dans app/globals.css : stylise titres/listes/checklist/citation/hr/code
+    (cause racine : @tailwindcss/typography PAS installé → 'prose' ne faisait rien)
+  - appliquée aux 5 blocs richText + à la page Blog
+  - ⚠️ FixedToolbarFeature RETIRÉ : boucle 'Maximum update depth' quand richText dans
+    blocs imbriqués (bug Payload confirmé 2×, même avec applyToFocusedEditor).
+    → barre INLINE par défaut (sur sélection) + menu '+' (CSS débloqué). NE PAS réessayer.
+
+UN SEUL BLOC TEXTE (option A) :
+  - bloc 'texte' simple SUPPRIMÉ, 'richtext' renommé « Texte » → un seul bloc formatable
+  - données migrées : 7 services + 24 villes (texte→richtext, sans perte)
+  - tables/enums 'texte' orphelins droppés. ⚠️ retirer un bloc = enums orphelins →
+    drizzle prompt 'rename enum' : DROP les tables+enums orphelins AVANT push.
+
+VILLES RÉPLIQUÉES (bibliothèque complète) :
+  - Villes.ts : 4 → 35 blocs (miroir Services, PAS de withShortSectionOptions car pas de
+    versioning sur villes)
+  - villes/[slug]/page.tsx : fetch toutes collections + settings + googleReviewsNode → BlockRenderer
+  - 95 tables villes_blocks_* synchronisées (push sûr, sans prompt). auth préservée.
+
+BLOG RÉPARÉ (oubli 'Étape 29' trouvé au balayage) :
+  - blog/[slug]/page.tsx : corps d'article était un PLACEHOLDER jamais rendu
+  - maintenant lexicalToHtml(article.contenu) + .lex-rich → contenu formaté affiché
+
+BALAYAGE Services : 35 blocs câblés 1:1 avec BlockRenderer ✅ · code mort TexteBlock nettoyé ✅
+
+PROCHAIN : répliquer aux Pages/Blog (même schéma) si voulu. FAQ inline déjà sur Services+Villes.
+─────────────────────────────────────────────────────────────────────────────
+
 Date        : 2026-06-03 (suite) — BIBLIOTHÈQUE DE 12 NOUVEAUX BLOCS sur SERVICES
 Session     : Dev 1 (Opus) — page builder Elementor complet
 
