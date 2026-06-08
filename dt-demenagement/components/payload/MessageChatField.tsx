@@ -112,7 +112,7 @@ export default function MessageChatField() {
   if (!id) {
     return (
       <div style={styles.empty}>
-        Sauvegardez d'abord le dossier pour accéder à la messagerie.
+        Sauvegardez d&apos;abord le dossier pour accéder à la messagerie.
       </div>
     )
   }

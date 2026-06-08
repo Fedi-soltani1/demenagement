@@ -158,6 +158,12 @@ const nextConfig: NextConfig = {
         hostname: '*.cdninstagram.com',
         pathname: '/**',
       },
+      {
+        // Miniatures vidéo YouTube (posters des blocs vidéo)
+        protocol: 'https',
+        hostname: 'img.youtube.com',
+        pathname: '/**',
+      },
     ],
   },
 

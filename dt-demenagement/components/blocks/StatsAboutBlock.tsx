@@ -249,10 +249,12 @@ export const StatsAboutBlock = memo(function StatsAboutBlock({ cms, sectionOptio
                 /* Miniature + bouton play custom */
                 <>
                   {videoUrl && extractYoutubeId(videoUrl) && !videoFichierUrl && (
-                    <img
+                    <Image
                       src={`https://img.youtube.com/vi/${extractYoutubeId(videoUrl)}/maxresdefault.jpg`}
                       alt=""
-                      className="absolute inset-0 w-full h-full object-cover"
+                      fill
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                      className="object-cover"
                       aria-hidden="true"
                     />
                   )}

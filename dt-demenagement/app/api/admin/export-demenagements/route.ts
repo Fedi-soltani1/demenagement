@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server'
 import { getPayload } from 'payload'
+import type { Where } from 'payload'
 import config from '@payload-config'
 
 function esc(val: unknown): string {
@@ -21,8 +22,7 @@ export async function GET(request: NextRequest): Promise<Response> {
   const { searchParams } = new URL(request.url)
   const statutFilter = searchParams.get('statut')
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const where: Record<string, any> = {}
+  const where: Where = {}
   if (statutFilter) where.statut = { equals: statutFilter }
 
   const result = await payload.find({

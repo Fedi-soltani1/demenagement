@@ -65,7 +65,6 @@ export async function GET(request: NextRequest): Promise<Response> {
       })),
       safeCount(payload.count({
         collection: 'demenagements',
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         where: { and: [
           { statut: { in: ['devis_recu', 'confirme', 'en_preparation', 'en_cours'] } },
           { dateDemenagement: { greater_than_or_equal: todayStart.toISOString() } as any },
