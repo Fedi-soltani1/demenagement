@@ -111,15 +111,6 @@ export function DevisSection({
   const [error,       setError]       = useState<string | null>(null)
   const [showLines,   setShowLines]   = useState(false)
 
-  if (!devisStatut || devisStatut === 'brouillon') return null
-
-  const daysLeft      = computeDaysLeft(devisEnvoyeLe, devisValiditeJours)
-  const isExpired     = daysLeft !== null && daysLeft <= 0
-  const isUrgent      = daysLeft !== null && daysLeft > 0 && daysLeft <= 5
-  const hasPrix       = prixTotalTTC != null && prixTotalTTC > 0
-  const hasLines      = (lignesDevis?.length ?? 0) > 0
-  const currentStatut = result ?? devisStatut
-
   const handleSubmit = useCallback(async () => {
     if (action === 'none') return
     if (action === 'accepte' && !confirmed) {
@@ -155,6 +146,18 @@ export function DevisSection({
   const handleDownload = useCallback(() => {
     window.open(`/api/client/devis-pdf/${encodeURIComponent(numeroDossier)}`, '_blank')
   }, [numeroDossier])
+
+  // Garde APRÈS tous les hooks (règle des hooks : les hooks doivent être appelés
+  // de façon inconditionnelle, dans le même ordre à chaque rendu — sinon crash React).
+  if (!devisStatut || devisStatut === 'brouillon') return null
+
+  // Valeurs dérivées (après la garde : devisStatut est garanti défini ici)
+  const daysLeft      = computeDaysLeft(devisEnvoyeLe, devisValiditeJours)
+  const isExpired     = daysLeft !== null && daysLeft <= 0
+  const isUrgent      = daysLeft !== null && daysLeft > 0 && daysLeft <= 5
+  const hasPrix       = prixTotalTTC != null && prixTotalTTC > 0
+  const hasLines      = (lignesDevis?.length ?? 0) > 0
+  const currentStatut = result ?? devisStatut
 
   return (
     <section

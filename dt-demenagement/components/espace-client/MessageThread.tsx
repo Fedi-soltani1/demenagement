@@ -45,7 +45,6 @@ export function MessageThread({ messages: initialMessages, dossierId, clientEmai
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify({ dossierId: Number(dossierId) }),
     }).catch(() => { /* non-blocking */ })
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dossierId])
 
   async function handleSend() {
