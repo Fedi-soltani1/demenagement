@@ -40,7 +40,15 @@ export default buildConfig({
 
   db: postgresAdapter({
     pool: {
-      connectionString: process.env.DATABASE_URL ?? '',
+      // Strip sslmode from URL — pg-connection-string warns when it sees 'require'.
+      // SSL is controlled explicitly below, so the URL param is redundant.
+      connectionString: (() => {
+        try {
+          const u = new URL(process.env.DATABASE_URL ?? '')
+          u.searchParams.delete('sslmode')
+          return u.toString()
+        } catch { return process.env.DATABASE_URL ?? '' }
+      })(),
       ssl: { rejectUnauthorized: false },
     },
     push: false,

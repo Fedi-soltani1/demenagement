@@ -7,6 +7,7 @@ import type { DocumentProps } from '@react-pdf/renderer'
 import { z } from 'zod'
 import { DevisPDF } from '@/components/pdf/DevisPDF'
 import { sendMail } from '@/lib/mailer'
+import { generateMagicLink } from '@/lib/generate-magic-link'
 
 const ligneSchema = z.object({
   designation:  z.string().nullish(),
@@ -74,11 +75,24 @@ export async function POST(request: NextRequest): Promise<Response> {
   const pdfBuffer = await renderToBuffer(element)
   const filename  = `Devis-${dossier.numeroDossier ?? parsed.data.dossierId}.pdf`
 
+  // Generate a magic link so the client can access their espace client in one click
+  let magicLink: string
+  try {
+    magicLink = await generateMagicLink(
+      clientEmail,
+      `/espace-client/${dossier.numeroDossier ?? ''}`,
+    )
+  } catch {
+    // Graceful fallback — still send the email with a standard connexion link
+    const base = process.env.NEXT_PUBLIC_SERVER_URL?.replace(/\/$/, '') ?? ''
+    magicLink = `${base}/connexion?callbackUrl=${encodeURIComponent(`/espace-client/${dossier.numeroDossier ?? ''}`)}`
+  }
+
   try {
     await sendMail({
       to:      clientEmail,
       subject: `Votre devis DT Déménagement — ${dossier.numeroDossier ?? ''}`,
-      html:    buildEmailHtml(dossier),
+      html:    buildEmailHtml(dossier, magicLink),
       attachments: [{ filename, content: Buffer.from(pdfBuffer) }],
     })
   } catch (mailErr) {
@@ -115,7 +129,7 @@ export async function POST(request: NextRequest): Promise<Response> {
   return Response.json({ success: true })
 }
 
-function buildEmailHtml(d: DossierFields): string {
+function buildEmailHtml(d: DossierFields, magicLink: string): string {
   const validite = d.devisValiditeJours ?? 30
   const prix = d.prixTotalTTC != null
     ? `${Math.round(d.prixTotalTTC).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} DT TTC`
@@ -149,15 +163,29 @@ function buildEmailHtml(d: DossierFields): string {
           <td style="padding:28px 32px;">
             <p style="color:#333;font-size:15px;margin:0 0 10px;">Bonjour ${d.nomComplet ?? 'cher client'},</p>
             <p style="color:#555;font-size:14px;line-height:1.7;margin:0 0 20px;">
-              Nous avons le plaisir de vous faire parvenir votre devis en pièce jointe.
+              Nous avons le plaisir de vous faire parvenir votre devis en pièce jointe.<br/>
+              Vous pouvez le consulter, l'accepter ou le refuser directement depuis votre espace client.
             </p>
-            <div style="background:#f9f9f9;border:1px solid #e0e0e0;border-left:4px solid #b52027;border-radius:4px;padding:16px 20px;margin-bottom:20px;">
+            <div style="background:#f9f9f9;border:1px solid #e0e0e0;border-left:4px solid #b52027;border-radius:4px;padding:16px 20px;margin-bottom:24px;">
               <p style="margin:0 0 4px;font-size:10px;color:#999;text-transform:uppercase;letter-spacing:1px;">Montant total TTC</p>
               <p style="margin:0;font-size:28px;font-weight:bold;color:#b52027;">${prix}</p>
               <p style="margin:6px 0 0;font-size:12px;color:#888;">Validité : ${validite} jours</p>
             </div>
-            <p style="color:#555;font-size:14px;line-height:1.7;margin:0 0 10px;">
-              Pour accepter ce devis ou pour toute question :
+            <!-- CTA bouton espace client -->
+            <table cellpadding="0" cellspacing="0" style="margin:0 0 28px;">
+              <tr>
+                <td align="center" style="background:#b52027;border-radius:8px;">
+                  <a href="${magicLink}"
+                     style="display:inline-block;padding:14px 32px;font-size:15px;font-weight:bold;color:#ffffff;text-decoration:none;letter-spacing:0.3px;">
+                    Consulter et répondre au devis →
+                  </a>
+                </td>
+              </tr>
+            </table>
+            <p style="color:#888;font-size:12px;margin:0 0 4px;">Ce lien est personnel et valable 24 heures.</p>
+            <p style="color:#aaa;font-size:11px;word-break:break-all;margin:0 0 24px;">${magicLink}</p>
+            <p style="color:#555;font-size:14px;line-height:1.7;margin:0 0 8px;">
+              Pour toute question, contactez-nous :
             </p>
             <ul style="color:#555;font-size:14px;line-height:2.2;margin:0 0 24px;">
               <li>Téléphone : <strong>+216 52 880 311</strong></li>
