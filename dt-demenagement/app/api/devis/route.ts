@@ -165,8 +165,14 @@ export async function POST(request: Request) {
       )
     }
     await Promise.all(emailPromises)
-  } catch {
-    // Email non bloquant — le dossier est créé dans tous les cas
+  } catch (mailErr) {
+    // Email NON bloquant — le dossier est créé dans tous les cas. MAIS on logue
+    // l'échec : sinon un problème SMTP (identifiants manquants, From rejeté par
+    // Hostinger…) passe totalement inaperçu et « le mail de confirmation n'arrive pas ».
+    payload.logger.error(
+      `[devis ${numeroDossier}] Échec envoi email de confirmation (SMTP) : ` +
+      (mailErr instanceof Error ? mailErr.message : String(mailErr)),
+    )
   }
 
   return NextResponse.json({ success: true, numeroDossier }, { status: 201 })
