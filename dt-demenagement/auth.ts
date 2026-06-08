@@ -31,7 +31,7 @@ if (!globalWithAuthPg._authPgClient) {
   globalWithAuthPg._authPgClient = postgres(env.DATABASE_URL, {
     max: 2,
     idle_timeout: 20,
-    ssl: 'require',
+    ssl: { rejectUnauthorized: false },
   })
 }
 

@@ -15,7 +15,7 @@ export async function generateMagicLink(email: string, callbackPath: string): Pr
 
   const expires = new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 h
 
-  const sql = postgres(env.DATABASE_URL, { max: 1, ssl: 'require' })
+  const sql = postgres(env.DATABASE_URL, { max: 1, ssl: { rejectUnauthorized: false } })
   try {
     await sql`
       INSERT INTO auth_verification_tokens (identifier, token, expires)
