@@ -34,10 +34,12 @@ const devisSchema = z.object({
   volumeEstime:   z.number().min(0).max(500).optional(),
   commentaire:    z.string().max(1000).optional(),
 
-  // IDs Payload Media — uploadés via /api/devis/upload
-  photosDepart:   z.array(z.string()).max(3).optional(),
-  photosArrivee:  z.array(z.string()).max(3).optional(),
-  photosMeubles:  z.array(z.string()).max(5).optional(),
+  // IDs Payload Media — uploadés via /api/devis/upload.
+  // Payload renvoie des IDs NUMÉRIQUES → on accepte string OU number (la route les
+  // convertit ensuite en nombre via .map(Number)). Sinon un upload de photo casse l'envoi (422).
+  photosDepart:   z.array(z.union([z.string(), z.number()])).max(3).optional(),
+  photosArrivee:  z.array(z.union([z.string(), z.number()])).max(3).optional(),
+  photosMeubles:  z.array(z.union([z.string(), z.number()])).max(5).optional(),
 })
 
 export async function POST(request: Request) {
@@ -132,7 +134,7 @@ export async function POST(request: Request) {
   }
 
   // Résoudre les URLs publiques des photos pour l'email
-  const resolvePhotoUrls = async (ids: string[]): Promise<string[]> => {
+  const resolvePhotoUrls = async (ids: (string | number)[]): Promise<string[]> => {
     if (!ids.length) return []
     const results = await Promise.allSettled(
       ids.map((id) => payload.findByID({ collection: 'media', id, overrideAccess: true }))
