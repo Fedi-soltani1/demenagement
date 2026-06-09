@@ -31,13 +31,17 @@ const devisSchema = z.object({
 
   services:       z.array(z.string()).min(1).max(6),
   dateSouhaitee:  z.string().optional(),
-  volumeEstime:   z.number().min(0).max(500).optional(),
+  // Volume estimé en m³ — limite généreuse pour couvrir les gros déménagements
+  // d'entreprise/entrepôt (500 était trop bas et bloquait l'envoi du devis en 422).
+  volumeEstime:   z.number().min(0).max(5000).optional(),
   commentaire:    z.string().max(1000).optional(),
 
-  // IDs Payload Media — uploadés via /api/devis/upload
-  photosDepart:   z.array(z.string()).max(3).optional(),
-  photosArrivee:  z.array(z.string()).max(3).optional(),
-  photosMeubles:  z.array(z.string()).max(5).optional(),
+  // IDs Payload Media — uploadés via /api/devis/upload.
+  // Payload renvoie des IDs NUMÉRIQUES → on accepte string OU number (la route les
+  // convertit ensuite en nombre via .map(Number)). Sinon un upload de photo casse l'envoi (422).
+  photosDepart:   z.array(z.union([z.string(), z.number()])).max(3).optional(),
+  photosArrivee:  z.array(z.union([z.string(), z.number()])).max(3).optional(),
+  photosMeubles:  z.array(z.union([z.string(), z.number()])).max(5).optional(),
 })
 
 export async function POST(request: Request) {
@@ -132,7 +136,7 @@ export async function POST(request: Request) {
   }
 
   // Résoudre les URLs publiques des photos pour l'email
-  const resolvePhotoUrls = async (ids: string[]): Promise<string[]> => {
+  const resolvePhotoUrls = async (ids: (string | number)[]): Promise<string[]> => {
     if (!ids.length) return []
     const results = await Promise.allSettled(
       ids.map((id) => payload.findByID({ collection: 'media', id, overrideAccess: true }))
@@ -172,8 +176,14 @@ export async function POST(request: Request) {
       )
     }
     await Promise.all(emailPromises)
-  } catch {
-    // Email non bloquant — le dossier est créé dans tous les cas
+  } catch (mailErr) {
+    // Email NON bloquant — le dossier est créé dans tous les cas. MAIS on logue
+    // l'échec : sinon un problème SMTP (identifiants manquants, From rejeté par
+    // Hostinger…) passe totalement inaperçu et « le mail de confirmation n'arrive pas ».
+    payload.logger.error(
+      `[devis ${numeroDossier}] Échec envoi email de confirmation (SMTP) : ` +
+      (mailErr instanceof Error ? mailErr.message : String(mailErr)),
+    )
   }
 
   return NextResponse.json({ success: true, numeroDossier }, { status: 201 })

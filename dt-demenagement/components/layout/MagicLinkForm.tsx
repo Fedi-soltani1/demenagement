@@ -31,7 +31,8 @@ export function MagicLinkForm({
     e.preventDefault()
     setError(null)
     startTransition(async () => {
-      const result = await signIn('resend', {
+      // Provider NextAuth « nodemailer » (lien magique via Hostinger SMTP, cf. auth.ts).
+      const result = await signIn('nodemailer', {
         email,
         redirect: false,
         callbackUrl: callbackUrl ?? `/espace-client`,
