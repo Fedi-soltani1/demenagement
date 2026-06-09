@@ -2,6 +2,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { PhoneLink } from '@/components/ui/PhoneLink'
+import { DevisButton } from '@/components/ui/DevisButton'
 import { COMPANY, SERVICES, VILLES, PAYS } from '@/lib/constants'
 import type { NavService, NavVille, NavPays, NavSettings, NavLien } from '@/components/layout/Navbar'
 
@@ -286,12 +287,9 @@ function Footer({
             </ul>
 
             {/* CTA devis */}
-            <Link
-              href="/devis"
-              className="inline-flex items-center justify-center w-full px-4 py-3 text-sm font-semibold rounded-[var(--radius-btn)] bg-[var(--color-red)] text-white hover:bg-[var(--color-red-dark)] hover:shadow-[0_0_20px_rgba(181,32,39,0.4)] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-bg-dark-2)]"
-            >
+            <DevisButton className="inline-flex items-center justify-center w-full px-4 py-3 text-sm font-semibold rounded-[var(--radius-btn)] bg-[var(--color-red)] text-white hover:bg-[var(--color-red-dark)] hover:shadow-[0_0_20px_rgba(181,32,39,0.4)] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-bg-dark-2)]">
               {t('devis')}
-            </Link>
+            </DevisButton>
           </div>
         </div>
       </div>

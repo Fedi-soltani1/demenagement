@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { setRequestLocale, getTranslations } from 'next-intl/server'
+import { DevisButton } from '@/components/ui/DevisButton'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { LOCALES, COMPANY } from '@/lib/constants'
@@ -128,12 +129,9 @@ export default async function ContactPage({
             <p className="font-body text-[var(--color-text-muted)] mb-5 text-base">
               {t('ctaText')}
             </p>
-            <Link
-              href="/devis"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[var(--color-red)] text-white font-body font-semibold text-sm uppercase tracking-wider hover:bg-[var(--color-red-dark)] hover:shadow-[0_0_24px_rgba(181,32,39,0.4)] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)]"
-            >
+            <DevisButton className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[var(--color-red)] text-white font-body font-semibold text-sm uppercase tracking-wider hover:bg-[var(--color-red-dark)] hover:shadow-[0_0_24px_rgba(181,32,39,0.4)] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)]">
               {t('ctaButton')} →
-            </Link>
+            </DevisButton>
           </div>
         </FadeIn>
       </section>

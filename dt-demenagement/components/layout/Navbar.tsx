@@ -370,7 +370,7 @@ function Navbar({
               ) : (
                 <button
                   type="button"
-                  onClick={openDevisModal}
+                  onClick={() => openDevisModal()}
                   className={ctaClass}
                 >
                   {settingsProp?.navbarCtaTexte ?? t('devis')}

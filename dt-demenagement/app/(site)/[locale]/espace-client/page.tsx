@@ -3,12 +3,14 @@ import { setRequestLocale } from 'next-intl/server'
 import { getTranslations } from 'next-intl/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import type { ReactNode } from 'react'
 import { auth } from '@/auth'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { COMPANY, LOCALES } from '@/lib/constants'
 import { Breadcrumb } from '@/components/layout/Breadcrumb'
 import { StatusBadge } from '@/components/espace-client/StatusBadge'
+import { DevisButton } from '@/components/ui/DevisButton'
 import { MapPin, Calendar, Package, ArrowRight, User } from 'lucide-react'
 import { SignOutButton } from '@/components/espace-client/SignOutButton'
 
@@ -119,8 +121,12 @@ export default async function EspaceClientPage({ params }: PageProps) {
             <EmptyState
               title={t('emptyTitle')}
               subtitle={t('emptySubtitle')}
-              ctaLabel={t('emptyCtaLabel')}
-              ctaHref="/devis"
+              cta={
+                <DevisButton className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-[var(--color-red)] text-white font-body font-bold text-sm uppercase tracking-wider hover:bg-[var(--color-red-dark)] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)]">
+                  {t('emptyCtaLabel')}
+                  <ArrowRight className="w-4 h-4" aria-hidden="true" />
+                </DevisButton>
+              }
             />
           ) : (
             <div className="space-y-4">
@@ -173,13 +179,10 @@ export default async function EspaceClientPage({ params }: PageProps) {
 
           {/* CTA nouveau devis */}
           <div className="mt-10 pt-8 border-t border-white/5 text-center">
-            <Link
-              href="/devis"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[var(--color-red)]/10 border border-[var(--color-red)]/20 text-[var(--color-red)] font-body font-semibold text-sm hover:bg-[var(--color-red)]/20 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)]"
-            >
+            <DevisButton className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[var(--color-red)]/10 border border-[var(--color-red)]/20 text-[var(--color-red)] font-body font-semibold text-sm hover:bg-[var(--color-red)]/20 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)]">
               {t('newDevisLabel')}
               <ArrowRight className="w-4 h-4" aria-hidden="true" />
-            </Link>
+            </DevisButton>
           </div>
 
         </div>
@@ -188,8 +191,8 @@ export default async function EspaceClientPage({ params }: PageProps) {
   )
 }
 
-function EmptyState({ title, subtitle, ctaLabel, ctaHref }: {
-  title: string; subtitle: string; ctaLabel: string; ctaHref: string
+function EmptyState({ title, subtitle, cta }: {
+  title: string; subtitle: string; cta: ReactNode
 }) {
   return (
     <div className="text-center py-20">
@@ -198,13 +201,7 @@ function EmptyState({ title, subtitle, ctaLabel, ctaHref }: {
       </div>
       <h2 className="font-heading font-semibold text-[var(--color-text-light)] text-xl mb-3">{title}</h2>
       <p className="font-body text-[var(--color-text-muted)] text-sm mb-8 max-w-sm mx-auto">{subtitle}</p>
-      <Link
-        href={ctaHref}
-        className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-[var(--color-red)] text-white font-body font-bold text-sm uppercase tracking-wider hover:bg-[var(--color-red-dark)] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)]"
-      >
-        {ctaLabel}
-        <ArrowRight className="w-4 h-4" aria-hidden="true" />
-      </Link>
+      {cta}
     </div>
   )
 }

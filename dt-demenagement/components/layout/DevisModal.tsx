@@ -18,7 +18,7 @@ import { ArrowRight, ArrowLeft, X, ClipboardList, Calendar, CheckCircle } from '
 // ─── Context ──────────────────────────────────────────────────────────────────
 
 interface DevisModalContextValue {
-  open: () => void
+  open: (opts?: { ville?: string }) => void
   close: () => void
 }
 
@@ -161,19 +161,21 @@ export function DevisModalProvider({ children }: { children: ReactNode }) {
   const dialogRef  = useRef<HTMLDivElement>(null)
   const triggerRef = useRef<HTMLElement | null>(null)
 
-  const [isOpen,    setIsOpen]    = useState(false)
-  const [screen,    setScreen]    = useState<Screen>('contact')
-  const [contact,   setContact]   = useState<ContactData>(CONTACT_INIT)
-  const [rdv,       setRdv]       = useState<RdvData>(RDV_INIT)
-  const [errors,    setErrors]    = useState<FieldErrors>({})
-  const [isPending, startTransition] = useTransition()
+  const [isOpen,       setIsOpen]       = useState(false)
+  const [screen,       setScreen]       = useState<Screen>('contact')
+  const [contact,      setContact]      = useState<ContactData>(CONTACT_INIT)
+  const [rdv,          setRdv]          = useState<RdvData>(RDV_INIT)
+  const [errors,       setErrors]       = useState<FieldErrors>({})
+  const [villeContext, setVilleContext] = useState<string | undefined>(undefined)
+  const [isPending,    startTransition] = useTransition()
 
-  const open = useCallback(() => {
+  const open = useCallback((opts?: { ville?: string }) => {
     triggerRef.current = document.activeElement as HTMLElement
     setScreen('contact')
     setContact(CONTACT_INIT)
     setRdv(RDV_INIT)
     setErrors({})
+    setVilleContext(opts?.ville)
     setIsOpen(true)
   }, [])
 
@@ -214,8 +216,8 @@ export function DevisModalProvider({ children }: { children: ReactNode }) {
   function handleChoiceDevis() {
     const { prenom, nom } = splitNomPrenom(contact.nomPrenom)
     const params = new URLSearchParams({ prenom, nom, telephone: contact.telephone })
-    if (contact.email) params.set('email', contact.email)
-    const locale = pathname.split('/')[1] ?? 'fr'
+    if (contact.email)  params.set('email', contact.email)
+    if (villeContext)   params.set('ville', villeContext)
     close()
     router.push(`/devis?${params.toString()}`)
   }

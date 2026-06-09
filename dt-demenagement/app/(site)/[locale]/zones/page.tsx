@@ -10,6 +10,7 @@ import { ZonesMapClient } from '@/components/blocks/ZonesMapClient'
 import type { MapVille, MapPays } from '@/components/blocks/ZonesMap'
 import { MapPin, Globe, ArrowRight } from 'lucide-react'
 import { FadeIn } from '@/components/ui/FadeIn'
+import { DevisButton } from '@/components/ui/DevisButton'
 
 // ISR — les zones changent très rarement
 export const revalidate = 604800
@@ -328,13 +329,10 @@ export default async function ZonesPage({ params }: ZonesPageProps) {
             {t('ctaTitle')}
           </h2>
           <p className="font-body text-[var(--color-text-muted)] mb-8">{t('ctaSub')}</p>
-          <Link
-            href="/devis"
-            className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[var(--color-red)] text-white font-body font-bold text-sm uppercase tracking-wider hover:bg-[var(--color-red-dark)] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)]"
-          >
+          <DevisButton className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[var(--color-red)] text-white font-body font-bold text-sm uppercase tracking-wider hover:bg-[var(--color-red-dark)] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)]">
             {t('ctaButton')}
             <ArrowRight className="w-4 h-4" aria-hidden="true" />
-          </Link>
+          </DevisButton>
         </FadeIn>
       </section>
 

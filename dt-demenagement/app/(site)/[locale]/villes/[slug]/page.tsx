@@ -7,6 +7,7 @@ import { unstable_noStore as noStore } from 'next/cache'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import Link from 'next/link'
+import { DevisButton } from '@/components/ui/DevisButton'
 import { COMPANY, LOCALES } from '@/lib/constants'
 import { buildMetadata } from '@/lib/seo'
 import { Breadcrumb } from '@/components/layout/Breadcrumb'
@@ -295,12 +296,12 @@ export default async function VillePage({ params }: VillePageProps) {
               {t('heroSubtitle', { name: ville.nom ?? slug })}
             </p>
           </div>
-          <Link
-            href={`/devis?ville=${encodeURIComponent(ville.nom ?? slug)}`}
+          <DevisButton
+            ville={ville.nom ?? slug}
             className="flex-shrink-0 inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[var(--color-red)] text-white font-body font-bold text-sm uppercase tracking-wider hover:bg-[var(--color-red-dark)] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)]"
           >
             {t('ctaDevis', { name: ville.nom ?? slug })} →
-          </Link>
+          </DevisButton>
         </div>
       </section>
 

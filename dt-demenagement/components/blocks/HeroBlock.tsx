@@ -370,7 +370,7 @@ export const HeroBlock = memo(function HeroBlock({ cms, sectionOptions, typoTitr
         >
           <button
             type="button"
-            onClick={openDevisModal}
+            onClick={() => openDevisModal()}
             className="group relative overflow-hidden rounded-full px-8 py-4 bg-[var(--color-red)] text-white font-body font-semibold text-sm uppercase tracking-wider transition-all duration-300 hover:shadow-[0_0_40px_rgba(181,32,39,0.5)] active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-bg-dark)] inline-flex items-center gap-2"
           >
             <span className="relative z-10 inline-flex items-center gap-2">

@@ -133,7 +133,7 @@ export const CTAFinalBlock = memo(function CTAFinalBlock({ cms, sectionOptions, 
             {/* Bouton principal blanc */}
             <button
               type="button"
-              onClick={openDevisModal}
+              onClick={() => openDevisModal()}
               className="group relative inline-flex items-center gap-3 px-8 py-4 rounded-full bg-white text-[var(--color-red)] font-body font-bold text-sm uppercase tracking-wider overflow-hidden transition-all duration-300 hover:shadow-[0_8px_32px_rgba(0,0,0,0.25)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-red)]"
             >
               {/* Liquid fill */}
