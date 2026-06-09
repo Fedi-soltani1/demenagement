@@ -3,7 +3,9 @@
 import { signIn } from '@/auth'
 export async function sendMagicLink(email: string, callbackUrl: string): Promise<{ error?: string }> {
   try {
-    await signIn('resend', { email, redirectTo: callbackUrl })
+    // Provider NextAuth « nodemailer » (envoie le lien via Hostinger SMTP, cf. auth.ts).
+    // ⚠️ Doit correspondre à l'id du provider configuré dans auth.ts (Nodemailer → 'nodemailer').
+    await signIn('nodemailer', { email, redirectTo: callbackUrl })
     return {}
   } catch (err) {
     // Next.js redirect errors (NEXT_REDIRECT) must propagate — they're not real errors
