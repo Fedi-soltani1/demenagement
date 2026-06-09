@@ -31,7 +31,9 @@ const devisSchema = z.object({
 
   services:       z.array(z.string()).min(1).max(6),
   dateSouhaitee:  z.string().optional(),
-  volumeEstime:   z.number().min(0).max(500).optional(),
+  // Volume estimé en m³ — limite généreuse pour couvrir les gros déménagements
+  // d'entreprise/entrepôt (500 était trop bas et bloquait l'envoi du devis en 422).
+  volumeEstime:   z.number().min(0).max(5000).optional(),
   commentaire:    z.string().max(1000).optional(),
 
   // IDs Payload Media — uploadés via /api/devis/upload.
