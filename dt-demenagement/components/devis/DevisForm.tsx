@@ -125,10 +125,11 @@ const stepVariants = {
 // ── Main component ────────────────────────────────────────────────────────────
 
 interface InitialContact {
-  prenom?:    string
-  nom?:       string
-  telephone?: string
-  email?:     string
+  prenom?:      string
+  nom?:         string
+  telephone?:   string
+  email?:       string
+  departVille?: string
 }
 
 export function DevisForm({
@@ -144,10 +145,11 @@ export function DevisForm({
   const [direction,  setDirection]  = useState(1)
   const [form, setForm] = useState<FormData>(() => ({
     ...INITIAL,
-    prenom:    initialContact?.prenom    ?? '',
-    nom:       initialContact?.nom       ?? '',
-    telephone: initialContact?.telephone ?? '',
-    email:     initialContact?.email     ?? '',
+    prenom:       initialContact?.prenom      ?? '',
+    nom:          initialContact?.nom         ?? '',
+    telephone:    initialContact?.telephone   ?? '',
+    email:        initialContact?.email       ?? '',
+    departVille:  initialContact?.departVille ?? '',
   }))
   const [fieldErrs,  setFieldErrs]  = useState<FieldErrors>({})
   const [success,    setSuccess]    = useState(false)

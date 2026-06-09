@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { getPayload } from 'payload'
 import config from '@payload-config'
+import { sendMail } from '@/lib/mailer'
+import { env } from '@/lib/env'
 
 // Endpoint léger pour le bloc « Formulaire de contact » embarquable.
 // Collecte un lead simple (nom, téléphone, email, message) et crée
@@ -88,6 +90,25 @@ export async function POST(request: Request): Promise<NextResponse> {
     // Ne jamais logger de données personnelles. On signale un échec générique.
     return NextResponse.json({ error: 'Enregistrement impossible' }, { status: 500 })
   }
+
+  // Email de notification admin (non-bloquant)
+  sendMail({
+    to:      env.EMAIL_DEVIS_TO,
+    subject: `📩 Nouveau message de contact — ${d.nom}`,
+    html: `<!DOCTYPE html>
+<html lang="fr"><head><meta charset="UTF-8"></head>
+<body style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;padding:24px;">
+  <div style="background:#0f0f0f;padding:16px 24px;border-radius:8px 8px 0 0;">
+    <h2 style="color:#fff;margin:0;font-size:16px;">DT Déménagement — Formulaire de contact</h2>
+  </div>
+  <table style="width:100%;border-collapse:collapse;background:#f9f9f9;border:1px solid #e0e0e0;border-top:none;">
+    <tr><td style="padding:10px 16px;font-weight:bold;width:120px;">Nom</td><td style="padding:10px 16px;">${d.nom.replace(/</g, '&lt;')}</td></tr>
+    <tr style="background:#fff;"><td style="padding:10px 16px;font-weight:bold;">Téléphone</td><td style="padding:10px 16px;">${d.telephone}</td></tr>
+    ${email ? `<tr><td style="padding:10px 16px;font-weight:bold;">Email</td><td style="padding:10px 16px;">${email}</td></tr>` : ''}
+    ${d.message ? `<tr style="background:#fff;"><td style="padding:10px 16px;font-weight:bold;vertical-align:top;">Message</td><td style="padding:10px 16px;white-space:pre-wrap;">${d.message.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</td></tr>` : ''}
+  </table>
+</body></html>`,
+  }).catch(() => { /* non-bloquant */ })
 
   return NextResponse.json({ success: true }, { status: 201 })
 }

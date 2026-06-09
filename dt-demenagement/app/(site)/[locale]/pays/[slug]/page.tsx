@@ -257,14 +257,14 @@ export default async function PaysPage({ params }: PaysPageProps) {
         <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
           <div>
             <p className="font-heading font-semibold text-[var(--color-text-light)] text-xl mb-1">
-              Prêt à déménager vers {pays.nom} ?
+              Prêt à déménager vers {pays.nom ?? slug} ?
             </p>
             <p className="font-body text-[var(--color-text-muted)] text-sm">
               Obtenez votre devis gratuit en moins de 24h.
             </p>
           </div>
           <Link
-            href={`/devis?pays=${slug}`}
+            href={`/devis?ville=${encodeURIComponent(pays.nom ?? slug)}`}
             className="flex-shrink-0 inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[var(--color-red)] text-white font-body font-bold text-sm uppercase tracking-wider hover:bg-[var(--color-red-dark)] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)]"
           >
             Devis gratuit →

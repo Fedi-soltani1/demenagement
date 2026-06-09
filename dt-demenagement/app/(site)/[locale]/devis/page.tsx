@@ -15,6 +15,8 @@ interface PageProps {
     nom?:       string
     telephone?: string
     email?:     string
+    ville?:     string
+    pays?:      string
   }>
 }
 
@@ -37,7 +39,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function DevisPage({ params, searchParams }: PageProps) {
   const { locale } = await params
-  const { type, prenom, nom, telephone, email } = await searchParams
+  const { type, prenom, nom, telephone, email, ville, pays } = await searchParams
   setRequestLocale(locale)
 
   const t = await getTranslations({ locale, namespace: 'Devis' })
@@ -125,7 +127,13 @@ export default async function DevisPage({ params, searchParams }: PageProps) {
             <DevisForm
               type={activeType}
               locale={locale}
-              initialContact={{ prenom, nom, telephone, email }}
+              initialContact={{
+                prenom,
+                nom,
+                telephone,
+                email,
+                departVille: ville ?? pays,
+              }}
             />
           </div>
 
