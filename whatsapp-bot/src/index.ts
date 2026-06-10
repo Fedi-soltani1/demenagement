@@ -1,4 +1,5 @@
 import { downloadMediaMessage, type WASocket, type proto } from '@whiskeysockets/baileys'
+import pino from 'pino'
 import { handleMessage } from './conversation.js'
 import { getSession, saveSession, type Session } from './sessions.js'
 import { createDevis, createRdv, uploadMedia } from './payloadClient.js'
@@ -30,6 +31,8 @@ function isPhotosStep(session: Session): boolean {
   return session.flux === 'devis' && DEVIS_STEPS[session.stepIndex]?.kind === 'photos'
 }
 
+const mediaLogger = pino({ level: 'silent' })
+
 async function send(sock: WASocket, jid: string, text: string): Promise<void> {
   await sock.sendMessage(jid, { text })
 }
@@ -48,12 +51,18 @@ async function onMessage(sock: WASocket, msg: proto.IWebMessageInfo): Promise<vo
       return
     }
     try {
-      const buffer = (await downloadMediaMessage(msg, 'buffer', {})) as Buffer
+      const buffer = (await downloadMediaMessage(
+        msg,
+        'buffer',
+        {},
+        { logger: mediaLogger, reuploadRequest: sock.updateMediaMessage },
+      )) as Buffer
       const id = await uploadMedia(buffer, image.mimetype ?? 'image/jpeg')
       session.mediaIds.push(id)
       saveSession(session)
       await send(sock, jid, `Photo reçue ✅ (${session.mediaIds.length}). Envoyez-en d'autres ou tapez OK.`)
-    } catch {
+    } catch (e) {
+      console.error('[photo]', e instanceof Error ? e.message : e)
       await send(sock, jid, "Désolé, je n'ai pas pu enregistrer cette photo. Réessayez ou tapez OK.")
     }
     return
