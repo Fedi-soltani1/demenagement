@@ -18,8 +18,11 @@ async function postJson<T>(path: string, body: unknown): Promise<T> {
 /** Upload d'une photo (buffer) -> renvoie l'id media Payload. */
 export async function uploadMedia(buffer: Buffer, mimetype: string): Promise<string> {
   const form = new FormData()
-  const ext = mimetype.split('/')[1] ?? 'jpg'
-  form.append('file', new Blob([new Uint8Array(buffer)], { type: mimetype }), `photo.${ext}`)
+  // Nom de fichier UNIQUE : Payload refuse les doublons de filename (sinon 500
+  // "filename invalid" dès la 2e photo, qui s'appelaient toutes "photo.jpg").
+  const ext = (mimetype.split('/')[1] ?? 'jpg').replace('jpeg', 'jpg')
+  const name = `wa-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`
+  form.append('file', new Blob([new Uint8Array(buffer)], { type: mimetype }), name)
   const res = await fetch(`${config.apiBaseUrl}/api/devis/upload`, { method: 'POST', body: form })
   if (!res.ok) throw new Error(`upload -> ${res.status}`)
   const json = (await res.json()) as { id: string }
