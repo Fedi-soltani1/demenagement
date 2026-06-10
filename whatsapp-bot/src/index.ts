@@ -5,6 +5,16 @@ import { createDevis, createRdv, uploadMedia } from './payloadClient.js'
 import { startSocket } from './connection.js'
 import { DEVIS_STEPS } from './flows.js'
 
+// Garde-fous globaux : Baileys lève parfois des erreurs internes transitoires
+// (ex : "Timed Out" 408 sur sendPassiveIq) non rattrapées qui crasheraient le
+// process. On les logue sans tuer le bot — la connexion reste ouverte.
+process.on('unhandledRejection', (reason) => {
+  console.error('[unhandledRejection]', reason instanceof Error ? reason.message : reason)
+})
+process.on('uncaughtException', (err) => {
+  console.error('[uncaughtException]', err instanceof Error ? err.message : err)
+})
+
 /** Extrait le numéro E.164 (+216…) depuis un JID WhatsApp (ex : 21652880311@s.whatsapp.net). */
 function numeroFromJid(jid: string): string {
   return '+' + jid.split('@')[0]!.split(':')[0]!
@@ -33,6 +43,10 @@ async function onMessage(sock: WASocket, msg: proto.IWebMessageInfo): Promise<vo
   // 1) Image reçue pendant l'étape photos -> télécharger + uploader
   const image = msg.message?.imageMessage
   if (image && isPhotosStep(session)) {
+    if (session.mediaIds.length >= 5) {
+      await send(sock, jid, 'Vous avez déjà 5 photos (le maximum). Tapez OK pour continuer.')
+      return
+    }
     try {
       const buffer = (await downloadMediaMessage(msg, 'buffer', {})) as Buffer
       const id = await uploadMedia(buffer, image.mimetype ?? 'image/jpeg')
@@ -76,7 +90,9 @@ async function onMessage(sock: WASocket, msg: proto.IWebMessageInfo): Promise<vo
 }
 
 startSocket((sock) => {
-  sock.ev.on('messages.upsert', ({ messages }) => {
-    for (const msg of messages) void onMessage(sock, msg)
+  // Traitement SÉQUENTIEL : si plusieurs photos arrivent en rafale, on les traite
+  // une par une (sinon course sur la session -> photos perdues).
+  sock.ev.on('messages.upsert', async ({ messages }) => {
+    for (const msg of messages) await onMessage(sock, msg)
   })
 })

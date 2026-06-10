@@ -42,9 +42,18 @@ export async function startSocket(
     }
     if (connection === 'close') {
       const code = (lastDisconnect?.error as Boom | undefined)?.output?.statusCode
-      const loggedOut = code === DisconnectReason.loggedOut
-      console.log(`⚠️ Connexion fermée (code ${code}).`, loggedOut ? 'Déconnecté — rescanner le QR.' : 'Reconnexion…')
-      if (!loggedOut) void startSocket(onReady)
+
+      if (code === DisconnectReason.loggedOut) {
+        console.log('⛔ Déconnecté (loggedOut). Supprimez le dossier auth/ et rescannez le QR.')
+        return
+      }
+      if (code === DisconnectReason.connectionReplaced) {
+        console.log('⛔ Session reprise par une AUTRE instance du bot. Une seule instance peut tourner à la fois — arrêt.')
+        process.exit(0)
+      }
+      // Reconnexion avec un petit délai pour éviter les boucles serrées.
+      console.log(`⚠️ Connexion fermée (code ${code}). Reconnexion dans 2 s…`)
+      setTimeout(() => void startSocket(onReady), 2000)
     }
   })
 }

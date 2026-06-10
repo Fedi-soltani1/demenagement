@@ -26,12 +26,39 @@ export async function uploadMedia(buffer: Buffer, mimetype: string): Promise<str
   return json.id
 }
 
+/**
+ * Convertit une date saisie au format libre en chaîne ISO.
+ * Gère JJ/MM/AAAA (et JJ-MM-AAAA, JJ.MM.AAAA) + tout ce que `new Date` sait lire.
+ * Renvoie null si non interprétable.
+ */
+function toIsoDate(input: string): string | null {
+  const t = input.trim()
+  const m = t.match(/^(\d{1,2})[/\-.](\d{1,2})[/\-.](\d{4})$/)
+  if (m) {
+    const d = new Date(Number(m[3]), Number(m[2]) - 1, Number(m[1]))
+    return isNaN(d.getTime()) ? null : d.toISOString()
+  }
+  const d = new Date(t)
+  return isNaN(d.getTime()) ? null : d.toISOString()
+}
+
 /** Crée un dossier devis. Renvoie le numéro de dossier. */
 export async function createDevis(session: Session): Promise<string> {
   const d = session.data
   const volume = typeof d.volumeEstime === 'string'
     ? Number(String(d.volumeEstime).replace(',', '.'))
     : undefined
+
+  // Le site fait new Date(dateSouhaitee).toISOString() : on doit envoyer une date
+  // parseable. Si la saisie est illisible, on la bascule dans le commentaire.
+  let dateSouhaitee: string | undefined
+  let commentaire = typeof d.commentaire === 'string' ? d.commentaire : undefined
+  if (typeof d.dateSouhaitee === 'string' && d.dateSouhaitee.trim()) {
+    const iso = toIsoDate(d.dateSouhaitee)
+    if (iso) dateSouhaitee = iso
+    else commentaire = [commentaire, `Date souhaitée : ${d.dateSouhaitee}`].filter(Boolean).join(' — ')
+  }
+
   const body = {
     type:       d.type,
     prenom:     d.prenom,
@@ -41,9 +68,9 @@ export async function createDevis(session: Session): Promise<string> {
     adresseDepart:  { adresse: d.adresseDepart,  ville: d.villeDepart },
     adresseArrivee: { adresse: d.adresseArrivee, ville: d.villeArrivee },
     services:       d.services,
-    dateSouhaitee:  d.dateSouhaitee,
+    dateSouhaitee,
     volumeEstime:   typeof volume === 'number' && Number.isFinite(volume) ? volume : undefined,
-    commentaire:    d.commentaire,
+    commentaire,
     photosMeubles:  session.mediaIds,
   }
   const json = await postJson<{ numeroDossier: string }>('/api/devis', body)
