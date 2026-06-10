@@ -105,13 +105,15 @@ git commit -m "feat(whatsapp): helper recap.ts — URL wa.me + normalisation num
 **Files:**
 - Modify: `components/layout/DevisModal.tsx`
 
-- [ ] **Step 1 : Étendre l'interface du contexte + l'import du helper**
+> ⚠️ Le code a évolué (commits `d21f367` / `a2915d3`) : `open` prend déjà `{ ville?, service? }` et `handleChoiceDevis` ajoute `ville`/`service`. On **fusionne** `whatsapp` dans la signature existante, on ne la remplace pas.
+
+- [ ] **Step 1 : Étendre la signature `open` du contexte + l'import du helper**
 
 Dans `components/layout/DevisModal.tsx`, remplacer la déclaration du contexte :
 
 ```typescript
 interface DevisModalContextValue {
-  open: () => void
+  open:  (opts?: { ville?: string; service?: string }) => void
   close: () => void
 }
 ```
@@ -119,12 +121,8 @@ interface DevisModalContextValue {
 par :
 
 ```typescript
-interface DevisModalOpenOptions {
-  whatsapp?: boolean
-}
-
 interface DevisModalContextValue {
-  open: (options?: DevisModalOpenOptions) => void
+  open:  (opts?: { ville?: string; service?: string; whatsapp?: boolean }) => void
   close: () => void
 }
 ```
@@ -135,39 +133,45 @@ Et ajouter l'import en tête (zone « composants internes ») :
 import { buildRecapUrl } from '@/lib/whatsapp/recap'
 ```
 
-- [ ] **Step 2 : Ajouter le state `waMode` et le passer dans `open`**
+- [ ] **Step 2 : Ajouter le state `waMode` et le renseigner dans `open`**
 
-Après `const [isOpen, setIsOpen] = useState(false)`, ajouter :
+Après la ligne `const [serviceContext,  setServiceContext]   = useState<string | undefined>(undefined)`, ajouter :
 
 ```typescript
-const [waMode, setWaMode] = useState(false)
+  const [waMode,          setWaMode]           = useState(false)
 ```
 
-Puis remplacer le `open` existant :
+Puis modifier la signature et le corps de `open` pour fusionner `whatsapp`. Remplacer :
 
 ```typescript
-  const open = useCallback(() => {
+  const open = useCallback((opts?: { ville?: string; service?: string }) => {
     triggerRef.current = document.activeElement as HTMLElement
     setScreen('contact')
     setContact(CONTACT_INIT)
     setRdv(RDV_INIT)
     setErrors({})
+    // opts priment sur l'auto-détection URL
+    setVilleContext(opts?.ville   ?? autoVille)
+    setServiceContext(opts?.service ?? autoService)
     setIsOpen(true)
-  }, [])
+  }, [autoVille, autoService])
 ```
 
 par :
 
 ```typescript
-  const open = useCallback((options?: DevisModalOpenOptions) => {
+  const open = useCallback((opts?: { ville?: string; service?: string; whatsapp?: boolean }) => {
     triggerRef.current = document.activeElement as HTMLElement
     setScreen('contact')
     setContact(CONTACT_INIT)
     setRdv(RDV_INIT)
     setErrors({})
-    setWaMode(options?.whatsapp ?? false)
+    // opts priment sur l'auto-détection URL
+    setVilleContext(opts?.ville   ?? autoVille)
+    setServiceContext(opts?.service ?? autoService)
+    setWaMode(opts?.whatsapp ?? false)
     setIsOpen(true)
-  }, [])
+  }, [autoVille, autoService])
 ```
 
 - [ ] **Step 3 : Propager `wa=1` vers /devis quand on est en mode WhatsApp**
@@ -176,15 +180,19 @@ Dans `handleChoiceDevis`, remplacer :
 
 ```typescript
     const params = new URLSearchParams({ prenom, nom, telephone: contact.telephone })
-    if (contact.email) params.set('email', contact.email)
+    if (contact.email)   params.set('email',   contact.email)
+    if (villeContext)    params.set('ville',    villeContext)
+    if (serviceContext)  params.set('service',  serviceContext)
 ```
 
 par :
 
 ```typescript
     const params = new URLSearchParams({ prenom, nom, telephone: contact.telephone })
-    if (contact.email) params.set('email', contact.email)
-    if (waMode) params.set('wa', '1')
+    if (contact.email)   params.set('email',   contact.email)
+    if (villeContext)    params.set('ville',    villeContext)
+    if (serviceContext)  params.set('service',  serviceContext)
+    if (waMode)          params.set('wa',       '1')
 ```
 
 - [ ] **Step 4 : Bouton récap sur l'écran de succès (RDV)**
