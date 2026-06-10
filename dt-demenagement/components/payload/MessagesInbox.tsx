@@ -76,7 +76,7 @@ export default function MessagesInbox() {
 
   useEffect(() => {
     void fetchAll()
-    const timer = setInterval(() => void fetchAll(), 10_000)
+    const timer = setInterval(() => void fetchAll(), 30_000)
     return () => clearInterval(timer)
   }, [])
 

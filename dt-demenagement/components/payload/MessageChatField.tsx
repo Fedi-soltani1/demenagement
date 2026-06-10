@@ -76,7 +76,7 @@ export default function MessageChatField() {
     void fetchMessages().then(() => {
       if (id) void markAsRead(Number(id))
     })
-    const timer = setInterval(() => void fetchMessages(), 10_000)
+    const timer = setInterval(() => void fetchMessages(), 30_000)
     return () => clearInterval(timer)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id])

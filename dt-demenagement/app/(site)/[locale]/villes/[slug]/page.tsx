@@ -3,7 +3,6 @@ import { draftMode } from 'next/headers'
 import type { Metadata } from 'next'
 import { setRequestLocale } from 'next-intl/server'
 import { getTranslations } from 'next-intl/server'
-import { unstable_noStore as noStore } from 'next/cache'
 import { getPayloadSafe } from '@/lib/payload-safe'
 import Link from 'next/link'
 import { DevisButton } from '@/components/ui/DevisButton'
@@ -20,7 +19,7 @@ import type { BlogArticleData }   from '@/components/blocks/BlogPreviewBlock'
 import type { PartnerData }       from '@/components/blocks/PartnersBlock'
 import type { MapVille, MapPays } from '@/components/blocks/MapBlock'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 3600
 
 interface VillePageProps {
   params: Promise<{ locale: string; slug: string }>
@@ -53,7 +52,6 @@ type PaysDoc = {
 }
 
 async function getVilleData(slug: string, locale: string) {
-  noStore()
   const { isEnabled: isDraft } = await draftMode()
   const payload = await getPayloadSafe()
   if (!payload) return null

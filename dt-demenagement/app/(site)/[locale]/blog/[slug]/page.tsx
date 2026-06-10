@@ -5,7 +5,6 @@ import type { Metadata } from 'next'
 import { setRequestLocale } from 'next-intl/server'
 import Image from 'next/image'
 import Link from 'next/link'
-import { unstable_noStore as noStore } from 'next/cache'
 import { COMPANY, LOCALES } from '@/lib/constants'
 import { buildMetadata } from '@/lib/seo'
 import { Breadcrumb } from '@/components/layout/Breadcrumb'
@@ -19,7 +18,7 @@ import type { BlogArticleData }   from '@/components/blocks/BlogPreviewBlock'
 import type { PartnerData }       from '@/components/blocks/PartnersBlock'
 import type { MapVille, MapPays } from '@/components/blocks/MapBlock'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 3600
 
 interface BlogPageProps {
   params: Promise<{ locale: string; slug: string }>
@@ -49,7 +48,6 @@ type ArticleDoc = {
 }
 
 async function getArticle(slug: string, locale: string): Promise<ArticleDoc | null> {
-  noStore()
   const { isEnabled: isDraft } = await draftMode()
   const payload = await getPayloadSafe()
   if (!payload) return null

@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { setRequestLocale, getTranslations } from 'next-intl/server'
 import { DevisButton } from '@/components/ui/DevisButton'
-import { unstable_noStore as noStore } from 'next/cache'
 import { getPayloadSafe } from '@/lib/payload-safe'
 import { LOCALES, COMPANY } from '@/lib/constants'
 import { buildMetadata } from '@/lib/seo'
@@ -10,7 +9,7 @@ import { FadeIn } from '@/components/ui/FadeIn'
 import { ServicesGrid } from '@/components/ui/ServicesGrid'
 import type { ServiceItem } from '@/components/ui/ServicesGrid'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 3600
 
 export async function generateStaticParams() {
   return LOCALES.map((locale) => ({ locale }))
@@ -41,7 +40,6 @@ export default async function ServicesPage({
 
   const t = await getTranslations({ locale, namespace: 'Home.services' })
 
-  noStore()
   const payload = await getPayloadSafe()
   const result  = payload
     ? await payload.find({
