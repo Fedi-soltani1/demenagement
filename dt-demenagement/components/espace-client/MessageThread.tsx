@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useTransition, useRef, useEffect } from 'react'
+import React, { useState, useTransition, useRef, useEffect, useCallback } from 'react'
 import { Send, Loader2, MessageSquare } from 'lucide-react'
 
 interface Message {
@@ -32,20 +32,56 @@ export function MessageThread({ messages: initialMessages, dossierId, clientEmai
   const [content,   setContent]   = useState('')
   const [error,     setError]     = useState('')
   const [isPending, startTransition] = useTransition()
-  const bottomRef = useRef<HTMLDivElement>(null)
+  const bottomRef    = useRef<HTMLDivElement>(null)
+  const latestIdRef  = useRef<string | number | null>(
+    initialMessages.length ? initialMessages[initialMessages.length - 1]!.id : null
+  )
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
-  // Mark admin messages as read by client on mount
+  // Mark admin messages as read on mount
   useEffect(() => {
     void fetch('/api/client/messages/mark-read', {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify({ dossierId: Number(dossierId) }),
-    }).catch(() => { /* non-blocking */ })
+    }).catch(() => {})
   }, [dossierId])
+
+  // Poll for new messages every 15 s — only appends truly new ones to avoid flicker
+  const poll = useCallback(async () => {
+    try {
+      const res = await fetch(`/api/client/messages?dossierId=${dossierId}`)
+      if (!res.ok) return
+      const data = await res.json() as { messages: Message[] }
+      if (!data.messages?.length) return
+
+      setMessages((prev) => {
+        const existingIds = new Set(prev.map((m) => String(m.id)))
+        const fresh = data.messages.filter((m) => !existingIds.has(String(m.id)))
+        if (!fresh.length) return prev
+        // Mark new admin messages as read
+        const hasNewAdmin = fresh.some((m) => m.auteur === 'admin')
+        if (hasNewAdmin) {
+          void fetch('/api/client/messages/mark-read', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({ dossierId: Number(dossierId) }),
+          }).catch(() => {})
+        }
+        const updated = [...prev, ...fresh]
+        latestIdRef.current = updated[updated.length - 1]!.id
+        return updated
+      })
+    } catch { /* silent */ }
+  }, [dossierId])
+
+  useEffect(() => {
+    const timer = setInterval(() => void poll(), 15_000)
+    return () => clearInterval(timer)
+  }, [poll])
 
   async function handleSend() {
     const trimmed = content.trim()
