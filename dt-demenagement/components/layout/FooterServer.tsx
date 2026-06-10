@@ -1,6 +1,6 @@
 import { getPayload } from 'payload'
 import config from '@payload-config'
-import { unstable_noStore as noStore } from 'next/cache'
+import { unstable_cache } from 'next/cache'
 import { Footer } from '@/components/layout/Footer'
 import type { NavService, NavVille, NavPays, NavSettings, NavLien } from '@/components/layout/Navbar'
 import { COMPANY, VILLES, PAYS } from '@/lib/constants'
@@ -35,14 +35,12 @@ const SETTINGS_FALLBACK: NavSettings = {
   instagram:       COMPANY.instagram,
 }
 
-async function fetchAll(): Promise<{
+async function _fetchAll(): Promise<{
   services: NavService[]
   villes:   NavVille[]
   pays:     NavPays[]
   settings: NavSettings
 }> {
-  noStore()
-
   let payload
   try {
     payload = await getPayload({ config })
@@ -147,6 +145,9 @@ async function fetchAll(): Promise<{
 
   return { services, villes, pays, settings }
 }
+
+// Cache footer data 5 minutes — shared cache key with navbar for deduplication
+const fetchAll = unstable_cache(_fetchAll, ['footer-data'], { revalidate: 300 })
 
 export async function FooterServer() {
   const { services, villes, pays, settings } = await fetchAll()

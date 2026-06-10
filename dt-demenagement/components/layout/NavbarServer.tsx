@@ -1,6 +1,6 @@
 import { getPayload } from 'payload'
 import config from '@payload-config'
-import { unstable_noStore as noStore } from 'next/cache'
+import { unstable_cache } from 'next/cache'
 import { Navbar } from '@/components/layout/Navbar'
 import type { NavService, NavVille, NavPays, NavSettings, NavLien } from '@/components/layout/Navbar'
 import { COMPANY, VILLES, PAYS } from '@/lib/constants'
@@ -36,14 +36,12 @@ const SETTINGS_FALLBACK: NavSettings = {
   instagram:       COMPANY.instagram,
 }
 
-async function fetchAll(): Promise<{
+async function _fetchAll(): Promise<{
   services: NavService[]
   villes:   NavVille[]
   pays:     NavPays[]
   settings: NavSettings
 }> {
-  noStore()
-
   let payload
   try {
     payload = await getPayload({ config })
@@ -150,6 +148,9 @@ async function fetchAll(): Promise<{
 
   return { services, villes, pays, settings }
 }
+
+// Cache navbar data 5 minutes — navbar changes only when CMS content changes
+const fetchAll = unstable_cache(_fetchAll, ['navbar-data'], { revalidate: 300 })
 
 export async function NavbarServer() {
   const { services, villes, pays, settings } = await fetchAll()
