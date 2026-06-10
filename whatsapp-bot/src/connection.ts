@@ -1,6 +1,7 @@
 // Connexion WhatsApp via Baileys : QR au 1er lancement, reconnexion auto.
 import makeWASocket, {
   useMultiFileAuthState,
+  fetchLatestBaileysVersion,
   DisconnectReason,
   type WASocket,
 } from '@whiskeysockets/baileys'
@@ -20,7 +21,12 @@ export async function startSocket(
 ): Promise<void> {
   const { state, saveCreds } = await useMultiFileAuthState('auth')
 
-  const sock = makeWASocket({ auth: state, logger })
+  // Récupère la dernière version de WhatsApp Web (évite l'erreur 405 "Connection Failure"
+  // due à une version périmée codée en dur dans Baileys).
+  const { version } = await fetchLatestBaileysVersion()
+  console.log(`ℹ️  Version WhatsApp Web utilisée : ${version.join('.')}`)
+
+  const sock = makeWASocket({ version, auth: state, logger })
 
   sock.ev.on('creds.update', saveCreds)
 
