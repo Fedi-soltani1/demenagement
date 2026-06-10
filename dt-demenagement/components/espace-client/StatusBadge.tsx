@@ -71,6 +71,11 @@ export function StatusProgress({ statut }: { statut: string }) {
           const current = i === activeIndex
           const future  = i > activeIndex
           const Icon = step.icon
+          const iconClass: string = done
+            ? 'bg-emerald-500 border-emerald-500 text-white'
+            : current
+            ? 'bg-[var(--color-red)] border-[var(--color-red)] text-white ring-4 ring-[var(--color-red)]/15'
+            : 'bg-[var(--color-bg-dark)] border-white/10 text-[var(--color-text-muted)]'
 
           return (
             <div
@@ -79,11 +84,7 @@ export function StatusProgress({ statut }: { statut: string }) {
               className={`relative flex items-start gap-4 py-3 transition-opacity ${future ? 'opacity-35' : ''}`}
             >
               {/* Icon circle */}
-              <div className={`relative z-10 w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 border transition-all ${
-                done    ? 'bg-emerald-500      border-emerald-500   text-white'                               :
-                current ? 'bg-[var(--color-red)] border-[var(--color-red)] text-white ring-4 ring-[var(--color-red)]/15' :
-                          'bg-[var(--color-bg-dark)] border-white/10  text-[var(--color-text-muted)]'
-              }`}>
+              <div className={`relative z-10 w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 border transition-all ${iconClass}`}>
                 <Icon className="w-3.5 h-3.5" aria-hidden="true" />
               </div>
 
