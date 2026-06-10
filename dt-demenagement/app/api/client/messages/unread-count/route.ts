@@ -12,26 +12,25 @@ export async function GET() {
     return NextResponse.json({ count: 0 })
   }
 
-  // Get all client's dossier IDs in one shot
   const dossiersResult = await payload.find({
     collection: 'demenagements',
-    where: { clientId: { equals: session.user.email } },
-    limit: 100,
-    depth: 0,
+    where:      { clientId: { equals: session.user.email } },
+    limit:      100,
+    depth:      0,
     overrideAccess: true,
   })
 
   const ids = dossiersResult.docs.map((d) => d.id as number)
   if (ids.length === 0) return NextResponse.json({ count: 0 })
 
-  // Count admin messages not yet read by client
+  // Use `or` instead of `in` — guaranteed to work on relationship fields in Payload v3
   const result = await payload.find({
     collection: 'messages',
     where: {
       and: [
-        { demenagement: { in: ids } },
-        { auteur:        { equals: 'admin' } },
-        { luParClient:   { equals: false } },
+        { or: ids.map((id) => ({ demenagement: { equals: id } })) },
+        { auteur:      { equals: 'admin' } },
+        { luParClient: { equals: false } },
       ],
     },
     limit: 0,

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 
+// Count unread client messages across all dossiers — used by admin nav badge
 export async function GET(request: Request) {
   let payload
   try { payload = await getPayload({ config }) } catch {
@@ -13,6 +14,8 @@ export async function GET(request: Request) {
     return NextResponse.json({ count: 0 })
   }
 
+  // Simple query: all messages with auteur=client and lu=false
+  // No relationship filter needed — works across all dossiers
   const result = await payload.find({
     collection: 'messages',
     where: {

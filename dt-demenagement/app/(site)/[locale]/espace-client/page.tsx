@@ -90,7 +90,7 @@ export default async function EspaceClientPage({ params }: PageProps) {
     dossiers = result.docs as DemenagementDoc[]
   }
 
-  // Unread messages count
+  // Unread messages count — use `or` on each dossier ID (safer than `in` on relationship fields)
   let messagesNonLus = 0
   if (payload && dossiers.length > 0) {
     const ids = dossiers.map((d) => d.id as number)
@@ -98,9 +98,9 @@ export default async function EspaceClientPage({ params }: PageProps) {
       collection: 'messages',
       where: {
         and: [
-          { demenagement: { in: ids } },
-          { auteur:        { equals: 'admin' } },
-          { luParClient:   { equals: false } },
+          { or: ids.map((id) => ({ demenagement: { equals: id } })) },
+          { auteur:      { equals: 'admin' } },
+          { luParClient: { equals: false } },
         ],
       },
       limit: 0,

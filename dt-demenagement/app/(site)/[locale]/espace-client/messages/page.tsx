@@ -7,7 +7,8 @@ import { auth } from '@/auth'
 import { getPayloadSafe } from '@/lib/payload-safe'
 import { COMPANY } from '@/lib/constants'
 import { Breadcrumb } from '@/components/layout/Breadcrumb'
-import { MessagesHub, type DossierConversation } from '@/components/espace-client/MessagesHub'
+import { MessagesHub } from '@/components/espace-client/MessagesHub'
+import type { ConversationStat } from '@/app/api/client/conversations/route'
 
 export const dynamic = 'force-dynamic'
 
@@ -15,25 +16,21 @@ interface PageProps { params: Promise<{ locale: string }> }
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title:   `Messages — ${COMPANY.name}`,
-    robots:  { index: false, follow: false },
+    title:  `Messages — ${COMPANY.name}`,
+    robots: { index: false, follow: false },
   }
 }
 
 type MessageDoc = {
-  id:          string | number
-  auteur:      'client' | 'admin'
-  contenu:     string
-  createdAt:   string
-  luParClient: boolean
+  id:           string | number
+  auteur:       'client' | 'admin'
+  contenu:      string
+  createdAt:    string
+  luParClient:  boolean
   demenagement: number | { id: number } | null
 }
 
-type DossierDoc = {
-  id:            number
-  numeroDossier: string
-  statut:        string
-}
+type DossierDoc = { id: number; numeroDossier: string; statut: string }
 
 export default async function MessagesPage({ params }: PageProps) {
   const { locale } = await params
@@ -43,11 +40,9 @@ export default async function MessagesPage({ params }: PageProps) {
   if (!session?.user?.email) redirect(`/${locale}/connexion`)
 
   const payload = await getPayloadSafe()
-
-  let dossiers: DossierConversation[] = []
+  let conversations: ConversationStat[] = []
 
   if (payload) {
-    // All client dossiers
     const dossiersResult = await payload.find({
       collection: 'demenagements',
       where:      { clientId: { equals: session.user.email } },
@@ -60,12 +55,11 @@ export default async function MessagesPage({ params }: PageProps) {
     const docs = dossiersResult.docs as DossierDoc[]
     const ids  = docs.map((d) => d.id)
 
-    // All messages for those dossiers in one query
     let allMessages: MessageDoc[] = []
     if (ids.length > 0) {
       const msgResult = await payload.find({
         collection: 'messages',
-        where:      { demenagement: { in: ids } },
+        where:      { or: ids.map((id) => ({ demenagement: { equals: id } })) },
         sort:       '-createdAt',
         limit:      1000,
         depth:      0,
@@ -74,45 +68,42 @@ export default async function MessagesPage({ params }: PageProps) {
       allMessages = msgResult.docs as MessageDoc[]
     }
 
-    // Group by dossier — messages already sorted desc, so first seen = latest
-    const latestMsg  = new Map<number, MessageDoc>()
-    const unreadMap  = new Map<number, number>()
+    const latestMsg = new Map<number, MessageDoc>()
+    const unreadMap = new Map<number, number>()
 
     for (const msg of allMessages) {
-      const dossierId = typeof msg.demenagement === 'number'
-        ? msg.demenagement
-        : (msg.demenagement as { id: number } | null)?.id ?? -1
-
-      if (!latestMsg.has(dossierId)) latestMsg.set(dossierId, msg)
-
+      const did =
+        typeof msg.demenagement === 'number'
+          ? msg.demenagement
+          : (msg.demenagement as { id: number } | null)?.id ?? -1
+      if (!latestMsg.has(did)) latestMsg.set(did, msg)
       if (msg.auteur === 'admin' && !msg.luParClient) {
-        unreadMap.set(dossierId, (unreadMap.get(dossierId) ?? 0) + 1)
+        unreadMap.set(did, (unreadMap.get(did) ?? 0) + 1)
       }
     }
 
-    dossiers = docs.map((d) => ({
-      id:            d.id,
-      numeroDossier: d.numeroDossier,
-      statut:        d.statut,
-      lastMessage: latestMsg.has(d.id)
-        ? {
-            contenu:   latestMsg.get(d.id)!.contenu,
-            auteur:    latestMsg.get(d.id)!.auteur,
-            createdAt: latestMsg.get(d.id)!.createdAt,
-          }
-        : null,
-      unreadCount: unreadMap.get(d.id) ?? 0,
-    }))
+    conversations = docs.map((d) => {
+      const lm = latestMsg.get(d.id)
+      return {
+        dossierId:     d.id,
+        numeroDossier: d.numeroDossier,
+        statut:        d.statut,
+        unreadCount:   unreadMap.get(d.id) ?? 0,
+        lastMessage: lm
+          ? { contenu: lm.contenu, auteur: lm.auteur, createdAt: lm.createdAt }
+          : null,
+      }
+    })
   }
 
-  const totalUnread = dossiers.reduce((acc, d) => acc + d.unreadCount, 0)
+  const totalUnread = conversations.reduce((n, c) => n + c.unreadCount, 0)
 
   return (
     <>
       <Breadcrumb
         items={[
-          { label: 'Accueil',       href: `/${locale}` },
-          { label: 'Mon espace',    href: `/${locale}/espace-client` },
+          { label: 'Accueil',    href: `/${locale}` },
+          { label: 'Mon espace', href: `/${locale}/espace-client` },
           { label: 'Messages' },
         ]}
       />
@@ -120,7 +111,6 @@ export default async function MessagesPage({ params }: PageProps) {
       <main className="min-h-screen bg-[var(--color-bg-dark)] py-10 px-container">
         <div className="max-w-5xl mx-auto">
 
-          {/* Header */}
           <div className="flex items-center gap-4 mb-8">
             <Link
               href={`/${locale}/espace-client`}
@@ -130,7 +120,7 @@ export default async function MessagesPage({ params }: PageProps) {
               <ArrowLeft className="w-4 h-4" aria-hidden="true" />
             </Link>
             <div className="flex items-center gap-3">
-              <h1 className="font-heading font-bold text-[var(--color-text-light)] text-xl leading-tight">
+              <h1 className="font-heading font-bold text-[var(--color-text-light)] text-xl">
                 Messages
               </h1>
               {totalUnread > 0 && (
@@ -142,7 +132,7 @@ export default async function MessagesPage({ params }: PageProps) {
           </div>
 
           <MessagesHub
-            dossiers={dossiers}
+            dossiers={conversations}
             locale={locale}
             clientEmail={session.user.email!}
           />
