@@ -108,10 +108,12 @@ export default async function ZonesPage({ params }: ZonesPageProps) {
   let paysResult:   { docs: PaysDoc[]  } = { docs: [] }
 
   if (payload) {
-    ;[villesResult, paysResult] = await Promise.all([
+    const [vR, pR] = await Promise.all([
       payload.find({ collection: 'villes', where: { publie: { equals: true } }, locale: locale as 'fr' | 'ar' | 'en', sort: 'nom', limit: 50 }),
       payload.find({ collection: 'pays',   where: { publie: { equals: true } }, locale: locale as 'fr' | 'ar' | 'en', sort: 'nom', limit: 20 }),
     ])
+    villesResult = vR as unknown as { docs: VilleDoc[] }
+    paysResult   = pR as unknown as { docs: PaysDoc[]  }
   }
 
   // Mapper les données Payload → format carte
