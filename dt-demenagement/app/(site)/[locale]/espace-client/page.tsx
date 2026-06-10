@@ -5,8 +5,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import type { ReactNode } from 'react'
 import { auth } from '@/auth'
-import { getPayload } from 'payload'
-import config from '@payload-config'
+import { getPayloadSafe } from '@/lib/payload-safe'
 import { COMPANY, LOCALES } from '@/lib/constants'
 import { Breadcrumb } from '@/components/layout/Breadcrumb'
 import { StatusBadge } from '@/components/espace-client/StatusBadge'
@@ -53,38 +52,41 @@ export default async function EspaceClientPage({ params }: PageProps) {
   if (!session?.user?.email) redirect('/connexion')
 
   const t = await getTranslations({ locale, namespace: 'EspaceClient' })
-  const payload = await getPayload({ config })
+  const payload = await getPayloadSafe()
 
-  // Créer la fiche client Payload si elle n'existe pas encore
-  const existingClient = await payload.find({
-    collection: 'clients',
-    where: { email: { equals: session.user.email } },
-    limit: 1,
-    overrideAccess: true,
-  })
-  if (existingClient.totalDocs === 0) {
-    const prefix = session.user.email.split('@')[0] ?? session.user.email
-    const parts  = prefix.replace(/[._-]+/g, ' ').trim().split(' ')
-    await payload.create({
+  let dossiers: DemenagementDoc[] = []
+
+  if (payload) {
+    // Créer la fiche client Payload si elle n'existe pas encore
+    const existingClient = await payload.find({
       collection: 'clients',
-      data: {
-        email:  session.user.email,
-        prenom: parts[0] ?? '—',
-        nom:    parts.slice(1).join(' ') || '—',
-      },
+      where: { email: { equals: session.user.email } },
+      limit: 1,
       overrideAccess: true,
     })
+    if (existingClient.totalDocs === 0) {
+      const prefix = session.user.email.split('@')[0] ?? session.user.email
+      const parts  = prefix.replace(/[._-]+/g, ' ').trim().split(' ')
+      await payload.create({
+        collection: 'clients',
+        data: {
+          email:  session.user.email,
+          prenom: parts[0] ?? '—',
+          nom:    parts.slice(1).join(' ') || '—',
+        },
+        overrideAccess: true,
+      })
+    }
+
+    const result = await payload.find({
+      collection: 'demenagements',
+      where:      { clientId: { equals: session.user.email } },
+      sort:       '-createdAt',
+      limit:      20,
+      overrideAccess: true,
+    })
+    dossiers = result.docs as DemenagementDoc[]
   }
-
-  const result = await payload.find({
-    collection: 'demenagements',
-    where:      { clientId: { equals: session.user.email } },
-    sort:       '-createdAt',
-    limit:      20,
-    overrideAccess: true,
-  })
-
-  const dossiers = result.docs as DemenagementDoc[]
 
   return (
     <>

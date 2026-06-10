@@ -1,9 +1,8 @@
-import { getPayload } from 'payload'
 import type { Metadata } from 'next'
 import { setRequestLocale } from 'next-intl/server'
 import { getTranslations } from 'next-intl/server'
 import Link from 'next/link'
-import config from '@payload-config'
+import { getPayloadSafe } from '@/lib/payload-safe'
 import { COMPANY, LOCALES } from '@/lib/constants'
 import { buildMetadata } from '@/lib/seo'
 import { lexicalToText } from '@/lib/lexical-to-text'
@@ -59,14 +58,16 @@ export default async function FAQPage({ params }: FAQPageProps) {
 
   const t = await getTranslations({ locale, namespace: 'FAQ' })
 
-  const payload = await getPayload({ config })
-  const result = await payload.find({
-    collection: 'faq',
-    where: { publie: { equals: true } },
-    locale: locale as 'fr' | 'ar' | 'en',
-    sort: 'ordre',
-    limit: 200,
-  })
+  const payload = await getPayloadSafe()
+  const result  = payload
+    ? await payload.find({
+        collection: 'faq',
+        where: { publie: { equals: true } },
+        locale: locale as 'fr' | 'ar' | 'en',
+        sort: 'ordre',
+        limit: 200,
+      }).catch(() => ({ docs: [] as unknown[] }))
+    : { docs: [] as unknown[] }
 
   const items: FAQItem[] = (result.docs as FAQDoc[]).map((doc) => ({
     id: String(doc.id),

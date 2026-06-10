@@ -360,7 +360,7 @@ function Navbar({
             <div className="hidden lg:flex items-center gap-2 ms-auto ps-4">
               <PhoneLink numero={phone1} source="navbar" />
               <ThemeToggle labelDark={t('switchToDark')} labelLight={t('switchToLight')} />
-              {settingsProp?.navbarCtaLien ? (
+              {settingsProp?.navbarCtaLien && !settingsProp.navbarCtaLien.startsWith('/devis') ? (
                 <Link
                   href={settingsProp.navbarCtaLien}
                   className={ctaClass}
@@ -498,7 +498,7 @@ function Navbar({
                 <PhoneLink numero={phone1} source="navbar-mobile" />
                 {phone2 && <PhoneLink numero={phone2} source="navbar-mobile" />}
               </div>
-              {settingsProp?.navbarCtaLien ? (
+              {settingsProp?.navbarCtaLien && !settingsProp.navbarCtaLien.startsWith('/devis') ? (
                 <Link
                   href={settingsProp.navbarCtaLien}
                   onClick={() => setIsMobileOpen(false)}

@@ -135,7 +135,7 @@ export async function POST(request: Request) {
 </html>`,
         })
       )
-      .catch(() => { /* non-bloquant */ })
+      .catch((err: unknown) => { console.error(`[admin/message] Échec notification client SMTP (dossier ${numeroDossier}) :`, err) })
   }
 
   // Lien admin vers le dossier pour référence

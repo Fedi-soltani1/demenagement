@@ -2,8 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { setRequestLocale, getTranslations } from 'next-intl/server'
 import { DevisButton } from '@/components/ui/DevisButton'
-import { getPayload } from 'payload'
-import config from '@payload-config'
+import { getPayloadSafe } from '@/lib/payload-safe'
 import { LOCALES, COMPANY } from '@/lib/constants'
 import { buildMetadata } from '@/lib/seo'
 import { MapPin, Phone, Mail, Clock } from 'lucide-react'
@@ -49,12 +48,12 @@ export default async function ContactPage({
 
   const [t, payload] = await Promise.all([
     getTranslations({ locale, namespace: 'Contact' }),
-    getPayload({ config }),
+    getPayloadSafe(),
   ])
 
   const settings = await payload
-    .findGlobal({ slug: 'settings', locale: loc })
-    .catch(() => null) as SettingsDoc | null
+    ?.findGlobal({ slug: 'settings', locale: loc })
+    .catch(() => null) as SettingsDoc | null ?? null
 
   const telephone = [settings?.telephone1 ?? COMPANY.phone1, settings?.telephone2 ?? COMPANY.phone2]
     .filter(Boolean)

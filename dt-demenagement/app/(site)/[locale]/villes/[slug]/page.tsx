@@ -4,8 +4,7 @@ import type { Metadata } from 'next'
 import { setRequestLocale } from 'next-intl/server'
 import { getTranslations } from 'next-intl/server'
 import { unstable_noStore as noStore } from 'next/cache'
-import { getPayload } from 'payload'
-import config from '@payload-config'
+import { getPayloadSafe } from '@/lib/payload-safe'
 import Link from 'next/link'
 import { DevisButton } from '@/components/ui/DevisButton'
 import { COMPANY, LOCALES } from '@/lib/constants'
@@ -56,7 +55,8 @@ type PaysDoc = {
 async function getVilleData(slug: string, locale: string) {
   noStore()
   const { isEnabled: isDraft } = await draftMode()
-  const payload = await getPayload({ config })
+  const payload = await getPayloadSafe()
+  if (!payload) return null
   const loc = locale as 'fr' | 'ar' | 'en'
 
   const [villeRes, servicesRes] = await Promise.all([
@@ -128,7 +128,7 @@ export default async function VillePage({ params }: VillePageProps) {
   const t = await getTranslations({ locale, namespace: 'Villes' })
 
   // Données partagées passées aux blocs (mirroir de la page Service)
-  const payload = await getPayload({ config })
+  const payload = await getPayloadSafe()
   const loc = locale as 'fr' | 'ar' | 'en'
 
   const [
@@ -139,7 +139,7 @@ export default async function VillePage({ params }: VillePageProps) {
     villesRes,
     paysRes,
     settingsRes,
-  ] = await Promise.all([
+  ] = payload ? await Promise.all([
     payload.find({
       collection: 'services',
       where: { publie: { equals: true } },
@@ -192,7 +192,11 @@ export default async function VillePage({ params }: VillePageProps) {
 
     payload.findGlobal({ slug: 'settings', locale: loc, depth: 0 })
       .catch(() => null),
-  ])
+  ]) : [
+    { docs: [] as unknown[] }, { docs: [] as unknown[] }, { docs: [] as unknown[] },
+    { docs: [] as unknown[] }, { docs: [] as unknown[] }, { docs: [] as unknown[] },
+    null,
+  ]
 
   const s = settingsRes as {
     telephone1?: string | null; email?: string | null; adresse?: string | null; horaires?: string | null

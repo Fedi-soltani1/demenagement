@@ -25,6 +25,17 @@ type SettingsDoc = {
   navbarCtaLien?:    string | null
 }
 
+const SETTINGS_FALLBACK: NavSettings = {
+  telephone1:      COMPANY.phone1,
+  telephone2:      COMPANY.phone2,
+  whatsapp:        COMPANY.whatsapp,
+  whatsappMessage: COMPANY.whatsappMessage,
+  email:           COMPANY.email,
+  adresse:         COMPANY.address,
+  facebook:        COMPANY.facebook,
+  instagram:       COMPANY.instagram,
+}
+
 async function fetchAll(): Promise<{
   services: NavService[]
   villes:   NavVille[]
@@ -32,7 +43,18 @@ async function fetchAll(): Promise<{
   settings: NavSettings
 }> {
   noStore()
-  const payload = await getPayload({ config })
+
+  let payload
+  try {
+    payload = await getPayload({ config })
+  } catch {
+    return {
+      services: [],
+      villes:   VILLES.map((v) => ({ nom: v.nom, slug: v.slug })),
+      pays:     PAYS.map((p) => ({ nom: p.nom, slug: p.slug, drapeau: p.drapeau })),
+      settings: SETTINGS_FALLBACK,
+    }
+  }
 
   // ── Services — TOUJOURS tous les services publiés (indépendant de l'accueil) ──
   // Un nouveau service publié apparaît automatiquement dans le menu, sans aucune
@@ -122,7 +144,7 @@ async function fetchAll(): Promise<{
       liensNavigation:  liensNavigation.length > 0 ? liensNavigation : null,
       logoUrl:          s.logoImage?.url  ?? null,
       navbarCtaTexte:   s.navbarCtaTexte  ?? null,
-      navbarCtaLien:    s.navbarCtaLien   ?? '/devis',
+      navbarCtaLien:    s.navbarCtaLien   ?? null,
     }
   } catch { /* garde les fallbacks */ }
 

@@ -949,11 +949,19 @@ export function BlockRenderer({
 
           case 'boutons': {
             type BoutonRaw = { texte?: unknown; lien?: unknown; style?: unknown }
-            const boutonItems = arr<BoutonRaw>(block.boutons).map((b) => ({
-              texte: str(b.texte),
-              lien:  str(b.lien),
-              style: str(b.style) as 'primaire' | 'secondaire' | 'telephone' | null,
-            }))
+            const boutonItems = arr<BoutonRaw>(block.boutons).map((b) => {
+              const lien  = str(b.lien)
+              const style = str(b.style)
+              // Rétrocompatibilité : bouton primaire qui pointe vers /devis → modal
+              const resolvedStyle = (style === 'primaire' && lien?.startsWith('/devis'))
+                ? 'devis'
+                : style
+              return {
+                texte: str(b.texte),
+                lien:  resolvedStyle === 'devis' ? null : lien,
+                style: resolvedStyle as 'primaire' | 'secondaire' | 'telephone' | 'devis' | null,
+              }
+            })
             return (
               <BoutonsBlock key={key}
                 boutons={boutonItems}
@@ -1024,11 +1032,19 @@ export function BlockRenderer({
 
           case 'media-texte': {
             type MediaBoutonRaw = { texte?: unknown; lien?: unknown; style?: unknown }
-            const mtBoutons = arr<MediaBoutonRaw>(block.boutons).map((b) => ({
-              texte: str(b.texte),
-              lien:  str(b.lien),
-              style: str(b.style) as 'primaire' | 'secondaire' | 'telephone' | null,
-            }))
+            const mtBoutons = arr<MediaBoutonRaw>(block.boutons).map((b) => {
+              const lien  = str(b.lien)
+              const style = str(b.style)
+              // Rétrocompatibilité : bouton primaire qui pointe vers /devis → modal
+              const resolvedStyle = (style === 'primaire' && lien?.startsWith('/devis'))
+                ? 'devis'
+                : style
+              return {
+                texte: str(b.texte),
+                lien:  resolvedStyle === 'devis' ? null : lien,
+                style: resolvedStyle as 'primaire' | 'secondaire' | 'telephone' | 'devis' | null,
+              }
+            })
             return (
               <MediaTexteBlock
                 key={key}

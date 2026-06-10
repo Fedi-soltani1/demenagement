@@ -260,8 +260,8 @@ export async function POST(request: Request): Promise<NextResponse> {
 
   try {
     await sendMail({ to: env.EMAIL_DEVIS_TO, subject: emailSubject, html: emailHtml })
-  } catch {
-    // Non-bloquant — échec silencieux
+  } catch (err) {
+    console.error(`[devis-response] Échec notification admin SMTP (${action} — ${numeroDossier}) :`, err)
   }
 
   // 10. Réponse de succès

@@ -108,7 +108,9 @@ export async function POST(request: Request): Promise<NextResponse> {
     ${d.message ? `<tr style="background:#fff;"><td style="padding:10px 16px;font-weight:bold;vertical-align:top;">Message</td><td style="padding:10px 16px;white-space:pre-wrap;">${d.message.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</td></tr>` : ''}
   </table>
 </body></html>`,
-  }).catch(() => { /* non-bloquant */ })
+  }).catch((err: unknown) => {
+    console.error('[contact] Échec notification admin SMTP :', err)
+  })
 
   return NextResponse.json({ success: true }, { status: 201 })
 }

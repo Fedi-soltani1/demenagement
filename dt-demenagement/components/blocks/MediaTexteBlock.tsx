@@ -1,9 +1,12 @@
+'use client'
+
 import { memo }                from 'react'
 import Image                   from 'next/image'
 import Link                    from 'next/link'
 import { PhoneLink }           from '@/components/ui/PhoneLink'
 import { SectionWrapper }      from '@/components/blocks/SectionWrapper'
 import { COMPANY }             from '@/lib/constants'
+import { useDevisModal }       from '@/components/layout/DevisModal'
 import type { SectionOptions, TypographieOptions } from '@/lib/sectionOptions'
 import { resolveHeadingTag, resolveTitleTypography, resolveTextTypography, cx } from '@/lib/sectionOptions'
 
@@ -11,7 +14,7 @@ import { resolveHeadingTag, resolveTitleTypography, resolveTextTypography, cx } 
 
 type MediaTextePosition = 'gauche' | 'droite' | 'haut' | 'bas'
 type MediaTexteTaille   = 'petite' | 'moyenne' | 'grande'
-type BoutonStyle        = 'primaire' | 'secondaire' | 'telephone'
+type BoutonStyle        = 'primaire' | 'secondaire' | 'telephone' | 'devis'
 
 interface MediaBouton {
   texte?: string | null
@@ -78,6 +81,7 @@ export const MediaTexteBlock = memo(function MediaTexteBlock({
   typoTitre,
   typoTexte,
 }: MediaTexteBlockProps) {
+  const { open: openDevisModal } = useDevisModal()
   const HeadingTag = resolveHeadingTag(sectionOptions)
   const titleTypo  = resolveTitleTypography(typoTitre)
   const textTypo   = resolveTextTypography(typoTexte)
@@ -161,6 +165,18 @@ export const MediaTexteBlock = memo(function MediaTexteBlock({
                       showIcon
                       className={CLS_SECONDARY}
                     />
+                  )
+                }
+                if (b.style === 'devis') {
+                  return (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => openDevisModal()}
+                      className={CLS_PRIMARY}
+                    >
+                      {b.texte}
+                    </button>
                   )
                 }
                 return (

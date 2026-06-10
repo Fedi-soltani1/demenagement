@@ -1,12 +1,15 @@
+'use client'
+
 import { memo }                from 'react'
 import Link                    from 'next/link'
 import { PhoneLink }           from '@/components/ui/PhoneLink'
 import { SectionWrapper }      from '@/components/blocks/SectionWrapper'
 import { COMPANY }             from '@/lib/constants'
+import { useDevisModal }       from '@/components/layout/DevisModal'
 import type { SectionOptions } from '@/lib/sectionOptions'
 import { cx }                  from '@/lib/sectionOptions'
 
-type BoutonStyle = 'primaire' | 'secondaire' | 'telephone'
+type BoutonStyle = 'primaire' | 'secondaire' | 'telephone' | 'devis'
 type BoutonAlign  = 'gauche' | 'centre' | 'droite'
 
 interface Bouton {
@@ -34,6 +37,8 @@ const CLS_SECONDARY = 'inline-flex items-center gap-2 px-8 py-4 rounded-full bor
 export const BoutonsBlock = memo(function BoutonsBlock({
   boutons, alignement = 'centre', sectionOptions, telephone,
 }: BoutonsBlockProps) {
+  const { open: openDevisModal } = useDevisModal()
+
   if (!boutons?.length) return null
   return (
     <SectionWrapper options={sectionOptions} defaultEspacement="serre">
@@ -43,6 +48,18 @@ export const BoutonsBlock = memo(function BoutonsBlock({
             return (
               <PhoneLink key={i} numero={telephone ?? COMPANY.phone1}
                 display={b.texte ?? undefined} showIcon className={CLS_SECONDARY} />
+            )
+          }
+          if (b.style === 'devis') {
+            return (
+              <button
+                key={i}
+                type="button"
+                onClick={() => openDevisModal()}
+                className={CLS_PRIMARY}
+              >
+                {b.texte}
+              </button>
             )
           }
           return (

@@ -1,9 +1,8 @@
 import { notFound } from 'next/navigation'
-import { getPayload } from 'payload'
+import { getPayloadSafe } from '@/lib/payload-safe'
 import { draftMode } from 'next/headers'
 import type { Metadata } from 'next'
 import { setRequestLocale } from 'next-intl/server'
-import config from '@payload-config'
 import { COMPANY, LOCALES } from '@/lib/constants'
 import { buildMetadata, serviceSchema } from '@/lib/seo'
 import { Breadcrumb } from '@/components/layout/Breadcrumb'
@@ -56,7 +55,8 @@ type PaysDoc = {
 }
 
 async function fetchService(slug: string, locale: string, isDraft: boolean): Promise<ServiceDoc | null> {
-  const payload = await getPayload({ config })
+  const payload = await getPayloadSafe()
+  if (!payload) return null
   const result = await payload.find({
     collection: 'services',
     draft: isDraft,
@@ -71,12 +71,13 @@ async function fetchService(slug: string, locale: string, isDraft: boolean): Pro
 }
 
 export async function generateStaticParams() {
-  const payload = await getPayload({ config })
+  const payload = await getPayloadSafe()
+  if (!payload) return []
   const result = await payload.find({
     collection: 'services',
     where: { publie: { equals: true } },
     limit: 100,
-  })
+  }).catch(() => ({ docs: [] as ServiceDoc[] }))
   const slugs = (result.docs as ServiceDoc[]).map((d) => d.slug)
   return LOCALES.flatMap((locale) => slugs.map((slug) => ({ locale, slug })))
 }
@@ -107,7 +108,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
   setRequestLocale(locale)
 
   const { isEnabled: isDraft } = await draftMode()
-  const payload = await getPayload({ config })
+  const payload = await getPayloadSafe()
   const loc = locale as 'fr' | 'ar' | 'en'
 
   // Fetch service + toutes les collections relationnelles en parallèle
@@ -120,7 +121,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
     villesRes,
     paysRes,
     settingsRes,
-  ] = await Promise.all([
+  ] = payload ? await Promise.all([
     fetchService(slug, locale, isDraft),
 
     payload.find({
@@ -175,7 +176,12 @@ export default async function ServicePage({ params }: ServicePageProps) {
 
     payload.findGlobal({ slug: 'settings', locale: loc, depth: 0 })
       .catch(() => null),
-  ])
+  ]) : [
+    null,
+    { docs: [] as unknown[] }, { docs: [] as unknown[] }, { docs: [] as unknown[] },
+    { docs: [] as unknown[] }, { docs: [] as unknown[] }, { docs: [] as unknown[] },
+    null,
+  ]
 
   if (!service) notFound()
 

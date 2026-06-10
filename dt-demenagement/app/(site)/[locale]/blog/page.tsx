@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import { setRequestLocale, getTranslations } from 'next-intl/server'
-import { getPayload } from 'payload'
-import config from '@payload-config'
+import { getPayloadSafe } from '@/lib/payload-safe'
 import { LOCALES, COMPANY } from '@/lib/constants'
 import { FadeIn } from '@/components/ui/FadeIn'
 import { BlogGrid } from '@/components/ui/BlogGrid'
@@ -36,17 +35,17 @@ export default async function BlogPage({
 
   const t = await getTranslations({ locale, namespace: 'Home.blog' })
 
-  const payload = await getPayload({ config })
-  const result  = await payload
-    .find({
-      collection: 'blog',
-      where: { publie: { equals: true } },
-      sort: '-datePublication',
-      locale: locale as 'fr' | 'ar' | 'en',
-      limit: 12,
-      depth: 1,
-    })
-    .catch(() => ({ docs: [] as unknown[] }))
+  const payload = await getPayloadSafe()
+  const result  = payload
+    ? await payload.find({
+        collection: 'blog',
+        where: { publie: { equals: true } },
+        sort: '-datePublication',
+        locale: locale as 'fr' | 'ar' | 'en',
+        limit: 12,
+        depth: 1,
+      }).catch(() => ({ docs: [] as unknown[] }))
+    : { docs: [] as unknown[] }
 
   const articles = result.docs as ArticleItem[]
 

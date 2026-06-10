@@ -23,6 +23,7 @@ import Clients from './payload/collections/Clients'
 import Messages from './payload/collections/Messages'
 import Demenagements from './payload/collections/Demenagements'
 import RendezVous from './payload/collections/RendezVous'
+import Leads from './payload/collections/Leads'
 import Settings from './payload/collections/Settings'
 
 // Tables NextAuth (gérées par @auth/drizzle-adapter, hors Payload).
@@ -140,6 +141,7 @@ export default buildConfig({
     Demenagements,
     Messages,
     RendezVous,
+    Leads,
 
     // 👥 Utilisateurs
     Clients,

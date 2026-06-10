@@ -4,8 +4,7 @@ import { getTranslations } from 'next-intl/server'
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
 import { auth } from '@/auth'
-import { getPayload } from 'payload'
-import config from '@payload-config'
+import { getPayloadSafe } from '@/lib/payload-safe'
 import { COMPANY } from '@/lib/constants'
 import { Breadcrumb } from '@/components/layout/Breadcrumb'
 import { StatusBadge, StatusProgress } from '@/components/espace-client/StatusBadge'
@@ -77,7 +76,8 @@ export default async function DossierPage({ params }: PageProps) {
   if (!session?.user?.email) redirect('/connexion')
 
   const t = await getTranslations({ locale, namespace: 'EspaceClient' })
-  const payload = await getPayload({ config })
+  const payload = await getPayloadSafe()
+  if (!payload) notFound()
 
   // Vérifier que le dossier appartient au client connecté
   const result = await payload.find({

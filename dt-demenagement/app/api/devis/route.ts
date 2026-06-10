@@ -70,37 +70,42 @@ export async function POST(request: Request) {
   const payload = await getPayload({ config })
 
   // Créer le dossier dans Payload CMS
-  await payload.create({
-    collection: 'demenagements',
-    data: {
-      numeroDossier,
-      clientId:    d.email,
-      nomComplet:  `${d.prenom} ${d.nom}`,
-      telephone:   d.telephone,
-      typeClient:  d.type,
-      commentaire: d.commentaire,
-      statut:      'devis_recu',
-      adresseDepart: {
-        adresse:   d.adresseDepart.adresse,
-        ville:     d.adresseDepart.ville,
-        etage:     d.adresseDepart.etage ?? 'RDC',
-        ascenseur: d.adresseDepart.ascenseur ?? false,
+  try {
+    await payload.create({
+      collection: 'demenagements',
+      data: {
+        numeroDossier,
+        clientId:    d.email,
+        nomComplet:  `${d.prenom} ${d.nom}`,
+        telephone:   d.telephone,
+        typeClient:  d.type,
+        commentaire: d.commentaire,
+        statut:      'devis_recu',
+        adresseDepart: {
+          adresse:   d.adresseDepart.adresse,
+          ville:     d.adresseDepart.ville,
+          etage:     d.adresseDepart.etage ?? 'RDC',
+          ascenseur: d.adresseDepart.ascenseur ?? false,
+        },
+        adresseArrivee: {
+          adresse:   d.adresseArrivee.adresse,
+          ville:     d.adresseArrivee.ville,
+          etage:     d.adresseArrivee.etage ?? 'RDC',
+          ascenseur: d.adresseArrivee.ascenseur ?? false,
+        },
+        servicesInclus:   d.services,
+        volumeM3:         d.volumeEstime,
+        dateDemenagement: d.dateSouhaitee ? new Date(d.dateSouhaitee).toISOString() : undefined,
+        photosDepart:     (d.photosDepart  ?? []).map(Number).filter(Boolean),
+        photosArrivee:    (d.photosArrivee ?? []).map(Number).filter(Boolean),
+        photosMeubles:    (d.photosMeubles ?? []).map(Number).filter(Boolean),
       },
-      adresseArrivee: {
-        adresse:   d.adresseArrivee.adresse,
-        ville:     d.adresseArrivee.ville,
-        etage:     d.adresseArrivee.etage ?? 'RDC',
-        ascenseur: d.adresseArrivee.ascenseur ?? false,
-      },
-      servicesInclus:   d.services,
-      volumeM3:         d.volumeEstime,
-      dateDemenagement: d.dateSouhaitee ? new Date(d.dateSouhaitee).toISOString() : undefined,
-      photosDepart:     (d.photosDepart  ?? []).map(Number).filter(Boolean),
-      photosArrivee:    (d.photosArrivee ?? []).map(Number).filter(Boolean),
-      photosMeubles:    (d.photosMeubles ?? []).map(Number).filter(Boolean),
-    },
-    overrideAccess: true,
-  })
+      overrideAccess: true,
+    })
+  } catch (payloadErr) {
+    const msg = payloadErr instanceof Error ? payloadErr.message : 'Erreur création dossier'
+    return NextResponse.json({ error: msg }, { status: 422 })
+  }
 
   // Upsert fiche client — uniquement si l'email est fourni
   if (d.email) {

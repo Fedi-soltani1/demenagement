@@ -1,8 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { setRequestLocale } from 'next-intl/server'
-import { getPayload } from 'payload'
-import config from '@payload-config'
+import { getPayloadSafe } from '@/lib/payload-safe'
 import { COMPANY, LOCALES } from '@/lib/constants'
 import { BlockRenderer } from '@/components/blocks/BlockRenderer'
 
@@ -18,23 +17,25 @@ export default async function RecrutementPage({ params }: { params: Promise<{ lo
   const { locale } = await params
   setRequestLocale(locale)
 
-  const payload = await getPayload({ config })
+  const payload = await getPayloadSafe()
 
-  const [pageData, settings] = await Promise.all([
-    payload
-      .find({
-        collection: 'pages',
-        where: { and: [{ slug: { equals: 'recrutement' } }, { publie: { equals: true } }] },
-        locale: 'fr',
-        depth: 3,
-        limit: 1,
-      })
-      .catch(() => ({ docs: [] as unknown[] })),
+  const [pageData, settings] = payload
+    ? await Promise.all([
+        payload
+          .find({
+            collection: 'pages',
+            where: { and: [{ slug: { equals: 'recrutement' } }, { publie: { equals: true } }] },
+            locale: 'fr',
+            depth: 3,
+            limit: 1,
+          })
+          .catch(() => ({ docs: [] as unknown[] })),
 
-    payload
-      .findGlobal({ slug: 'settings', locale: 'fr', depth: 0 })
-      .catch(() => null) as Promise<{ email?: string | null } | null>,
-  ])
+        payload
+          .findGlobal({ slug: 'settings', locale: 'fr', depth: 0 })
+          .catch(() => null) as Promise<{ email?: string | null } | null>,
+      ])
+    : [{ docs: [] as unknown[] }, null]
 
   type PageDoc = { layout?: unknown[] }
   const page   = pageData.docs[0] as PageDoc | undefined

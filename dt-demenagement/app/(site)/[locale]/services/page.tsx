@@ -3,8 +3,7 @@ import Link from 'next/link'
 import { setRequestLocale, getTranslations } from 'next-intl/server'
 import { DevisButton } from '@/components/ui/DevisButton'
 import { unstable_noStore as noStore } from 'next/cache'
-import { getPayload } from 'payload'
-import config from '@payload-config'
+import { getPayloadSafe } from '@/lib/payload-safe'
 import { LOCALES, COMPANY } from '@/lib/constants'
 import { buildMetadata } from '@/lib/seo'
 import { FadeIn } from '@/components/ui/FadeIn'
@@ -43,16 +42,16 @@ export default async function ServicesPage({
   const t = await getTranslations({ locale, namespace: 'Home.services' })
 
   noStore()
-  const payload = await getPayload({ config })
-  const result = await payload
-    .find({
-      collection: 'services',
-      where: { publie: { equals: true } },
-      sort: 'ordre',
-      locale: locale as 'fr' | 'ar' | 'en',
-      limit: 50,
-    })
-    .catch(() => ({ docs: [] as unknown[] }))
+  const payload = await getPayloadSafe()
+  const result  = payload
+    ? await payload.find({
+        collection: 'services',
+        where: { publie: { equals: true } },
+        sort: 'ordre',
+        locale: locale as 'fr' | 'ar' | 'en',
+        limit: 50,
+      }).catch(() => ({ docs: [] as unknown[] }))
+    : { docs: [] as unknown[] }
 
   const services = result.docs as ServiceItem[]
 

@@ -83,7 +83,7 @@ export async function POST(request: Request) {
           </div>
         </div>
       `,
-    }).catch(() => { /* non-blocking */ })
+    }).catch((err: unknown) => { console.error('[client/message] Échec notification admin SMTP :', err) })
   }
 
   return NextResponse.json({ message }, { status: 201 })

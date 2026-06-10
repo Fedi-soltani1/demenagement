@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import { draftMode } from 'next/headers'
-import { getPayload } from 'payload'
-import config from '@payload-config'
+import { getPayloadSafe } from '@/lib/payload-safe'
 import { setRequestLocale, getTranslations } from 'next-intl/server'
 import { COMPANY, LOCALES } from '@/lib/constants'
 import { BlockRenderer }          from '@/components/blocks/BlockRenderer'
@@ -39,7 +38,7 @@ export default async function HomePage({ params }: HomePageProps) {
   setRequestLocale(locale)
 
   const { isEnabled: isDraft } = await draftMode()
-  const payload = await getPayload({ config })
+  const payload = await getPayloadSafe()
   const loc = locale as 'fr' | 'ar' | 'en'
 
   // Fetch en parallèle — Page accueil (avec ses blocs) + collections relationnelles
@@ -52,7 +51,7 @@ export default async function HomePage({ params }: HomePageProps) {
     villesRes,
     paysRes,
     settingsRes,
-  ] = await Promise.all([
+  ] = payload ? await Promise.all([
 
     // Page accueil depuis la collection Pages (slug = 'accueil')
     // depth: 3 pour peupler les relationships imbriquées dans les blocs
@@ -125,7 +124,11 @@ export default async function HomePage({ params }: HomePageProps) {
 
     // Paramètres globaux (téléphone, email, réseaux…) pour les blocs Coordonnées/Réseaux
     payload.findGlobal({ slug: 'settings', locale: loc, depth: 0 }).catch(() => null),
-  ])
+  ]) : [
+    { docs: [] as unknown[] }, { docs: [] as unknown[] }, { docs: [] as unknown[] },
+    { docs: [] as unknown[] }, { docs: [] as unknown[] }, { docs: [] as unknown[] },
+    { docs: [] as unknown[] }, null,
+  ]
 
   // Extraire la page accueil depuis Payload
   type PageDoc = { layout?: unknown[] }

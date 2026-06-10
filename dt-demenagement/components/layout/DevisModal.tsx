@@ -5,6 +5,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
   useTransition,
@@ -18,7 +19,7 @@ import { ArrowRight, ArrowLeft, X, ClipboardList, Calendar, CheckCircle } from '
 // ─── Context ──────────────────────────────────────────────────────────────────
 
 interface DevisModalContextValue {
-  open: (opts?: { ville?: string }) => void
+  open:  (opts?: { ville?: string; service?: string }) => void
   close: () => void
 }
 
@@ -79,6 +80,18 @@ function splitNomPrenom(full: string): { prenom: string; nom: string } {
   const parts = full.trim().split(/\s+/)
   if (parts.length === 1) return { prenom: parts[0] ?? '', nom: '' }
   return { prenom: parts[0] ?? '', nom: parts.slice(1).join(' ') }
+}
+
+// Extrait le slug de service depuis une URL comme /services/transporteur-en-tunisie
+function extractServiceSlug(path: string): string | undefined {
+  const m = path.match(/\/services\/([^/?#]+)/)
+  return m ? m[1] : undefined
+}
+
+// Extrait le nom de ville depuis une URL comme /villes/tunis
+function extractVilleSlug(path: string): string | undefined {
+  const m = path.match(/\/villes\/([^/?#]+)/)
+  return m ? m[1] : undefined
 }
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
@@ -161,23 +174,30 @@ export function DevisModalProvider({ children }: { children: ReactNode }) {
   const dialogRef  = useRef<HTMLDivElement>(null)
   const triggerRef = useRef<HTMLElement | null>(null)
 
-  const [isOpen,       setIsOpen]       = useState(false)
-  const [screen,       setScreen]       = useState<Screen>('contact')
-  const [contact,      setContact]      = useState<ContactData>(CONTACT_INIT)
-  const [rdv,          setRdv]          = useState<RdvData>(RDV_INIT)
-  const [errors,       setErrors]       = useState<FieldErrors>({})
-  const [villeContext, setVilleContext] = useState<string | undefined>(undefined)
-  const [isPending,    startTransition] = useTransition()
+  const [isOpen,          setIsOpen]          = useState(false)
+  const [screen,          setScreen]          = useState<Screen>('contact')
+  const [contact,         setContact]         = useState<ContactData>(CONTACT_INIT)
+  const [rdv,             setRdv]             = useState<RdvData>(RDV_INIT)
+  const [errors,          setErrors]          = useState<FieldErrors>({})
+  const [villeContext,    setVilleContext]     = useState<string | undefined>(undefined)
+  const [serviceContext,  setServiceContext]   = useState<string | undefined>(undefined)
+  const [isPending,       startTransition]    = useTransition()
 
-  const open = useCallback((opts?: { ville?: string }) => {
+  // Auto-détection du contexte depuis l'URL courante
+  const autoService = useMemo(() => extractServiceSlug(pathname), [pathname])
+  const autoVille   = useMemo(() => extractVilleSlug(pathname),   [pathname])
+
+  const open = useCallback((opts?: { ville?: string; service?: string }) => {
     triggerRef.current = document.activeElement as HTMLElement
     setScreen('contact')
     setContact(CONTACT_INIT)
     setRdv(RDV_INIT)
     setErrors({})
-    setVilleContext(opts?.ville)
+    // opts priment sur l'auto-détection URL
+    setVilleContext(opts?.ville   ?? autoVille)
+    setServiceContext(opts?.service ?? autoService)
     setIsOpen(true)
-  }, [])
+  }, [autoVille, autoService])
 
   const close = useCallback(() => {
     setIsOpen(false)
@@ -200,7 +220,7 @@ export function DevisModalProvider({ children }: { children: ReactNode }) {
     if (isOpen) dialogRef.current?.focus()
   }, [isOpen])
 
-  // ── Screen 1 → 2 ────────────────────────────────────────────────────────────
+  // ── Screen 1 → 2 : validation + enregistrement lead ────────────────────────
 
   function handleContactContinue() {
     const errs: FieldErrors = {}
@@ -208,6 +228,21 @@ export function DevisModalProvider({ children }: { children: ReactNode }) {
     if (!TEL_RE.test(contact.telephone)) errs.telephone = t('errorTelephone')
     if (Object.keys(errs).length > 0) { setErrors(errs); return }
     setErrors({})
+
+    // Enregistrement du lead en arrière-plan (fire & forget — ne bloque pas l'UX)
+    fetch('/api/leads', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        nomPrenom:  contact.nomPrenom.trim(),
+        telephone:  contact.telephone.trim(),
+        email:      contact.email.trim() || undefined,
+        source:     pathname,
+        service:    serviceContext,
+        ville:      villeContext,
+      }),
+    }).catch(() => { /* erreur silencieuse — ne pas bloquer l'utilisateur */ })
+
     setScreen('choice')
   }
 
@@ -216,8 +251,9 @@ export function DevisModalProvider({ children }: { children: ReactNode }) {
   function handleChoiceDevis() {
     const { prenom, nom } = splitNomPrenom(contact.nomPrenom)
     const params = new URLSearchParams({ prenom, nom, telephone: contact.telephone })
-    if (contact.email)  params.set('email', contact.email)
-    if (villeContext)   params.set('ville', villeContext)
+    if (contact.email)   params.set('email',   contact.email)
+    if (villeContext)    params.set('ville',    villeContext)
+    if (serviceContext)  params.set('service',  serviceContext)
     close()
     router.push(`/devis?${params.toString()}`)
   }

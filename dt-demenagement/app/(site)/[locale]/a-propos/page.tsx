@@ -3,8 +3,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { setRequestLocale, getTranslations } from 'next-intl/server'
 import { DevisButton } from '@/components/ui/DevisButton'
-import { getPayload } from 'payload'
-import config from '@payload-config'
+import { getPayloadSafe } from '@/lib/payload-safe'
 import { LOCALES, COMPANY } from '@/lib/constants'
 import { buildMetadata } from '@/lib/seo'
 import { BlockRenderer } from '@/components/blocks/BlockRenderer'
@@ -26,15 +25,15 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>
 }): Promise<Metadata> {
   const { locale } = await params
-  const payload    = await getPayload({ config })
-  const result     = await payload
-    .find({
-      collection: 'pages',
-      where: { slug: { equals: 'a-propos' }, publie: { equals: true } },
-      locale: locale as 'fr' | 'ar' | 'en',
-      limit: 1,
-    })
-    .catch(() => ({ docs: [] as unknown[] }))
+  const payload    = await getPayloadSafe()
+  const result     = payload
+    ? await payload.find({
+        collection: 'pages',
+        where: { slug: { equals: 'a-propos' }, publie: { equals: true } },
+        locale: locale as 'fr' | 'ar' | 'en',
+        limit: 1,
+      }).catch(() => ({ docs: [] as unknown[] }))
+    : { docs: [] as unknown[] }
 
   const page = result.docs[0] as
     | { seo?: { metaTitle?: string; metaDescription?: string } }
@@ -54,32 +53,34 @@ export default async function AProposPage({
   setRequestLocale(locale)
 
   const t       = await getTranslations({ locale, namespace: 'Home.about' })
-  const payload = await getPayload({ config })
+  const payload = await getPayloadSafe()
   const loc     = locale as 'fr' | 'ar' | 'en'
 
-  const [pageData, servicesRes, testimonialsRes, partnersRes] = await Promise.all([
-    payload
-      .find({
-        collection: 'pages',
-        where: { and: [{ slug: { equals: 'a-propos' } }, { publie: { equals: true } }] },
-        locale: loc,
-        depth: 3,
-        limit: 1,
-      })
-      .catch(() => ({ docs: [] as unknown[] })),
+  const [pageData, servicesRes, testimonialsRes, partnersRes] = payload
+    ? await Promise.all([
+        payload
+          .find({
+            collection: 'pages',
+            where: { and: [{ slug: { equals: 'a-propos' } }, { publie: { equals: true } }] },
+            locale: loc,
+            depth: 3,
+            limit: 1,
+          })
+          .catch(() => ({ docs: [] as unknown[] })),
 
-    payload
-      .find({ collection: 'services', where: { publie: { equals: true } }, sort: 'ordre', locale: loc, limit: 12 })
-      .catch(() => ({ docs: [] as unknown[] })),
+        payload
+          .find({ collection: 'services', where: { publie: { equals: true } }, sort: 'ordre', locale: loc, limit: 12 })
+          .catch(() => ({ docs: [] as unknown[] })),
 
-    payload
-      .find({ collection: 'testimonials', where: { publie: { equals: true } }, limit: 20 })
-      .catch(() => ({ docs: [] as unknown[] })),
+        payload
+          .find({ collection: 'testimonials', where: { publie: { equals: true } }, limit: 20 })
+          .catch(() => ({ docs: [] as unknown[] })),
 
-    payload
-      .find({ collection: 'partners', where: { publie: { equals: true } }, sort: 'ordre', limit: 30, depth: 1 })
-      .catch(() => ({ docs: [] as unknown[] })),
-  ])
+        payload
+          .find({ collection: 'partners', where: { publie: { equals: true } }, sort: 'ordre', limit: 30, depth: 1 })
+          .catch(() => ({ docs: [] as unknown[] })),
+      ])
+    : [{ docs: [] as unknown[] }, { docs: [] as unknown[] }, { docs: [] as unknown[] }, { docs: [] as unknown[] }]
 
   type PageDoc = { layout?: unknown[] }
   const page   = pageData.docs[0] as PageDoc | undefined

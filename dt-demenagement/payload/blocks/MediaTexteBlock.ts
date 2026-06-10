@@ -116,6 +116,7 @@ export const MediaTexteBlock: Block = {
             { label: 'Primaire (rouge rempli)', value: 'primaire'   },
             { label: 'Secondaire (contour)',    value: 'secondaire' },
             { label: 'Téléphone (icône 📞)',     value: 'telephone'  },
+            { label: '📋 Ouvrir popup devis',   value: 'devis'      },
           ],
         },
       ],

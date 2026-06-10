@@ -4,8 +4,7 @@ import type { Metadata } from 'next'
 import { setRequestLocale } from 'next-intl/server'
 import { getTranslations } from 'next-intl/server'
 import { unstable_noStore as noStore } from 'next/cache'
-import { getPayload } from 'payload'
-import config from '@payload-config'
+import { getPayloadSafe } from '@/lib/payload-safe'
 import Link from 'next/link'
 import { DevisButton } from '@/components/ui/DevisButton'
 import { COMPANY, LOCALES } from '@/lib/constants'
@@ -52,7 +51,8 @@ type PaysMapDoc = {
 async function getPays(slug: string, locale: string) {
   noStore()
   const { isEnabled: isDraft } = await draftMode()
-  const payload = await getPayload({ config })
+  const payload = await getPayloadSafe()
+  if (!payload) return null
   const loc = locale as 'fr' | 'ar' | 'en'
 
   const paysRes = await payload.find({
@@ -81,7 +81,8 @@ async function getPays(slug: string, locale: string) {
 export async function generateStaticParams() {
   noStore()
   try {
-    const payload = await getPayload({ config })
+    const payload = await getPayloadSafe()
+    if (!payload) return []
     const res = await payload.find({
       collection: 'pays',
       where: { publie: { equals: true } },
@@ -121,7 +122,7 @@ export default async function PaysPage({ params }: PaysPageProps) {
   const t = await getTranslations({ locale, namespace: 'Villes' })
 
   // Données partagées passées aux blocs (miroir de la page Ville)
-  const payload = await getPayload({ config })
+  const payload = await getPayloadSafe()
   const loc = locale as 'fr' | 'ar' | 'en'
 
   const [
@@ -132,7 +133,7 @@ export default async function PaysPage({ params }: PaysPageProps) {
     villesRes,
     paysRes,
     settingsRes,
-  ] = await Promise.all([
+  ] = payload ? await Promise.all([
     payload.find({
       collection: 'services',
       where: { publie: { equals: true } },
@@ -185,7 +186,11 @@ export default async function PaysPage({ params }: PaysPageProps) {
 
     payload.findGlobal({ slug: 'settings', locale: loc, depth: 0 })
       .catch(() => null),
-  ])
+  ]) : [
+    { docs: [] as unknown[] }, { docs: [] as unknown[] }, { docs: [] as unknown[] },
+    { docs: [] as unknown[] }, { docs: [] as unknown[] }, { docs: [] as unknown[] },
+    null,
+  ]
 
   const s = settingsRes as {
     telephone1?: string | null; email?: string | null; adresse?: string | null; horaires?: string | null

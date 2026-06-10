@@ -1,9 +1,8 @@
-import { getPayload } from 'payload'
 import type { Metadata } from 'next'
 import { setRequestLocale } from 'next-intl/server'
 import { getTranslations } from 'next-intl/server'
 import Link from 'next/link'
-import config from '@payload-config'
+import { getPayloadSafe } from '@/lib/payload-safe'
 import { COMPANY, LOCALES, VILLES, PAYS } from '@/lib/constants'
 import { Breadcrumb } from '@/components/layout/Breadcrumb'
 import { ZonesMapClient } from '@/components/blocks/ZonesMapClient'
@@ -103,12 +102,17 @@ export default async function ZonesPage({ params }: ZonesPageProps) {
   const t = await getTranslations({ locale, namespace: 'Zones' })
 
   // Fetch Payload — fallback sur les constantes si DB non alimentée
-  const payload = await getPayload({ config })
+  const payload = await getPayloadSafe()
 
-  const [villesResult, paysResult] = await Promise.all([
-    payload.find({ collection: 'villes', where: { publie: { equals: true } }, locale: locale as 'fr' | 'ar' | 'en', sort: 'nom', limit: 50 }),
-    payload.find({ collection: 'pays',   where: { publie: { equals: true } }, locale: locale as 'fr' | 'ar' | 'en', sort: 'nom', limit: 20 }),
-  ])
+  let villesResult: { docs: VilleDoc[] } = { docs: [] }
+  let paysResult:   { docs: PaysDoc[]  } = { docs: [] }
+
+  if (payload) {
+    ;[villesResult, paysResult] = await Promise.all([
+      payload.find({ collection: 'villes', where: { publie: { equals: true } }, locale: locale as 'fr' | 'ar' | 'en', sort: 'nom', limit: 50 }),
+      payload.find({ collection: 'pays',   where: { publie: { equals: true } }, locale: locale as 'fr' | 'ar' | 'en', sort: 'nom', limit: 20 }),
+    ])
+  }
 
   // Mapper les données Payload → format carte
   const mapVilles: MapVille[] = (villesResult.docs as VilleDoc[]).length > 0

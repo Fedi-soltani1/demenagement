@@ -1,11 +1,10 @@
 import { notFound } from 'next/navigation'
-import { getPayload } from 'payload'
+import { getPayloadSafe } from '@/lib/payload-safe'
 import { draftMode } from 'next/headers'
 import type { Metadata } from 'next'
 import { setRequestLocale } from 'next-intl/server'
 import Image from 'next/image'
 import Link from 'next/link'
-import config from '@payload-config'
 import { unstable_noStore as noStore } from 'next/cache'
 import { COMPANY, LOCALES } from '@/lib/constants'
 import { buildMetadata } from '@/lib/seo'
@@ -52,7 +51,8 @@ type ArticleDoc = {
 async function getArticle(slug: string, locale: string): Promise<ArticleDoc | null> {
   noStore()
   const { isEnabled: isDraft } = await draftMode()
-  const payload = await getPayload({ config })
+  const payload = await getPayloadSafe()
+  if (!payload) return null
   const result = await payload.find({
     collection: 'blog',
     draft: isDraft,
@@ -67,24 +67,26 @@ async function getArticle(slug: string, locale: string): Promise<ArticleDoc | nu
 }
 
 async function getRelatedArticles(currentSlug: string, locale: string): Promise<ArticleDoc[]> {
-  const payload = await getPayload({ config })
+  const payload = await getPayloadSafe()
+  if (!payload) return []
   const result = await payload.find({
     collection: 'blog',
     where: { slug: { not_equals: currentSlug }, publie: { equals: true } },
     locale: locale as 'fr' | 'ar' | 'en',
     limit: 3,
     sort: '-datePublication',
-  })
+  }).catch(() => ({ docs: [] as ArticleDoc[] }))
   return result.docs as ArticleDoc[]
 }
 
 export async function generateStaticParams() {
-  const payload = await getPayload({ config })
+  const payload = await getPayloadSafe()
+  if (!payload) return []
   const result = await payload.find({
     collection: 'blog',
     where: { publie: { equals: true } },
     limit: 200,
-  })
+  }).catch(() => ({ docs: [] as ArticleDoc[] }))
 
   return LOCALES.flatMap((locale) =>
     result.docs.map((doc) => ({ locale, slug: (doc as ArticleDoc).slug }))
@@ -131,7 +133,7 @@ export default async function BlogArticlePage({ params }: BlogPageProps) {
   if (!article) notFound()
 
   // Données partagées passées aux blocs (mirroir des pages Villes / Services)
-  const payload = await getPayload({ config })
+  const payload = await getPayloadSafe()
   const loc = locale as 'fr' | 'ar' | 'en'
 
   const [
@@ -142,7 +144,7 @@ export default async function BlogArticlePage({ params }: BlogPageProps) {
     villesRes,
     paysRes,
     settingsRes,
-  ] = await Promise.all([
+  ] = payload ? await Promise.all([
     payload.find({
       collection: 'services',
       where: { publie: { equals: true } },
@@ -195,7 +197,11 @@ export default async function BlogArticlePage({ params }: BlogPageProps) {
 
     payload.findGlobal({ slug: 'settings', locale: loc, depth: 0 })
       .catch(() => null),
-  ])
+  ]) : [
+    { docs: [] as unknown[] }, { docs: [] as unknown[] }, { docs: [] as unknown[] },
+    { docs: [] as unknown[] }, { docs: [] as unknown[] }, { docs: [] as unknown[] },
+    null,
+  ]
 
   const s = settingsRes as {
     telephone1?: string | null; email?: string | null; adresse?: string | null; horaires?: string | null

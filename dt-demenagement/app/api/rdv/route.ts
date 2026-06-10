@@ -79,7 +79,7 @@ export async function POST(request: Request) {
     ${d.dateVisite ? `<tr><td style="padding:10px 16px;font-weight:bold;">Date souhaitée</td><td style="padding:10px 16px;">${d.dateVisite}${d.heure ? ` à ${d.heure}` : ''}</td></tr>` : ''}
   </table>
 </body></html>`,
-    }).catch(() => {})
+    }).catch((err: unknown) => { console.error('[rdv] Échec notification admin SMTP :', err) })
   )
 
   // 2. Confirmation client (si email fourni)
@@ -123,7 +123,7 @@ export async function POST(request: Request) {
     </td></tr>
   </table>
 </body></html>`,
-      }).catch(() => {})
+      }).catch((err: unknown) => { console.error('[rdv] Échec confirmation client SMTP :', err) })
     )
   }
 

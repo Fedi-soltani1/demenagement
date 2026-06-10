@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { getPayload } from 'payload'
-import config from '@payload-config'
+import { getPayloadSafe } from '@/lib/payload-safe'
 import { setRequestLocale } from 'next-intl/server'
 import { LOCALES, COMPANY } from '@/lib/constants'
 
@@ -19,29 +18,31 @@ export default async function PlanDuSitePage({ params }: { params: Promise<{ loc
   const { locale } = await params
   setRequestLocale(locale)
 
-  const payload = await getPayload({ config })
+  const payload = await getPayloadSafe()
 
-  const [servicesRes, villesRes] = await Promise.all([
-    payload.find({
-      collection: 'services',
-      where: { publie: { equals: true } },
-      sort: 'ordre',
-      locale: locale as 'fr' | 'ar' | 'en',
-      limit: 50,
-      select: { nom: true, slug: true },
-      depth: 0,
-    }).catch(() => ({ docs: [] as unknown[] })),
+  const [servicesRes, villesRes] = payload
+    ? await Promise.all([
+        payload.find({
+          collection: 'services',
+          where: { publie: { equals: true } },
+          sort: 'ordre',
+          locale: locale as 'fr' | 'ar' | 'en',
+          limit: 50,
+          select: { nom: true, slug: true },
+          depth: 0,
+        }).catch(() => ({ docs: [] as unknown[] })),
 
-    payload.find({
-      collection: 'villes',
-      where: { publie: { equals: true } },
-      sort: 'nom',
-      locale: locale as 'fr' | 'ar' | 'en',
-      limit: 100,
-      select: { nom: true, slug: true },
-      depth: 0,
-    }).catch(() => ({ docs: [] as unknown[] })),
-  ])
+        payload.find({
+          collection: 'villes',
+          where: { publie: { equals: true } },
+          sort: 'nom',
+          locale: locale as 'fr' | 'ar' | 'en',
+          limit: 100,
+          select: { nom: true, slug: true },
+          depth: 0,
+        }).catch(() => ({ docs: [] as unknown[] })),
+      ])
+    : [{ docs: [] as unknown[] }, { docs: [] as unknown[] }]
 
   type ServiceDoc = { nom?: string | null; slug?: string | null }
   type VilleDoc   = { nom?: string | null; slug?: string | null }
