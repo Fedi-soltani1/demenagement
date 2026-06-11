@@ -12,4 +12,6 @@ function required(name: string): string {
 export const config = {
   apiBaseUrl: required('BOT_API_BASE_URL'),
   logLevel:   process.env.LOG_LEVEL ?? 'info',
+  httpPort:   Number(process.env.BOT_HTTP_PORT ?? '3100'),
+  sendSecret: required('BOT_SEND_SECRET'),
 } as const
