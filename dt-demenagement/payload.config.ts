@@ -91,6 +91,7 @@ export default buildConfig({
       },
       header:         ['@/components/payload/AdminHeaderBar'],
       afterDashboard: ['@/components/payload/AdminDashboard'],
+      afterNavLinks:  ['@/components/payload/AdminUnreadBadge'],
       views: {
         rdvCalendar: {
           Component: '@/components/payload/RDVCalendarView',

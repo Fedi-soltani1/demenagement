@@ -37,6 +37,7 @@ import { default as default_a109362b2079cbee17bbf4a5035a5d28 } from '@/component
 import { default as default_7a969c861589af9322f5d573a708d2fb } from '@/components/payload/AdminIcon'
 import { default as default_313e964a7107ac39e31c5ff2e54b6ba9 } from '@/components/payload/AdminLogo'
 import { default as default_90396af18c2250adfc20df25d311cd9a } from '@/components/payload/AdminDashboard'
+import { default as default_ef39643ec38f84ef279eda1676af9ec2 } from '@/components/payload/AdminUnreadBadge'
 import { default as default_83caa34b9c33d3543c6ac49d8e8a5659 } from '@/components/payload/RDVCalendarView'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
@@ -81,6 +82,7 @@ export const importMap = {
   "@/components/payload/AdminIcon#default": default_7a969c861589af9322f5d573a708d2fb,
   "@/components/payload/AdminLogo#default": default_313e964a7107ac39e31c5ff2e54b6ba9,
   "@/components/payload/AdminDashboard#default": default_90396af18c2250adfc20df25d311cd9a,
+  "@/components/payload/AdminUnreadBadge#default": default_ef39643ec38f84ef279eda1676af9ec2,
   "@/components/payload/RDVCalendarView#default": default_83caa34b9c33d3543c6ac49d8e8a5659,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }

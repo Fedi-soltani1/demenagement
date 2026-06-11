@@ -11,7 +11,7 @@ import { StatusBadge } from '@/components/espace-client/StatusBadge'
 import { SignOutButton } from '@/components/espace-client/SignOutButton'
 import {
   MapPin, Calendar, Package, ArrowRight, User,
-  Truck, Plus, Clock, CheckCircle, FileText,
+  Truck, Plus, Clock, CheckCircle, FileText, MessageSquare,
 } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
@@ -88,6 +88,25 @@ export default async function EspaceClientPage({ params }: PageProps) {
       overrideAccess: true,
     })
     dossiers = result.docs as DemenagementDoc[]
+  }
+
+  // Unread messages count — use `or` on each dossier ID (safer than `in` on relationship fields)
+  let messagesNonLus = 0
+  if (payload && dossiers.length > 0) {
+    const ids = dossiers.map((d) => d.id as number)
+    const unreadResult = await payload.find({
+      collection: 'messages',
+      where: {
+        and: [
+          { or: ids.map((id) => ({ demenagement: { equals: id } })) },
+          { auteur:      { equals: 'admin' } },
+          { luParClient: { equals: false } },
+        ],
+      },
+      limit: 0,
+      overrideAccess: true,
+    })
+    messagesNonLus = unreadResult.totalDocs
   }
 
   // Stats
@@ -182,7 +201,7 @@ export default async function EspaceClientPage({ params }: PageProps) {
           )}
 
           {/* ── Actions rapides ── */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
             <Link
               href={`/${locale}/espace-client/nouveau`}
               className="group flex items-center gap-4 p-5 rounded-2xl border border-[var(--color-red)]/30 bg-[var(--color-red)]/5 hover:bg-[var(--color-red)]/10 hover:border-[var(--color-red)]/50 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)]"
@@ -190,11 +209,11 @@ export default async function EspaceClientPage({ params }: PageProps) {
               <div className="w-11 h-11 rounded-xl bg-[var(--color-red)]/15 flex items-center justify-center flex-shrink-0 group-hover:bg-[var(--color-red)]/25 transition-colors">
                 <Truck className="w-5 h-5 text-[var(--color-red)]" />
               </div>
-              <div className="flex-1">
-                <p className="font-body font-semibold text-sm text-[var(--color-text-light)]">Demander un déménagement</p>
-                <p className="font-body text-xs text-[var(--color-text-muted)]">Transfert complet avec devis personnalisé</p>
+              <div className="flex-1 min-w-0">
+                <p className="font-body font-semibold text-sm text-[var(--color-text-light)]">Nouveau déménagement</p>
+                <p className="font-body text-xs text-[var(--color-text-muted)]">Devis personnalisé</p>
               </div>
-              <Plus className="w-4 h-4 text-[var(--color-red)] opacity-70 group-hover:opacity-100 transition-opacity" />
+              <Plus className="w-4 h-4 text-[var(--color-red)] opacity-70 group-hover:opacity-100 transition-opacity flex-shrink-0" />
             </Link>
 
             <Link
@@ -204,11 +223,41 @@ export default async function EspaceClientPage({ params }: PageProps) {
               <div className="w-11 h-11 rounded-xl bg-white/5 flex items-center justify-center flex-shrink-0 group-hover:bg-white/10 transition-colors">
                 <Package className="w-5 h-5 text-[var(--color-text-muted)] group-hover:text-[var(--color-text-light)] transition-colors" />
               </div>
-              <div className="flex-1">
-                <p className="font-body font-semibold text-sm text-[var(--color-text-light)]">Demander une livraison</p>
-                <p className="font-body text-xs text-[var(--color-text-muted)]">Transport de colis ou petits objets</p>
+              <div className="flex-1 min-w-0">
+                <p className="font-body font-semibold text-sm text-[var(--color-text-light)]">Nouvelle livraison</p>
+                <p className="font-body text-xs text-[var(--color-text-muted)]">Transport de colis</p>
               </div>
-              <Plus className="w-4 h-4 text-[var(--color-text-muted)] opacity-70 group-hover:opacity-100 transition-opacity" />
+              <Plus className="w-4 h-4 text-[var(--color-text-muted)] opacity-70 group-hover:opacity-100 transition-opacity flex-shrink-0" />
+            </Link>
+
+            {/* Messages quick link */}
+            <Link
+              href={`/${locale}/espace-client/messages`}
+              className={`group relative flex items-center gap-4 p-5 rounded-2xl border transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)] ${
+                messagesNonLus > 0
+                  ? 'border-violet-400/30 bg-violet-400/5 hover:bg-violet-400/10 hover:border-violet-400/50'
+                  : 'border-white/8 bg-white/[0.02] hover:border-white/15 hover:bg-white/[0.04]'
+              }`}
+            >
+              {messagesNonLus > 0 && (
+                <span className="absolute top-3 end-3 min-w-[20px] h-5 px-1.5 rounded-full bg-[var(--color-red)] text-white font-body text-[10px] font-bold flex items-center justify-center">
+                  {messagesNonLus > 9 ? '9+' : messagesNonLus}
+                </span>
+              )}
+              <div className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:opacity-80 transition-opacity ${
+                messagesNonLus > 0 ? 'bg-violet-400/15' : 'bg-white/5'
+              }`}>
+                <MessageSquare className={`w-5 h-5 ${messagesNonLus > 0 ? 'text-violet-400' : 'text-[var(--color-text-muted)] group-hover:text-[var(--color-text-light)]'} transition-colors`} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-body font-semibold text-sm text-[var(--color-text-light)]">Messages</p>
+                <p className="font-body text-xs text-[var(--color-text-muted)]">
+                  {messagesNonLus > 0
+                    ? `${messagesNonLus} non lu${messagesNonLus > 1 ? 's' : ''}`
+                    : 'Conversations'}
+                </p>
+              </div>
+              <ArrowRight className={`w-4 h-4 flex-shrink-0 opacity-70 group-hover:opacity-100 transition-opacity ${messagesNonLus > 0 ? 'text-violet-400' : 'text-[var(--color-text-muted)]'}`} />
             </Link>
           </div>
 
