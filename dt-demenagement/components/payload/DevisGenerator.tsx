@@ -22,8 +22,8 @@ type DossierSummary = {
   devisStatut?: string
 }
 
-type Action    = 'idle' | 'pdf' | 'email'
-type SendPanel = 'hidden' | 'choice' | 'confirm-email'
+type Action    = 'idle' | 'pdf' | 'email' | 'whatsapp'
+type SendPanel = 'hidden' | 'choice' | 'confirm-email' | 'confirm-whatsapp'
 type Result    = { type: 'success' | 'error'; msg: string } | null
 
 const STATUT: Record<string, { label: string; color: string; bg: string }> = {
@@ -37,19 +37,6 @@ function expiryDate(days: number): string {
   const d = new Date()
   d.setDate(d.getDate() + days)
   return d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' })
-}
-
-function whatsappUrl(telephone: string | undefined, dossier: DossierSummary): string {
-  const raw = (telephone ?? '').replace(/[\s\-().]/g, '').replace(/^\+/, '').replace(/^00/, '')
-  const msg = encodeURIComponent(
-    `Bonjour ${dossier.nomComplet ?? ''},\n\n` +
-    `Veuillez trouver en pièce jointe votre devis ${dossier.numeroDossier ?? ''} — DT Déménagement Tunisie.\n\n` +
-    `Montant total TTC : ${dossier.prixTotalTTC != null ? `${dossier.prixTotalTTC} DT` : 'à confirmer'}\n` +
-    `Validité : ${dossier.devisValiditeJours ?? 30} jours\n\n` +
-    `Pour accepter ou pour toute question, contactez-nous au +216 52 880 311.\n\n` +
-    `Cordialement,\nDT Déménagement Tunisie`
-  )
-  return raw ? `https://wa.me/${raw}?text=${msg}` : `https://wa.me/?text=${msg}`
 }
 
 export default function DevisGenerator() {
@@ -160,13 +147,22 @@ export default function DevisGenerator() {
     } finally { setAction('idle') }
   }
 
-  function handleWhatsApp() {
-    if (dossier) {
-      window.open(
-        whatsappUrl(dossier.telephone, { ...dossier, prixTotalTTC: livePrix, devisValiditeJours: liveValidite }),
-        '_blank'
-      )
-    }
+  async function handleSendWhatsApp() {
+    setSendPanel('hidden'); setAction('whatsapp'); setResult(null)
+    try {
+      const res = await fetch('/api/admin/send-devis-whatsapp', {
+        method:      'POST',
+        headers:     { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body:        JSON.stringify({ dossierId, overrides: buildOverrides() }),
+      })
+      const j: { error?: string } = await res.json().catch(() => ({}))
+      if (!res.ok) throw new Error(j.error ?? `Erreur ${res.status}`)
+      setResult({ type: 'success', msg: `💬 Devis envoyé sur WhatsApp au ${dossier?.telephone ?? 'client'}.` })
+      fetchDossier(false)
+    } catch (e) {
+      setResult({ type: 'error', msg: e instanceof Error ? e.message : "Erreur lors de l'envoi WhatsApp." })
+    } finally { setAction('idle') }
   }
 
   return (
@@ -323,7 +319,7 @@ export default function DevisGenerator() {
               <button
                 type="button"
                 disabled={busy}
-                onClick={handleWhatsApp}
+                onClick={() => setSendPanel('confirm-whatsapp')}
                 style={sendBtnStyle('#128c7e', busy)}
               >
                 💬 WhatsApp
@@ -372,6 +368,49 @@ export default function DevisGenerator() {
                 style={sendBtnStyle('#1a5cbf', action === 'email')}
               >
                 {action === 'email' ? 'Envoi en cours…' : '✉️ Confirmer l\'envoi'}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* WhatsApp confirmation */}
+        {sendPanel === 'confirm-whatsapp' && dossier && (
+          <div style={{ marginTop: '10px', background: '#eafaf5', border: '1px solid #b8e6d6', borderRadius: '8px', padding: '16px' }}>
+            <p style={{ margin: '0 0 8px', fontSize: '13px', color: '#1a1a1a', fontWeight: 600 }}>
+              Confirmer l&apos;envoi sur WhatsApp
+            </p>
+            <p style={{ margin: '0 0 4px', fontSize: '12px', color: '#555' }}>
+              Au : <strong style={{ color: '#128c7e' }}>{dossier.telephone ?? '— numéro manquant'}</strong>
+              {dossier.nomComplet ? ` (${dossier.nomComplet})` : ''}
+            </p>
+            {livePrix > 0 && (
+              <p style={{ margin: '0 0 12px', fontSize: '12px', color: '#555' }}>
+                Montant : <strong style={{ color: '#b52027' }}>
+                  {Math.round(livePrix).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} DT TTC
+                </strong>
+                {' · '}Validité : <strong>{liveValidite} jours</strong>
+              </p>
+            )}
+            {!dossier.telephone && (
+              <p style={{ margin: '0 0 12px', fontSize: '11px', color: '#8a1820' }}>
+                ⚠️ Ce dossier n&apos;a pas de numéro de téléphone — l&apos;envoi échouera.
+              </p>
+            )}
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button
+                type="button"
+                onClick={() => setSendPanel('choice')}
+                style={{ padding: '8px 16px', background: '#e0e0e0', border: 'none', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', fontWeight: 500 }}
+              >
+                ← Retour
+              </button>
+              <button
+                type="button"
+                onClick={handleSendWhatsApp}
+                disabled={action === 'whatsapp' || !dossier.telephone}
+                style={sendBtnStyle('#128c7e', action === 'whatsapp' || !dossier.telephone)}
+              >
+                {action === 'whatsapp' ? 'Envoi en cours…' : '💬 Confirmer l\'envoi'}
               </button>
             </div>
           </div>
