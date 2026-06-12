@@ -47,6 +47,10 @@ const envSchema = z.object({
 
   // Cron
   CRON_SECRET: z.string().min(1),
+
+  // Bot WhatsApp (envoi devis) — optionnel en dev local
+  BOT_SEND_URL: z.string().optional().default(''),
+  BOT_SEND_SECRET: z.string().optional().default(''),
 })
 
 // Variables publiques (NEXT_PUBLIC_*) — validées séparément
