@@ -178,17 +178,20 @@ export default buildConfig({
 
   email: () => {
     const transport = nodemailer.createTransport({
-      host:   process.env.SMTP_HOST ?? 'smtp.hostinger.com',
+      host:   process.env.SMTP_HOST ?? 'smtp.resend.com',
       port:   Number(process.env.SMTP_PORT ?? 465),
-      secure: Number(process.env.SMTP_PORT ?? 465) === 465,
+      secure: true,
       auth: {
-        user: process.env.SMTP_USER ?? '',
+        user: process.env.SMTP_USER ?? 'resend',
         pass: process.env.SMTP_PASS ?? '',
       },
     })
+    const fromAddress = process.env.EMAIL_FROM?.match(/<(.+)>/)?.[1]
+      ?? process.env.SMTP_USER
+      ?? 'onboarding@resend.dev'
     return {
-      name:               'hostinger-smtp',
-      defaultFromAddress: process.env.SMTP_USER ?? 'contact@demenagement.tn',
+      name:               'smtp',
+      defaultFromAddress: fromAddress,
       defaultFromName:    'DT Déménagement Tunisie',
       sendEmail:          (msg: Parameters<typeof transport.sendMail>[0]) =>
         transport.sendMail(msg),
