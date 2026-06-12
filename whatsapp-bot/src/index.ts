@@ -4,6 +4,7 @@ import { handleMessage } from './conversation.js'
 import { getSession, saveSession, type Session } from './sessions.js'
 import { createDevis, createRdv, uploadMedia } from './payloadClient.js'
 import { startSocket } from './connection.js'
+import { startHttpServer } from './httpServer.js'
 import { DEVIS_STEPS } from './flows.js'
 
 // Garde-fous globaux : Baileys lève parfois des erreurs internes transitoires
@@ -98,10 +99,23 @@ async function onMessage(sock: WASocket, msg: proto.IWebMessageInfo): Promise<vo
   }
 }
 
+// Socket courante, mise à jour à chaque (re)connexion (startSocket rappelle onReady
+// à chaque 'connection open'). Le serveur HTTP lit toujours la dernière via ce getter.
+let currentSock: WASocket | null = null
+let httpStarted = false
+
 startSocket((sock) => {
+  currentSock = sock
+
   // Traitement SÉQUENTIEL : si plusieurs photos arrivent en rafale, on les traite
   // une par une (sinon course sur la session -> photos perdues).
   sock.ev.on('messages.upsert', async ({ messages }) => {
     for (const msg of messages) await onMessage(sock, msg)
   })
+
+  // Le serveur HTTP ne doit démarrer qu'UNE fois (sinon EADDRINUSE à la reconnexion).
+  if (!httpStarted) {
+    startHttpServer(() => currentSock)
+    httpStarted = true
+  }
 })
