@@ -118,4 +118,8 @@ startSocket((sock) => {
     startHttpServer(() => currentSock)
     httpStarted = true
   }
+}, () => {
+  // Connexion WhatsApp perdue : invalider la socket pour que /send-devis renvoie 503
+  // au lieu d'un faux « envoyé » (le message ne partirait jamais sur une socket morte).
+  currentSock = null
 })
