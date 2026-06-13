@@ -5,6 +5,7 @@ import { getSession, saveSession, type Session } from './sessions.js'
 import { createDevis, createRdv, uploadMedia } from './payloadClient.js'
 import { startSocket } from './connection.js'
 import { startHttpServer } from './httpServer.js'
+import { senderNumero } from './numero.js'
 import { DEVIS_STEPS } from './flows.js'
 
 // Garde-fous globaux : Baileys lève parfois des erreurs internes transitoires
@@ -16,11 +17,6 @@ process.on('unhandledRejection', (reason) => {
 process.on('uncaughtException', (err) => {
   console.error('[uncaughtException]', err instanceof Error ? err.message : err)
 })
-
-/** Extrait le numéro E.164 (+216…) depuis un JID WhatsApp (ex : 21652880311@s.whatsapp.net). */
-function numeroFromJid(jid: string): string {
-  return '+' + jid.split('@')[0]!.split(':')[0]!
-}
 
 /** Texte d'un message (conversation simple ou extendedText). */
 function textOf(msg: proto.IWebMessageInfo): string | undefined {
@@ -41,7 +37,13 @@ async function send(sock: WASocket, jid: string, text: string): Promise<void> {
 async function onMessage(sock: WASocket, msg: proto.IWebMessageInfo): Promise<void> {
   const jid = msg.key.remoteJid
   if (!jid || msg.key.fromMe || jid.endsWith('@g.us')) return  // ignore soi-même + groupes
-  const numero = numeroFromJid(jid)
+  // Numéro réel de l'expéditeur (gère l'adressage @lid via key.senderPn). Si indéterminable,
+  // on IGNORE le message plutôt que de stocker un faux numéro (ex. +271197841408022).
+  const numero = senderNumero(msg.key)
+  if (!numero) {
+    console.error('[numero] numéro réel indéterminable (lid sans senderPn) — message ignoré')
+    return
+  }
   const session = getSession(numero)
 
   // 1) Image reçue pendant l'étape photos -> télécharger + uploader
@@ -118,4 +120,8 @@ startSocket((sock) => {
     startHttpServer(() => currentSock)
     httpStarted = true
   }
+}, () => {
+  // Connexion WhatsApp perdue : invalider la socket pour que /send-devis renvoie 503
+  // au lieu d'un faux « envoyé » (le message ne partirait jamais sur une socket morte).
+  currentSock = null
 })

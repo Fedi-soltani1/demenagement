@@ -1,6 +1,7 @@
 // Test simple (sans framework) : assertions via node:assert, lancé par tsx.
 import assert from 'node:assert'
-import { toJid, handleSendDevis } from './httpServer.js'
+import { toJid, handleSendDevis, startHttpServer } from './httpServer.js'
+import { config } from './config.js'
 
 // --- toJid ---
 assert.equal(toJid('+216 53 064 275'), '21653064275@s.whatsapp.net', 'toJid +216')
@@ -46,6 +47,21 @@ assert.equal(toJid('0021653064275'), '21653064275@s.whatsapp.net', 'toJid 00216'
   assert.equal(sent.jid, '21653064275@s.whatsapp.net', 'jid correct')
   assert.equal((sent.content as { fileName?: string }).fileName, 'Devis.pdf', 'fileName propagé')
   assert.equal((sent.content as { mimetype?: string }).mimetype, 'application/pdf', 'mimetype PDF')
+}
+
+// --- startHttpServer : bot déconnecté (getSock -> null) -> 503, pas de faux « envoyé » ---
+{
+  const server = startHttpServer(() => null, 0) // port 0 = port libre aléatoire
+  await new Promise<void>((r) => server.once('listening', () => r()))
+  const addr = server.address()
+  const port = typeof addr === 'object' && addr ? addr.port : 0
+  const res = await fetch(`http://localhost:${port}/send-devis`, {
+    method:  'POST',
+    headers: { 'x-bot-secret': config.sendSecret, 'Content-Type': 'application/json' },
+    body:    JSON.stringify({ telephone: '+21653064275', fileName: 'd.pdf', pdfBase64: 'AAA', message: 'hi' }),
+  })
+  assert.equal(res.status, 503, 'bot déconnecté (sock null) -> 503')
+  server.close()
 }
 
 console.log('✅ httpServer.test.ts — toutes les assertions passent')

@@ -1,6 +1,6 @@
 // Serveur HTTP minimal du bot : reçoit un PDF de devis et le relaie sur WhatsApp.
 // Module `http` natif (zéro dépendance). Démarré une seule fois depuis index.ts.
-import { createServer } from 'node:http'
+import { createServer, type Server } from 'node:http'
 import type { WASocket } from '@whiskeysockets/baileys'
 import { config } from './config.js'
 
@@ -46,8 +46,10 @@ export async function handleSendDevis(
   return { status: 200, body: { success: true } }
 }
 
-/** Démarre le serveur HTTP (une seule fois). `getSock` renvoie la socket courante (ou null). */
-export function startHttpServer(getSock: () => WASocket | null): void {
+/** Démarre le serveur HTTP (une seule fois). `getSock` renvoie la socket courante (ou null).
+ *  Si le bot est déconnecté de WhatsApp, `getSock()` renvoie null → l'endpoint répond 503
+ *  (pas de faux « envoyé »). `port` est paramétrable pour les tests (0 = port libre aléatoire). */
+export function startHttpServer(getSock: () => WASocket | null, port: number = config.httpPort): Server {
   const server = createServer((req, res) => {
     const json = (status: number, obj: Record<string, unknown>): void => {
       res.writeHead(status, { 'Content-Type': 'application/json' })
@@ -83,7 +85,9 @@ export function startHttpServer(getSock: () => WASocket | null): void {
       })()
     })
   })
-  server.listen(config.httpPort, () => {
-    console.log(`🌐 Serveur HTTP du bot prêt sur le port ${config.httpPort} (POST /send-devis)`)
+  server.listen(port, () => {
+    const actual = (server.address() as { port: number } | null)?.port ?? port
+    console.log(`🌐 Serveur HTTP du bot prêt sur le port ${actual} (POST /send-devis)`)
   })
+  return server
 }

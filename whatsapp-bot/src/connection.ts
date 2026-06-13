@@ -18,6 +18,7 @@ const logger = pino({ level: config.logLevel })
  */
 export async function startSocket(
   onReady: (sock: WASocket) => void,
+  onClose?: () => void,
 ): Promise<void> {
   const { state, saveCreds } = await useMultiFileAuthState('auth')
 
@@ -41,6 +42,9 @@ export async function startSocket(
       onReady(sock)
     }
     if (connection === 'close') {
+      // Connexion perdue : prévenir l'appelant pour qu'il invalide la socket courante
+      // (sinon l'endpoint /send-devis croit toujours pouvoir envoyer → faux « envoyé »).
+      onClose?.()
       const code = (lastDisconnect?.error as Boom | undefined)?.output?.statusCode
 
       if (code === DisconnectReason.loggedOut) {
@@ -53,7 +57,7 @@ export async function startSocket(
       }
       // Reconnexion avec un petit délai pour éviter les boucles serrées.
       console.log(`⚠️ Connexion fermée (code ${code}). Reconnexion dans 2 s…`)
-      setTimeout(() => void startSocket(onReady), 2000)
+      setTimeout(() => void startSocket(onReady, onClose), 2000)
     }
   })
 }
