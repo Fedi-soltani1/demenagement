@@ -4,7 +4,7 @@ import { type NextRequest, NextResponse } from 'next/server'
 
 const intlMiddleware = createMiddleware(routing)
 
-const PROTECTED_PATTERNS = [/^\/espace-client/]
+const PROTECTED_PATTERNS = [/^\/espace-client/, /^\/[a-z]{2}\/espace-client/]
 
 // Vérifie la présence du cookie de session NextAuth (dev ou prod HTTPS)
 function hasSessionCookie(req: NextRequest): boolean {

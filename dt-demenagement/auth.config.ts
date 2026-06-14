@@ -11,6 +11,13 @@ export const authConfig = {
   },
   providers: [],
   callbacks: {
+    redirect({ url, baseUrl }) {
+      // Relative URLs — always allow
+      if (url.startsWith('/')) return `${baseUrl}${url}`
+      // Same origin — allow
+      try { if (new URL(url).origin === new URL(baseUrl).origin) return url } catch {}
+      return `${baseUrl}/fr/espace-client`
+    },
     session({ session, token }) {
       if (token?.sub) session.user.id = token.sub
       return session

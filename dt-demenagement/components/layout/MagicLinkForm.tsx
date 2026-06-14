@@ -35,7 +35,7 @@ export function MagicLinkForm({
       const result = await signIn('nodemailer', {
         email,
         redirect: false,
-        callbackUrl: callbackUrl ?? `/espace-client`,
+        callbackUrl: callbackUrl ?? `/${locale}/espace-client`,
       })
       if (result?.error) {
         setError(t('errorDefault'))
