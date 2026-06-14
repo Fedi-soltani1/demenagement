@@ -91,21 +91,40 @@ export async function POST(request: Request): Promise<NextResponse> {
     return NextResponse.json({ error: 'Enregistrement impossible' }, { status: 500 })
   }
 
+  const adminUrl = `${(process.env.NEXT_PUBLIC_SERVER_URL ?? 'http://localhost:3000').replace(/\/$/, '')}/admin/collections/rendez-vous`
+
   // Email de notification admin (non-bloquant)
   sendMail({
     to:      env.EMAIL_DEVIS_TO,
     subject: `📩 Nouveau message de contact — ${d.nom}`,
     html: `<!DOCTYPE html>
-<html lang="fr"><head><meta charset="UTF-8"></head>
-<body style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;padding:24px;">
-  <div style="background:#0f0f0f;padding:16px 24px;border-radius:8px 8px 0 0;">
-    <h2 style="color:#fff;margin:0;font-size:16px;">DT Déménagement — Formulaire de contact</h2>
-  </div>
-  <table style="width:100%;border-collapse:collapse;background:#f9f9f9;border:1px solid #e0e0e0;border-top:none;">
-    <tr><td style="padding:10px 16px;font-weight:bold;width:120px;">Nom</td><td style="padding:10px 16px;">${d.nom.replace(/</g, '&lt;')}</td></tr>
-    <tr style="background:#fff;"><td style="padding:10px 16px;font-weight:bold;">Téléphone</td><td style="padding:10px 16px;">${d.telephone}</td></tr>
-    ${email ? `<tr><td style="padding:10px 16px;font-weight:bold;">Email</td><td style="padding:10px 16px;">${email}</td></tr>` : ''}
-    ${d.message ? `<tr style="background:#fff;"><td style="padding:10px 16px;font-weight:bold;vertical-align:top;">Message</td><td style="padding:10px 16px;white-space:pre-wrap;">${d.message.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</td></tr>` : ''}
+<html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#0a0a0a;font-family:Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0a0a0a;padding:40px 16px;">
+    <tr><td align="center">
+      <table width="560" cellpadding="0" cellspacing="0" style="background:#111;border-radius:16px;overflow:hidden;border:1px solid #2a2a2a;max-width:560px;width:100%;">
+        <tr><td style="background:#b52027;padding:20px 28px;">
+          <p style="margin:0;font-size:17px;font-weight:bold;color:#fff;">DT Déménagement — Message de contact</p>
+          <p style="margin:4px 0 0;font-size:12px;color:rgba(255,255,255,0.75);">Formulaire site web</p>
+        </td></tr>
+        <tr><td style="padding:24px 28px;">
+          <table style="width:100%;border-collapse:collapse;">
+            <tr style="border-bottom:1px solid #2a2a2a;"><td style="padding:10px 0;color:#a0a0a0;font-size:12px;width:120px;">NOM</td><td style="padding:10px 0;color:#f8f5f0;font-size:14px;font-weight:bold;">${d.nom.replace(/</g, '&lt;')}</td></tr>
+            <tr style="border-bottom:1px solid #2a2a2a;"><td style="padding:10px 0;color:#a0a0a0;font-size:12px;">TÉLÉPHONE</td><td style="padding:10px 0;color:#f8f5f0;font-size:14px;">${d.telephone}</td></tr>
+            ${email ? `<tr style="border-bottom:1px solid #2a2a2a;"><td style="padding:10px 0;color:#a0a0a0;font-size:12px;">EMAIL</td><td style="padding:10px 0;color:#f8f5f0;font-size:14px;">${email}</td></tr>` : ''}
+            ${d.message ? `<tr><td style="padding:10px 0;color:#a0a0a0;font-size:12px;vertical-align:top;">MESSAGE</td><td style="padding:10px 0;color:#f8f5f0;font-size:14px;white-space:pre-wrap;">${d.message.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</td></tr>` : ''}
+          </table>
+        </td></tr>
+        <tr><td style="padding:0 28px 28px;">
+          <a href="${adminUrl}" style="display:inline-block;background:#c9a84c;color:#0a0a0a;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:14px;">
+            📋 Voir dans l'admin →
+          </a>
+        </td></tr>
+        <tr><td style="padding:16px 28px;border-top:1px solid #2a2a2a;">
+          <p style="margin:0;font-size:11px;color:#555;">© ${new Date().getFullYear()} DT Déménagement Tunisie</p>
+        </td></tr>
+      </table>
+    </td></tr>
   </table>
 </body></html>`,
   }).catch((err: unknown) => {

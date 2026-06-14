@@ -4,6 +4,7 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 import { sendMail } from '@/lib/mailer'
 import { env } from '@/lib/env'
+import { signEmailToken } from '@/lib/email-token'
 
 const TEL_RE = /^\+?[0-9\s\-()\s]{8,20}$/
 
@@ -58,25 +59,63 @@ export async function POST(request: Request) {
   // Emails non-bloquants
   const emailPromises: Promise<void>[] = []
 
-  // 1. Notification admin
+  // 1. Notification admin avec boutons Confirmer / Annuler
+  const base         = (env.NEXT_PUBLIC_SERVER_URL ?? 'http://localhost:3000').replace(/\/$/, '')
+  const rdvIdStr     = String(rdv.id)
+  const tokenConfirm = signEmailToken(`rdv:${rdvIdStr}:confirme`)
+  const tokenAnnule  = signEmailToken(`rdv:${rdvIdStr}:annule`)
+  const urlConfirm   = `${base}/api/admin/rdv-action?id=${rdvIdStr}&action=confirme&token=${tokenConfirm}`
+  const urlAnnule    = `${base}/api/admin/rdv-action?id=${rdvIdStr}&action=annule&token=${tokenAnnule}`
+  const adminUrl     = `${base}/admin/collections/rendez-vous/${rdvIdStr}`
+
   emailPromises.push(
     sendMail({
       to:      env.EMAIL_DEVIS_TO,
       subject: `📅 Nouvelle demande de visite — ${d.prenom} ${d.nom}`,
       html: `<!DOCTYPE html>
-<html lang="fr"><head><meta charset="UTF-8"></head>
-<body style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;padding:24px;">
-  <div style="background:#0f0f0f;padding:16px 24px;border-radius:8px 8px 0 0;">
-    <h2 style="color:#fff;margin:0;font-size:16px;">DT Déménagement — Nouvelle demande de visite</h2>
-  </div>
-  <table style="width:100%;border-collapse:collapse;background:#f9f9f9;border:1px solid #e0e0e0;border-top:none;">
-    <tr><td style="padding:10px 16px;font-weight:bold;width:140px;">Type</td><td style="padding:10px 16px;">${d.type}</td></tr>
-    <tr style="background:#fff;"><td style="padding:10px 16px;font-weight:bold;">Nom</td><td style="padding:10px 16px;">${d.prenom} ${d.nom}</td></tr>
-    <tr><td style="padding:10px 16px;font-weight:bold;">Téléphone</td><td style="padding:10px 16px;">${d.telephone}</td></tr>
-    <tr style="background:#fff;"><td style="padding:10px 16px;font-weight:bold;">WhatsApp</td><td style="padding:10px 16px;">${d.whatsapp}</td></tr>
-    ${d.email ? `<tr><td style="padding:10px 16px;font-weight:bold;">Email</td><td style="padding:10px 16px;">${d.email}</td></tr>` : ''}
-    ${d.adresse ? `<tr style="background:#fff;"><td style="padding:10px 16px;font-weight:bold;">Adresse</td><td style="padding:10px 16px;">${d.adresse}</td></tr>` : ''}
-    ${d.dateVisite ? `<tr><td style="padding:10px 16px;font-weight:bold;">Date souhaitée</td><td style="padding:10px 16px;">${d.dateVisite}${d.heure ? ` à ${d.heure}` : ''}</td></tr>` : ''}
+<html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#0a0a0a;font-family:Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0a0a0a;padding:40px 16px;">
+    <tr><td align="center">
+      <table width="580" cellpadding="0" cellspacing="0" style="background:#111;border-radius:16px;overflow:hidden;border:1px solid #2a2a2a;max-width:580px;width:100%;">
+        <tr><td style="background:#b52027;padding:20px 28px;">
+          <p style="margin:0;font-size:17px;font-weight:bold;color:#fff;">DT Déménagement — Nouvelle demande de visite</p>
+          <p style="margin:4px 0 0;font-size:12px;color:rgba(255,255,255,0.75);">Action requise</p>
+        </td></tr>
+        <tr><td style="padding:24px 28px;">
+          <table style="width:100%;border-collapse:collapse;">
+            <tr style="border-bottom:1px solid #2a2a2a;"><td style="padding:10px 0;color:#a0a0a0;font-size:12px;width:130px;">TYPE</td><td style="padding:10px 0;color:#f8f5f0;font-size:14px;">${d.type}</td></tr>
+            <tr style="border-bottom:1px solid #2a2a2a;"><td style="padding:10px 0;color:#a0a0a0;font-size:12px;">NOM</td><td style="padding:10px 0;color:#f8f5f0;font-size:14px;font-weight:bold;">${d.prenom} ${d.nom}</td></tr>
+            <tr style="border-bottom:1px solid #2a2a2a;"><td style="padding:10px 0;color:#a0a0a0;font-size:12px;">TÉLÉPHONE</td><td style="padding:10px 0;color:#f8f5f0;font-size:14px;">${d.telephone}</td></tr>
+            <tr style="border-bottom:1px solid #2a2a2a;"><td style="padding:10px 0;color:#a0a0a0;font-size:12px;">WHATSAPP</td><td style="padding:10px 0;color:#f8f5f0;font-size:14px;">${d.whatsapp}</td></tr>
+            ${d.email ? `<tr style="border-bottom:1px solid #2a2a2a;"><td style="padding:10px 0;color:#a0a0a0;font-size:12px;">EMAIL</td><td style="padding:10px 0;color:#f8f5f0;font-size:14px;">${d.email}</td></tr>` : ''}
+            ${d.adresse ? `<tr style="border-bottom:1px solid #2a2a2a;"><td style="padding:10px 0;color:#a0a0a0;font-size:12px;">ADRESSE</td><td style="padding:10px 0;color:#f8f5f0;font-size:14px;">${d.adresse}</td></tr>` : ''}
+            ${d.dateVisite ? `<tr><td style="padding:10px 0;color:#a0a0a0;font-size:12px;">DATE SOUHAITÉE</td><td style="padding:10px 0;color:#c9a84c;font-size:14px;font-weight:bold;">${d.dateVisite}${d.heure ? ` à ${d.heure}` : ''}</td></tr>` : ''}
+          </table>
+        </td></tr>
+        <tr><td style="padding:0 28px 28px;">
+          <p style="margin:0 0 16px;font-size:13px;color:#a0a0a0;">Répondre directement depuis cet email :</p>
+          <table cellpadding="0" cellspacing="0"><tr>
+            <td style="padding-right:12px;">
+              <a href="${urlConfirm}" style="display:inline-block;background:#16a34a;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:14px;">
+                ✅ Confirmer le RDV
+              </a>
+            </td>
+            <td>
+              <a href="${urlAnnule}" style="display:inline-block;background:#b52027;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:14px;">
+                ❌ Annuler le RDV
+              </a>
+            </td>
+          </tr></table>
+          <p style="margin:16px 0 0;font-size:11px;color:#555;">
+            Ou <a href="${adminUrl}" style="color:#c9a84c;text-decoration:none;">ouvrir dans l'admin →</a>
+          </p>
+        </td></tr>
+        <tr><td style="padding:16px 28px;border-top:1px solid #2a2a2a;">
+          <p style="margin:0;font-size:11px;color:#555;">© ${new Date().getFullYear()} DT Déménagement Tunisie</p>
+        </td></tr>
+      </table>
+    </td></tr>
   </table>
 </body></html>`,
     }).catch((err: unknown) => { console.error('[rdv] Échec notification admin SMTP :', err) })
