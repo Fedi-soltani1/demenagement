@@ -188,6 +188,15 @@ export default async function DossierPage({ params }: PageProps) {
                   refusedSubtitle:         t('devisRefusedSubtitle'),
                   respondedOn:             t('devisRespondedOn'),
                   cancelBtn:               t('devisCancelBtn'),
+                  pdfError:                t('devisPdfError'),
+                  errorConfirmRequired:    t('devisErrorConfirmRequired'),
+                  confirmAcceptTitle:      t('devisConfirmAcceptTitle'),
+                  confirmAcceptBody:       t('devisConfirmAcceptBody'),
+                  confirmRefuseTitle:      t('devisConfirmRefuseTitle'),
+                  confirmRefuseBody:       t('devisConfirmRefuseBody'),
+                  confirmYesAccept:        t('devisConfirmYesAccept'),
+                  confirmYesRefuse:        t('devisConfirmYesRefuse'),
+                  confirmCancel:           t('devisConfirmCancel'),
                 } as DevisLabels}
               />
 

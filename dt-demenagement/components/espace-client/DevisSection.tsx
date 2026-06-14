@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { CheckCircle, XCircle, Download, Clock, AlertTriangle, ChevronDown, ChevronUp } from 'lucide-react'
+import { CheckCircle, XCircle, Download, Clock, AlertTriangle, ChevronDown, ChevronUp, Loader2 } from 'lucide-react'
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -56,6 +56,15 @@ export type DevisLabels = {
   refusedSubtitle:         string
   respondedOn:             string
   cancelBtn:               string
+  pdfError:                string
+  errorConfirmRequired:    string
+  confirmAcceptTitle:      string
+  confirmAcceptBody:       string
+  confirmRefuseTitle:      string
+  confirmRefuseBody:       string
+  confirmYesAccept:        string
+  confirmYesRefuse:        string
+  confirmCancel:           string
 }
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
@@ -104,17 +113,32 @@ export function DevisSection({
   labels,
 }: DevisSectionProps) {
   const [action,      setAction]      = useState<'none' | 'accepte' | 'refuse'>('none')
+  const [confirmOpen, setConfirmOpen] = useState(false)
+  const [pendingAction, setPendingAction] = useState<'accepte' | 'refuse' | null>(null)
   const [commentaire, setCommentaire] = useState('')
   const [confirmed,   setConfirmed]   = useState(false)
   const [loading,     setLoading]     = useState(false)
   const [result,      setResult]      = useState<'accepte' | 'refuse' | null>(null)
   const [error,       setError]       = useState<string | null>(null)
-  const [showLines,   setShowLines]   = useState(false)
+  const [showLines,   setShowLines]   = useState(true)
+
+  const openConfirm = useCallback((a: 'accepte' | 'refuse') => {
+    setPendingAction(a)
+    setConfirmOpen(true)
+  }, [])
+
+  const confirmAction = useCallback(() => {
+    if (!pendingAction) return
+    setAction(pendingAction)
+    setConfirmOpen(false)
+    setPendingAction(null)
+    setError(null)
+  }, [pendingAction])
 
   const handleSubmit = useCallback(async () => {
     if (action === 'none') return
     if (action === 'accepte' && !confirmed) {
-      setError('Veuillez cocher la case de confirmation avant d\'accepter.')
+      setError(labels.errorConfirmRequired)
       return
     }
     setLoading(true)
@@ -141,11 +165,21 @@ export function DevisSection({
     } finally {
       setLoading(false)
     }
-  }, [action, confirmed, commentaire, numeroDossier])
+  }, [action, confirmed, commentaire, numeroDossier, labels.errorConfirmRequired])
 
-  const handleDownload = useCallback(() => {
-    window.open(`/api/client/devis-pdf/${encodeURIComponent(numeroDossier)}`, '_blank')
-  }, [numeroDossier])
+  const handleDownload = useCallback(async () => {
+    setError(null)
+    try {
+      const res = await fetch(`/api/client/devis-pdf/${encodeURIComponent(numeroDossier)}`)
+      if (!res.ok) throw new Error('pdf-error')
+      const blob = await res.blob()
+      const url  = URL.createObjectURL(blob)
+      window.open(url, '_blank')
+      setTimeout(() => URL.revokeObjectURL(url), 5000)
+    } catch {
+      setError(labels.pdfError)
+    }
+  }, [numeroDossier, labels.pdfError])
 
   // Garde APRÈS tous les hooks (règle des hooks : les hooks doivent être appelés
   // de façon inconditionnelle, dans le même ordre à chaque rendu — sinon crash React).
@@ -307,11 +341,62 @@ export function DevisSection({
           {/* Formulaire accepter/refuser */}
           {!isExpired && (
             <div className="pt-4 border-t border-white/5">
+
+              {/* Modal de confirmation */}
+              {confirmOpen && pendingAction && (
+                <div
+                  className="fixed inset-0 z-50 flex items-center justify-center p-4"
+                  role="dialog"
+                  aria-modal="true"
+                  aria-labelledby="confirm-dialog-title"
+                >
+                  <div
+                    className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+                    onClick={() => setConfirmOpen(false)}
+                    aria-hidden="true"
+                  />
+                  <div className="relative z-10 w-full max-w-sm rounded-2xl border border-white/10 bg-[#111] p-6 space-y-5 shadow-xl">
+                    <div className="flex items-center gap-3">
+                      {pendingAction === 'accepte'
+                        ? <CheckCircle className="w-6 h-6 text-emerald-400 flex-shrink-0" aria-hidden="true" />
+                        : <XCircle    className="w-6 h-6 text-red-400 flex-shrink-0"     aria-hidden="true" />
+                      }
+                      <h2 id="confirm-dialog-title" className="font-heading text-base text-[var(--color-text-light)]">
+                        {pendingAction === 'accepte' ? labels.confirmAcceptTitle : labels.confirmRefuseTitle}
+                      </h2>
+                    </div>
+                    <p className="font-body text-sm text-[var(--color-text-muted)] leading-relaxed">
+                      {pendingAction === 'accepte' ? labels.confirmAcceptBody : labels.confirmRefuseBody}
+                    </p>
+                    <div className="flex gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setConfirmOpen(false)}
+                        className="flex-1 px-4 py-2.5 rounded-xl border border-white/10 font-body text-sm text-[var(--color-text-muted)] hover:border-white/20 hover:text-[var(--color-text-light)] transition-all focus-visible:outline-none"
+                      >
+                        {labels.confirmCancel}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={confirmAction}
+                        className={`flex-1 px-4 py-2.5 rounded-xl font-body font-bold text-sm transition-all focus-visible:outline-none focus-visible:ring-2 ${
+                          pendingAction === 'accepte'
+                            ? 'bg-emerald-400 text-black hover:bg-emerald-300 focus-visible:ring-emerald-400'
+                            : 'bg-[var(--color-red)] text-white hover:opacity-90 focus-visible:ring-[var(--color-red)]'
+                        }`}
+                      >
+                        {pendingAction === 'accepte' ? labels.confirmYesAccept : labels.confirmYesRefuse}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {action === 'none' && (
                 <div className="flex flex-col sm:flex-row gap-3">
                   <button
                     type="button"
-                    onClick={() => { setAction('accepte'); setError(null) }}
+                    onClick={() => openConfirm('accepte')}
                     className="flex-1 flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl bg-emerald-400/10 border border-emerald-400/25 text-emerald-400 font-body font-bold text-sm hover:bg-emerald-400/20 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"
                   >
                     <CheckCircle className="w-4 h-4" aria-hidden="true" />
@@ -319,7 +404,7 @@ export function DevisSection({
                   </button>
                   <button
                     type="button"
-                    onClick={() => { setAction('refuse'); setError(null) }}
+                    onClick={() => openConfirm('refuse')}
                     className="flex-1 flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl bg-red-400/8 border border-red-400/20 text-red-400 font-body font-bold text-sm hover:bg-red-400/15 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
                   >
                     <XCircle className="w-4 h-4" aria-hidden="true" />
@@ -336,7 +421,7 @@ export function DevisSection({
                     </p>
                     <button
                       type="button"
-                      onClick={() => { setAction('none'); setConfirmed(false); setCommentaire(''); setError(null) }}
+                      onClick={() => { setAction('none'); setConfirmed(false); setCommentaire(''); setError(null); setConfirmOpen(false) }}
                       className="font-body text-xs text-[var(--color-text-muted)] hover:text-[var(--color-text-light)] transition-colors focus-visible:outline-none"
                     >
                       {labels.cancelBtn}
@@ -397,16 +482,14 @@ export function DevisSection({
                     }`}
                   >
                     {loading
-                      ? (action === 'accepte' ? labels.accepting : labels.refusing)
-                      : (
-                          <>
-                            {action === 'accepte'
-                              ? <CheckCircle className="w-4 h-4" aria-hidden="true" />
-                              : <XCircle    className="w-4 h-4" aria-hidden="true" />
-                            }
-                            {action === 'accepte' ? labels.acceptBtn : labels.refuseBtn}
-                          </>
-                        )
+                      ? <><Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />{action === 'accepte' ? labels.accepting : labels.refusing}</>
+                      : <>
+                          {action === 'accepte'
+                            ? <CheckCircle className="w-4 h-4" aria-hidden="true" />
+                            : <XCircle    className="w-4 h-4" aria-hidden="true" />
+                          }
+                          {action === 'accepte' ? labels.acceptBtn : labels.refuseBtn}
+                        </>
                     }
                   </button>
                 </div>
