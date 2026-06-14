@@ -44,10 +44,15 @@ export default async function PartenairePage({ params }: PageProps) {
     payload.find({ collection: 'services', where: { publie: { equals: true } }, sort: 'ordre', limit: 6, depth: 0, locale: loc }).catch(() => ({ docs: [] })),
   ])
 
-  const s = settings as { logoImage?: { url?: string } | null; landingPartenaire?: { titre?: string; sousTitre?: string } } | null
+  const s = settings as {
+    logoImage?: { url?: string } | null
+    landingPartenaire?: { titre?: string; sousTitre?: string; pill1?: string; pill2?: string; pill3?: string }
+  } | null
+  const lp         = s?.landingPartenaire
   const dtLogoUrl  = s?.logoImage?.url ?? undefined
-  const titre      = s?.landingPartenaire?.titre     ?? 'Déménagez sereinement avec DT Déménagement Tunisie'
-  const sousTitre  = s?.landingPartenaire?.sousTitre ?? 'Devis gratuit en 2 minutes. Une équipe professionnelle partout en Tunisie et vers l\'international.'
+  const titre      = lp?.titre     ?? 'Déménagez sereinement avec DT Déménagement Tunisie'
+  const sousTitre  = lp?.sousTitre ?? 'Devis gratuit en 2 minutes. Une équipe professionnelle partout en Tunisie et vers l\'international.'
+  const pills      = [lp?.pill1 ?? 'Devis gratuit', lp?.pill2 ?? 'Partout en Tunisie', lp?.pill3 ?? 'Équipe professionnelle'].filter(Boolean) as string[]
   const services   = servicesRes.docs as ServiceDoc[]
   const partnerLogoUrl = typeof partner.logo === 'object' && partner.logo ? partner.logo.url : undefined
 
@@ -61,9 +66,10 @@ export default async function PartenairePage({ params }: PageProps) {
       <PartnerHero
         dtLogoUrl={dtLogoUrl}
         partnerLogoUrl={partnerLogoUrl}
-        partnerName={partner.nom ?? 'Notre partenaire'}
+        partnerName={(partner.nom ?? 'Notre partenaire').trim()}
         titre={titre}
         sousTitre={sousTitre}
+        pills={pills}
       />
 
       {/* ── Services ── */}

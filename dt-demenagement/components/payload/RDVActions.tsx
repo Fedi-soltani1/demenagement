@@ -22,16 +22,29 @@ export default function RDVActions() {
   const [result,  setResult]  = useState<{ type: 'ok' | 'err'; msg: string } | null>(null)
   const [current, setCurrent] = useState<Status>(live?.statut ?? 'nouveau')
 
-  const tel      = live?.telephone ?? ''
-  const wa       = live?.whatsapp  ?? tel
-  const fullName = [live?.prenom, live?.nom].filter(Boolean).join(' ') || 'le client'
-  const waNum    = wa.replace(/[^0-9]/g, '')
-  const waMsg    = encodeURIComponent(
-    `Bonjour ${fullName},\n\nNous confirmons votre rendez-vous visite avec DT Déménagement Tunisie.\n` +
-    (live?.dateVisite ? `📅 Date : ${live.dateVisite}` : '') +
-    (live?.heure      ? ` à ${live.heure}` : '') +
-    `\n\nPour toute question : +216 52 880 311\n\nCordialement,\nDT Déménagement Tunisie`
-  )
+  const tel = live?.telephone ?? ''
+  const wa  = live?.whatsapp  ?? tel
+
+  async function sendWhatsApp() {
+    if (!id || saving) return
+    setSaving(true); setResult(null)
+    try {
+      const res = await fetch('/api/admin/send-rdv-whatsapp', {
+        method:      'POST',
+        headers:     { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body:        JSON.stringify({ rdvId: id }),
+      })
+      const j: { error?: string } = await res.json().catch(() => ({}))
+      if (!res.ok) throw new Error(j.error ?? `Erreur ${res.status}`)
+      setCurrent('confirme')
+      setResult({ type: 'ok', msg: '💬 Confirmation envoyée par WhatsApp — RDV confirmé ✅' })
+    } catch (e) {
+      setResult({ type: 'err', msg: e instanceof Error ? e.message : "Erreur lors de l'envoi WhatsApp." })
+    } finally {
+      setSaving(false)
+    }
+  }
 
   async function setStatut(next: Status) {
     if (!id || next === current || saving) return
@@ -92,11 +105,11 @@ export default function RDVActions() {
               📞 Téléphone non renseigné
             </div>
           )}
-          {waNum ? (
-            <a href={`https://wa.me/${waNum}?text=${waMsg}`} target="_blank" rel="noreferrer"
-              style={{ ...btnBase, background: '#128c7e', color: '#fff', textDecoration: 'none' }}>
-              💬 WhatsApp
-            </a>
+          {wa ? (
+            <button type="button" disabled={saving} onClick={sendWhatsApp}
+              style={{ ...btnBase, background: '#128c7e', color: '#fff' }}>
+              💬 Confirmer + envoyer WhatsApp
+            </button>
           ) : null}
         </div>
 

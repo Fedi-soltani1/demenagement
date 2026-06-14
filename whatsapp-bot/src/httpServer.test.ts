@@ -1,6 +1,6 @@
 // Test simple (sans framework) : assertions via node:assert, lancé par tsx.
 import assert from 'node:assert'
-import { toJid, handleSendDevis, startHttpServer } from './httpServer.js'
+import { toJid, handleSendDevis, handleSendMessage, startHttpServer } from './httpServer.js'
 import { config } from './config.js'
 
 // --- toJid ---
@@ -47,6 +47,26 @@ assert.equal(toJid('0021653064275'), '21653064275@s.whatsapp.net', 'toJid 00216'
   assert.equal(sent.jid, '21653064275@s.whatsapp.net', 'jid correct')
   assert.equal((sent.content as { fileName?: string }).fileName, 'Devis.pdf', 'fileName propagé')
   assert.equal((sent.content as { mimetype?: string }).mimetype, 'application/pdf', 'mimetype PDF')
+}
+
+// --- handleSendMessage : texte OK -> 200 ---
+{
+  const calls: { jid: string; content: Record<string, unknown> }[] = []
+  const fakeSock = {
+    onWhatsApp: async () => [{ exists: true, jid: 'x' }],
+    sendMessage: async (jid: string, content: Record<string, unknown>) => { calls.push({ jid, content }); return {} },
+  }
+  const r = await handleSendMessage({ telephone: '+21653064275', message: 'Bonjour' }, fakeSock as never)
+  assert.equal(r.status, 200, 'message OK -> 200')
+  assert.equal(calls.length, 1, 'sendMessage appelé')
+  assert.equal((calls[0]!.content as { text?: string }).text, 'Bonjour', 'texte envoyé')
+}
+
+// --- handleSendMessage : champs manquants -> 422 ---
+{
+  const fakeSock = { onWhatsApp: async () => [{ exists: true, jid: 'x' }], sendMessage: async () => ({}) }
+  const r = await handleSendMessage({ telephone: '+21653064275' }, fakeSock as never)
+  assert.equal(r.status, 422, 'message manquant -> 422')
 }
 
 // --- startHttpServer : bot déconnecté (getSock -> null) -> 503, pas de faux « envoyé » ---

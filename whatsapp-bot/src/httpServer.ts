@@ -46,6 +46,29 @@ export async function handleSendDevis(
   return { status: 200, body: { success: true } }
 }
 
+export interface SendMessageBody {
+  telephone: string
+  message:   string
+}
+
+/** Envoi d'un simple message texte (ex. confirmation de RDV). Socket injectée → testable. */
+export async function handleSendMessage(
+  body: Partial<SendMessageBody>,
+  sock: MinimalSock,
+): Promise<SendResult> {
+  const { telephone, message } = body
+  if (!telephone || !message) {
+    return { status: 422, body: { error: 'Champs manquants' } }
+  }
+  const jid = toJid(telephone)
+  const found = (await sock.onWhatsApp(jid)) ?? []
+  if (!found[0]?.exists) {
+    return { status: 422, body: { error: "Ce numéro n'a pas de compte WhatsApp" } }
+  }
+  await sock.sendMessage(jid, { text: message })
+  return { status: 200, body: { success: true } }
+}
+
 /** Démarre le serveur HTTP (une seule fois). `getSock` renvoie la socket courante (ou null).
  *  Si le bot est déconnecté de WhatsApp, `getSock()` renvoie null → l'endpoint répond 503
  *  (pas de faux « envoyé »). `port` est paramétrable pour les tests (0 = port libre aléatoire). */
@@ -56,9 +79,10 @@ export function startHttpServer(getSock: () => WASocket | null, port: number = c
       res.end(JSON.stringify(obj))
     }
 
-    if (req.method !== 'POST' || req.url !== '/send-devis') {
+    if (req.method !== 'POST' || (req.url !== '/send-devis' && req.url !== '/send-message')) {
       json(404, { error: 'Not found' }); return
     }
+    const route = req.url
     if (req.headers['x-bot-secret'] !== config.sendSecret) {
       json(401, { error: 'Non autorisé' }); return
     }
@@ -75,11 +99,13 @@ export function startHttpServer(getSock: () => WASocket | null, port: number = c
         const sock = getSock()
         if (!sock) { json(503, { error: 'Bot non connecté à WhatsApp' }); return }
         try {
-          const parsed = JSON.parse(raw) as Partial<SendDevisBody>
-          const result = await handleSendDevis(parsed, sock)
+          const parsed = JSON.parse(raw) as Record<string, unknown>
+          const result = route === '/send-message'
+            ? await handleSendMessage(parsed, sock)
+            : await handleSendDevis(parsed, sock)
           json(result.status, result.body)
         } catch (e) {
-          console.error('[send-devis]', e instanceof Error ? e.message : e)
+          console.error('[bot-send]', e instanceof Error ? e.message : e)
           json(500, { error: e instanceof Error ? e.message : 'Erreur interne' })
         }
       })()
@@ -87,7 +113,7 @@ export function startHttpServer(getSock: () => WASocket | null, port: number = c
   })
   server.listen(port, () => {
     const actual = (server.address() as { port: number } | null)?.port ?? port
-    console.log(`🌐 Serveur HTTP du bot prêt sur le port ${actual} (POST /send-devis)`)
+    console.log(`🌐 Serveur HTTP du bot prêt sur le port ${actual} (POST /send-devis, /send-message)`)
   })
   return server
 }

@@ -35,15 +35,13 @@ interface PartnerHeroProps {
   partnerName: string
   titre: string
   sousTitre: string
+  pills: string[]
 }
 
-const PILLS = [
-  { icon: ShieldCheck, label: 'Devis gratuit' },
-  { icon: MapPin,      label: 'Partout en Tunisie' },
-  { icon: Sparkles,    label: 'Équipe professionnelle' },
-]
+// Icônes fixes pour les badges de confiance (le texte vient de Settings).
+const PILL_ICONS = [ShieldCheck, MapPin, Sparkles]
 
-export function PartnerHero({ dtLogoUrl, partnerLogoUrl, partnerName, titre, sousTitre }: PartnerHeroProps) {
+export function PartnerHero({ dtLogoUrl, partnerLogoUrl, partnerName, titre, sousTitre, pills }: PartnerHeroProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   useWaveCanvas(canvasRef, true)
   const { open } = useDevisModal()
@@ -145,18 +143,23 @@ export function PartnerHero({ dtLogoUrl, partnerLogoUrl, partnerName, titre, sou
           </button>
         </motion.div>
 
-        {/* Pills de confiance */}
-        <motion.ul variants={item} className="mt-7 flex flex-wrap items-center justify-center gap-3">
-          {PILLS.map(({ icon: Icon, label }) => (
-            <li
-              key={label}
-              className="inline-flex items-center gap-2 rounded-full border border-white/[0.12] bg-white/[0.05] px-4 py-2 font-body text-xs font-medium text-text-muted backdrop-blur-sm"
-            >
-              <Icon className="h-3.5 w-3.5 text-[var(--color-gold)]" aria-hidden="true" />
-              {label}
-            </li>
-          ))}
-        </motion.ul>
+        {/* Pills de confiance (texte éditable depuis Settings) */}
+        {pills.filter(Boolean).length > 0 && (
+          <motion.ul variants={item} className="mt-7 flex flex-wrap items-center justify-center gap-3">
+            {pills.filter(Boolean).map((label, idx) => {
+              const Icon = PILL_ICONS[idx % PILL_ICONS.length] ?? ShieldCheck
+              return (
+                <li
+                  key={label}
+                  className="inline-flex items-center gap-2 rounded-full border border-white/[0.12] bg-white/[0.05] px-4 py-2 font-body text-xs font-medium text-text-muted backdrop-blur-sm"
+                >
+                  <Icon className="h-3.5 w-3.5 text-[var(--color-gold)]" aria-hidden="true" />
+                  {label}
+                </li>
+              )
+            })}
+          </motion.ul>
+        )}
       </motion.div>
     </section>
   )
