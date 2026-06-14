@@ -528,11 +528,12 @@ export function MessagesHub({ dossiers: initialDossiers, locale, clientEmail }: 
               <div className="flex gap-2 items-end">
                 <textarea
                   value={content}
-                  onChange={(e) => setContent(e.target.value)}
+                  onChange={(e) => setContent(e.target.value.slice(0, 2000))}
                   onKeyDown={handleKeyDown}
                   placeholder="Écrivez votre message… (Entrée pour envoyer)"
                   disabled={isPending}
                   rows={2}
+                  maxLength={2000}
                   aria-label="Votre message"
                   className="flex-1 px-4 py-2.5 rounded-xl bg-white/[0.04] border border-white/10 text-[var(--color-text-light)] font-body text-sm placeholder:text-[var(--color-text-muted)]/40 focus:outline-none focus:ring-2 focus:ring-[var(--color-red)] focus:border-transparent disabled:opacity-50 resize-none transition-all"
                 />
@@ -549,6 +550,11 @@ export function MessagesHub({ dossiers: initialDossiers, locale, clientEmail }: 
                   }
                 </button>
               </div>
+              {content.length > 0 && (
+                <p className={`text-right font-mono text-[10px] mt-1 ${content.length >= 1900 ? 'text-amber-400' : 'text-[var(--color-text-muted)]'}`}>
+                  {content.length} / 2000
+                </p>
+              )}
             </div>
           </>
         ) : (

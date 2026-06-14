@@ -304,9 +304,13 @@ export function NouvelleDemandeForm({ locale }: { locale: string }) {
               rows={4}
               placeholder="Précisions sur le mobilier, contraintes d'accès, objets fragiles ou lourds..."
               value={form.commentaire}
-              onChange={e => setForm(f => ({ ...f, commentaire: e.target.value }))}
+              onChange={e => setForm(f => ({ ...f, commentaire: e.target.value.slice(0, 1000) }))}
+              maxLength={1000}
               className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-[var(--color-text-light)] font-body text-sm placeholder-[var(--color-text-muted)] focus:outline-none focus:border-[var(--color-red)]/50 focus:ring-1 focus:ring-[var(--color-red)]/30 resize-none"
             />
+            <p className={`text-right font-mono text-[10px] mt-1 ${form.commentaire.length >= 950 ? 'text-amber-400' : 'text-[var(--color-text-muted)]'}`}>
+              {form.commentaire.length} / 1000
+            </p>
           </div>
         </div>
       )}

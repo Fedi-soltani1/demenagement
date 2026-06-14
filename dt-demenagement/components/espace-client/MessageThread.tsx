@@ -186,29 +186,35 @@ export function MessageThread({ messages: initialMessages, dossierId, clientEmai
       </div>
 
       {/* Formulaire envoi */}
-      <div className="flex gap-2 items-end">
-        <textarea
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder={labels.placeholder}
-          disabled={isPending}
-          rows={2}
-          className="flex-1 px-4 py-3 rounded-xl bg-white/[0.04] border border-white/10 text-[var(--color-text-light)] font-body text-sm placeholder:text-[var(--color-text-muted)]/50 focus:outline-none focus:ring-2 focus:ring-[var(--color-red)] focus:border-transparent disabled:opacity-50 resize-none transition-all"
-          aria-label={labels.placeholder}
-        />
-        <button
-          type="button"
-          onClick={handleSend}
-          disabled={isPending || !content.trim()}
-          aria-label={isPending ? labels.sending : labels.send}
-          className="flex-shrink-0 w-10 h-10 rounded-xl bg-[var(--color-red)] text-white flex items-center justify-center hover:bg-[var(--color-red-dark)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)]"
-        >
-          {isPending
-            ? <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
-            : <Send className="w-4 h-4" aria-hidden="true" />
-          }
-        </button>
+      <div>
+        <div className="flex gap-2 items-end">
+          <textarea
+            value={content}
+            onChange={(e) => setContent(e.target.value.slice(0, 2000))}
+            onKeyDown={handleKeyDown}
+            placeholder={labels.placeholder}
+            disabled={isPending}
+            rows={2}
+            maxLength={2000}
+            className="flex-1 px-4 py-3 rounded-xl bg-white/[0.04] border border-white/10 text-[var(--color-text-light)] font-body text-sm placeholder:text-[var(--color-text-muted)]/50 focus:outline-none focus:ring-2 focus:ring-[var(--color-red)] focus:border-transparent disabled:opacity-50 resize-none transition-all"
+            aria-label={labels.placeholder}
+          />
+          <button
+            type="button"
+            onClick={handleSend}
+            disabled={isPending || !content.trim()}
+            aria-label={isPending ? labels.sending : labels.send}
+            className="flex-shrink-0 w-10 h-10 rounded-xl bg-[var(--color-red)] text-white flex items-center justify-center hover:bg-[var(--color-red-dark)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)]"
+          >
+            {isPending
+              ? <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
+              : <Send className="w-4 h-4" aria-hidden="true" />
+            }
+          </button>
+        </div>
+        <p className={`text-right font-mono text-[10px] mt-1 ${content.length >= 1900 ? 'text-amber-400' : 'text-[var(--color-text-muted)]'}`}>
+          {content.length} / 2000
+        </p>
       </div>
 
       {error && (

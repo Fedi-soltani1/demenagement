@@ -9,6 +9,7 @@ import { COMPANY, LOCALES } from '@/lib/constants'
 import { Breadcrumb } from '@/components/layout/Breadcrumb'
 import { StatusBadge } from '@/components/espace-client/StatusBadge'
 import { SignOutButton } from '@/components/espace-client/SignOutButton'
+import { WelcomeBanner } from '@/components/espace-client/WelcomeBanner'
 import {
   MapPin, Calendar, Package, ArrowRight, User,
   Truck, Plus, Clock, CheckCircle, FileText, MessageSquare,
@@ -148,6 +149,9 @@ export default async function EspaceClientPage({ params }: PageProps) {
             </div>
             <SignOutButton locale={locale} label={t('signOut')} />
           </div>
+
+          {/* ── Bannière bienvenue (première connexion) ── */}
+          <WelcomeBanner />
 
           {/* ── Stats ── */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
