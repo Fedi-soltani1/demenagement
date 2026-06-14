@@ -258,10 +258,83 @@ export async function POST(request: Request): Promise<NextResponse> {
 </body>
 </html>`
 
-  try {
-    await sendMail({ to: env.EMAIL_DEVIS_TO, subject: emailSubject, html: emailHtml })
-  } catch (err) {
-    console.error(`[devis-response] Échec notification admin SMTP (${action} — ${numeroDossier}) :`, err)
+  sendMail({ to: env.EMAIL_DEVIS_TO, subject: emailSubject, html: emailHtml })
+    .catch((err: unknown) => { console.error(`[devis-response] Échec notification admin (${action} — ${numeroDossier}) :`, err) })
+
+  // 9b. Email de confirmation au CLIENT (non-bloquant)
+  const clientEmail = session.user.email
+  if (clientEmail) {
+    const clientSubject = action === 'accepte'
+      ? `✅ Votre devis est confirmé — DT Déménagement`
+      : `Votre retour a bien été reçu — DT Déménagement`
+
+    const clientHtml = action === 'accepte'
+      ? `<!DOCTYPE html>
+<html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#0a0a0a;font-family:Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0a0a0a;padding:40px 16px;">
+    <tr><td align="center">
+      <table width="560" cellpadding="0" cellspacing="0" style="background:#111;border-radius:16px;overflow:hidden;border:1px solid #2a2a2a;max-width:560px;width:100%;">
+        <tr><td style="background:#16a34a;padding:20px 28px;">
+          <p style="margin:0;font-size:17px;font-weight:bold;color:#fff;">DT Déménagement Tunisie</p>
+          <p style="margin:4px 0 0;font-size:12px;color:rgba(255,255,255,0.8);">Acceptation de devis confirmée</p>
+        </td></tr>
+        <tr><td style="padding:28px;">
+          <p style="margin:0 0 16px;font-size:15px;color:#f8f5f0;line-height:1.6;">
+            Bonjour,<br><br>
+            Votre acceptation du devis <strong style="color:#c9a84c;">${escapeHtml(numeroDossier)}</strong> a bien été enregistrée. 🎉<br><br>
+            Notre équipe vous contactera dans les <strong style="color:#4ade80;">24 heures</strong> pour finaliser les détails de votre déménagement.
+          </p>
+          <div style="background:#1a1a1a;border-left:3px solid #4ade80;border-radius:4px;padding:14px 18px;margin-bottom:24px;">
+            <p style="margin:0 0 4px;font-size:12px;color:#a0a0a0;">Dossier accepté le</p>
+            <p style="margin:0;font-size:15px;font-weight:bold;color:#f8f5f0;">${dateFr} à ${heureFr}</p>
+          </div>
+          <p style="margin:0;font-size:13px;color:#a0a0a0;line-height:1.6;">
+            En cas de question, contactez-nous au <strong style="color:#f8f5f0;"><a href="tel:+21652880311" style="color:#c9a84c;text-decoration:none;">+216 52 880 311</a></strong> ou sur WhatsApp.
+          </p>
+        </td></tr>
+        <tr><td style="padding:16px 28px;border-top:1px solid #2a2a2a;">
+          <p style="margin:0;font-size:11px;color:#555;">+216 52 880 311 — contact@demenagement.tn — © ${new Date().getFullYear()} DT Déménagement Tunisie</p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body></html>`
+      : `<!DOCTYPE html>
+<html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#0a0a0a;font-family:Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0a0a0a;padding:40px 16px;">
+    <tr><td align="center">
+      <table width="560" cellpadding="0" cellspacing="0" style="background:#111;border-radius:16px;overflow:hidden;border:1px solid #2a2a2a;max-width:560px;width:100%;">
+        <tr><td style="background:#b52027;padding:20px 28px;">
+          <p style="margin:0;font-size:17px;font-weight:bold;color:#fff;">DT Déménagement Tunisie</p>
+          <p style="margin:4px 0 0;font-size:12px;color:rgba(255,255,255,0.8);">Retour sur devis reçu</p>
+        </td></tr>
+        <tr><td style="padding:28px;">
+          <p style="margin:0 0 16px;font-size:15px;color:#f8f5f0;line-height:1.6;">
+            Bonjour,<br><br>
+            Nous avons bien reçu votre retour concernant le devis <strong style="color:#c9a84c;">${escapeHtml(numeroDossier)}</strong>.<br><br>
+            Notre équipe vous contactera prochainement pour discuter de vos besoins et vous proposer une solution adaptée.
+          </p>
+          ${commentaire ? `<div style="background:#1a1a1a;border-left:3px solid #a0a0a0;border-radius:4px;padding:14px 18px;margin-bottom:24px;">
+            <p style="margin:0 0 4px;font-size:12px;color:#a0a0a0;">Votre commentaire</p>
+            <p style="margin:0;font-size:14px;color:#f8f5f0;white-space:pre-wrap;">${escapeHtml(commentaire)}</p>
+          </div>` : ''}
+          <p style="margin:0;font-size:13px;color:#a0a0a0;line-height:1.6;">
+            N'hésitez pas à nous appeler au <a href="tel:+21652880311" style="color:#c9a84c;text-decoration:none;">+216 52 880 311</a>.
+            <br><strong style="color:#f8f5f0;">L'équipe DT Déménagement Tunisie</strong>
+          </p>
+        </td></tr>
+        <tr><td style="padding:16px 28px;border-top:1px solid #2a2a2a;">
+          <p style="margin:0;font-size:11px;color:#555;">+216 52 880 311 — contact@demenagement.tn — © ${new Date().getFullYear()} DT Déménagement Tunisie</p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body></html>`
+
+    sendMail({ to: clientEmail, subject: clientSubject, html: clientHtml })
+      .catch((err: unknown) => { console.error(`[devis-response] Échec email client (${action} — ${numeroDossier}) :`, err) })
   }
 
   // 10. Réponse de succès
