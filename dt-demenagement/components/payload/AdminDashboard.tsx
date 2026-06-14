@@ -236,6 +236,7 @@ export default function AdminDashboard() {
   const [stats,   setStats]   = useState<Stats | null>(null)
   const [loading, setLoading] = useState(true)
   const [error,   setError]   = useState(false)
+  const [partner, setPartner] = useState<{ devis: number; rdv: number; partenaires: string[] }>({ devis: 0, rdv: 0, partenaires: [] })
 
   // Hide Payload's default dashboard content and page header injected above our component
   useEffect(() => {
@@ -265,6 +266,13 @@ export default function AdminDashboard() {
       .catch(() => { setError(true); setLoading(false) })
   }, [])
 
+  useEffect(() => {
+    fetch('/api/admin/partner-demands-count', { credentials: 'include' })
+      .then((r) => r.ok ? r.json() : { count: 0, partenaires: [] })
+      .then((d: { devis?: number; rdv?: number; partenaires?: string[] }) => setPartner({ devis: d.devis ?? 0, rdv: d.rdv ?? 0, partenaires: d.partenaires ?? [] }))
+      .catch(() => { /* silent */ })
+  }, [])
+
   const today       = new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
   const totalUrgent = (stats?.urgent.dossiers ?? 0) + (stats?.urgent.messages ?? 0)
   const pipelineMax = stats ? Math.max(stats.dossiers.devis_recu, stats.dossiers.confirme, stats.dossiers.en_preparation, stats.dossiers.en_cours, stats.dossiers.livre, stats.dossiers.annule, 1) : 1
@@ -281,6 +289,50 @@ export default function AdminDashboard() {
         @keyframes dt-spin  { to { transform: rotate(360deg) } }
         @keyframes dt-pulse { 0%,100% { opacity:1; transform:scale(1) } 50% { opacity:0.4; transform:scale(1.4) } }
       `}</style>
+
+      {/* ── Bandeau demandes partenaires du jour ── */}
+      {(() => {
+        const devisRecu   = stats?.dossiers.devis_recu ?? 0
+        const rdvNouveaux = stats?.rdv.nouveaux ?? 0
+        const enRetard    = stats?.urgent.dossiers ?? 0
+        if (devisRecu === 0 && rdvNouveaux === 0 && enRetard === 0) return null
+        const banner = (bg: string, border: string, color: string): React.CSSProperties => ({
+          display: 'flex', alignItems: 'center', gap: '10px', padding: '13px 16px',
+          borderRadius: '8px', background: bg, border: `1px solid ${border}`, color,
+          fontSize: '14px', fontWeight: 600, textDecoration: 'none',
+        })
+        const viaPart = (n: number) => {
+          if (n <= 0) return ''
+          const noms = partner.partenaires
+          const detail = noms.length === 1 ? ` (${noms[0]})` : ''
+          return ` · dont ${n} via partenaire${detail}`
+        }
+        return (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
+            {enRetard > 0 && (
+              <a href="/admin/collections/demenagements" style={banner('#fde8e8', '#f0a0a0', '#8a1820')}>
+                <span style={{ fontSize: '16px' }}>⚠️</span>
+                <span style={{ flex: 1 }}><b>{enRetard} dossier{enRetard > 1 ? 's' : ''} en retard</b> — non traité{enRetard > 1 ? 's' : ''} depuis +48h</span>
+                <span style={{ fontSize: '12px', opacity: 0.7 }}>→</span>
+              </a>
+            )}
+            {devisRecu > 0 && (
+              <a href="/admin/collections/demenagements" style={banner('rgba(181,32,39,0.08)', 'rgba(181,32,39,0.28)', '#b52027')}>
+                <span style={{ fontSize: '16px' }}>📥</span>
+                <span style={{ flex: 1 }}><b>{devisRecu} devis à traiter</b>{viaPart(partner.devis)}</span>
+                <span style={{ fontSize: '12px', opacity: 0.7 }}>→</span>
+              </a>
+            )}
+            {rdvNouveaux > 0 && (
+              <a href="/admin/collections/rendez-vous" style={banner('rgba(201,168,76,0.1)', 'rgba(201,168,76,0.4)', '#8a6d1f')}>
+                <span style={{ fontSize: '16px' }}>📅</span>
+                <span style={{ flex: 1 }}><b>{rdvNouveaux} rendez-vous à traiter</b>{viaPart(partner.rdv)}</span>
+                <span style={{ fontSize: '12px', opacity: 0.7 }}>→</span>
+              </a>
+            )}
+          </div>
+        )
+      })()}
 
       {/* ── Error banner ── */}
       {error && (

@@ -16,8 +16,8 @@ const RendezVous: CollectionConfig = {
   admin: {
     group: '🚚 Opérations',
     useAsTitle: 'nom',
-    defaultColumns: ['nom', 'prenom', 'telephone', 'dateVisite', 'heure', 'statut', 'createdAt'],
-    listSearchableFields: ['nom', 'prenom', 'telephone', 'whatsapp'],
+    defaultColumns: ['nom', 'prenom', 'telephone', 'sourcePartenaireNom', 'dateVisite', 'heure', 'statut', 'createdAt'],
+    listSearchableFields: ['nom', 'prenom', 'telephone', 'whatsapp', 'sourcePartenaireNom'],
     description: 'Demandes de visite à domicile reçues depuis le site. Contacter le client pour confirmer le RDV.',
   },
 
@@ -70,6 +70,19 @@ const RendezVous: CollectionConfig = {
       label: 'Heure souhaitée',
       type: 'text',
       required: false,
+    },
+    {
+      name: 'sourcePartenaire',
+      label: 'Source partenaire affilié',
+      type: 'relationship',
+      relationTo: 'affiliates',
+      admin: { readOnly: true, description: 'Partenaire affilié dont le lien a amené cette demande (si applicable).' },
+    },
+    {
+      name: 'sourcePartenaireNom',
+      label: 'Nom du partenaire (source)',
+      type: 'text',
+      admin: { readOnly: true, description: 'Conservé même si le partenaire est supprimé.' },
     },
     {
       name: 'actionsRapides',

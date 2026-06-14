@@ -239,6 +239,28 @@ const Settings: GlobalConfig = {
         },
       ],
     },
+    {
+      name: 'landingPartenaire',
+      type: 'group',
+      label: '🤝 Landing partenaires',
+      admin: { description: 'Textes de la page affichée via le lien d\'un partenaire (/partenaire/...).' },
+      fields: [
+        {
+          name: 'titre',
+          label: 'Titre d\'accroche',
+          type: 'text',
+          localized: true,
+          defaultValue: 'Déménagez sereinement avec DT Déménagement Tunisie',
+        },
+        {
+          name: 'sousTitre',
+          label: 'Sous-titre',
+          type: 'textarea',
+          localized: true,
+          defaultValue: 'Devis gratuit en 2 minutes. Une équipe professionnelle partout en Tunisie et vers l\'international.',
+        },
+      ],
+    },
   ],
 }
 

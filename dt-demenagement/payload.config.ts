@@ -10,6 +10,7 @@ import Admins from './payload/collections/Admins'
 import Media from './payload/collections/Media'
 import Categories from './payload/collections/Categories'
 import Partners from './payload/collections/Partners'
+import Affiliates from './payload/collections/Affiliates'
 import Services from './payload/collections/Services'
 import FAQ from './payload/collections/FAQ'
 import Villes from './payload/collections/Villes'
@@ -159,6 +160,9 @@ export default buildConfig({
     Testimonials,
     GoogleReviews,
     Partners,
+
+    // 🤝 Affiliation
+    Affiliates,
 
     // 📧 Marketing
     Newsletter,

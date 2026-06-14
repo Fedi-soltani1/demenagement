@@ -69,15 +69,21 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
           />
           <CustomCursor />
           <PageLoader />
-          <BandeauAnnonceServer locale={locale} />
-          <NavbarServer />
+          {/* .site-chrome : masqué par la landing partenaire (page autonome) via la classe
+              html.partner-landing (voir globals.css + PartnerLandingMode). */}
+          <div className="site-chrome" style={{ display: 'contents' }}>
+            <BandeauAnnonceServer locale={locale} />
+            <NavbarServer />
+          </div>
           <main id="main-content">
             {children}
           </main>
-          <FooterServer />
-          <ScrollToTop />
-          {whatsappActif && <WhatsAppButton />}
-          <CookieBanner />
+          <div className="site-chrome" style={{ display: 'contents' }}>
+            <FooterServer />
+            <ScrollToTop />
+            {whatsappActif && <WhatsAppButton />}
+            <CookieBanner />
+          </div>
           <LivePreviewListener serverURL={process.env.NEXT_PUBLIC_PAYLOAD_URL ?? 'http://localhost:3000'} />
         </DevisModalProvider>
       </ThemeProvider>

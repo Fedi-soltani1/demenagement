@@ -432,3 +432,6 @@ section[style*="bg-dark2"] {
   background: var(--color-border);
   margin: 2rem 0;
 }
+
+/* Landing partenaire : page autonome, sans le chrome du site (navbar, bandeau, footer, flottants) */
+html.partner-landing .site-chrome { display: none !important; }

@@ -16,8 +16,8 @@ const Demenagements: CollectionConfig = {
   admin: {
     group: '🚚 Opérations',
     useAsTitle: 'numeroDossier',
-    defaultColumns: ['numeroDossier', 'nomComplet', 'statut', 'dateDemenagement', 'devisStatut', 'notesRapides'],
-    listSearchableFields: ['numeroDossier', 'nomComplet', 'telephone', 'clientId'],
+    defaultColumns: ['numeroDossier', 'nomComplet', 'statut', 'sourcePartenaireNom', 'dateDemenagement', 'devisStatut', 'notesRapides'],
+    listSearchableFields: ['numeroDossier', 'nomComplet', 'telephone', 'clientId', 'sourcePartenaireNom'],
     description: 'Chaque ligne = une demande de devis reçue. Ouvrir un dossier et changer le "Statut du dossier" pour que le client voie l\'avancement en temps réel.',
     components: {
       beforeListTable: ['@/components/payload/DossierExportButton'],
@@ -128,6 +128,22 @@ const Demenagements: CollectionConfig = {
         { label: '🏢 Entreprise',  value: 'entreprise' },
       ],
       admin: { readOnly: true },
+    },
+    {
+      name: 'sourcePartenaire',
+      label: 'Source partenaire affilié',
+      type: 'relationship',
+      relationTo: 'affiliates',
+      admin: {
+        readOnly: true,
+        description: 'Partenaire affilié dont le lien a amené cette demande (si applicable).',
+      },
+    },
+    {
+      name: 'sourcePartenaireNom',
+      label: 'Nom du partenaire (source)',
+      type: 'text',
+      admin: { readOnly: true, description: 'Conservé même si le partenaire est supprimé.' },
     },
     {
       name: 'commentaire',

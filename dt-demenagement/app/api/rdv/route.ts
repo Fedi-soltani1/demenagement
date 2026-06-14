@@ -1,9 +1,11 @@
 import { NextResponse } from 'next/server'
+import { cookies } from 'next/headers'
 import { z } from 'zod'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { sendMail } from '@/lib/mailer'
 import { env } from '@/lib/env'
+import { resolvePartner, payloadPartnerFinder } from '@/lib/partner-attribution'
 
 const TEL_RE = /^\+?[0-9\s\-()\s]{8,20}$/
 
@@ -38,6 +40,10 @@ export async function POST(request: Request) {
   const d = result.data
   const payload = await getPayload({ config })
 
+  // Attribution partenaire (cookie dt_partenaire posé par la landing /partenaire/[slug])
+  const partenaireSlug = (await cookies()).get('dt_partenaire')?.value
+  const partenaire = await resolvePartner(partenaireSlug, payloadPartnerFinder(payload))
+
   const rdv = await payload.create({
     collection: 'rendez-vous',
     data: {
@@ -51,6 +57,8 @@ export async function POST(request: Request) {
       adresse:    d.adresse ?? '',
       dateVisite: d.dateVisite ?? '',
       heure:      d.heure ?? '',
+      sourcePartenaire:    partenaire ? partenaire.id : undefined,
+      sourcePartenaireNom: partenaire ? partenaire.nom : undefined,
     },
     overrideAccess: true,
   })
@@ -62,7 +70,7 @@ export async function POST(request: Request) {
   emailPromises.push(
     sendMail({
       to:      env.EMAIL_DEVIS_TO,
-      subject: `📅 Nouvelle demande de visite — ${d.prenom} ${d.nom}`,
+      subject: `📅 Nouvelle demande de visite — ${d.prenom} ${d.nom}${partenaire ? ` (via ${partenaire.nom})` : ''}`,
       html: `<!DOCTYPE html>
 <html lang="fr"><head><meta charset="UTF-8"></head>
 <body style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;padding:24px;">

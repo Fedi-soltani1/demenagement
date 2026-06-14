@@ -1,10 +1,12 @@
 import { NextResponse } from 'next/server'
+import { cookies } from 'next/headers'
 import { z } from 'zod'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { env } from '@/lib/env'
 import { sendMail } from '@/lib/mailer'
 import { generateMagicLink } from '@/lib/generate-magic-link'
+import { resolvePartner, payloadPartnerFinder } from '@/lib/partner-attribution'
 
 // Honeypot + rate limiting ultra-simple (sans Redis pour l'instant)
 // ⚠️ TODO: Brancher Upstash Redis quand UPSTASH_REDIS_REST_URL est configuré
@@ -69,6 +71,10 @@ export async function POST(request: Request) {
 
   const payload = await getPayload({ config })
 
+  // Attribution partenaire (cookie dt_partenaire posé par la landing /partenaire/[slug])
+  const partenaireSlug = (await cookies()).get('dt_partenaire')?.value
+  const partenaire = await resolvePartner(partenaireSlug, payloadPartnerFinder(payload))
+
   // Créer le dossier dans Payload CMS
   try {
     await payload.create({
@@ -99,6 +105,8 @@ export async function POST(request: Request) {
         photosDepart:     (d.photosDepart  ?? []).map(Number).filter(Boolean),
         photosArrivee:    (d.photosArrivee ?? []).map(Number).filter(Boolean),
         photosMeubles:    (d.photosMeubles ?? []).map(Number).filter(Boolean),
+        sourcePartenaire:    partenaire ? partenaire.id : undefined,
+        sourcePartenaireNom: partenaire ? partenaire.nom : undefined,
       },
       overrideAccess: true,
     })
@@ -162,7 +170,7 @@ export async function POST(request: Request) {
       sendMail({
         to:      env.EMAIL_DEVIS_TO,
         subject: `Nouveau devis ${numeroDossier} — ${d.type} — ${d.prenom} ${d.nom}`,
-        html:    buildInternalEmail(d, numeroDossier, photoUrls),
+        html:    buildInternalEmail(d, numeroDossier, photoUrls, partenaire?.nom),
       }),
     ]
     if (d.email) {
@@ -251,6 +259,7 @@ function buildInternalEmail(
   d: z.infer<typeof devisSchema>,
   numeroDossier: string,
   photos: { depart: string[]; arrivee: string[]; meubles: string[] },
+  partenaireNom?: string,
 ): string {
   const photoGrid = (urls: string[], label: string) => {
     if (!urls.length) return ''
@@ -266,6 +275,7 @@ function buildInternalEmail(
   return `
     <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:32px">
       <h2>Nouveau devis — ${numeroDossier}</h2>
+      ${partenaireNom ? `<p style="margin:0 0 12px;padding:8px 12px;background:#eafaf5;border-left:3px solid #128c7e;font-size:14px">🤝 <strong>Source : ${partenaireNom}</strong></p>` : ''}
       <table style="width:100%;border-collapse:collapse">
         <tr><td style="padding:6px;font-weight:bold">Type</td><td>${d.type}</td></tr>
         <tr><td style="padding:6px;font-weight:bold">Nom</td><td>${d.prenom} ${d.nom}</td></tr>
