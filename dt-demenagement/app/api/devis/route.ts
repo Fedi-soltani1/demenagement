@@ -261,36 +261,66 @@ function buildInternalEmail(
   photos: { depart: string[]; arrivee: string[]; meubles: string[] },
   partenaireNom?: string,
 ): string {
-  const photoGrid = (urls: string[], label: string) => {
+  const base      = (process.env.NEXT_PUBLIC_SERVER_URL ?? 'http://localhost:3000').replace(/\/$/, '')
+  const adminUrl  = `${base}/admin/collections/demenagements`
+
+  const row = (label: string, value: string) =>
+    `<tr style="border-bottom:1px solid #2a2a2a;">
+       <td style="padding:10px 0;color:#a0a0a0;font-size:12px;width:140px;">${label}</td>
+       <td style="padding:10px 0;color:#f8f5f0;font-size:14px;">${value}</td>
+     </tr>`
+
+  const photoBlock = (urls: string[], label: string) => {
     if (!urls.length) return ''
     return `
-      <tr>
-        <td style="padding:6px;font-weight:bold;vertical-align:top">${label}</td>
-        <td style="padding:6px">
-          ${urls.map((u) => `<img src="${u}" alt="photo" style="width:120px;height:90px;object-fit:cover;border-radius:6px;margin:2px;" />`).join('')}
-        </td>
-      </tr>`
+      <p style="margin:16px 0 8px;font-size:12px;color:#a0a0a0;text-transform:uppercase;letter-spacing:1px;">${label}</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;">
+        ${urls.map((u) => `<img src="${u}" alt="photo" style="width:120px;height:90px;object-fit:cover;border-radius:6px;" />`).join('')}
+      </div>`
   }
 
-  return `
-    <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:32px">
-      <h2>Nouveau devis — ${numeroDossier}</h2>
-      ${partenaireNom ? `<p style="margin:0 0 12px;padding:8px 12px;background:#eafaf5;border-left:3px solid #128c7e;font-size:14px">🤝 <strong>Source : ${partenaireNom}</strong></p>` : ''}
-      <table style="width:100%;border-collapse:collapse">
-        <tr><td style="padding:6px;font-weight:bold">Type</td><td>${d.type}</td></tr>
-        <tr><td style="padding:6px;font-weight:bold">Nom</td><td>${d.prenom} ${d.nom}</td></tr>
-        <tr><td style="padding:6px;font-weight:bold">Email</td><td>${d.email}</td></tr>
-        <tr><td style="padding:6px;font-weight:bold">Téléphone</td><td>${d.telephone}</td></tr>
-        <tr><td style="padding:6px;font-weight:bold">Départ</td><td>${d.adresseDepart.adresse}, ${d.adresseDepart.ville}</td></tr>
-        <tr><td style="padding:6px;font-weight:bold">Arrivée</td><td>${d.adresseArrivee.adresse}, ${d.adresseArrivee.ville}</td></tr>
-        <tr><td style="padding:6px;font-weight:bold">Services</td><td>${d.services.join(', ')}</td></tr>
-        ${d.dateSouhaitee ? `<tr><td style="padding:6px;font-weight:bold">Date</td><td>${d.dateSouhaitee}</td></tr>` : ''}
-        ${d.volumeEstime  ? `<tr><td style="padding:6px;font-weight:bold">Volume</td><td>${d.volumeEstime} m³</td></tr>` : ''}
-        ${d.commentaire   ? `<tr><td style="padding:6px;font-weight:bold">Commentaire</td><td>${d.commentaire}</td></tr>` : ''}
-        ${photoGrid(photos.meubles, 'Photos meubles')}
-        ${photoGrid(photos.depart,  'Photos accès départ')}
-        ${photoGrid(photos.arrivee, 'Photos accès arrivée')}
+  const hasPhotos = photos.meubles.length || photos.depart.length || photos.arrivee.length
+
+  return `<!DOCTYPE html>
+<html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#0a0a0a;font-family:Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0a0a0a;padding:40px 16px;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="background:#111;border-radius:16px;overflow:hidden;border:1px solid #2a2a2a;max-width:600px;width:100%;">
+        <tr><td style="background:#b52027;padding:20px 28px;">
+          <p style="margin:0;font-size:17px;font-weight:bold;color:#fff;">DT Déménagement — Nouveau devis reçu</p>
+          <p style="margin:4px 0 0;font-size:12px;color:rgba(255,255,255,0.75);">Dossier <strong style="color:#fff;">${numeroDossier}</strong></p>
+        </td></tr>
+        ${partenaireNom ? `<tr><td style="padding:12px 28px;background:#0e2e29;border-bottom:1px solid #2a2a2a;"><p style="margin:0;font-size:13px;color:#7fe0cd;">🤝 <strong>Source : ${partenaireNom}</strong> — partenaire affilié</p></td></tr>` : ''}
+        <tr><td style="padding:24px 28px;">
+          <table style="width:100%;border-collapse:collapse;">
+            ${row('TYPE', d.type === 'particulier' ? '🏠 Particulier' : '🏢 Entreprise')}
+            ${row('NOM', `${d.prenom} ${d.nom}`)}
+            ${d.email ? row('EMAIL', d.email) : ''}
+            ${row('TÉLÉPHONE', d.telephone)}
+            ${row('DÉPART', `${d.adresseDepart.adresse}, ${d.adresseDepart.ville}${d.adresseDepart.etage ? ` — Étage ${d.adresseDepart.etage}` : ''}${d.adresseDepart.ascenseur ? ' (asc.)' : ''}`)}
+            ${row('ARRIVÉE', `${d.adresseArrivee.adresse}, ${d.adresseArrivee.ville}${d.adresseArrivee.etage ? ` — Étage ${d.adresseArrivee.etage}` : ''}${d.adresseArrivee.ascenseur ? ' (asc.)' : ''}`)}
+            ${row('SERVICES', d.services.join(', '))}
+            ${d.dateSouhaitee ? `<tr style="border-bottom:1px solid #2a2a2a;"><td style="padding:10px 0;color:#a0a0a0;font-size:12px;width:140px;">DATE SOUHAITÉE</td><td style="padding:10px 0;color:#c9a84c;font-size:14px;font-weight:bold;">${d.dateSouhaitee}</td></tr>` : ''}
+            ${d.volumeEstime  ? row('VOLUME ESTIMÉ', `${d.volumeEstime} m³`) : ''}
+            ${d.commentaire   ? row('COMMENTAIRE', d.commentaire) : ''}
+          </table>
+          ${hasPhotos ? `<div style="margin-top:16px;padding-top:16px;border-top:1px solid #2a2a2a;">
+            ${photoBlock(photos.meubles, 'Photos meubles')}
+            ${photoBlock(photos.depart, 'Photos accès départ')}
+            ${photoBlock(photos.arrivee, 'Photos accès arrivée')}
+          </div>` : ''}
+        </td></tr>
+        <tr><td style="padding:0 28px 28px;">
+          <a href="${adminUrl}" style="display:inline-block;background:#c9a84c;color:#0a0a0a;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:14px;">
+            📋 Ouvrir dans l'admin →
+          </a>
+        </td></tr>
+        <tr><td style="padding:16px 28px;border-top:1px solid #2a2a2a;">
+          <p style="margin:0;font-size:11px;color:#555;">© ${new Date().getFullYear()} DT Déménagement Tunisie</p>
+        </td></tr>
       </table>
-    </div>
-  `
+    </td></tr>
+  </table>
+</body></html>`
 }

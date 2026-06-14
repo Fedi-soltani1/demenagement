@@ -11,6 +11,7 @@ interface Message {
   contenu:      string
   createdAt:    string
   luParClient?: boolean
+  _status?:     'sending' | 'error'
 }
 
 interface MessagesHubProps {
@@ -46,9 +47,11 @@ export function MessagesHub({ dossiers: initialDossiers, locale, clientEmail }: 
   const [loadingId,  setLoadingId]  = useState<number | null>(null)
   const [content,    setContent]    = useState('')
   const [isPending,  startTransition] = useTransition()
-  const [sendError,  setSendError]  = useState('')
   const [mobileView, setMobileView] = useState<'list' | 'thread'>('list')
-  const bottomRef = useRef<HTMLDivElement>(null)
+  const bottomRef     = useRef<HTMLDivElement>(null)
+  const scrollRef     = useRef<HTMLDivElement>(null)
+  const isAtBottomRef = useRef(true)
+  const prevMsgCount  = useRef(0)
 
   const selectedConv = conversations.find((d) => d.dossierId === selectedId) ?? null
   const currentMsgs  = selectedId ? (messages[selectedId] ?? []) : []
@@ -147,16 +150,24 @@ export function MessagesHub({ dossiers: initialDossiers, locale, clientEmail }: 
     )
   }, [selectedId])
 
-  // ── Scroll to bottom ────────────────────────────────────────────────────
+  // ── Smart scroll: only if new messages arrived while user was at bottom ─
+  const handleThreadScroll = useCallback(() => {
+    const el = scrollRef.current
+    if (!el) return
+    isAtBottomRef.current = el.scrollHeight - el.scrollTop - el.clientHeight < 60
+  }, [])
+
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+    if (currentMsgs.length > prevMsgCount.current && isAtBottomRef.current) {
+      bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+    }
+    prevMsgCount.current = currentMsgs.length
   }, [currentMsgs.length])
 
   // ── Select conversation ─────────────────────────────────────────────────
   function selectConv(dossierId: number) {
     setSelectedId(dossierId)
     setMobileView('thread')
-    setSendError('')
     setContent('')
   }
 
@@ -165,7 +176,6 @@ export function MessagesHub({ dossiers: initialDossiers, locale, clientEmail }: 
     if (!selectedId) return
     const trimmed = content.trim()
     if (!trimmed || isPending) return
-    setSendError('')
 
     startTransition(async () => {
       const optimisticId = `opt-${Date.now()}`
@@ -209,18 +219,70 @@ export function MessagesHub({ dossiers: initialDossiers, locale, clientEmail }: 
           )
         )
       } catch {
+        // Mark optimistic message as failed — user can retry from the badge
         setMessages((prev) => ({
           ...prev,
-          [selectedId]: (prev[selectedId] ?? []).filter((m) => m.id !== optimisticId),
+          [selectedId]: (prev[selectedId] ?? []).map((m) =>
+            m.id === optimisticId ? { ...m, _status: 'error' as const } : m
+          ),
         }))
-        setSendError('Erreur lors de l\'envoi. Réessayez.')
-        setContent(trimmed)  // restore content so user can retry
       }
     })
   }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend() }
+  }
+
+  // ── Retry a failed optimistic message ───────────────────────────────────
+  function retryMessage(failedMsg: Message) {
+    if (!selectedId) return
+    const trimmed = failedMsg.contenu.trim()
+    if (!trimmed) return
+
+    // Remove the failed message first, then re-send
+    setMessages((prev) => ({
+      ...prev,
+      [selectedId]: (prev[selectedId] ?? []).filter((m) => m.id !== failedMsg.id),
+    }))
+
+    startTransition(async () => {
+      const optimisticId = `opt-${Date.now()}`
+      const optimistic: Message = {
+        id:        optimisticId,
+        auteur:    'client',
+        contenu:   trimmed,
+        createdAt: new Date().toISOString(),
+        _status:   'sending',
+      }
+      setMessages((prev) => ({
+        ...prev,
+        [selectedId]: [...(prev[selectedId] ?? []), optimistic],
+      }))
+      try {
+        const res = await fetch('/api/client/message', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({ dossierId: String(selectedId), contenu: trimmed, clientEmail }),
+        })
+        if (!res.ok) throw new Error()
+        const data = await res.json() as { message: Message }
+        setMessages((prev) => ({
+          ...prev,
+          [selectedId]: [
+            ...(prev[selectedId] ?? []).filter((m) => m.id !== optimisticId),
+            data.message,
+          ],
+        }))
+      } catch {
+        setMessages((prev) => ({
+          ...prev,
+          [selectedId]: (prev[selectedId] ?? []).map((m) =>
+            m.id === optimisticId ? { ...m, _status: 'error' as const } : m
+          ),
+        }))
+      }
+    })
   }
 
   // ── Empty state ────────────────────────────────────────────────────────
@@ -386,6 +448,8 @@ export function MessagesHub({ dossiers: initialDossiers, locale, clientEmail }: 
 
             {/* Messages list */}
             <div
+              ref={scrollRef}
+              onScroll={handleThreadScroll}
               className="flex-1 overflow-y-auto px-4 py-4 space-y-3"
               role="log"
               aria-live="polite"
@@ -405,7 +469,8 @@ export function MessagesHub({ dossiers: initialDossiers, locale, clientEmail }: 
               ) : (
                 currentMsgs.map((msg, i) => {
                   const isClient     = msg.auteur === 'client'
-                  const isOptimistic = String(msg.id).startsWith('opt-')
+                  const isSending    = msg._status === 'sending'
+                  const isFailed     = msg._status === 'error'
                   const prev         = i > 0 ? currentMsgs[i - 1] : null
                   const showDate     =
                     !prev ||
@@ -427,18 +492,28 @@ export function MessagesHub({ dossiers: initialDossiers, locale, clientEmail }: 
                       )}
 
                       <div className={`flex ${isClient ? 'justify-end' : 'justify-start'}`}>
-                        <div
-                          className={`max-w-[75%] px-4 py-3 rounded-2xl font-body text-sm leading-relaxed ${
-                            isClient
-                              ? `bg-[var(--color-red)] text-white rounded-br-sm ${isOptimistic ? 'opacity-60' : ''}`
-                              : 'bg-white/[0.06] border border-white/8 text-[var(--color-text-light)] rounded-bl-sm'
-                          }`}
-                        >
-                          <p className="whitespace-pre-wrap break-words">{msg.contenu}</p>
-                          <p className={`text-[10px] mt-1 ${isClient ? 'text-end opacity-60' : 'opacity-50'}`}>
-                            {formatFull(msg.createdAt)}
-                            {isOptimistic && <span className="ms-1">· Envoi…</span>}
-                          </p>
+                        <div className="max-w-[75%]">
+                          <div
+                            className={`px-4 py-3 rounded-2xl font-body text-sm leading-relaxed ${
+                              isClient
+                                ? `bg-[var(--color-red)] text-white rounded-br-sm ${isSending ? 'opacity-60' : ''} ${isFailed ? 'opacity-50 border border-red-400/50' : ''}`
+                                : 'bg-white/[0.06] border border-white/8 text-[var(--color-text-light)] rounded-bl-sm'
+                            }`}
+                          >
+                            <p className="whitespace-pre-wrap break-words">{msg.contenu}</p>
+                            <p className={`text-[10px] mt-1 ${isClient ? 'text-end opacity-60' : 'opacity-50'}`}>
+                              {isSending ? 'Envoi…' : formatFull(msg.createdAt)}
+                            </p>
+                          </div>
+                          {isFailed && (
+                            <button
+                              type="button"
+                              onClick={() => retryMessage(msg)}
+                              className="mt-1 flex items-center gap-1 font-body text-[10px] text-red-400 hover:text-red-300 transition-colors float-end"
+                            >
+                              ❌ Échec — Réessayer
+                            </button>
+                          )}
                         </div>
                       </div>
                     </React.Fragment>
@@ -450,19 +525,15 @@ export function MessagesHub({ dossiers: initialDossiers, locale, clientEmail }: 
 
             {/* Send form */}
             <div className="px-4 py-3 border-t border-white/8 flex-shrink-0">
-              {sendError && (
-                <p role="alert" className="font-body text-xs text-[var(--color-red)] mb-2">
-                  {sendError}
-                </p>
-              )}
               <div className="flex gap-2 items-end">
                 <textarea
                   value={content}
-                  onChange={(e) => setContent(e.target.value)}
+                  onChange={(e) => setContent(e.target.value.slice(0, 2000))}
                   onKeyDown={handleKeyDown}
                   placeholder="Écrivez votre message… (Entrée pour envoyer)"
                   disabled={isPending}
                   rows={2}
+                  maxLength={2000}
                   aria-label="Votre message"
                   className="flex-1 px-4 py-2.5 rounded-xl bg-white/[0.04] border border-white/10 text-[var(--color-text-light)] font-body text-sm placeholder:text-[var(--color-text-muted)]/40 focus:outline-none focus:ring-2 focus:ring-[var(--color-red)] focus:border-transparent disabled:opacity-50 resize-none transition-all"
                 />
@@ -479,6 +550,11 @@ export function MessagesHub({ dossiers: initialDossiers, locale, clientEmail }: 
                   }
                 </button>
               </div>
+              {content.length > 0 && (
+                <p className={`text-right font-mono text-[10px] mt-1 ${content.length >= 1900 ? 'text-amber-400' : 'text-[var(--color-text-muted)]'}`}>
+                  {content.length} / 2000
+                </p>
+              )}
             </div>
           </>
         ) : (

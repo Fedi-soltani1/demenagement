@@ -349,7 +349,16 @@
     "devisRefusedTitle": "Devis refusé",
     "devisRefusedSubtitle": "Nous avons bien noté votre refus. Contactez-nous pour discuter d'une nouvelle offre.",
     "devisRespondedOn": "Réponse enregistrée le",
-    "devisCancelBtn": "Annuler"
+    "devisCancelBtn": "Annuler",
+    "devisPdfError": "Impossible de générer le PDF. Veuillez réessayer.",
+    "devisErrorConfirmRequired": "Veuillez cocher la case de confirmation avant d'accepter.",
+    "devisConfirmAcceptTitle": "Confirmer l'acceptation",
+    "devisConfirmAcceptBody": "Êtes-vous sûr de vouloir accepter ce devis ? Cette action est définitive.",
+    "devisConfirmRefuseTitle": "Confirmer le refus",
+    "devisConfirmRefuseBody": "Êtes-vous sûr de vouloir refuser ce devis ?",
+    "devisConfirmYesAccept": "Oui, accepter",
+    "devisConfirmYesRefuse": "Oui, refuser",
+    "devisConfirmCancel": "Annuler"
   },
   "NotFound": {
     "badge": "Erreur 404",
