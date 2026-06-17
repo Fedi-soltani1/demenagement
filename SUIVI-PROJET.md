@@ -66,6 +66,35 @@ CONSÉQUENCE : Les nouvelles colonnes ajoutées dans les collections Payload NE 
 ## 🤖 DERNIÈRE MISE À JOUR PAR CLAUDE CODE
 
 ```
+Date        : 2026-06-17 — LOGIQUE LEADS = ABANDONS UNIQUEMENT (+ durcissement)
+Session     : Dev 1 (Opus)
+
+OBJECTIF : la table `leads` ne contient QUE les abandons — un prospect qui saisit
+  ses infos dans le popup « Devis Gratuit », clique « Continuer » (→ écran de choix)
+  puis ferme SANS choisir Devis ni RDV. S'il clique Devis/RDV → pas un lead.
+
+CHANGEMENTS :
+  components/layout/DevisModal.tsx
+    → lead NON créé au clic « Continuer » ; créé à la fermeture (close()) si
+      screen==='choice' && !proceededRef && !leadSentRef (verrou one-shot anti-doublon)
+    → capture aussi via pagehide+sendBeacon (fermeture onglet) et sur navigation
+      interne / bouton retour (effet pathname) ; sourceRef fige la page d'origine
+  app/api/leads/route.ts
+    → notification email admin « Prospect à rappeler » (EMAIL_DEVIS_TO, non bloquant)
+    → échappement HTML des champs (escapeHtml)
+  lib/leads.ts (NOUVEAU)
+    → markLeadConverted(payload, telephone, statut) : filet de sécurité — si un
+      abandon revient et finalise (même tél normalisé), son lead passe converti.
+      Pagination complète (plus de plafond 200). Appelé dans /api/devis et /api/rdv.
+  payload/collections/Leads.ts
+    → baseListFilter → la liste admin n'affiche que statut='nouveau' (abandons)
+  lib/escape-html.ts (NOUVEAU)
+    → escapeHtml appliqué aux emails leads + devis + rdv (anti-injection HTML)
+
+BASE : les 23 leads existants (ancienne logique « tout le monde ») SUPPRIMÉS (clean slate).
+VÉRIF : tsc --noEmit OK · eslint OK.
+
+──────────────────────────────────────────────────────────────────────────────
 Date        : 2026-06-05 (suite) — PARITÉ COMPLÈTE VILLES + PAGES + BLOG
 Session     : Dev 1 (Opus)
 
@@ -753,9 +782,12 @@ Reprendre à : "Déploiement production Vercel + Railway"
 > Elle lui dit exactement où reprendre sans poser de questions.
 
 ```
-PHASE ACTUELLE    : Post-Phase 6 — REFACTOR ARCHITECTURE MODULAIRE TERMINÉ
-ÉTAPE ACTUELLE    : ✅ Dynamic imports + React.memo + EASE constants — tous blocs
-STATUT            : ✅ push: false restauré — serveur propre sur http://localhost:3000
+PHASE ACTUELLE    : Post-Phase 6 — CORRECTIONS & DURCISSEMENT
+ÉTAPE ACTUELLE    : ✅ Logique LEADS = abandons uniquement (popup Devis Gratuit)
+STATUT            : ✅ tsc + eslint OK — voir DERNIÈRE MISE À JOUR (2026-06-17)
+DERNIER FICHIER   : components/layout/DevisModal.tsx
+PROCHAINE ACTION  : tester en local le flux popup (abandon vs devis vs rdv) puis point suivant
+BLOQUEURS         : Aucun
 
 ─── SESSION 2026-05-24 — MIGRATION SCHEMA sectionOptions + typographie ──────
   RÉSUMÉ : Tous les blocs Payload ont maintenant sectionOptions + typographie

@@ -7,6 +7,8 @@ import { env } from '@/lib/env'
 import { sendMail } from '@/lib/mailer'
 import { generateMagicLink } from '@/lib/generate-magic-link'
 import { resolvePartner, payloadPartnerFinder } from '@/lib/partner-attribution'
+import { markLeadConverted } from '@/lib/leads'
+import { escapeHtml } from '@/lib/escape-html'
 
 // Honeypot + rate limiting ultra-simple (sans Redis pour l'instant)
 // ⚠️ TODO: Brancher Upstash Redis quand UPSTASH_REDIS_REST_URL est configuré
@@ -115,6 +117,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: msg }, { status: 422 })
   }
 
+  // Le prospect a TERMINÉ le process → son lead initial n'est plus un abandon.
+  // On le marque « devis_soumis » pour qu'il quitte la liste des leads.
+  await markLeadConverted(payload, d.telephone, 'devis_soumis')
+
   // Upsert fiche client — uniquement si l'email est fourni
   if (d.email) {
     const existingClient = await payload.find({
@@ -220,7 +226,7 @@ function buildClientEmail(prenom: string, numeroDossier: string, magicLink: stri
         <tr>
           <td style="padding:28px;">
             <p style="margin:0 0 16px;font-size:15px;color:#f8f5f0;line-height:1.6;">
-              Bonjour <strong>${prenom}</strong>,<br><br>
+              Bonjour <strong>${escapeHtml(prenom)}</strong>,<br><br>
               Votre demande de devis a bien été reçue. Notre équipe vous contactera dans les <strong style="color:#c9a84c;">24 heures</strong>.
             </p>
             <div style="background:#1a1a1a;border:1px solid #2a2a2a;border-radius:8px;padding:16px;text-align:center;margin:0 0 24px;">
@@ -291,19 +297,19 @@ function buildInternalEmail(
           <p style="margin:0;font-size:17px;font-weight:bold;color:#fff;">DT Déménagement — Nouveau devis reçu</p>
           <p style="margin:4px 0 0;font-size:12px;color:rgba(255,255,255,0.75);">Dossier <strong style="color:#fff;">${numeroDossier}</strong></p>
         </td></tr>
-        ${partenaireNom ? `<tr><td style="padding:12px 28px;background:#0e2e29;border-bottom:1px solid #2a2a2a;"><p style="margin:0;font-size:13px;color:#7fe0cd;">🤝 <strong>Source : ${partenaireNom}</strong> — partenaire affilié</p></td></tr>` : ''}
+        ${partenaireNom ? `<tr><td style="padding:12px 28px;background:#0e2e29;border-bottom:1px solid #2a2a2a;"><p style="margin:0;font-size:13px;color:#7fe0cd;">🤝 <strong>Source : ${escapeHtml(partenaireNom)}</strong> — partenaire affilié</p></td></tr>` : ''}
         <tr><td style="padding:24px 28px;">
           <table style="width:100%;border-collapse:collapse;">
             ${row('TYPE', d.type === 'particulier' ? '🏠 Particulier' : '🏢 Entreprise')}
-            ${row('NOM', `${d.prenom} ${d.nom}`)}
-            ${d.email ? row('EMAIL', d.email) : ''}
-            ${row('TÉLÉPHONE', d.telephone)}
-            ${row('DÉPART', `${d.adresseDepart.adresse}, ${d.adresseDepart.ville}${d.adresseDepart.etage ? ` — Étage ${d.adresseDepart.etage}` : ''}${d.adresseDepart.ascenseur ? ' (asc.)' : ''}`)}
-            ${row('ARRIVÉE', `${d.adresseArrivee.adresse}, ${d.adresseArrivee.ville}${d.adresseArrivee.etage ? ` — Étage ${d.adresseArrivee.etage}` : ''}${d.adresseArrivee.ascenseur ? ' (asc.)' : ''}`)}
-            ${row('SERVICES', d.services.join(', '))}
-            ${d.dateSouhaitee ? `<tr style="border-bottom:1px solid #2a2a2a;"><td style="padding:10px 0;color:#a0a0a0;font-size:12px;width:140px;">DATE SOUHAITÉE</td><td style="padding:10px 0;color:#c9a84c;font-size:14px;font-weight:bold;">${d.dateSouhaitee}</td></tr>` : ''}
+            ${row('NOM', `${escapeHtml(d.prenom)} ${escapeHtml(d.nom)}`)}
+            ${d.email ? row('EMAIL', escapeHtml(d.email)) : ''}
+            ${row('TÉLÉPHONE', escapeHtml(d.telephone))}
+            ${row('DÉPART', `${escapeHtml(d.adresseDepart.adresse)}, ${escapeHtml(d.adresseDepart.ville)}${d.adresseDepart.etage ? ` — Étage ${d.adresseDepart.etage}` : ''}${d.adresseDepart.ascenseur ? ' (asc.)' : ''}`)}
+            ${row('ARRIVÉE', `${escapeHtml(d.adresseArrivee.adresse)}, ${escapeHtml(d.adresseArrivee.ville)}${d.adresseArrivee.etage ? ` — Étage ${d.adresseArrivee.etage}` : ''}${d.adresseArrivee.ascenseur ? ' (asc.)' : ''}`)}
+            ${row('SERVICES', escapeHtml(d.services.join(', ')))}
+            ${d.dateSouhaitee ? `<tr style="border-bottom:1px solid #2a2a2a;"><td style="padding:10px 0;color:#a0a0a0;font-size:12px;width:140px;">DATE SOUHAITÉE</td><td style="padding:10px 0;color:#c9a84c;font-size:14px;font-weight:bold;">${escapeHtml(d.dateSouhaitee)}</td></tr>` : ''}
             ${d.volumeEstime  ? row('VOLUME ESTIMÉ', `${d.volumeEstime} m³`) : ''}
-            ${d.commentaire   ? row('COMMENTAIRE', d.commentaire) : ''}
+            ${d.commentaire   ? row('COMMENTAIRE', escapeHtml(d.commentaire)) : ''}
           </table>
           ${hasPhotos ? `<div style="margin-top:16px;padding-top:16px;border-top:1px solid #2a2a2a;">
             ${photoBlock(photos.meubles, 'Photos meubles')}

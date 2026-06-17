@@ -7,6 +7,8 @@ import { sendMail } from '@/lib/mailer'
 import { env } from '@/lib/env'
 import { resolvePartner, payloadPartnerFinder } from '@/lib/partner-attribution'
 import { signEmailToken } from '@/lib/email-token'
+import { markLeadConverted } from '@/lib/leads'
+import { escapeHtml } from '@/lib/escape-html'
 
 const TEL_RE = /^\+?[0-9\s\-()\s]{8,20}$/
 
@@ -64,6 +66,10 @@ export async function POST(request: Request) {
     overrideAccess: true,
   })
 
+  // Le prospect a TERMINÉ le process → son lead initial n'est plus un abandon.
+  // On le marque « rdv_planifie » pour qu'il quitte la liste des leads.
+  await markLeadConverted(payload, d.telephone, 'rdv_planifie')
+
   // Emails non-bloquants
   const emailPromises: Promise<void>[] = []
 
@@ -92,13 +98,13 @@ export async function POST(request: Request) {
         </td></tr>
         <tr><td style="padding:24px 28px;">
           <table style="width:100%;border-collapse:collapse;">
-            <tr style="border-bottom:1px solid #2a2a2a;"><td style="padding:10px 0;color:#a0a0a0;font-size:12px;width:130px;">TYPE</td><td style="padding:10px 0;color:#f8f5f0;font-size:14px;">${d.type}</td></tr>
-            <tr style="border-bottom:1px solid #2a2a2a;"><td style="padding:10px 0;color:#a0a0a0;font-size:12px;">NOM</td><td style="padding:10px 0;color:#f8f5f0;font-size:14px;font-weight:bold;">${d.prenom} ${d.nom}</td></tr>
-            <tr style="border-bottom:1px solid #2a2a2a;"><td style="padding:10px 0;color:#a0a0a0;font-size:12px;">TÉLÉPHONE</td><td style="padding:10px 0;color:#f8f5f0;font-size:14px;"><a href="tel:${d.telephone}" style="color:#c9a84c;text-decoration:none;">${d.telephone}</a></td></tr>
-            <tr style="border-bottom:1px solid #2a2a2a;"><td style="padding:10px 0;color:#a0a0a0;font-size:12px;">WHATSAPP</td><td style="padding:10px 0;color:#f8f5f0;font-size:14px;"><a href="https://wa.me/${d.whatsapp.replace(/\D/g, '')}" style="color:#c9a84c;text-decoration:none;">${d.whatsapp}</a></td></tr>
-            ${d.email ? `<tr style="border-bottom:1px solid #2a2a2a;"><td style="padding:10px 0;color:#a0a0a0;font-size:12px;">EMAIL</td><td style="padding:10px 0;color:#f8f5f0;font-size:14px;">${d.email}</td></tr>` : ''}
-            ${d.adresse ? `<tr style="border-bottom:1px solid #2a2a2a;"><td style="padding:10px 0;color:#a0a0a0;font-size:12px;">ADRESSE</td><td style="padding:10px 0;color:#f8f5f0;font-size:14px;">${d.adresse}</td></tr>` : ''}
-            ${d.dateVisite ? `<tr><td style="padding:10px 0;color:#a0a0a0;font-size:12px;">DATE SOUHAITÉE</td><td style="padding:10px 0;color:#c9a84c;font-size:14px;font-weight:bold;">${d.dateVisite}${d.heure ? ` à ${d.heure}` : ''}</td></tr>` : ''}
+            <tr style="border-bottom:1px solid #2a2a2a;"><td style="padding:10px 0;color:#a0a0a0;font-size:12px;width:130px;">TYPE</td><td style="padding:10px 0;color:#f8f5f0;font-size:14px;">${escapeHtml(d.type)}</td></tr>
+            <tr style="border-bottom:1px solid #2a2a2a;"><td style="padding:10px 0;color:#a0a0a0;font-size:12px;">NOM</td><td style="padding:10px 0;color:#f8f5f0;font-size:14px;font-weight:bold;">${escapeHtml(d.prenom)} ${escapeHtml(d.nom)}</td></tr>
+            <tr style="border-bottom:1px solid #2a2a2a;"><td style="padding:10px 0;color:#a0a0a0;font-size:12px;">TÉLÉPHONE</td><td style="padding:10px 0;color:#f8f5f0;font-size:14px;"><a href="tel:${d.telephone.replace(/[^0-9+]/g, '')}" style="color:#c9a84c;text-decoration:none;">${escapeHtml(d.telephone)}</a></td></tr>
+            <tr style="border-bottom:1px solid #2a2a2a;"><td style="padding:10px 0;color:#a0a0a0;font-size:12px;">WHATSAPP</td><td style="padding:10px 0;color:#f8f5f0;font-size:14px;"><a href="https://wa.me/${d.whatsapp.replace(/\D/g, '')}" style="color:#c9a84c;text-decoration:none;">${escapeHtml(d.whatsapp)}</a></td></tr>
+            ${d.email ? `<tr style="border-bottom:1px solid #2a2a2a;"><td style="padding:10px 0;color:#a0a0a0;font-size:12px;">EMAIL</td><td style="padding:10px 0;color:#f8f5f0;font-size:14px;">${escapeHtml(d.email)}</td></tr>` : ''}
+            ${d.adresse ? `<tr style="border-bottom:1px solid #2a2a2a;"><td style="padding:10px 0;color:#a0a0a0;font-size:12px;">ADRESSE</td><td style="padding:10px 0;color:#f8f5f0;font-size:14px;">${escapeHtml(d.adresse)}</td></tr>` : ''}
+            ${d.dateVisite ? `<tr><td style="padding:10px 0;color:#a0a0a0;font-size:12px;">DATE SOUHAITÉE</td><td style="padding:10px 0;color:#c9a84c;font-size:14px;font-weight:bold;">${escapeHtml(d.dateVisite)}${d.heure ? ` à ${escapeHtml(d.heure)}` : ''}</td></tr>` : ''}
           </table>
         </td></tr>
         <tr><td style="padding:0 28px 28px;">
@@ -150,13 +156,13 @@ export async function POST(request: Request) {
         <tr>
           <td style="padding:28px;">
             <p style="margin:0 0 16px;font-size:15px;color:#f8f5f0;line-height:1.6;">
-              Bonjour <strong>${d.prenom}</strong>,<br><br>
+              Bonjour <strong>${escapeHtml(d.prenom)}</strong>,<br><br>
               Votre demande de visite a bien été reçue. Notre équipe vous contactera dans les plus brefs délais au
-              <strong style="color:#c9a84c;">${d.telephone}</strong> pour confirmer le rendez-vous.
+              <strong style="color:#c9a84c;">${escapeHtml(d.telephone)}</strong> pour confirmer le rendez-vous.
             </p>
             ${d.dateVisite ? `<div style="background:#1a1a1a;border-left:3px solid #c9a84c;border-radius:4px;padding:14px 18px;margin-bottom:16px;">
               <p style="margin:0;font-size:13px;color:#a0a0a0;">Date souhaitée</p>
-              <p style="margin:4px 0 0;font-size:15px;color:#f8f5f0;font-weight:bold;">${d.dateVisite}${d.heure ? ` à ${d.heure}` : ''}</p>
+              <p style="margin:4px 0 0;font-size:15px;color:#f8f5f0;font-weight:bold;">${escapeHtml(d.dateVisite)}${d.heure ? ` à ${escapeHtml(d.heure)}` : ''}</p>
             </div>` : ''}
             <p style="margin:0;font-size:13px;color:#a0a0a0;">Merci de votre confiance,<br><strong style="color:#f8f5f0;">L'équipe DT Déménagement Tunisie</strong></p>
           </td>

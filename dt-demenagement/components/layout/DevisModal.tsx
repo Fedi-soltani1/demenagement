@@ -173,6 +173,18 @@ export function DevisModalProvider({ children }: { children: ReactNode }) {
   const pathname   = usePathname()
   const dialogRef  = useRef<HTMLDivElement>(null)
   const triggerRef = useRef<HTMLElement | null>(null)
+  // Devient true dès que l'utilisateur choisit « Devis » ou « Rendez-vous ».
+  // Sert à distinguer une vraie fermeture-abandon d'un passage à l'étape suivante.
+  const proceededRef = useRef(false)
+  // Verrou one-shot : un lead d'abandon n'est envoyé qu'UNE fois par session
+  // d'ouverture, pour éviter un doublon close() + pagehide (ex. bfcache mobile).
+  const leadSentRef = useRef(false)
+  // Page source figée au moment où l'utilisateur atteint l'écran de choix, pour
+  // que le lead garde la bonne origine même s'il navigue ensuite (bouton retour).
+  const sourceRef = useRef('')
+  // Dernier pathname connu — pour détecter une navigation interne (SPA) pendant
+  // que le popup est ouvert à l'écran de choix.
+  const prevPathRef = useRef('')
 
   const [isOpen,          setIsOpen]          = useState(false)
   const [screen,          setScreen]          = useState<Screen>('contact')
@@ -189,6 +201,8 @@ export function DevisModalProvider({ children }: { children: ReactNode }) {
 
   const open = useCallback((opts?: { ville?: string; service?: string }) => {
     triggerRef.current = document.activeElement as HTMLElement
+    proceededRef.current = false
+    leadSentRef.current = false
     setScreen('contact')
     setContact(CONTACT_INIT)
     setRdv(RDV_INIT)
@@ -199,10 +213,34 @@ export function DevisModalProvider({ children }: { children: ReactNode }) {
     setIsOpen(true)
   }, [autoVille, autoService])
 
+  // Corps JSON du lead d'abandon (partagé entre close(), pagehide et la
+  // capture sur navigation interne). `source` vient de sourceRef (page figée).
+  const buildLeadBody = useCallback((): string => JSON.stringify({
+    nomPrenom:  contact.nomPrenom.trim(),
+    telephone:  contact.telephone.trim(),
+    email:      contact.email.trim() || undefined,
+    source:     sourceRef.current,
+    service:    serviceContext,
+    ville:      villeContext,
+  }), [contact, serviceContext, villeContext])
+
   const close = useCallback(() => {
+    // Capture du lead UNIQUEMENT en cas d'abandon : l'utilisateur a saisi ses
+    // infos (écran « choice » atteint = contact validé) puis ferme le popup
+    // SANS cliquer ni « Devis » ni « Rendez-vous ». S'il a choisi une option,
+    // ce n'est pas un lead → on ne stocke rien. Le verrou leadSentRef évite un
+    // doublon avec l'écouteur pagehide.
+    if (screen === 'choice' && !proceededRef.current && !leadSentRef.current) {
+      leadSentRef.current = true
+      fetch('/api/leads', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    buildLeadBody(),
+      }).catch(() => { /* erreur silencieuse — ne pas bloquer l'utilisateur */ })
+    }
     setIsOpen(false)
     setTimeout(() => triggerRef.current?.focus(), 50)
-  }, [])
+  }, [screen, buildLeadBody])
 
   useEffect(() => {
     if (!isOpen) return
@@ -220,6 +258,39 @@ export function DevisModalProvider({ children }: { children: ReactNode }) {
     if (isOpen) dialogRef.current?.focus()
   }, [isOpen])
 
+  // Capture d'abandon même si l'utilisateur ferme l'onglet / quitte le site
+  // (et pas seulement le popup) alors qu'il est à l'écran de choix sans avoir
+  // choisi. `pagehide` est fiable au déchargement réel (fermeture onglet,
+  // navigation externe) et ne se déclenche PAS sur une navigation interne (SPA).
+  // On utilise sendBeacon car un fetch classique est annulé au déchargement.
+  useEffect(() => {
+    if (!isOpen || screen !== 'choice') return
+    const onPageHide = () => {
+      if (proceededRef.current || leadSentRef.current) return
+      leadSentRef.current = true
+      navigator.sendBeacon('/api/leads', new Blob([buildLeadBody()], { type: 'application/json' }))
+    }
+    window.addEventListener('pagehide', onPageHide)
+    return () => window.removeEventListener('pagehide', onPageHide)
+  }, [isOpen, screen, buildLeadBody])
+
+  // Capture d'abandon sur navigation interne (SPA) — typiquement le bouton
+  // « retour » du navigateur — alors que le popup est ouvert à l'écran de choix
+  // sans choix effectué. `pagehide` ne couvre pas ce cas (navigation douce).
+  useEffect(() => {
+    if (!prevPathRef.current) { prevPathRef.current = pathname; return }
+    if (prevPathRef.current === pathname) return
+    prevPathRef.current = pathname
+    if (isOpen && screen === 'choice' && !proceededRef.current && !leadSentRef.current) {
+      leadSentRef.current = true
+      fetch('/api/leads', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    buildLeadBody(),
+      }).catch(() => { /* erreur silencieuse */ })
+    }
+  }, [pathname, isOpen, screen, buildLeadBody])
+
   // ── Screen 1 → 2 : validation + enregistrement lead ────────────────────────
 
   function handleContactContinue() {
@@ -229,26 +300,17 @@ export function DevisModalProvider({ children }: { children: ReactNode }) {
     if (Object.keys(errs).length > 0) { setErrors(errs); return }
     setErrors({})
 
-    // Enregistrement du lead en arrière-plan (fire & forget — ne bloque pas l'UX)
-    fetch('/api/leads', {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        nomPrenom:  contact.nomPrenom.trim(),
-        telephone:  contact.telephone.trim(),
-        email:      contact.email.trim() || undefined,
-        source:     pathname,
-        service:    serviceContext,
-        ville:      villeContext,
-      }),
-    }).catch(() => { /* erreur silencieuse — ne pas bloquer l'utilisateur */ })
-
+    // Pas d'enregistrement de lead ici : le prospect n'est capturé comme lead
+    // qu'en cas d'ABANDON à l'écran de choix (voir close()). S'il poursuit vers
+    // un devis ou un RDV, ce n'est pas un lead.
+    sourceRef.current = pathname   // origine figée pour un éventuel lead d'abandon
     setScreen('choice')
   }
 
   // ── Screen 2 → /devis ───────────────────────────────────────────────────────
 
   function handleChoiceDevis() {
+    proceededRef.current = true   // choix effectué → pas un lead abandonné
     const { prenom, nom } = splitNomPrenom(contact.nomPrenom)
     const params = new URLSearchParams({ prenom, nom, telephone: contact.telephone })
     if (contact.email)   params.set('email',   contact.email)
@@ -261,6 +323,7 @@ export function DevisModalProvider({ children }: { children: ReactNode }) {
   // ── Screen 2 → 3 ────────────────────────────────────────────────────────────
 
   function handleChoiceRdv() {
+    proceededRef.current = true   // choix effectué → pas un lead abandonné
     const { prenom, nom } = splitNomPrenom(contact.nomPrenom)
     setRdv((prev) => ({
       ...prev,

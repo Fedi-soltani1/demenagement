@@ -17,7 +17,11 @@ const Leads: CollectionConfig = {
     useAsTitle: 'nomPrenom',
     defaultColumns: ['nomPrenom', 'telephone', 'email', 'service', 'statut', 'createdAt'],
     listSearchableFields: ['nomPrenom', 'telephone', 'email'],
-    description: 'Prospects ayant rempli le formulaire initial du popup "Devis Gratuit". Suivre leur conversion vers un devis ou un RDV.',
+    description: 'Prospects ayant rempli le popup "Devis Gratuit" mais N\'AYANT PAS terminé (ni devis complet, ni RDV). Dès qu\'ils convertissent, ils quittent cette liste. Filtrer par statut pour voir les convertis.',
+    // Par défaut, la liste ne montre QUE les abandons (statut « nouveau ») :
+    // un prospect qui termine un devis ou un RDV passe à un statut converti et
+    // disparaît d'ici. L'admin peut retirer le filtre « statut » pour les revoir.
+    baseListFilter: () => ({ statut: { equals: 'nouveau' } }),
   },
 
   fields: [
