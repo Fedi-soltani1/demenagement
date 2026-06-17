@@ -94,6 +94,19 @@ CHANGEMENTS :
 BASE : les 23 leads existants (ancienne logique « tout le monde ») SUPPRIMÉS (clean slate).
 VÉRIF : tsc --noEmit OK · eslint OK.
 
+SUITE (même jour) — ATTRIBUTION PARTENAIRE SUR LES LEADS :
+  Bug : les leads (contrairement à devis/rdv) ne traçaient PAS l'origine partenaire.
+  Le popup DevisModal est le CTA des pages /partenaire/[slug] → des leads y naissent,
+  mais /api/leads ignorait le cookie dt_partenaire.
+  Fix (aligné sur devis/rdv) :
+    payload/collections/Leads.ts → champs sourcePartenaire (relation affiliates) +
+      sourcePartenaireNom (texte), ajoutés aux defaultColumns/searchable.
+    app/api/leads/route.ts → lit cookie dt_partenaire (next/headers), resolvePartner,
+      stocke l'attribution ; email admin = ligne ORIGINE (partenaire vs site direct).
+    DB → ALTER TABLE leads ADD source_partenaire_id integer + source_partenaire_nom text
+      (schéma vérifié identique à demenagements/rendez_vous).
+  CRUD leads admin vérifié OK (read/create/update/delete = isAdmin / create ouvert).
+
 ──────────────────────────────────────────────────────────────────────────────
 Date        : 2026-06-05 (suite) — PARITÉ COMPLÈTE VILLES + PAGES + BLOG
 Session     : Dev 1 (Opus)

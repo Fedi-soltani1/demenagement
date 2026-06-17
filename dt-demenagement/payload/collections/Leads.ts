@@ -15,8 +15,8 @@ const Leads: CollectionConfig = {
   admin: {
     group: '🚚 Opérations',
     useAsTitle: 'nomPrenom',
-    defaultColumns: ['nomPrenom', 'telephone', 'email', 'service', 'statut', 'createdAt'],
-    listSearchableFields: ['nomPrenom', 'telephone', 'email'],
+    defaultColumns: ['nomPrenom', 'telephone', 'email', 'sourcePartenaireNom', 'service', 'statut', 'createdAt'],
+    listSearchableFields: ['nomPrenom', 'telephone', 'email', 'sourcePartenaireNom'],
     description: 'Prospects ayant rempli le popup "Devis Gratuit" mais N\'AYANT PAS terminé (ni devis complet, ni RDV). Dès qu\'ils convertissent, ils quittent cette liste. Filtrer par statut pour voir les convertis.',
     // Par défaut, la liste ne montre QUE les abandons (statut « nouveau ») :
     // un prospect qui termine un devis ou un RDV passe à un statut converti et
@@ -72,6 +72,19 @@ const Leads: CollectionConfig = {
       label: 'URL source',
       type: 'text',
       admin: { description: 'Chemin complet de la page depuis laquelle le popup a été ouvert.', readOnly: true },
+    },
+    {
+      name: 'sourcePartenaire',
+      label: 'Source partenaire affilié',
+      type: 'relationship',
+      relationTo: 'affiliates',
+      admin: { readOnly: true, description: 'Partenaire affilié dont le lien a amené ce prospect (si applicable).' },
+    },
+    {
+      name: 'sourcePartenaireNom',
+      label: 'Nom du partenaire (source)',
+      type: 'text',
+      admin: { readOnly: true, description: 'Conservé même si le partenaire est supprimé. Vide = vient directement de notre site.' },
     },
   ],
 }
