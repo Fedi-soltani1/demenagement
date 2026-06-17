@@ -114,9 +114,6 @@ Lead marqué `statut = 'devis_soumis'`.
   `window.location.href = url`.
 - **États** : boutons désactivés pendant le traitement (`saving`) → pas de double création.
   Message de retour rouge en cas d'erreur (rien créé à moitié ⇒ réessai possible).
-- **Garde-fou « déjà converti »** : si `statut !== 'nouveau'`, afficher un avertissement
-  (« Ce lead est déjà converti — reconvertir créera un nouveau dossier ») et demander
-  confirmation avant le POST.
 - `telephone` : `wa.me` utilise `replace(/\D/g, '')` ; `tel:` garde `+` et chiffres.
 
 ## Route `app/api/admin/lead-convert/route.ts`
@@ -139,8 +136,10 @@ Lead marqué `statut = 'devis_soumis'`.
   l'URL est renvoyée ; le lead peut rester « nouveau » (incohérence mineure, rare).
 - **Lead sans email** → devis créé sans email (autorisé).
 - **`nomPrenom` en un seul mot** → `nom = '(à compléter)'`.
-- **Lead déjà converti** → avertissement + confirmation côté composant.
 - **Double-clic** → bouton désactivé pendant le POST.
+
+(Note : pas de garde-fou « déjà converti » — la liste n'affiche que les leads
+`nouveau`, donc le cas ne se présente pas dans le flux normal. YAGNI.)
 
 ## Hors périmètre (YAGNI)
 
@@ -168,4 +167,3 @@ Lead marqué `statut = 'devis_soumis'`.
    téléphone), redirection, lead passé `rdv_planifie`.
 3. Lead **issu d'un partenaire** → le dossier créé porte bien `sourcePartenaireNom`.
 4. 📞 / 💬 → ouvrent l'appel / WhatsApp avec le bon numéro.
-5. Lead **déjà converti** → avertissement avant reconversion.
