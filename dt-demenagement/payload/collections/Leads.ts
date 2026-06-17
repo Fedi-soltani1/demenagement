@@ -7,7 +7,7 @@ const Leads: CollectionConfig = {
 
   access: {
     read:   isAdmin,
-    create: () => true,   // appelé depuis /api/leads (sans auth)
+    create: () => true,   // appelé depuis /api/lead-capture (sans auth)
     update: isAdmin,
     delete: isAdmin,
   },

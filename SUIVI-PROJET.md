@@ -107,6 +107,16 @@ SUITE (même jour) — ATTRIBUTION PARTENAIRE SUR LES LEADS :
       (schéma vérifié identique à demenagements/rendez_vous).
   CRUD leads admin vérifié OK (read/create/update/delete = isAdmin / create ouvert).
 
+  BUG CORRIGÉ — suppression de lead renvoyait 405 :
+    app/api/leads/route.ts portait le MÊME chemin que l'API REST Payload de la
+    collection 'leads' → l'interceptait et ne gérait que POST → DELETE/PATCH = 405.
+    → Route de capture renommée app/api/lead-capture/route.ts ; DevisModal.tsx mis à
+      jour (fetch + sendBeacon → /api/lead-capture). /api/leads rendu à Payload.
+    Vérifié : GET/DELETE /api/leads = 403 (auth Payload, plus 405) ; POST
+      /api/lead-capture = 201. CRUD admin OK.
+  ATTRIBUTION : modèle cookie 30j (last-touch) CONSERVÉ — cohérent leads/devis/rdv.
+    Pour tester un lead « Site direct » → navigation privée (sinon le cookie colle).
+
 ──────────────────────────────────────────────────────────────────────────────
 Date        : 2026-06-05 (suite) — PARITÉ COMPLÈTE VILLES + PAGES + BLOG
 Session     : Dev 1 (Opus)
