@@ -1,11 +1,11 @@
 import { default as default_043a135b5bf61c6c0293ccc212327364 } from '@/components/payload/DossierPipelineField'
-import { default as default_ba9f6cd83058905c544f217015932b9a } from '@/components/payload/DossierNumeroCell'
-import { default as default_5a0188a70b9b30cbd877f4236d25597f } from '@/components/payload/DossierStatutCell'
 import { default as default_a3e73777b572bed8f65364e432be9838 } from '@/components/payload/DossierClientCell'
-import { default as default_8ac8105d304bf750f880d02219803fb8 } from '@/components/payload/DossierNotesCell'
+import { default as default_5a0188a70b9b30cbd877f4236d25597f } from '@/components/payload/DossierStatutCell'
+import { default as default_ba9f6cd83058905c544f217015932b9a } from '@/components/payload/DossierNumeroCell'
 import { default as default_7b1942edc728b4f0f4c01b21977f4787 } from '@/components/payload/DevisStatutCell'
 import { default as default_48385a705c89432a57989e43a54a039c } from '@/components/payload/DevisGenerator'
 import { default as default_73c706e456fb9a9778758bdffc246dad } from '@/components/payload/MessageChatField'
+import { default as default_8ac8105d304bf750f880d02219803fb8 } from '@/components/payload/DossierNotesCell'
 import { default as default_51b02d8b9b076e7ad3e0b37c458e2bac } from '@/components/payload/DossierExportButton'
 import { default as default_882530b95db163bd21c08234f57db28c } from '@/components/payload/MessagesInbox'
 import { default as default_f4fef62e875393be866aaca47b6a37f0 } from '@/components/payload/RDVStatutCell'
@@ -40,19 +40,20 @@ import { default as default_7a969c861589af9322f5d573a708d2fb } from '@/component
 import { default as default_313e964a7107ac39e31c5ff2e54b6ba9 } from '@/components/payload/AdminLogo'
 import { default as default_90396af18c2250adfc20df25d311cd9a } from '@/components/payload/AdminDashboard'
 import { default as default_ef39643ec38f84ef279eda1676af9ec2 } from '@/components/payload/AdminUnreadBadge'
+import { default as default_2747d5abd180ca9058dbf9aafd7e3e69 } from '@/components/payload/AdminLightbox'
 import { default as default_83caa34b9c33d3543c6ac49d8e8a5659 } from '@/components/payload/RDVCalendarView'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
 /** @type import('payload').ImportMap */
 export const importMap = {
   "@/components/payload/DossierPipelineField#default": default_043a135b5bf61c6c0293ccc212327364,
-  "@/components/payload/DossierNumeroCell#default": default_ba9f6cd83058905c544f217015932b9a,
-  "@/components/payload/DossierStatutCell#default": default_5a0188a70b9b30cbd877f4236d25597f,
   "@/components/payload/DossierClientCell#default": default_a3e73777b572bed8f65364e432be9838,
-  "@/components/payload/DossierNotesCell#default": default_8ac8105d304bf750f880d02219803fb8,
+  "@/components/payload/DossierStatutCell#default": default_5a0188a70b9b30cbd877f4236d25597f,
+  "@/components/payload/DossierNumeroCell#default": default_ba9f6cd83058905c544f217015932b9a,
   "@/components/payload/DevisStatutCell#default": default_7b1942edc728b4f0f4c01b21977f4787,
   "@/components/payload/DevisGenerator#default": default_48385a705c89432a57989e43a54a039c,
   "@/components/payload/MessageChatField#default": default_73c706e456fb9a9778758bdffc246dad,
+  "@/components/payload/DossierNotesCell#default": default_8ac8105d304bf750f880d02219803fb8,
   "@/components/payload/DossierExportButton#default": default_51b02d8b9b076e7ad3e0b37c458e2bac,
   "@/components/payload/MessagesInbox#default": default_882530b95db163bd21c08234f57db28c,
   "@/components/payload/RDVStatutCell#default": default_f4fef62e875393be866aaca47b6a37f0,
@@ -87,6 +88,7 @@ export const importMap = {
   "@/components/payload/AdminLogo#default": default_313e964a7107ac39e31c5ff2e54b6ba9,
   "@/components/payload/AdminDashboard#default": default_90396af18c2250adfc20df25d311cd9a,
   "@/components/payload/AdminUnreadBadge#default": default_ef39643ec38f84ef279eda1676af9ec2,
+  "@/components/payload/AdminLightbox#default": default_2747d5abd180ca9058dbf9aafd7e3e69,
   "@/components/payload/RDVCalendarView#default": default_83caa34b9c33d3543c6ac49d8e8a5659,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }

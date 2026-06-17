@@ -23,50 +23,67 @@ const Clients: CollectionConfig = {
   auth: false,
 
   fields: [
+    // ── Identité ──────────────────────────────────────────────────────────────
     {
       name: 'email',
-      label: 'Email du client',
+      label: 'Email',
       type: 'email',
       required: true,
       unique: true,
     },
     {
-      name: 'nom',
-      label: 'Nom de famille',
-      type: 'text',
-      required: true,
-    },
-    {
-      name: 'prenom',
-      label: 'Prénom',
-      type: 'text',
-      required: true,
+      type: 'row',
+      fields: [
+        {
+          name: 'prenom',
+          label: 'Prénom',
+          type: 'text',
+          required: true,
+          admin: { width: '50%' },
+        },
+        {
+          name: 'nom',
+          label: 'Nom',
+          type: 'text',
+          required: true,
+          admin: { width: '50%' },
+        },
+      ],
     },
     {
       name: 'telephone',
       label: 'Téléphone',
       type: 'text',
-      admin: { description: 'Format international (ex: +21652880311)' },
+      admin: { description: 'Format international (ex: +21652880311)', placeholder: '+216 XX XXX XXX' },
     },
+
+    // ── Adresse ───────────────────────────────────────────────────────────────
     {
       name: 'adresse',
       type: 'group',
-      label: 'Adresse du client',
+      label: 'Adresse',
       fields: [
-        { name: 'rue',        label: 'Rue / Adresse',  type: 'text' },
-        { name: 'ville',      label: 'Ville',           type: 'text' },
-        { name: 'codePostal', label: 'Code postal',     type: 'text' },
+        {
+          type: 'row',
+          fields: [
+            { name: 'rue',        label: 'Rue / Adresse', type: 'text', admin: { width: '70%' } },
+            { name: 'codePostal', label: 'Code postal',   type: 'text', admin: { width: '30%' } },
+          ],
+        },
+        { name: 'ville', label: 'Ville', type: 'text' },
       ],
     },
+
+    // ── Notes internes (super-admin uniquement) ───────────────────────────────
     {
       name: 'notesInternes',
-      label: '🔒 Notes internes (non visibles par le client)',
+      label: '🔒 Notes internes',
       type: 'textarea',
       access: {
         read:   ({ req: { user } }) => Boolean(user && (user as { role?: string }).role === 'super-admin'),
         update: ({ req: { user } }) => Boolean(user && (user as { role?: string }).role === 'super-admin'),
       },
-      admin: { description: 'Remarques internes sur ce client — jamais affichées dans l\'espace client.' },
+      admin: { description: 'Jamais affichées dans l\'espace client.' },
     },
   ],
 }

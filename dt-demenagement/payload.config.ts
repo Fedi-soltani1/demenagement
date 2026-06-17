@@ -86,6 +86,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
     components: {
+      providers: ['@/components/payload/AdminLightbox'],
       graphics: {
         Logo: '@/components/payload/AdminLogo',
         Icon: '@/components/payload/AdminIcon',

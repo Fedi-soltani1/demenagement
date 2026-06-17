@@ -7,7 +7,7 @@ const Leads: CollectionConfig = {
 
   access: {
     read:   isAdmin,
-    create: () => true,   // appelé depuis /api/leads (sans auth)
+    create: () => true,
     update: isAdmin,
     delete: isAdmin,
   },
@@ -17,61 +17,89 @@ const Leads: CollectionConfig = {
     useAsTitle: 'nomPrenom',
     defaultColumns: ['nomPrenom', 'telephone', 'email', 'service', 'statut', 'createdAt'],
     listSearchableFields: ['nomPrenom', 'telephone', 'email'],
-    description: 'Prospects ayant rempli le popup "Devis Gratuit" mais N\'AYANT PAS terminé (ni devis complet, ni RDV). Dès qu\'ils convertissent, ils quittent cette liste. Filtrer par statut pour voir les convertis.',
-    // Par défaut, la liste ne montre QUE les abandons (statut « nouveau ») :
-    // un prospect qui termine un devis ou un RDV passe à un statut converti et
-    // disparaît d'ici. L'admin peut retirer le filtre « statut » pour les revoir.
+    description: 'Prospects ayant rempli le popup "Devis Gratuit" sans terminer le process. Ils disparaissent d\'ici dès qu\'ils convertissent (devis complet ou RDV).',
     baseListFilter: () => ({ statut: { equals: 'nouveau' } }),
   },
 
   fields: [
+    // ── Identité & Contact ────────────────────────────────────────────────────
     {
-      name: 'nomPrenom',
-      label: 'Nom complet',
-      type: 'text',
-      required: true,
-    },
-    {
-      name: 'telephone',
-      label: 'Téléphone',
-      type: 'text',
-      required: true,
-    },
-    {
-      name: 'email',
-      label: 'Email',
-      type: 'email',
-    },
-    {
-      name: 'statut',
-      label: 'Statut',
-      type: 'select',
-      required: true,
-      defaultValue: 'nouveau',
-      options: [
-        { label: '🆕 Nouveau',                  value: 'nouveau'       },
-        { label: '📋 Devis complet soumis',      value: 'devis_soumis'  },
-        { label: '📅 RDV planifié',              value: 'rdv_planifie'  },
-        { label: '🚫 Non converti',              value: 'non_converti'  },
+      type: 'row',
+      fields: [
+        {
+          name: 'nomPrenom',
+          label: 'Nom complet',
+          type: 'text',
+          required: true,
+          admin: { width: '50%' },
+        },
+        {
+          name: 'telephone',
+          label: 'Téléphone',
+          type: 'text',
+          required: true,
+          admin: { width: '50%', placeholder: '+216 XX XXX XXX' },
+        },
       ],
     },
     {
-      name: 'service',
-      label: 'Service (page source)',
-      type: 'text',
-      admin: { description: 'Slug du service si le prospect vient d\'une page service (ex: transporteur-en-tunisie).' },
+      type: 'row',
+      fields: [
+        {
+          name: 'email',
+          label: 'Email',
+          type: 'email',
+          admin: { width: '50%' },
+        },
+        {
+          name: 'statut',
+          label: 'Statut',
+          type: 'select',
+          required: true,
+          defaultValue: 'nouveau',
+          admin: { width: '50%' },
+          options: [
+            { label: '🆕 Nouveau',             value: 'nouveau'      },
+            { label: '📋 Devis complet soumis', value: 'devis_soumis' },
+            { label: '📅 RDV planifié',         value: 'rdv_planifie' },
+            { label: '🚫 Non converti',         value: 'non_converti' },
+          ],
+        },
+      ],
     },
+
+    // ── Source ────────────────────────────────────────────────────────────────
     {
-      name: 'ville',
-      label: 'Ville (page source)',
-      type: 'text',
-      admin: { description: 'Nom de la ville si le prospect vient d\'une page ville.' },
+      type: 'row',
+      fields: [
+        {
+          name: 'service',
+          label: 'Service (page source)',
+          type: 'text',
+          admin: {
+            width: '50%',
+            description: 'Slug du service — ex: transporteur-en-tunisie',
+          },
+        },
+        {
+          name: 'ville',
+          label: 'Ville (page source)',
+          type: 'text',
+          admin: {
+            width: '50%',
+            description: 'Nom de la ville si venu d\'une page ville.',
+          },
+        },
+      ],
     },
     {
       name: 'source',
       label: 'URL source',
       type: 'text',
-      admin: { description: 'Chemin complet de la page depuis laquelle le popup a été ouvert.', readOnly: true },
+      admin: {
+        readOnly: true,
+        description: 'Chemin de la page depuis laquelle le popup a été ouvert.',
+      },
     },
   ],
 }

@@ -8,12 +8,11 @@ interface CellProps {
 }
 
 const OPTIONS = [
-  { value: 'devis_recu',     label: '📥 Devis reçu',    color: '#7a5500', bg: '#fff3cd' },
-  { value: 'confirme',       label: '✅ Confirmé',       color: '#155724', bg: '#d4edda' },
-  { value: 'en_preparation', label: '📦 Préparation',    color: '#0c5460', bg: '#d1ecf1' },
-  { value: 'en_cours',       label: '🚛 En cours',       color: '#1a3a6b', bg: '#cce5ff' },
-  { value: 'livre',          label: '🏁 Livré',          color: '#3d1a78', bg: '#e2d9f3' },
-  { value: 'annule',         label: '❌ Annulé',         color: '#721c24', bg: '#f8d7da' },
+  { value: 'devis_recu', label: '📥 Devis reçu', color: '#7a5500', bg: '#fff3cd' },
+  { value: 'confirme',   label: '✅ Confirmé',    color: '#155724', bg: '#d4edda' },
+  { value: 'en_cours',   label: '🚛 En cours',    color: '#1a3a6b', bg: '#cce5ff' },
+  { value: 'livre',      label: '🏁 Livré',       color: '#3d1a78', bg: '#e2d9f3' },
+  { value: 'annule',     label: '❌ Annulé',      color: '#721c24', bg: '#f8d7da' },
 ]
 
 function ageLabel(createdAt: string | undefined, statut: string): React.ReactNode {

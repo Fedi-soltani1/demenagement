@@ -2,6 +2,15 @@ import type { CollectionConfig } from 'payload'
 import { isAdmin } from '../access/isAdmin'
 import { isCommercial } from '../access/isClient'
 
+const etageOptions = [
+  { label: 'RDC', value: 'RDC' },
+  { label: '1er étage', value: '1' },
+  { label: '2ème étage', value: '2' },
+  { label: '3ème étage', value: '3' },
+  { label: '4ème étage', value: '4' },
+  { label: '5ème +', value: '5+' },
+]
+
 const Demenagements: CollectionConfig = {
   slug: 'demenagements',
   labels: { singular: 'Dossier déménagement', plural: 'Dossiers déménagement' },
@@ -16,9 +25,9 @@ const Demenagements: CollectionConfig = {
   admin: {
     group: '🚚 Opérations',
     useAsTitle: 'numeroDossier',
-    defaultColumns: ['numeroDossier', 'nomComplet', 'statut', 'sourcePartenaireNom', 'dateDemenagement', 'devisStatut', 'notesRapides'],
+    defaultColumns: ['numeroDossier', 'nomComplet', 'telephone', 'statut', 'dateDemenagement', 'devisStatut', 'prixTotalTTC'],
     listSearchableFields: ['numeroDossier', 'nomComplet', 'telephone', 'clientId', 'sourcePartenaireNom'],
-    description: 'Chaque ligne = une demande de devis reçue. Ouvrir un dossier et changer le "Statut du dossier" pour que le client voie l\'avancement en temps réel.',
+    description: 'Chaque ligne = une demande de devis reçue. Modifier le "Statut du dossier" pour que le client voie l\'avancement en temps réel.',
     components: {
       beforeListTable: ['@/components/payload/DossierExportButton'],
     },
@@ -27,424 +36,439 @@ const Demenagements: CollectionConfig = {
   hooks: {
     beforeChange: [
       ({ data }: { data: Record<string, unknown> }) => {
-        const lines = data.lignesDevis as { quantite?: number; prixUnitaire?: number }[] | undefined
-        if (lines && lines.length > 0) {
-          const total = lines.reduce((sum, l) => sum + ((l.quantite ?? 1) * (l.prixUnitaire ?? 0)), 0)
-          if (total > 0) return { ...data, prixTotalTTC: Math.round(total * 100) / 100 }
+        if (!data.numeroDossier) {
+          const year = new Date().getFullYear()
+          const suffix = Math.floor(1000 + Math.random() * 9000)
+          data = { ...data, numeroDossier: `DT-${year}-${suffix}` }
         }
         return data
+      },
+    ],
+    beforeDelete: [
+      async ({ id, req }: { id: string | number; req: import('payload').PayloadRequest }) => {
+        // Delete all messages linked to this dossier before deleting it.
+        // Without this, the PostgreSQL FK constraint on messages.demenagement (NOT NULL)
+        // blocks the delete and causes a silent failure in the admin UI.
+        const linked = await req.payload.find({
+          collection: 'messages',
+          where: { demenagement: { equals: id } },
+          limit: 0,
+          overrideAccess: true,
+          req,
+        })
+        if (linked.totalDocs > 0) {
+          await Promise.all(
+            linked.docs.map((msg: { id: string | number }) =>
+              req.payload.delete({
+                collection: 'messages',
+                id: msg.id,
+                overrideAccess: true,
+                req,
+              })
+            )
+          )
+        }
       },
     ],
   },
 
   fields: [
-    // ── Barre de progression ──────────────────────────────────────────────────
+    // ── Barre de progression (toujours visible en haut) ───────────────────────
     {
       name: 'pipelineStatus',
       type: 'ui',
-      label: '📍 Avancement du dossier',
+      label: '📍 Avancement',
       admin: {
-        components: {
-          Field: '@/components/payload/DossierPipelineField',
-        },
+        components: { Field: '@/components/payload/DossierPipelineField' },
       },
     },
 
-    // ── Informations dossier ─────────────────────────────────────────────────
+    // ── Tabs ──────────────────────────────────────────────────────────────────
     {
-      name: 'numeroDossier',
-      label: 'Numéro de dossier',
-      type: 'text',
-      required: true,
-      unique: true,
-      admin: {
-        description: 'Généré automatiquement à la soumission du formulaire. Ne pas modifier.',
-        readOnly: true,
-        components: {
-          Cell: '@/components/payload/DossierNumeroCell',
-        },
-      },
-    },
-    {
-      name: 'statut',
-      label: 'Statut du dossier',
-      type: 'select',
-      required: true,
-      defaultValue: 'devis_recu',
-      admin: {
-        description: '👆 C\'est CE champ que vous modifiez au quotidien. Le client voit le statut dans son espace.',
-        components: {
-          Cell: '@/components/payload/DossierStatutCell',
-        },
-      },
-      options: [
-        { label: '📥 Devis reçu — nouveau, pas encore traité',     value: 'devis_recu' },
-        { label: '✅ Confirmé — devis accepté, date fixée',        value: 'confirme' },
-        { label: '📦 En préparation — équipe mobilisée',           value: 'en_preparation' },
-        { label: '🚛 En cours — déménagement en cours',            value: 'en_cours' },
-        { label: '🏁 Livré — déménagement terminé',                value: 'livre' },
-        { label: '❌ Annulé — dossier annulé',                     value: 'annule' },
-      ],
-    },
-    {
-      name: 'dateDemenagement',
-      label: 'Date de déménagement souhaitée',
-      type: 'date',
-      admin: { description: 'Date souhaitée par le client — à confirmer avec lui.' },
-    },
+      type: 'tabs',
+      tabs: [
 
-    // ── Informations client ──────────────────────────────────────────────────
-    {
-      name: 'nomComplet',
-      label: 'Client',
-      type: 'text',
-      admin: {
-        readOnly: true,
-        description: 'Rempli automatiquement depuis le formulaire.',
-        components: {
-          Cell: '@/components/payload/DossierClientCell',
-        },
-      },
-    },
-    {
-      name: 'clientId',
-      label: 'Email du client',
-      type: 'text',
-      required: true,
-      admin: { readOnly: true },
-    },
-    {
-      name: 'telephone',
-      label: 'Téléphone du client',
-      type: 'text',
-      admin: { readOnly: true },
-    },
-    {
-      name: 'typeClient',
-      label: 'Type de client',
-      type: 'select',
-      options: [
-        { label: '🏠 Particulier', value: 'particulier' },
-        { label: '🏢 Entreprise',  value: 'entreprise' },
-      ],
-      admin: { readOnly: true },
-    },
-    {
-      name: 'sourcePartenaire',
-      label: 'Source partenaire affilié',
-      type: 'relationship',
-      relationTo: 'affiliates',
-      admin: {
-        readOnly: true,
-        description: 'Partenaire affilié dont le lien a amené cette demande (si applicable).',
-      },
-    },
-    {
-      name: 'sourcePartenaireNom',
-      label: 'Nom du partenaire (source)',
-      type: 'text',
-      admin: { readOnly: true, description: 'Conservé même si le partenaire est supprimé.' },
-    },
-    {
-      name: 'commentaire',
-      label: 'Message du client',
-      type: 'textarea',
-      admin: { readOnly: true, description: 'Message laissé par le client dans le formulaire.' },
-    },
-
-    // ── Adresses ─────────────────────────────────────────────────────────────
-    {
-      name: 'adresseDepart',
-      type: 'group',
-      label: '📦 Adresse de départ (là où se trouvent les affaires)',
-      fields: [
-        { name: 'adresse', label: 'Rue / Adresse',  type: 'text', required: true },
-        { name: 'ville',   label: 'Ville',           type: 'text', required: true },
+        // ── Tab 1 : Client ────────────────────────────────────────────────────
         {
-          name: 'etage',
-          label: 'Étage',
-          type: 'select',
-          options: [
-            { label: 'Rez-de-chaussée (RDC)', value: 'RDC' },
-            { label: '1er étage',  value: '1' },
-            { label: '2ème étage', value: '2' },
-            { label: '3ème étage', value: '3' },
-            { label: '4ème étage', value: '4' },
-            { label: '5ème et plus', value: '5+' },
+          label: '👤 Client',
+          fields: [
+            {
+              type: 'row',
+              fields: [
+                {
+                  name: 'nomComplet',
+                  label: 'Nom complet',
+                  type: 'text',
+                  admin: {
+                    width: '50%',
+                    placeholder: 'Prénom Nom',
+                    components: { Cell: '@/components/payload/DossierClientCell' },
+                  },
+                },
+                {
+                  name: 'telephone',
+                  label: 'Téléphone',
+                  type: 'text',
+                  admin: { width: '50%', placeholder: '+216 XX XXX XXX' },
+                },
+              ],
+            },
+            {
+              type: 'row',
+              fields: [
+                {
+                  name: 'clientId',
+                  label: 'Email',
+                  type: 'text',
+                  admin: {
+                    width: '50%',
+                    placeholder: 'client@email.com',
+                    description: 'Optionnel pour les dossiers créés manuellement.',
+                  },
+                },
+                {
+                  name: 'typeClient',
+                  label: 'Type de client',
+                  type: 'select',
+                  options: [
+                    { label: '🏠 Particulier', value: 'particulier' },
+                    { label: '🏢 Entreprise', value: 'entreprise' },
+                  ],
+                  admin: { width: '50%' },
+                },
+              ],
+            },
+            {
+              name: 'commentaire',
+              label: 'Message / Notes',
+              type: 'textarea',
+              admin: { placeholder: 'Message du client ou notes de l\'admin…' },
+            },
+            {
+              name: 'sourcePartenaire',
+              label: 'Partenaire affilié',
+              type: 'relationship',
+              relationTo: 'affiliates',
+              admin: {
+                readOnly: true,
+                condition: (data: Record<string, unknown>) => Boolean(data.sourcePartenaire),
+              },
+            },
+            {
+              name: 'sourcePartenaireNom',
+              label: 'Nom du partenaire',
+              type: 'text',
+              admin: {
+                readOnly: true,
+                description: 'Conservé même si le partenaire est supprimé.',
+                condition: (data: Record<string, unknown>) => Boolean(data.sourcePartenaireNom),
+              },
+            },
           ],
         },
-        { name: 'ascenseur', label: 'Ascenseur disponible', type: 'checkbox', defaultValue: false },
-        { name: 'lat', label: 'Latitude GPS',  type: 'number', admin: { condition: () => false } },
-        { name: 'lng', label: 'Longitude GPS', type: 'number', admin: { condition: () => false } },
-      ],
-    },
-    {
-      name: 'adresseArrivee',
-      type: 'group',
-      label: '🏠 Adresse d\'arrivée (destination)',
-      fields: [
-        { name: 'adresse', label: 'Rue / Adresse',  type: 'text', required: true },
-        { name: 'ville',   label: 'Ville',           type: 'text', required: true },
+
+        // ── Tab 2 : Adresses ──────────────────────────────────────────────────
         {
-          name: 'etage',
-          label: 'Étage',
-          type: 'select',
-          options: [
-            { label: 'Rez-de-chaussée (RDC)', value: 'RDC' },
-            { label: '1er étage',  value: '1' },
-            { label: '2ème étage', value: '2' },
-            { label: '3ème étage', value: '3' },
-            { label: '4ème étage', value: '4' },
-            { label: '5ème et plus', value: '5+' },
+          label: '📍 Adresses',
+          fields: [
+            {
+              name: 'adresseDepart',
+              type: 'group',
+              label: '📦 Départ',
+              fields: [
+                {
+                  type: 'row',
+                  fields: [
+                    {
+                      name: 'adresse',
+                      label: 'Rue / Adresse',
+                      type: 'text',
+                      required: true,
+                      admin: { width: '70%', placeholder: '12 rue des Orangers' },
+                    },
+                    {
+                      name: 'etage',
+                      label: 'Étage',
+                      type: 'select',
+                      options: etageOptions,
+                      admin: { width: '30%' },
+                    },
+                  ],
+                },
+                {
+                  type: 'row',
+                  fields: [
+                    {
+                      name: 'ville',
+                      label: 'Ville',
+                      type: 'text',
+                      required: true,
+                      admin: { width: '70%', placeholder: 'Tunis' },
+                    },
+                    {
+                      name: 'ascenseur',
+                      label: 'Ascenseur',
+                      type: 'checkbox',
+                      defaultValue: false,
+                      admin: { width: '30%' },
+                    },
+                  ],
+                },
+                { name: 'lat', label: 'Lat', type: 'number', admin: { condition: () => false } },
+                { name: 'lng', label: 'Lng', type: 'number', admin: { condition: () => false } },
+              ],
+            },
+            {
+              name: 'adresseArrivee',
+              type: 'group',
+              label: '🏠 Arrivée',
+              fields: [
+                {
+                  type: 'row',
+                  fields: [
+                    {
+                      name: 'adresse',
+                      label: 'Rue / Adresse',
+                      type: 'text',
+                      required: true,
+                      admin: { width: '70%', placeholder: '5 avenue Habib Bourguiba' },
+                    },
+                    {
+                      name: 'etage',
+                      label: 'Étage',
+                      type: 'select',
+                      options: etageOptions,
+                      admin: { width: '30%' },
+                    },
+                  ],
+                },
+                {
+                  type: 'row',
+                  fields: [
+                    {
+                      name: 'ville',
+                      label: 'Ville',
+                      type: 'text',
+                      required: true,
+                      admin: { width: '70%', placeholder: 'Sfax' },
+                    },
+                    {
+                      name: 'ascenseur',
+                      label: 'Ascenseur',
+                      type: 'checkbox',
+                      defaultValue: false,
+                      admin: { width: '30%' },
+                    },
+                  ],
+                },
+                { name: 'lat', label: 'Lat', type: 'number', admin: { condition: () => false } },
+                { name: 'lng', label: 'Lng', type: 'number', admin: { condition: () => false } },
+              ],
+            },
+            {
+              type: 'collapsible',
+              label: '📸 Photos envoyées par le client',
+              admin: { initCollapsed: true },
+              fields: [
+                {
+                  name: 'photosDepart',
+                  label: 'Accès départ',
+                  type: 'upload',
+                  relationTo: 'media',
+                  hasMany: true,
+                  admin: { description: 'Escalier, couloir, parking au départ.' },
+                },
+                {
+                  name: 'photosArrivee',
+                  label: 'Accès arrivée',
+                  type: 'upload',
+                  relationTo: 'media',
+                  hasMany: true,
+                  admin: { description: 'Escalier, couloir, parking à l\'arrivée.' },
+                },
+                {
+                  name: 'photosMeubles',
+                  label: 'Meubles & objets',
+                  type: 'upload',
+                  relationTo: 'media',
+                  hasMany: true,
+                  admin: { description: 'Photos pour estimer le volume.' },
+                },
+              ],
+            },
           ],
         },
-        { name: 'ascenseur', label: 'Ascenseur disponible', type: 'checkbox', defaultValue: false },
-        { name: 'lat', label: 'Latitude GPS',  type: 'number', admin: { condition: () => false } },
-        { name: 'lng', label: 'Longitude GPS', type: 'number', admin: { condition: () => false } },
+
+        // ── Tab 3 : Dossier ───────────────────────────────────────────────────
+        {
+          label: '🗓 Dossier',
+          fields: [
+            {
+              type: 'row',
+              fields: [
+                {
+                  name: 'statut',
+                  label: 'Statut',
+                  type: 'select',
+                  required: true,
+                  defaultValue: 'devis_recu',
+                  options: [
+                    { label: '📥 Devis reçu', value: 'devis_recu' },
+                    { label: '✅ Confirmé', value: 'confirme' },
+                    { label: '🚛 En cours', value: 'en_cours' },
+                    { label: '🏁 Livré', value: 'livre' },
+                    { label: '❌ Annulé', value: 'annule' },
+                  ],
+                  admin: {
+                    width: '50%',
+                    description: '👆 Ce champ est visible par le client dans son espace.',
+                    components: { Cell: '@/components/payload/DossierStatutCell' },
+                  },
+                },
+                {
+                  name: 'dateDemenagement',
+                  label: 'Date souhaitée',
+                  type: 'date',
+                  admin: { width: '50%', description: 'À confirmer avec le client.' },
+                },
+              ],
+            },
+            {
+              name: 'servicesInclus',
+              label: 'Services demandés',
+              type: 'select',
+              hasMany: true,
+              options: [
+                { label: '🚛 Transporteur en Tunisie', value: 'transporteur-en-tunisie' },
+                { label: '🏢 Transfert Entreprises', value: 'transfert-entreprises' },
+                { label: '⬆️ Location Monte-Meubles', value: 'location-monte-meubles' },
+                { label: '📦 Garde-Meubles / Stockage', value: 'gardes-meubles' },
+                { label: '📫 Service Emballage', value: 'services-emballage' },
+                { label: '🔧 Montage & Démontage', value: 'montage-demontage' },
+              ],
+            },
+            {
+              name: 'numeroDossier',
+              label: 'Numéro de dossier',
+              type: 'text',
+              unique: true,
+              admin: {
+                readOnly: true,
+                description: 'Généré automatiquement à la création.',
+                components: { Cell: '@/components/payload/DossierNumeroCell' },
+              },
+            },
+          ],
+        },
+
+        // ── Tab 4 : Devis ─────────────────────────────────────────────────────
+        {
+          label: '💰 Devis',
+          fields: [
+            {
+              type: 'row',
+              fields: [
+                {
+                  name: 'devisStatut',
+                  label: 'Statut',
+                  type: 'select',
+                  defaultValue: 'brouillon',
+                  options: [
+                    { label: '📝 Brouillon', value: 'brouillon' },
+                    { label: '📤 Envoyé',    value: 'envoye'    },
+                    { label: '✅ Accepté',   value: 'accepte'   },
+                    { label: '❌ Refusé',    value: 'refuse'    },
+                  ],
+                  admin: {
+                    width: '50%',
+                    components: { Cell: '@/components/payload/DevisStatutCell' },
+                  },
+                },
+                {
+                  name: 'prixTotalTTC',
+                  label: 'Prix total TTC (DT)',
+                  type: 'number',
+                  admin: {
+                    width: '50%',
+                    placeholder: 'ex : 850',
+                  },
+                },
+              ],
+            },
+            {
+              name: 'devisNotes',
+              label: 'Corps du devis',
+              type: 'textarea',
+              defaultValue: `Prestations incluses : chargement, transport et déchargement par une équipe professionnelle — matériel de protection fourni (couvertures, sangles, film plastique).
+
+Ce devis est établi sur la base des informations communiquées. Tout volume supplémentaire ou prestation additionnelle fera l'objet d'un avenant.
+
+Conditions : devis valable 30 jours à compter de sa date d'émission — paiement à la livraison — prix TTC.`,
+              admin: {
+                description: 'Apparaît dans le PDF du devis. Modifiable avant envoi.',
+                rows: 7,
+              },
+            },
+            {
+              name: 'devisCommentaireClient',
+              label: 'Commentaire du client',
+              type: 'textarea',
+              admin: {
+                readOnly: true,
+                condition: (data: Record<string, unknown>) => Boolean(data.devisCommentaireClient),
+              },
+            },
+            {
+              name: 'devisGenerateur',
+              type: 'ui',
+              label: '🚀 Générer et envoyer le devis',
+              admin: {
+                components: { Field: '@/components/payload/DevisGenerator' },
+              },
+            },
+          ],
+        },
+
+        // ── Tab 5 : Messagerie ────────────────────────────────────────────────
+        {
+          label: '💬 Messagerie',
+          fields: [
+            {
+              name: 'messagerie',
+              type: 'ui',
+              label: '💬 Messagerie',
+              admin: {
+                components: { Field: '@/components/payload/MessageChatField' },
+              },
+            },
+          ],
+        },
       ],
     },
 
-    // ── Détails du déménagement ───────────────────────────────────────────────
+    // ── Champs hors formulaire (données API + cellules liste) ─────────────────
+    { name: 'volumeM3',          type: 'number',   label: 'Volume m³',        admin: { hidden: true } },
+    { name: 'devisValiditeJours',type: 'number',   label: 'Validité devis',   admin: { hidden: true }, defaultValue: 30 },
+    { name: 'devisEnvoyeLe',     type: 'text',     label: 'Devis envoyé le',  admin: { hidden: true } },
+    { name: 'devisReponduLe',    type: 'text',     label: 'Devis répondu le', admin: { hidden: true } },
     {
-      name: 'servicesInclus',
-      label: 'Services demandés',
-      type: 'select',
-      hasMany: true,
-      admin: { description: 'Services cochés par le client dans le formulaire.' },
-      options: [
-        { label: '🚛 Transporteur en Tunisie',  value: 'transporteur-en-tunisie' },
-        { label: '🏢 Transfert Entreprises',    value: 'transfert-entreprises' },
-        { label: '⬆️ Location Monte-Meubles',   value: 'location-monte-meubles' },
-        { label: '📦 Garde-Meubles / Stockage', value: 'gardes-meubles' },
-        { label: '📫 Service Emballage',        value: 'services-emballage' },
-        { label: '🔧 Montage & Démontage',      value: 'montage-demontage' },
-      ],
-    },
-    {
-      name: 'volumeM3',
-      label: 'Volume estimé (en m³)',
-      type: 'number',
-      admin: { description: 'Estimation donnée par le client. 1 studio ≈ 15 m³ / 3 pièces ≈ 35 m³.' },
-    },
-
-    // ── Photos envoyées par le client ─────────────────────────────────────────
-    {
-      name: 'photosDepart',
-      label: '📸 Photos accès — départ',
-      type: 'upload',
-      relationTo: 'media',
-      hasMany: true,
-      admin: { description: 'Photos de l\'escalier, couloir, parking au départ — envoyées par le client via le formulaire.' },
-    },
-    {
-      name: 'photosArrivee',
-      label: '📸 Photos accès — arrivée',
-      type: 'upload',
-      relationTo: 'media',
-      hasMany: true,
-      admin: { description: 'Photos de l\'escalier, couloir, parking à l\'arrivée — envoyées par le client.' },
-    },
-    {
-      name: 'photosMeubles',
-      label: '📸 Photos meubles & objets',
-      type: 'upload',
-      relationTo: 'media',
-      hasMany: true,
-      admin: { description: 'Photos des meubles et objets à déménager — aidant à estimer le volume et la complexité.' },
-    },
-
-    // ── Équipe assignée ───────────────────────────────────────────────────────
-    {
-      name: 'demenageur',
-      type: 'group',
-      label: '👷 Déménageur assigné à ce dossier',
-      admin: { description: 'Remplir une fois le dossier confirmé.' },
-      fields: [
-        { name: 'nom',       label: 'Nom du déménageur', type: 'text' },
-        { name: 'telephone', label: 'Téléphone',          type: 'text' },
-      ],
-    },
-
-    // ── Documents ─────────────────────────────────────────────────────────────
-    {
-      name: 'documents',
+      name: 'lignesDevis',
       type: 'array',
-      label: '📄 Documents du dossier (devis PDF, contrat, bon de livraison)',
-      admin: { description: 'Uploader ici les documents à partager avec le client.' },
+      label: 'Lignes du devis',
+      admin: { hidden: true },
       fields: [
-        {
-          name: 'nom',
-          label: 'Nom du document (ex: Devis DT-2026-4821)',
-          type: 'text',
-          required: true,
-        },
-        {
-          name: 'type',
-          label: 'Type de document',
-          type: 'select',
-          required: true,
-          options: [
-            { label: '📋 Devis',             value: 'devis' },
-            { label: '📝 Contrat signé',      value: 'contrat' },
-            { label: '✅ Bon de livraison',   value: 'bon_livraison' },
-            { label: '📎 Autre document',     value: 'autre' },
-          ],
-        },
-        {
-          name: 'fichier',
-          label: 'Fichier (PDF recommandé)',
-          type: 'upload',
-          relationTo: 'media',
-          required: true,
-        },
+        { name: 'designation',  label: 'Désignation', type: 'text'   },
+        { name: 'quantite',     label: 'Qté',          type: 'number', defaultValue: 1 },
+        { name: 'prixUnitaire', label: 'Prix',         type: 'number' },
       ],
     },
-
-    // ── Notes rapides (tous admins) ───────────────────────────────────────────
     {
       name: 'notesRapides',
       label: '⚡ Notes rapides',
       type: 'textarea',
       admin: {
-        description: 'Notes visibles par tous les admins. Modifiable directement depuis la liste des dossiers.',
-        components: {
-          Cell: '@/components/payload/DossierNotesCell',
-        },
-      },
-    },
-
-    // ── Notes internes ────────────────────────────────────────────────────────
-    {
-      name: 'notesInternes',
-      label: '🔒 Notes internes (visibles uniquement par les super-admins)',
-      type: 'textarea',
-      access: {
-        read:   ({ req: { user } }) => Boolean(user && (user as { role?: string }).role === 'super-admin'),
-        update: ({ req: { user } }) => Boolean(user && (user as { role?: string }).role === 'super-admin'),
-      },
-      admin: { description: 'Remarques internes sur ce client ou ce dossier — jamais affichées au client.' },
-    },
-
-    // ── Devis ─────────────────────────────────────────────────────────────────
-    {
-      name: 'lignesDevis',
-      type: 'array',
-      label: '📊 Lignes du devis (détail tarification)',
-      admin: {
-        description: 'Ajoutez les postes de prix. Le total TTC sera calculé automatiquement à la sauvegarde.',
-      },
-      fields: [
-        {
-          name: 'designation',
-          label: 'Désignation / Prestation',
-          type: 'text',
-          required: true,
-        },
-        {
-          name: 'quantite',
-          label: 'Qté',
-          type: 'number',
-          defaultValue: 1,
-          admin: { width: '20%' },
-        },
-        {
-          name: 'prixUnitaire',
-          label: 'Prix unitaire (DT)',
-          type: 'number',
-          admin: { width: '30%' },
-        },
-      ],
-    },
-    {
-      name: 'prixTotalTTC',
-      label: '💰 Prix total TTC (en DT)',
-      type: 'number',
-      admin: {
-        description: 'Calculé automatiquement depuis les lignes si présentes. Sinon, saisir manuellement.',
-      },
-    },
-    {
-      name: 'devisValiditeJours',
-      label: '⏳ Validité du devis (jours)',
-      type: 'number',
-      defaultValue: 30,
-      admin: { description: 'Durée de validité en jours (défaut : 30 jours).' },
-    },
-    {
-      name: 'devisNotes',
-      label: '📝 Notes / conditions du devis',
-      type: 'textarea',
-      admin: {
-        description: 'Conditions particulières, prestations incluses, remarques à afficher dans le PDF.',
-      },
-    },
-    {
-      name: 'devisStatut',
-      label: '📋 Statut du devis',
-      type: 'select',
-      defaultValue: 'brouillon',
-      options: [
-        { label: '📝 Brouillon — pas encore envoyé', value: 'brouillon' },
-        { label: '📤 Envoyé au client',               value: 'envoye' },
-        { label: '✅ Accepté par le client',           value: 'accepte' },
-        { label: '❌ Refusé par le client',            value: 'refuse' },
-      ],
-      admin: {
-        components: {
-          Cell: '@/components/payload/DevisStatutCell',
-        },
-      },
-    },
-    {
-      name: 'devisEnvoyeLe',
-      label: '📅 Devis envoyé le',
-      type: 'text',
-      admin: {
-        readOnly: true,
-        description: 'Rempli automatiquement quand l\'admin envoie le devis au client.',
-        condition: (data: Record<string, unknown>) => Boolean(data.devisEnvoyeLe),
-      },
-    },
-    {
-      name: 'devisReponduLe',
-      label: '✅ Client a répondu le',
-      type: 'text',
-      admin: {
-        readOnly: true,
-        description: 'Rempli automatiquement quand le client accepte ou refuse via l\'espace client.',
-        condition: (data: Record<string, unknown>) => Boolean(data.devisReponduLe),
-      },
-    },
-    {
-      name: 'devisCommentaireClient',
-      label: '💬 Commentaire du client (réponse devis)',
-      type: 'textarea',
-      admin: {
-        readOnly: true,
-        description: 'Commentaire laissé par le client lors de son acceptation ou refus.',
-        condition: (data: Record<string, unknown>) => Boolean(data.devisCommentaireClient),
-      },
-    },
-    {
-      name: 'devisGenerateur',
-      type: 'ui',
-      label: '🚀 Générer et envoyer le devis',
-      admin: {
-        components: {
-          Field: '@/components/payload/DevisGenerator',
-        },
-      },
-    },
-
-    // ── Messagerie client ─────────────────────────────────────────────────────
-    {
-      name:  'messagerie',
-      type:  'ui',
-      label: '💬 Messagerie',
-      admin: {
-        components: {
-          Field: '@/components/payload/MessageChatField',
-        },
+        hidden: true,
+        components: { Cell: '@/components/payload/DossierNotesCell' },
       },
     },
   ],

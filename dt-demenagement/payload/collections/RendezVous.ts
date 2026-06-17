@@ -16,82 +16,129 @@ const RendezVous: CollectionConfig = {
   admin: {
     group: '🚚 Opérations',
     useAsTitle: 'nom',
-    defaultColumns: ['nom', 'prenom', 'telephone', 'sourcePartenaireNom', 'dateVisite', 'heure', 'statut', 'createdAt'],
+    defaultColumns: ['nom', 'prenom', 'telephone', 'dateVisite', 'heure', 'statut', 'type', 'createdAt'],
     listSearchableFields: ['nom', 'prenom', 'telephone', 'whatsapp', 'sourcePartenaireNom'],
-    description: 'Demandes de visite à domicile reçues depuis le site. Contacter le client pour confirmer le RDV.',
+    description: 'Demandes de visite à domicile. Contacter le client pour confirmer le RDV.',
   },
 
   fields: [
+    // ── Statut & Type ─────────────────────────────────────────────────────────
     {
-      name: 'statut',
-      label: 'Statut',
-      type: 'select',
-      required: true,
-      defaultValue: 'nouveau',
-      admin: {
-        description: 'Mettre à jour après avoir contacté le client.',
-        components: {
-          Cell: '@/components/payload/RDVStatutCell',
+      type: 'row',
+      fields: [
+        {
+          name: 'statut',
+          label: 'Statut',
+          type: 'select',
+          required: true,
+          defaultValue: 'nouveau',
+          admin: {
+            width: '50%',
+            description: 'Mettre à jour après avoir contacté le client.',
+            components: { Cell: '@/components/payload/RDVStatutCell' },
+          },
+          options: [
+            { label: '🆕 Nouveau — pas encore traité', value: 'nouveau' },
+            { label: '✅ Confirmé — RDV validé',        value: 'confirme' },
+            { label: '❌ Annulé',                        value: 'annule' },
+          ],
         },
-      },
-      options: [
-        { label: '🆕 Nouveau — pas encore traité', value: 'nouveau' },
-        { label: '✅ Confirmé — RDV validé',        value: 'confirme' },
-        { label: '❌ Annulé',                        value: 'annule' },
+        {
+          name: 'type',
+          label: 'Type de client',
+          type: 'select',
+          required: true,
+          defaultValue: 'client',
+          admin: { width: '50%' },
+          options: [
+            { label: 'Client',         value: 'client' },
+            { label: 'Entreprise',     value: 'entreprise' },
+            { label: 'Administration', value: 'administration' },
+          ],
+        },
+      ],
+    },
+
+    // ── Identité ──────────────────────────────────────────────────────────────
+    {
+      type: 'row',
+      fields: [
+        { name: 'nom',    label: 'Nom',    type: 'text', required: true, admin: { width: '50%' } },
+        { name: 'prenom', label: 'Prénom', type: 'text', required: true, admin: { width: '50%' } },
+      ],
+    },
+
+    // ── Contact ───────────────────────────────────────────────────────────────
+    {
+      type: 'row',
+      fields: [
+        { name: 'telephone', label: 'Téléphone', type: 'text', required: true, admin: { width: '50%', placeholder: '+216 XX XXX XXX' } },
+        { name: 'whatsapp',  label: 'WhatsApp',  type: 'text', required: true, admin: { width: '50%', placeholder: '+216 XX XXX XXX' } },
       ],
     },
     {
-      name: 'type',
-      label: 'Type de client',
-      type: 'select',
-      required: true,
-      defaultValue: 'client',
-      options: [
-        { label: 'Client',         value: 'client' },
-        { label: 'Entreprise',     value: 'entreprise' },
-        { label: 'Administration', value: 'administration' },
+      type: 'row',
+      fields: [
+        { name: 'email',   label: 'Email',   type: 'email', admin: { width: '50%' } },
+        { name: 'adresse', label: 'Adresse', type: 'text',  admin: { width: '50%' } },
       ],
     },
-    { name: 'nom',       label: 'Nom',       type: 'text',  required: true },
-    { name: 'prenom',    label: 'Prénom',    type: 'text',  required: true },
-    { name: 'telephone', label: 'Téléphone', type: 'text',  required: true },
-    { name: 'whatsapp',  label: 'WhatsApp',  type: 'text',  required: true },
-    { name: 'email',     label: 'Email',     type: 'email', required: false },
-    { name: 'adresse',   label: 'Adresse',   type: 'text',  required: false },
+
+    // ── Visite ────────────────────────────────────────────────────────────────
     {
-      name: 'dateVisite',
-      label: 'Date de visite souhaitée',
-      type: 'text',
-      required: false,
-      admin: { description: 'Format YYYY-MM-DD envoyé par le formulaire.' },
+      type: 'row',
+      fields: [
+        {
+          name: 'dateVisite',
+          label: 'Date souhaitée',
+          type: 'text',
+          admin: { width: '50%', description: 'Format YYYY-MM-DD.' },
+        },
+        {
+          name: 'heure',
+          label: 'Heure souhaitée',
+          type: 'text',
+          admin: { width: '50%', placeholder: 'ex : 10h00' },
+        },
+      ],
     },
+
+    // ── Source partenaire (auto-rempli, visible seulement si présent) ─────────
     {
-      name: 'heure',
-      label: 'Heure souhaitée',
-      type: 'text',
-      required: false,
+      type: 'row',
+      fields: [
+        {
+          name: 'sourcePartenaire',
+          label: 'Partenaire affilié',
+          type: 'relationship',
+          relationTo: 'affiliates',
+          admin: {
+            width: '50%',
+            readOnly: true,
+            condition: (data: Record<string, unknown>) => Boolean(data.sourcePartenaire),
+          },
+        },
+        {
+          name: 'sourcePartenaireNom',
+          label: 'Nom du partenaire',
+          type: 'text',
+          admin: {
+            width: '50%',
+            readOnly: true,
+            description: 'Conservé même si le partenaire est supprimé.',
+            condition: (data: Record<string, unknown>) => Boolean(data.sourcePartenaireNom),
+          },
+        },
+      ],
     },
-    {
-      name: 'sourcePartenaire',
-      label: 'Source partenaire affilié',
-      type: 'relationship',
-      relationTo: 'affiliates',
-      admin: { readOnly: true, description: 'Partenaire affilié dont le lien a amené cette demande (si applicable).' },
-    },
-    {
-      name: 'sourcePartenaireNom',
-      label: 'Nom du partenaire (source)',
-      type: 'text',
-      admin: { readOnly: true, description: 'Conservé même si le partenaire est supprimé.' },
-    },
+
+    // ── Actions rapides ───────────────────────────────────────────────────────
     {
       name: 'actionsRapides',
       type: 'ui',
       label: '⚡ Actions rapides',
       admin: {
-        components: {
-          Field: '@/components/payload/RDVActions',
-        },
+        components: { Field: '@/components/payload/RDVActions' },
       },
     },
   ],

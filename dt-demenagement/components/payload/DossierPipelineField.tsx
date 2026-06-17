@@ -4,11 +4,10 @@ import React from 'react'
 import { useFormFields, useTheme } from '@payloadcms/ui'
 
 const STEPS = [
-  { value: 'devis_recu',     icon: '📥', short: 'Reçu'       },
-  { value: 'confirme',       icon: '✅', short: 'Confirmé'    },
-  { value: 'en_preparation', icon: '📦', short: 'Préparation' },
-  { value: 'en_cours',       icon: '🚛', short: 'En cours'    },
-  { value: 'livre',          icon: '🏁', short: 'Livré'       },
+  { value: 'devis_recu', icon: '📥', short: 'Reçu'      },
+  { value: 'confirme',   icon: '✅', short: 'Confirmé'   },
+  { value: 'en_cours',   icon: '🚛', short: 'En cours'   },
+  { value: 'livre',      icon: '🏁', short: 'Livré'      },
 ]
 
 export default function DossierPipelineField() {
