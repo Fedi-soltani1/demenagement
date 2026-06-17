@@ -114,6 +114,14 @@ const Leads: CollectionConfig = {
       type: 'text',
       admin: { readOnly: true, description: 'Conservé même si le partenaire est supprimé. Vide = vient directement de notre site.' },
     },
+    {
+      name: 'actionsRapides',
+      type: 'ui',
+      label: '⚡ Actions rapides',
+      admin: {
+        components: { Field: '@/components/payload/LeadActions' },
+      },
+    },
   ],
 }
 

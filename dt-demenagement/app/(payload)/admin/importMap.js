@@ -10,6 +10,7 @@ import { default as default_51b02d8b9b076e7ad3e0b37c458e2bac } from '@/component
 import { default as default_882530b95db163bd21c08234f57db28c } from '@/components/payload/MessagesInbox'
 import { default as default_f4fef62e875393be866aaca47b6a37f0 } from '@/components/payload/RDVStatutCell'
 import { default as default_caf9c22b533487b41773d1e26f424a09 } from '@/components/payload/RDVActions'
+import { default as default_leadactions00000000000000000000000 } from '@/components/payload/LeadActions'
 import { RscEntryLexicalCell as RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { RscEntryLexicalField as RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { LexicalDiffComponent as LexicalDiffComponent_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
@@ -58,6 +59,7 @@ export const importMap = {
   "@/components/payload/MessagesInbox#default": default_882530b95db163bd21c08234f57db28c,
   "@/components/payload/RDVStatutCell#default": default_f4fef62e875393be866aaca47b6a37f0,
   "@/components/payload/RDVActions#default": default_caf9c22b533487b41773d1e26f424a09,
+  "@/components/payload/LeadActions#default": default_leadactions00000000000000000000000,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalCell": RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalField": RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#LexicalDiffComponent": LexicalDiffComponent_44fe37237e0ebf4470c9990d8cb7b07e,
