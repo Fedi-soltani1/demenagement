@@ -232,7 +232,7 @@ export function DevisModalProvider({ children }: { children: ReactNode }) {
     // doublon avec l'écouteur pagehide.
     if (screen === 'choice' && !proceededRef.current && !leadSentRef.current) {
       leadSentRef.current = true
-      fetch('/api/leads', {
+      fetch('/api/lead-capture', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body:    buildLeadBody(),
@@ -268,7 +268,7 @@ export function DevisModalProvider({ children }: { children: ReactNode }) {
     const onPageHide = () => {
       if (proceededRef.current || leadSentRef.current) return
       leadSentRef.current = true
-      navigator.sendBeacon('/api/leads', new Blob([buildLeadBody()], { type: 'application/json' }))
+      navigator.sendBeacon('/api/lead-capture', new Blob([buildLeadBody()], { type: 'application/json' }))
     }
     window.addEventListener('pagehide', onPageHide)
     return () => window.removeEventListener('pagehide', onPageHide)
@@ -283,7 +283,7 @@ export function DevisModalProvider({ children }: { children: ReactNode }) {
     prevPathRef.current = pathname
     if (isOpen && screen === 'choice' && !proceededRef.current && !leadSentRef.current) {
       leadSentRef.current = true
-      fetch('/api/leads', {
+      fetch('/api/lead-capture', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body:    buildLeadBody(),

@@ -1,8 +1,10 @@
 import { NextResponse } from 'next/server'
+import { cookies } from 'next/headers'
 import { getPayloadSafe } from '@/lib/payload-safe'
 import { sendMail } from '@/lib/mailer'
 import { env } from '@/lib/env'
 import { escapeHtml } from '@/lib/escape-html'
+import { resolvePartner, payloadPartnerFinder, type PartnerRef } from '@/lib/partner-attribution'
 
 export async function POST(request: Request) {
   try {
@@ -20,7 +22,15 @@ export async function POST(request: Request) {
     }
 
     const payload = await getPayloadSafe()
+
+    // Attribution partenaire — même cookie que /api/devis et /api/rdv
+    // (dt_partenaire posé par la landing /partenaire/[slug], last-touch 30j).
+    // Envoyé automatiquement avec le fetch/sendBeacon same-origin.
+    let partenaire: PartnerRef | null = null
     if (payload) {
+      const partenaireSlug = (await cookies()).get('dt_partenaire')?.value
+      partenaire = await resolvePartner(partenaireSlug, payloadPartnerFinder(payload))
+
       await payload.create({
         collection: 'leads',
         data: {
@@ -30,6 +40,7 @@ export async function POST(request: Request) {
           ...(source  ? { source }  : {}),
           ...(service ? { service } : {}),
           ...(ville   ? { ville }   : {}),
+          ...(partenaire ? { sourcePartenaire: partenaire.id, sourcePartenaireNom: partenaire.nom } : {}),
           statut: 'nouveau',
         },
         overrideAccess: true,
@@ -41,8 +52,8 @@ export async function POST(request: Request) {
     // ne doit jamais casser la capture du lead.
     await sendMail({
       to:      env.EMAIL_DEVIS_TO,
-      subject: `🔔 Prospect à rappeler — ${nomPrenom}`,
-      html:    buildLeadEmail({ nomPrenom, telephone, email, source, service, ville }),
+      subject: `🔔 Prospect à rappeler — ${nomPrenom}${partenaire ? ` (via ${partenaire.nom})` : ''}`,
+      html:    buildLeadEmail({ nomPrenom, telephone, email, source, service, ville, partenaireNom: partenaire?.nom ?? '' }),
     }).catch((err: unknown) => {
       console.error('[leads] Échec notification admin SMTP :', err)
     })
@@ -56,12 +67,13 @@ export async function POST(request: Request) {
 }
 
 interface LeadEmailData {
-  nomPrenom: string
-  telephone: string
-  email:     string
-  source:    string
-  service:   string
-  ville:     string
+  nomPrenom:     string
+  telephone:     string
+  email:         string
+  source:        string
+  service:       string
+  ville:         string
+  partenaireNom: string
 }
 
 function buildLeadEmail(d: LeadEmailData): string {
@@ -77,6 +89,9 @@ function buildLeadEmail(d: LeadEmailData): string {
   const svc   = escapeHtml(d.service)
   const ville = escapeHtml(d.ville)
   const src   = escapeHtml(d.source)
+  const origine = d.partenaireNom
+    ? `🤝 Partenaire : <strong>${escapeHtml(d.partenaireNom)}</strong>`
+    : '🌐 Site direct'
 
   const row = (label: string, value: string) =>
     `<tr style="border-bottom:1px solid #2a2a2a;">
@@ -97,6 +112,7 @@ function buildLeadEmail(d: LeadEmailData): string {
         <tr><td style="padding:24px 28px;">
           <table style="width:100%;border-collapse:collapse;">
             ${row('NOM', `<strong>${nom}</strong>`)}
+            ${row('ORIGINE', origine)}
             ${row('TÉLÉPHONE', `<a href="tel:${telDigits}" style="color:#c9a84c;text-decoration:none;">${tel}</a>`)}
             ${row('WHATSAPP', `<a href="${waLink}" style="color:#c9a84c;text-decoration:none;">${tel}</a>`)}
             ${d.email   ? row('EMAIL', email) : ''}

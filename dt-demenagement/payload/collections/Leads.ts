@@ -7,7 +7,7 @@ const Leads: CollectionConfig = {
 
   access: {
     read:   isAdmin,
-    create: () => true,
+    create: () => true,   // appelé depuis /api/lead-capture (sans auth)
     update: isAdmin,
     delete: isAdmin,
   },
@@ -15,9 +15,9 @@ const Leads: CollectionConfig = {
   admin: {
     group: '🚚 Opérations',
     useAsTitle: 'nomPrenom',
-    defaultColumns: ['nomPrenom', 'telephone', 'email', 'service', 'statut', 'createdAt'],
-    listSearchableFields: ['nomPrenom', 'telephone', 'email'],
-    description: 'Prospects ayant rempli le popup "Devis Gratuit" sans terminer le process. Ils disparaissent d\'ici dès qu\'ils convertissent (devis complet ou RDV).',
+    defaultColumns: ['nomPrenom', 'telephone', 'email', 'sourcePartenaireNom', 'service', 'statut', 'createdAt'],
+    listSearchableFields: ['nomPrenom', 'telephone', 'email', 'sourcePartenaireNom'],
+    description: 'Prospects ayant rempli le popup "Devis Gratuit" mais N\'AYANT PAS terminé (ni devis complet, ni RDV). Dès qu\'ils convertissent, ils quittent cette liste. Filtrer par statut pour voir les convertis.',
     baseListFilter: () => ({ statut: { equals: 'nouveau' } }),
   },
 
@@ -100,6 +100,19 @@ const Leads: CollectionConfig = {
         readOnly: true,
         description: 'Chemin de la page depuis laquelle le popup a été ouvert.',
       },
+    },
+    {
+      name: 'sourcePartenaire',
+      label: 'Source partenaire affilié',
+      type: 'relationship',
+      relationTo: 'affiliates',
+      admin: { readOnly: true, description: 'Partenaire affilié dont le lien a amené ce prospect (si applicable).' },
+    },
+    {
+      name: 'sourcePartenaireNom',
+      label: 'Nom du partenaire (source)',
+      type: 'text',
+      admin: { readOnly: true, description: 'Conservé même si le partenaire est supprimé. Vide = vient directement de notre site.' },
     },
   ],
 }
