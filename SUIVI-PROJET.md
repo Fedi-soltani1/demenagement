@@ -111,8 +111,14 @@ OBJECTIF : automatiser le tunnel admin RDV → dossier, leads, et fiche client.
    DB Neon : ALTER TABLE clients ALTER COLUMN email DROP NOT NULL (additif, index unique conservé)
      → permet la création d'un client par téléphone seul.
 
-LIMITE CONNUE (acceptée) : rattachement par téléphone = correspondance exacte de chaîne ;
-  l'email reste la clé fiable.
+6) HISTORIQUE — itération (2026-06-20 suite)
+   lib/phone.ts (+ .test.ts) (NOUVEAU) : phoneCore = 8 derniers chiffres (matching tolérant).
+   Matching amélioré : rattachement par email OU cœur du numéro (like) dans ClientHistory
+     ET dans upsert-client (dédup). Plus de dépendance au format exact du numéro.
+   Affichage ClientHistory revu : groupé par type (Dossiers / RDV / Leads) avec compteur
+     + badges de statut colorés (vert/rouge/ambre). Factures = « à venir » (bloc côté dossier, dev 2).
+
+NOTE : feature Factures laissée à dev 2 (bloc dans dossier déménagement, comme le devis).
 VÉRIF : tsc --noEmit OK · eslint OK (1 warning préexistant AdminLightbox) · tests rdv-to-dossier OK.
 
 ──────────────────────────────────────────────────────────────────────────────

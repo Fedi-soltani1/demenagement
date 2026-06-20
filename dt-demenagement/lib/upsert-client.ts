@@ -1,4 +1,5 @@
 import type { Payload } from 'payload'
+import { phoneCore } from '@/lib/phone'
 
 // Crée ou met à jour une fiche client, dédupliquée par EMAIL si présent,
 // sinon par TÉLÉPHONE (correspondance exacte). Utilisé par toutes les sources
@@ -30,9 +31,10 @@ export async function upsertClient(payload: Payload, input: ClientInput): Promis
     existing = (r.docs[0] as ClientDoc | undefined) ?? null
   }
   if (!existing && telephone) {
-    const r = await payload.find({
-      collection: 'clients', where: { telephone: { equals: telephone } }, limit: 1, overrideAccess: true,
-    })
+    // Rapprochement par cœur du numéro (8 derniers chiffres) → tolère les formats.
+    const core = phoneCore(telephone)
+    const where = core.length >= 6 ? { telephone: { like: core } } : { telephone: { equals: telephone } }
+    const r = await payload.find({ collection: 'clients', where, limit: 1, overrideAccess: true })
     existing = (r.docs[0] as ClientDoc | undefined) ?? null
   }
 
