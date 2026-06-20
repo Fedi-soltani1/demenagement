@@ -131,6 +131,15 @@ NOTE : feature Factures laissée à dev 2 (bloc dans dossier déménagement, com
      Couvre création MANUELLE en admin ET conversion RDV→dossier (et lead→dossier).
    app/api/devis/route.ts : réutilise sendDossierClientEmail + pose context.skipClientConfirmation
      sur le create (le site envoie déjà l'email → le hook ne le renvoie pas = anti-doublon).
+
+8) EMAILS — TOUT sur Resend (audit + fix) (2026-06-21)
+   AUDIT : tous les envois custom (devis, rdv, contact, messages, devis-response, send-devis,
+     send-rdv-email, rdv-action, lead-capture, dossier-client) + login magic link (auth.ts via
+     sendVerificationRequest→sendMail) passaient DÉJÀ par Resend (lib/mailer.ts, RESEND_API_KEY).
+   TROU TROUVÉ : payload.config.ts email adapter = nodemailer SMTP avec SMTP_PASS vide par défaut
+     → les emails internes Payload (« mot de passe oublié » admin, vérifications) ÉCHOUAIENT.
+   FIX : payload.config.ts → resendAdapter(@payloadcms/email-resend, déjà installé) si RESEND_API_KEY
+     présent (sinon repli SMTP nodemailer pour dev sans clé). Désormais 100% des emails = Resend.
 VÉRIF : tsc --noEmit OK · eslint OK (1 warning préexistant AdminLightbox) · tests rdv-to-dossier OK.
 
 ──────────────────────────────────────────────────────────────────────────────

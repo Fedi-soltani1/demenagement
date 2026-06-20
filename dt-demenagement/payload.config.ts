@@ -5,6 +5,7 @@ import { buildConfig } from 'payload'
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import nodemailer from 'nodemailer'
+import { resendAdapter } from '@payloadcms/email-resend'
 
 import Admins from './payload/collections/Admins'
 import Media from './payload/collections/Media'
@@ -181,27 +182,37 @@ export default buildConfig({
 
   sharp,
 
-  email: () => {
-    const transport = nodemailer.createTransport({
-      host:   process.env.SMTP_HOST ?? 'smtp.resend.com',
-      port:   Number(process.env.SMTP_PORT ?? 465),
-      secure: true,
-      auth: {
-        user: process.env.SMTP_USER ?? 'resend',
-        pass: process.env.SMTP_PASS ?? '',
+  // Emails internes de Payload (ex : « mot de passe oublié » de l'admin, vérifications).
+  // On les fait passer par Resend — comme TOUT le reste de l'app (cf. lib/mailer.ts) —
+  // pour une infra email unique et fiable. L'adresse d'expéditeur est extraite de
+  // EMAIL_FROM (« DT Déménagement <contact@demenagement.tn> ») sinon repli sécurisé.
+  email: process.env.RESEND_API_KEY
+    ? resendAdapter({
+        defaultFromAddress: process.env.EMAIL_FROM?.match(/<(.+)>/)?.[1]
+          ?? process.env.RESEND_FROM_ADDRESS
+          ?? 'onboarding@resend.dev',
+        defaultFromName: 'DT Déménagement Tunisie',
+        apiKey:          process.env.RESEND_API_KEY,
+      })
+    // Repli (dev local sans clé Resend) : SMTP nodemailer, évite de planter au démarrage.
+    : () => {
+        const transport = nodemailer.createTransport({
+          host:   process.env.SMTP_HOST ?? 'smtp.resend.com',
+          port:   Number(process.env.SMTP_PORT ?? 465),
+          secure: true,
+          auth: {
+            user: process.env.SMTP_USER ?? 'resend',
+            pass: process.env.SMTP_PASS ?? '',
+          },
+        })
+        return {
+          name:               'smtp',
+          defaultFromAddress: process.env.EMAIL_FROM?.match(/<(.+)>/)?.[1] ?? 'onboarding@resend.dev',
+          defaultFromName:    'DT Déménagement Tunisie',
+          sendEmail:          (msg: Parameters<typeof transport.sendMail>[0]) =>
+            transport.sendMail(msg),
+        }
       },
-    })
-    const fromAddress = process.env.EMAIL_FROM?.match(/<(.+)>/)?.[1]
-      ?? process.env.SMTP_USER
-      ?? 'onboarding@resend.dev'
-    return {
-      name:               'smtp',
-      defaultFromAddress: fromAddress,
-      defaultFromName:    'DT Déménagement Tunisie',
-      sendEmail:          (msg: Parameters<typeof transport.sendMail>[0]) =>
-        transport.sendMail(msg),
-    }
-  },
 
   typescript: {
     outputFile: path.resolve(dirname, 'types/payload-types.ts'),
