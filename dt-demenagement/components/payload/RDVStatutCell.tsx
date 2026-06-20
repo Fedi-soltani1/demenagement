@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
+import ConfirmModal from './ConfirmModal'
 
 interface CellProps {
   cellData?: unknown
@@ -17,6 +18,8 @@ export default function RDVStatutCell({ cellData, rowData }: CellProps) {
   const [statut, setStatut] = useState((cellData as string) || 'nouveau')
   const [saving, setSaving] = useState(false)
   const [converting, setConverting] = useState(false)
+  const [confirmOpen, setConfirmOpen] = useState(false)
+  const [convertError, setConvertError] = useState<string | null>(null)
 
   const current = OPTIONS.find((o) => o.value === statut) ?? OPTIONS[0]!
   const id      = rowData?.id as number | undefined
@@ -38,14 +41,9 @@ export default function RDVStatutCell({ cellData, rowData }: CellProps) {
 
   // Transforme le RDV confirmé en dossier déménagement (prérempli) puis supprime le RDV.
   // Même logique que le bouton de la fiche RDV (route /api/admin/rdv-to-dossier).
-  async function handleConvert(e: React.MouseEvent) {
-    e.stopPropagation()
+  async function doConvert() {
     if (!id || converting) return
-    if (!window.confirm(
-      'Transformer ce rendez-vous en dossier déménagement ?\n\n' +
-      'Les infos seront recopiées dans un nouveau dossier, et ce rendez-vous sera retiré de la liste.'
-    )) return
-    setConverting(true)
+    setConverting(true); setConvertError(null)
     try {
       const res = await fetch('/api/admin/rdv-to-dossier', {
         method:      'POST',
@@ -58,7 +56,7 @@ export default function RDVStatutCell({ cellData, rowData }: CellProps) {
       window.location.href = j.url
     } catch (err) {
       setConverting(false)
-      window.alert(err instanceof Error ? err.message : 'Erreur lors de la conversion.')
+      setConvertError(err instanceof Error ? err.message : 'Erreur lors de la conversion.')
     }
   }
 
@@ -97,7 +95,7 @@ export default function RDVStatutCell({ cellData, rowData }: CellProps) {
       {statut === 'confirme' && id ? (
         <button
           type="button"
-          onClick={handleConvert}
+          onClick={(e) => { e.stopPropagation(); setConvertError(null); setConfirmOpen(true) }}
           disabled={converting}
           title="Transformer en dossier déménagement"
           style={{
@@ -116,6 +114,16 @@ export default function RDVStatutCell({ cellData, rowData }: CellProps) {
           {converting ? '…' : '🚚 Transformer en dossier'}
         </button>
       ) : null}
+      <ConfirmModal
+        open={confirmOpen}
+        title="🚚 Transformer en dossier déménagement"
+        message={'Les infos de ce rendez-vous seront recopiées dans un nouveau dossier déménagement, et le rendez-vous sera retiré de la liste.\n\nContinuer ?'}
+        confirmLabel="Transformer en dossier"
+        loading={converting}
+        error={convertError}
+        onConfirm={doConvert}
+        onCancel={() => { setConfirmOpen(false); setConvertError(null) }}
+      />
     </div>
   )
 }

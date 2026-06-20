@@ -92,6 +92,9 @@ OBJECTIF : automatiser le tunnel admin RDV → dossier, leads, et fiche client.
    RDVActions.tsx : section « Étape suivante » (confirm() avant action).
    components/payload/RDVStatutCell.tsx : MÊME bouton accessible DANS LE TABLEAU (liste)
      des RDV — apparaît sur chaque ligne dès que statut='confirme' (réutilise la route).
+   components/payload/ConfirmModal.tsx (NOUVEAU) : popup de confirmation stylé (template admin)
+     remplaçant window.confirm — utilisé par les boutons « créer/transformer en dossier »
+     (fiche RDV + tableau).
 
 4) LEADS — menu Statut synchronisé avec les actions rapides
    components/payload/LeadStatutSelect.tsx (NOUVEAU) : choisir « Rendez-vous de visite »

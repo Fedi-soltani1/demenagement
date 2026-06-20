@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import { useDocumentInfo, useFormFields } from '@payloadcms/ui'
+import ConfirmModal from './ConfirmModal'
 
 type Status = 'nouveau' | 'confirme' | 'annule'
 
@@ -22,6 +23,8 @@ export default function RDVActions() {
   const [saving,  setSaving]  = useState(false)
   const [result,  setResult]  = useState<{ type: 'ok' | 'err'; msg: string } | null>(null)
   const [current, setCurrent] = useState<Status>(live?.statut ?? 'nouveau')
+  const [dossierConfirmOpen, setDossierConfirmOpen] = useState(false)
+  const [dossierError, setDossierError] = useState<string | null>(null)
 
   const tel   = live?.telephone ?? ''
   const wa    = live?.whatsapp  ?? tel
@@ -69,13 +72,9 @@ export default function RDVActions() {
     }
   }
 
-  async function createDossier() {
+  async function doCreateDossier() {
     if (!id || saving) return
-    if (!window.confirm(
-      'Créer un dossier déménagement à partir de ce rendez-vous ?\n\n' +
-      'Les infos seront recopiées dans un nouveau dossier, et ce rendez-vous sera retiré de la liste.'
-    )) return
-    setSaving(true); setResult(null)
+    setSaving(true); setDossierError(null)
     try {
       const res = await fetch('/api/admin/rdv-to-dossier', {
         method:      'POST',
@@ -85,11 +84,10 @@ export default function RDVActions() {
       })
       const j: { url?: string; error?: string } = await res.json().catch(() => ({}))
       if (!res.ok || !j.url) throw new Error(j.error ?? `Erreur ${res.status}`)
-      setResult({ type: 'ok', msg: 'Dossier créé — redirection…' })
       window.location.href = j.url
     } catch (e) {
-      setResult({ type: 'err', msg: e instanceof Error ? e.message : 'Erreur lors de la création du dossier.' })
       setSaving(false)
+      setDossierError(e instanceof Error ? e.message : 'Erreur lors de la création du dossier.')
     }
   }
 
@@ -220,7 +218,7 @@ export default function RDVActions() {
             <div style={{ fontSize: '10px', color: '#999', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px', fontWeight: 700 }}>
               Étape suivante
             </div>
-            <button type="button" disabled={saving} onClick={createDossier}
+            <button type="button" disabled={saving} onClick={() => { setDossierError(null); setDossierConfirmOpen(true) }}
               style={{ ...btnBase, background: '#0a0a0a', color: '#fff', width: '100%', flex: '1 1 100%' }}>
               🚚 Créer un dossier déménagement
             </button>
@@ -244,6 +242,17 @@ export default function RDVActions() {
           </div>
         )}
       </div>
+
+      <ConfirmModal
+        open={dossierConfirmOpen}
+        title="🚚 Créer un dossier déménagement"
+        message={'Les infos de ce rendez-vous seront recopiées dans un nouveau dossier déménagement, et le rendez-vous sera retiré de la liste.\n\nContinuer ?'}
+        confirmLabel="Créer le dossier"
+        loading={saving}
+        error={dossierError}
+        onConfirm={doCreateDossier}
+        onCancel={() => { setDossierConfirmOpen(false); setDossierError(null) }}
+      />
     </div>
   )
 }
