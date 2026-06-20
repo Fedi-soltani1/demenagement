@@ -1,6 +1,9 @@
 import type { CollectionConfig } from 'payload'
 import { isAdmin } from '../access/isAdmin'
 import { isCommercial } from '../access/isClient'
+import { upsertClient } from '../../lib/upsert-client'
+import { splitNomPrenom } from '../../lib/lead-convert'
+import { sendDossierClientEmail } from '../../lib/emails/dossier-client'
 
 const etageOptions = [
   { label: 'RDC', value: 'RDC' },
@@ -34,6 +37,43 @@ const Demenagements: CollectionConfig = {
   },
 
   hooks: {
+    // À la création d'un dossier (manuel OU depuis un RDV), si un email client est saisi
+    // (champ clientId) : on crée/met à jour sa fiche client (espace client) ET on lui
+    // envoie le MÊME email de confirmation + magic link que depuis le site.
+    // Le site (/api/devis) envoie déjà cet email → il pose context.skipClientConfirmation
+    // pour que le hook ne le renvoie pas (anti-doublon).
+    afterChange: [
+      async ({ doc, operation, req }: {
+        doc: Record<string, unknown>
+        operation: string
+        req: import('payload').PayloadRequest
+      }) => {
+        if (operation !== 'create') return
+        const email = String(doc.clientId ?? '').trim()
+        if (!email) return
+        const { prenom, nom } = splitNomPrenom(String(doc.nomComplet ?? ''))
+
+        await upsertClient(req.payload, {
+          email,
+          telephone: doc.telephone ? String(doc.telephone) : undefined,
+          prenom,
+          nom,
+        }).catch((e: unknown) => {
+          req.payload.logger.error(`[demenagements] upsert client échoué : ${e instanceof Error ? e.message : String(e)}`)
+        })
+
+        const skip = Boolean((req.context as Record<string, unknown> | undefined)?.skipClientConfirmation)
+        if (!skip) {
+          await sendDossierClientEmail({
+            email,
+            prenom,
+            numeroDossier: String(doc.numeroDossier ?? ''),
+          }).catch((e: unknown) => {
+            req.payload.logger.error(`[demenagements] email confirmation client échoué : ${e instanceof Error ? e.message : String(e)}`)
+          })
+        }
+      },
+    ],
     beforeChange: [
       ({ data }: { data: Record<string, unknown> }) => {
         if (!data.numeroDossier) {

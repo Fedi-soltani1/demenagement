@@ -122,6 +122,15 @@ OBJECTIF : automatiser le tunnel admin RDV → dossier, leads, et fiche client.
      + badges de statut colorés (vert/rouge/ambre). Factures = « à venir » (bloc côté dossier, dev 2).
 
 NOTE : feature Factures laissée à dev 2 (bloc dans dossier déménagement, comme le devis).
+
+7) ESPACE CLIENT — création + email auto sur dossier manuel / depuis RDV (2026-06-20 suite)
+   lib/emails/dossier-client.ts (NOUVEAU) : buildClientEmail + sendDossierClientEmail
+     (confirmation + magic link vers /espace-client/{numero}) — extrait de /api/devis.
+   payload/collections/Demenagements.ts : hook afterChange (create) → si email (clientId) saisi :
+     upsertClient (fiche client) + sendDossierClientEmail → EXACTEMENT comme depuis le site.
+     Couvre création MANUELLE en admin ET conversion RDV→dossier (et lead→dossier).
+   app/api/devis/route.ts : réutilise sendDossierClientEmail + pose context.skipClientConfirmation
+     sur le create (le site envoie déjà l'email → le hook ne le renvoie pas = anti-doublon).
 VÉRIF : tsc --noEmit OK · eslint OK (1 warning préexistant AdminLightbox) · tests rdv-to-dossier OK.
 
 ──────────────────────────────────────────────────────────────────────────────
