@@ -90,6 +90,8 @@ OBJECTIF : automatiser le tunnel admin RDV → dossier, leads, et fiche client.
    app/api/admin/rdv-to-dossier/route.ts (NOUVEAU) : crée le dossier prérempli PUIS
      SUPPRIME le RDV (anti-doublon : la ligne disparaît de la liste Rendez-vous).
    RDVActions.tsx : section « Étape suivante » (confirm() avant action).
+   components/payload/RDVStatutCell.tsx : MÊME bouton accessible DANS LE TABLEAU (liste)
+     des RDV — apparaît sur chaque ligne dès que statut='confirme' (réutilise la route).
 
 4) LEADS — menu Statut synchronisé avec les actions rapides
    components/payload/LeadStatutSelect.tsx (NOUVEAU) : choisir « Rendez-vous de visite »
