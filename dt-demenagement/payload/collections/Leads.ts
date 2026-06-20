@@ -57,7 +57,10 @@ const Leads: CollectionConfig = {
           type: 'select',
           required: true,
           defaultValue: 'nouveau',
-          admin: { width: '50%' },
+          admin: {
+            width: '50%',
+            components: { Field: '@/components/payload/LeadStatutSelect' },
+          },
           options: [
             { label: '🆕 Nouveau',             value: 'nouveau'      },
             { label: '📋 Devis complet soumis', value: 'devis_soumis' },

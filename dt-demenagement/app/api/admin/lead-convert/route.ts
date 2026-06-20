@@ -3,7 +3,8 @@ import { getPayload } from 'payload'
 import type { RequiredDataFromCollectionSlug } from 'payload'
 import config from '@payload-config'
 import { z } from 'zod'
-import { buildRdvData, buildDevisData, type LeadForConvert } from '@/lib/lead-convert'
+import { buildRdvData, buildDevisData, splitNomPrenom, type LeadForConvert } from '@/lib/lead-convert'
+import { upsertClient } from '@/lib/upsert-client'
 
 const schema = z.object({
   leadId: z.union([z.string(), z.number()]),
@@ -33,6 +34,11 @@ export async function POST(request: NextRequest): Promise<Response> {
   if (!lead) {
     return Response.json({ error: 'Lead introuvable' }, { status: 404 })
   }
+
+  // Rattachement automatique d'une fiche client (par email ou téléphone) — non bloquant.
+  const { prenom, nom } = splitNomPrenom(lead.nomPrenom)
+  await upsertClient(payload, { email: lead.email, telephone: lead.telephone, prenom, nom })
+    .catch((e: unknown) => { payload.logger.error(`[lead-convert] upsert client échoué : ${e instanceof Error ? e.message : String(e)}`) })
 
   // La validité des données est garantie par les tests de lib/lead-convert.test.ts ;
   // le cast satisfait les types générés de Payload pour payload.create.

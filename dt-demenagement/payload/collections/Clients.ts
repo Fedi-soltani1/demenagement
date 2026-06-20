@@ -28,8 +28,11 @@ const Clients: CollectionConfig = {
       name: 'email',
       label: 'Email',
       type: 'email',
-      required: true,
+      // Optionnel : un client peut être identifié par email OU par téléphone.
+      // unique reste actif (PostgreSQL autorise plusieurs valeurs nulles).
+      required: false,
       unique: true,
+      admin: { description: 'Optionnel — un client peut être identifié par email ou par téléphone.' },
     },
     {
       type: 'row',
@@ -84,6 +87,16 @@ const Clients: CollectionConfig = {
         update: ({ req: { user } }) => Boolean(user && (user as { role?: string }).role === 'super-admin'),
       },
       admin: { description: 'Jamais affichées dans l\'espace client.' },
+    },
+
+    // ── Historique / Traçabilité (lecture seule) ──────────────────────────────
+    {
+      name: 'historique',
+      type: 'ui',
+      label: '🗂 Historique du client',
+      admin: {
+        components: { Field: '@/components/payload/ClientHistory' },
+      },
     },
   ],
 }

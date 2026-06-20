@@ -9,8 +9,11 @@ import { default as default_8ac8105d304bf750f880d02219803fb8 } from '@/component
 import { default as default_51b02d8b9b076e7ad3e0b37c458e2bac } from '@/components/payload/DossierExportButton'
 import { default as default_882530b95db163bd21c08234f57db28c } from '@/components/payload/MessagesInbox'
 import { default as default_f4fef62e875393be866aaca47b6a37f0 } from '@/components/payload/RDVStatutCell'
+import { default as default_910c7e073b078d622691d5105cff119a } from '@/components/payload/RdvDateField'
 import { default as default_caf9c22b533487b41773d1e26f424a09 } from '@/components/payload/RDVActions'
-import { default as default_leadactions00000000000000000000000 } from '@/components/payload/LeadActions'
+import { default as default_a76aaf64c20e7385011a1c906f529098 } from '@/components/payload/LeadStatutSelect'
+import { default as default_27f08bc658dd86fa22e8a75a55e06630 } from '@/components/payload/LeadActions'
+import { default as default_f953daf5db8866abfe8554ebfb0d5519 } from '@/components/payload/ClientHistory'
 import { RscEntryLexicalCell as RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { RscEntryLexicalField as RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { LexicalDiffComponent as LexicalDiffComponent_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
@@ -58,8 +61,11 @@ export const importMap = {
   "@/components/payload/DossierExportButton#default": default_51b02d8b9b076e7ad3e0b37c458e2bac,
   "@/components/payload/MessagesInbox#default": default_882530b95db163bd21c08234f57db28c,
   "@/components/payload/RDVStatutCell#default": default_f4fef62e875393be866aaca47b6a37f0,
+  "@/components/payload/RdvDateField#default": default_910c7e073b078d622691d5105cff119a,
   "@/components/payload/RDVActions#default": default_caf9c22b533487b41773d1e26f424a09,
-  "@/components/payload/LeadActions#default": default_leadactions00000000000000000000000,
+  "@/components/payload/LeadStatutSelect#default": default_a76aaf64c20e7385011a1c906f529098,
+  "@/components/payload/LeadActions#default": default_27f08bc658dd86fa22e8a75a55e06630,
+  "@/components/payload/ClientHistory#default": default_f953daf5db8866abfe8554ebfb0d5519,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalCell": RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalField": RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#LexicalDiffComponent": LexicalDiffComponent_44fe37237e0ebf4470c9990d8cb7b07e,

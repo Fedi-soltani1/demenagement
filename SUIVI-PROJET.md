@@ -66,6 +66,54 @@ CONSÉQUENCE : Les nouvelles colonnes ajoutées dans les collections Payload NE 
 ## 🤖 DERNIÈRE MISE À JOUR PAR CLAUDE CODE
 
 ```
+Date        : 2026-06-20 — AUTOMATISATION WORKFLOW RDV / LEADS / CLIENTS
+Session     : Dev 1 (Opus)
+
+OBJECTIF : automatiser le tunnel admin RDV → dossier, leads, et fiche client.
+
+1) RDV — confirmation par EMAIL + factorisation
+   lib/emails/rdv.ts (NOUVEAU) : templates clientConfirmEmail / clientCancelEmail
+     extraits de rdv-action/route.ts (réutilisés, plus de duplication).
+   app/api/admin/send-rdv-email/route.ts (NOUVEAU) : envoie l'email de confirmation
+     (priorité à l'email saisi dans le formulaire, puis le persiste) + passe statut=confirme.
+   components/payload/RDVActions.tsx : bouton « 📧 Confirmer + envoyer email »
+     (désactivé si pas d'email) + envoi de l'email du formulaire dans la requête.
+
+2) RDV — champ « Date souhaitée » en CALENDRIER
+   components/payload/RdvDateField.tsx (NOUVEAU) : <input type=date> min=aujourd'hui
+     (dates passées non sélectionnables). Stockage texte YYYY-MM-DD conservé
+     → AUCUNE migration (dashboard/calendrier filtrent dateVisite en chaîne).
+   payload/collections/RendezVous.ts : dateVisite branché sur ce composant.
+
+3) RDV — bouton « 🚚 Créer un dossier déménagement » (RDV confirmé uniquement)
+   lib/rdv-to-dossier.ts (+ .test.ts) (NOUVEAU) : mapping pur RDV → dossier (testé, OK).
+   app/api/admin/rdv-to-dossier/route.ts (NOUVEAU) : crée le dossier prérempli PUIS
+     SUPPRIME le RDV (anti-doublon : la ligne disparaît de la liste Rendez-vous).
+   RDVActions.tsx : section « Étape suivante » (confirm() avant action).
+
+4) LEADS — menu Statut synchronisé avec les actions rapides
+   components/payload/LeadStatutSelect.tsx (NOUVEAU) : choisir « Rendez-vous de visite »
+     ou « Dossier déménagement » déclenche la MÊME conversion que les boutons
+     (/api/admin/lead-convert + redirection) ; « Nouveau »/« Non converti » = simple
+     valeur enregistrée au Save. Enum DB inchangé → aucune migration.
+   Leads.ts : statut branché sur ce composant.
+   LeadActions.tsx : bouton « Transformer en devis » → « 🚚 Transformer en dossier déménagement ».
+
+5) CLIENTS — auto-rattachement (email OU téléphone) + historique
+   lib/upsert-client.ts (NOUVEAU) : upsert client dédupliqué par email sinon téléphone.
+     Branché dans /api/devis (refactor), /api/rdv, /api/admin/lead-convert (non bloquant).
+   payload/collections/Clients.ts : email rendu OPTIONNEL (required:false) + champ UI historique.
+   components/payload/ClientHistory.tsx (NOUVEAU) : timeline lecture seule de TOUTE l'activité
+     (dossiers + RDV + leads, tous statuts = traçabilité totale) rattachée par email/tél.
+     Factures = emplacement « à venir ». Aucune table de liaison → aucune migration.
+   DB Neon : ALTER TABLE clients ALTER COLUMN email DROP NOT NULL (additif, index unique conservé)
+     → permet la création d'un client par téléphone seul.
+
+LIMITE CONNUE (acceptée) : rattachement par téléphone = correspondance exacte de chaîne ;
+  l'email reste la clé fiable.
+VÉRIF : tsc --noEmit OK · eslint OK (1 warning préexistant AdminLightbox) · tests rdv-to-dossier OK.
+
+──────────────────────────────────────────────────────────────────────────────
 Date        : 2026-06-17 — LOGIQUE LEADS = ABANDONS UNIQUEMENT (+ durcissement)
 Session     : Dev 1 (Opus)
 
@@ -805,11 +853,11 @@ Reprendre à : "Déploiement production Vercel + Railway"
 > Elle lui dit exactement où reprendre sans poser de questions.
 
 ```
-PHASE ACTUELLE    : Post-Phase 6 — CORRECTIONS & DURCISSEMENT
-ÉTAPE ACTUELLE    : ✅ Logique LEADS = abandons uniquement (popup Devis Gratuit)
-STATUT            : ✅ tsc + eslint OK — voir DERNIÈRE MISE À JOUR (2026-06-17)
-DERNIER FICHIER   : components/layout/DevisModal.tsx
-PROCHAINE ACTION  : tester en local le flux popup (abandon vs devis vs rdv) puis point suivant
+PHASE ACTUELLE    : Post-Phase 6 — AUTOMATISATION WORKFLOW (RDV / LEADS / CLIENTS)
+ÉTAPE ACTUELLE    : ✅ RDV→email/dossier · Leads statut synchronisé · Clients auto + historique
+STATUT            : ✅ tsc + eslint + tests OK — voir DERNIÈRE MISE À JOUR (2026-06-20)
+DERNIER FICHIER   : components/payload/ClientHistory.tsx
+PROCHAINE ACTION  : tester en admin (RDV confirmé → dossier, fiche client + historique) ; feature Factures à venir
 BLOQUEURS         : Aucun
 
 ─── SESSION 2026-05-24 — MIGRATION SCHEMA sectionOptions + typographie ──────

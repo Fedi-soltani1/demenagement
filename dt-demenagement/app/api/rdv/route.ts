@@ -8,6 +8,7 @@ import { env } from '@/lib/env'
 import { resolvePartner, payloadPartnerFinder } from '@/lib/partner-attribution'
 import { signEmailToken } from '@/lib/email-token'
 import { markLeadConverted } from '@/lib/leads'
+import { upsertClient } from '@/lib/upsert-client'
 import { escapeHtml } from '@/lib/escape-html'
 
 const TEL_RE = /^\+?[0-9\s\-()\s]{8,20}$/
@@ -69,6 +70,10 @@ export async function POST(request: Request) {
   // Le prospect a TERMINÉ le process → son lead initial n'est plus un abandon.
   // On le marque « rdv_planifie » pour qu'il quitte la liste des leads.
   await markLeadConverted(payload, d.telephone, 'rdv_planifie')
+
+  // Rattachement automatique d'une fiche client (par email ou téléphone) — non bloquant.
+  await upsertClient(payload, { email: d.email, telephone: d.telephone, prenom: d.prenom, nom: d.nom })
+    .catch((e: unknown) => { console.error('[rdv] upsert client échoué :', e) })
 
   // Emails non-bloquants
   const emailPromises: Promise<void>[] = []

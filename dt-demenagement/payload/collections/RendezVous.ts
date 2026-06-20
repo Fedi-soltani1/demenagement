@@ -92,7 +92,10 @@ const RendezVous: CollectionConfig = {
           name: 'dateVisite',
           label: 'Date souhaitée',
           type: 'text',
-          admin: { width: '50%', description: 'Format YYYY-MM-DD.' },
+          admin: {
+            width: '50%',
+            components: { Field: '@/components/payload/RdvDateField' },
+          },
         },
         {
           name: 'heure',

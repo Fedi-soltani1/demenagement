@@ -79,7 +79,7 @@ export default function LeadActions() {
           </button>
           <button type="button" disabled={saving} onClick={() => convert('devis')}
             style={{ ...btnBase, background: '#b52027', color: '#fff' }}>
-            📋 Transformer en devis
+            🚚 Transformer en dossier déménagement
           </button>
         </div>
 

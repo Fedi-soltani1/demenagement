@@ -8,6 +8,7 @@ import { sendMail } from '@/lib/mailer'
 import { generateMagicLink } from '@/lib/generate-magic-link'
 import { resolvePartner, payloadPartnerFinder } from '@/lib/partner-attribution'
 import { markLeadConverted } from '@/lib/leads'
+import { upsertClient } from '@/lib/upsert-client'
 import { escapeHtml } from '@/lib/escape-html'
 
 // Honeypot + rate limiting ultra-simple (sans Redis pour l'instant)
@@ -121,38 +122,9 @@ export async function POST(request: Request) {
   // On le marque « devis_soumis » pour qu'il quitte la liste des leads.
   await markLeadConverted(payload, d.telephone, 'devis_soumis')
 
-  // Upsert fiche client — uniquement si l'email est fourni
-  if (d.email) {
-    const existingClient = await payload.find({
-      collection: 'clients',
-      where: { email: { equals: d.email } },
-      limit: 1,
-      overrideAccess: true,
-    })
-    if (existingClient.totalDocs === 0) {
-      await payload.create({
-        collection: 'clients',
-        data: {
-          email:     d.email,
-          prenom:    d.prenom,
-          nom:       d.nom,
-          telephone: d.telephone,
-        },
-        overrideAccess: true,
-      })
-    } else {
-      await payload.update({
-        collection: 'clients',
-        id: existingClient.docs[0]!.id,
-        data: {
-          prenom:    d.prenom,
-          nom:       d.nom,
-          telephone: d.telephone,
-        },
-        overrideAccess: true,
-      })
-    }
-  }
+  // Rattachement automatique d'une fiche client (par email ou téléphone) — non bloquant.
+  await upsertClient(payload, { email: d.email, telephone: d.telephone, prenom: d.prenom, nom: d.nom })
+    .catch((e: unknown) => { console.error('[devis] upsert client échoué :', e) })
 
   // Résoudre les URLs publiques des photos pour l'email
   const resolvePhotoUrls = async (ids: (string | number)[]): Promise<string[]> => {
