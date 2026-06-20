@@ -1,9 +1,13 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 
 // Popup de confirmation stylé (template admin DT) — remplace window.confirm natif.
 // Utilisé pour les actions sensibles (ex : transformer un RDV en dossier).
+// Rendu via un PORTAL dans <body> : indispensable car les parents de l'admin
+// (cellules de tableau, panneaux) ont des transform/overflow qui casseraient
+// un position:fixed (popup clippé / derrière / « transparent »).
 
 interface ConfirmModalProps {
   open:          boolean
@@ -21,13 +25,16 @@ export default function ConfirmModal({
   open, title, message, confirmLabel = 'Confirmer', cancelLabel = 'Annuler',
   loading = false, error = null, onConfirm, onCancel,
 }: ConfirmModalProps): React.JSX.Element | null {
-  if (!open) return null
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => { setMounted(true) }, [])
 
-  return (
+  if (!open || !mounted) return null
+
+  const node = (
     <div
       onClick={(e) => { e.stopPropagation(); if (!loading) onCancel() }}
       style={{
-        position: 'fixed', inset: 0, zIndex: 9999,
+        position: 'fixed', inset: 0, zIndex: 99999,
         background: 'rgba(0,0,0,0.6)',
         display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px',
       }}
@@ -85,4 +92,6 @@ export default function ConfirmModal({
       </div>
     </div>
   )
+
+  return createPortal(node, document.body)
 }
