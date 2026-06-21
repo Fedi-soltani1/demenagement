@@ -310,17 +310,17 @@ export function DevisModalProvider({ children }: { children: ReactNode }) {
     if (Object.keys(errs).length > 0) { setErrors(errs); return }
     setErrors({})
 
-    // Fire-and-forget: create client account + send magic link for each chosen channel
+    // Fire-and-forget : crée/maj la fiche client + envoie LE MÊME lien sur les canaux choisis.
     const name = contact.nomPrenom.trim()
-    if (contactMethod.phone) void fetch('/api/auth/client-signup', {
+    void fetch('/api/auth/client-signup', {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ name, telephone: contact.telephone.trim() }),
-    })
-    if (contactMethod.email) void fetch('/api/auth/client-signup', {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ name, email: contact.email.trim() }),
+      body:    JSON.stringify({
+        name,
+        email:     contactMethod.email ? contact.email.trim() : undefined,
+        telephone: contactMethod.phone ? contact.telephone.trim() : undefined,
+        channels:  { email: contactMethod.email, whatsapp: contactMethod.phone },
+      }),
     })
 
     // Pas d'enregistrement de lead ici : le prospect n'est capturé comme lead
