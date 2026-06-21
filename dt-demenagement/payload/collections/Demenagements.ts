@@ -503,6 +503,15 @@ Conditions : devis valable 30 jours à compter de sa date d'émission — paieme
         {
           label: '🧾 Facture',
           fields: [
+            // Always mounted — shows lock UI when devis not accepted, null when accepted
+            {
+              name: 'factureLock',
+              type: 'ui',
+              admin: {
+                components: { Field: '@/components/payload/FactureLock' },
+              },
+            },
+            // All real fields only appear once devis is accepted
             {
               type: 'row',
               fields: [
@@ -517,13 +526,32 @@ Conditions : devis valable 30 jours à compter de sa date d'émission — paieme
                     { label: 'Payée',      value: 'payee'      },
                     { label: 'En retard',  value: 'en_retard'  },
                   ],
-                  admin: { width: '50%' },
+                  admin: {
+                    width: '34%',
+                    condition: (data: Record<string, unknown>) => data.devisStatut === 'accepte',
+                  },
                 },
                 {
                   name: 'facturePrixTTC',
                   label: 'Montant total TTC (DT)',
                   type: 'number',
-                  admin: { width: '50%', placeholder: 'ex : 850' },
+                  admin: {
+                    width: '33%',
+                    placeholder: 'ex : 850',
+                    condition: (data: Record<string, unknown>) => data.devisStatut === 'accepte',
+                  },
+                },
+                {
+                  name: 'factureTauxTVA',
+                  label: 'Taux TVA (%)',
+                  type: 'number',
+                  defaultValue: 19,
+                  admin: {
+                    width: '33%',
+                    placeholder: '19',
+                    description: 'Taux appliqué sur le HT (standard Tunisie : 19 %).',
+                    condition: (data: Record<string, unknown>) => data.devisStatut === 'accepte',
+                  },
                 },
               ],
             },
@@ -534,13 +562,29 @@ Conditions : devis valable 30 jours à compter de sa date d'émission — paieme
                   name: 'factureEmiseLe',
                   label: 'Émise le',
                   type: 'date',
-                  admin: { width: '50%', readOnly: true, description: 'Mis à jour automatiquement lors de l\'envoi.' },
+                  admin: {
+                    width: '50%',
+                    readOnly: true,
+                    description: "Mis à jour automatiquement lors de l'envoi.",
+                    condition: (data: Record<string, unknown>) => data.devisStatut === 'accepte',
+                  },
                 },
                 {
                   name: 'factureEcheanceLe',
                   label: "Date d'échéance",
                   type: 'date',
-                  admin: { width: '50%' },
+                  validate: (val: unknown) => {
+                    if (!val) return true
+                    const selected = new Date(val as string)
+                    const today = new Date()
+                    today.setHours(0, 0, 0, 0)
+                    if (selected < today) return "La date d'échéance ne peut pas être dans le passé."
+                    return true
+                  },
+                  admin: {
+                    width: '50%',
+                    condition: (data: Record<string, unknown>) => data.devisStatut === 'accepte',
+                  },
                 },
               ],
             },
@@ -548,17 +592,11 @@ Conditions : devis valable 30 jours à compter de sa date d'émission — paieme
               name: 'factureNotes',
               label: 'Notes / Coordonnées bancaires',
               type: 'textarea',
-              admin: { placeholder: 'Mode de paiement, RIB, instructions de paiement…', rows: 4 },
-            },
-            {
-              name: 'lignesFacture',
-              label: 'Lignes de la facture',
-              type: 'array',
-              fields: [
-                { name: 'designation',  label: 'Désignation',       type: 'text'   },
-                { name: 'quantite',     label: 'Quantité',           type: 'number', defaultValue: 1 },
-                { name: 'prixUnitaire', label: 'Prix unitaire (DT)', type: 'number' },
-              ],
+              admin: {
+                placeholder: 'Mode de paiement, RIB, instructions de paiement…',
+                rows: 4,
+                condition: (data: Record<string, unknown>) => data.devisStatut === 'accepte',
+              },
             },
             {
               name: 'factureGenerateur',
@@ -566,6 +604,7 @@ Conditions : devis valable 30 jours à compter de sa date d'émission — paieme
               type: 'ui',
               admin: {
                 components: { Field: '@/components/payload/FactureGenerator' },
+                condition: (data: Record<string, unknown>) => data.devisStatut === 'accepte',
               },
             },
           ],

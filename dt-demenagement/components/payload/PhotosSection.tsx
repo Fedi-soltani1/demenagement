@@ -113,6 +113,7 @@ function Lightbox({
       )}
 
       {/* Image */}
+      {/* eslint-disable-next-line @next/next/no-img-element -- aperçu admin (URL blob/dynamique), next/image inadapté */}
       <img
         src={urls[idx]}
         alt=""
@@ -196,6 +197,7 @@ function PhotoThumb({
         transition: 'border-color 0.15s, transform 0.15s',
       }}
     >
+      {/* eslint-disable-next-line @next/next/no-img-element -- vignette admin (URL blob/dynamique), next/image inadapté */}
       <img
         src={src}
         alt={alt}

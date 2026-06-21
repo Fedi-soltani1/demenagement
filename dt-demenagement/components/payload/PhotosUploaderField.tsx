@@ -97,6 +97,7 @@ function Lightbox({
         </>
       )}
 
+      {/* eslint-disable-next-line @next/next/no-img-element -- aperçu admin (URL blob/dynamique), next/image inadapté */}
       <img
         src={urls[idx]}
         alt=""
@@ -163,6 +164,7 @@ function PhotoThumb({ src, alt, onClick }: { src: string; alt: string; onClick: 
         transition: 'border-color 0.15s, transform 0.15s',
       }}
     >
+      {/* eslint-disable-next-line @next/next/no-img-element -- vignette admin (URL blob/dynamique), next/image inadapté */}
       <img src={src} alt={alt} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
       {hover && (
         <div style={{

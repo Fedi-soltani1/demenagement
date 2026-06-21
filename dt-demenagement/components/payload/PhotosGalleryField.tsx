@@ -117,6 +117,7 @@ function Lightbox({ urls, startIndex, onClose }: { urls: string[]; startIndex: n
       )}
 
       {/* Image */}
+      {/* eslint-disable-next-line @next/next/no-img-element -- aperçu admin (URL blob/dynamique), next/image inadapté */}
       <img
         src={urls[idx]}
         alt=""
@@ -193,6 +194,7 @@ function Thumb({ item, onClick }: { item: MediaDoc; onClick: () => void }) {
         boxShadow: hovered ? '0 6px 24px rgba(0,0,0,0.22)' : '0 1px 4px rgba(0,0,0,0.08)',
       }}
     >
+      {/* eslint-disable-next-line @next/next/no-img-element -- vignette admin (URL blob/dynamique), next/image inadapté */}
       <img
         src={src}
         alt={item.filename ?? ''}

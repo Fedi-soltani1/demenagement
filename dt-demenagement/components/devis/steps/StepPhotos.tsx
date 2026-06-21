@@ -11,7 +11,7 @@ interface Props {
   onChangeDepart:  (photos: UploadedPhoto[]) => void
   onChangeArrivee: (photos: UploadedPhoto[]) => void
   onChangeMeubles: (photos: UploadedPhoto[]) => void
-  onSkip: () => void
+  onSkip?: () => void
 }
 
 export function StepPhotos({
@@ -77,16 +77,18 @@ export function StepPhotos({
         </div>
       </div>
 
-      {/* Skip */}
-      <div className="text-center">
-        <button
-          type="button"
-          onClick={onSkip}
-          className="font-body text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text-light)] underline underline-offset-4 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)] rounded"
-        >
-          Passer cette étape — continuer sans photos
-        </button>
-      </div>
+      {/* Skip — affiché uniquement quand les photos forment une étape autonome */}
+      {onSkip && (
+        <div className="text-center">
+          <button
+            type="button"
+            onClick={onSkip}
+            className="font-body text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text-light)] underline underline-offset-4 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)] rounded"
+          >
+            Passer cette étape — continuer sans photos
+          </button>
+        </div>
+      )}
     </div>
   )
 }

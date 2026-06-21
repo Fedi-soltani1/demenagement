@@ -240,7 +240,9 @@ function fmtNum(n: number): string {
 
 function etageStr(e?: string): string {
   if (!e) return ''
-  return e === 'RDC' ? 'Rez-de-chaussée' : `${e}e étage`
+  if (e === 'RDC') return 'Rez-de-chaussée'
+  if (e === '1') return '1er étage'
+  return `${e}e étage`
 }
 
 function adresseStr(a?: Adresse): string {

@@ -36,8 +36,8 @@
   "DevisModal": {
     "close": "Close",
     "back": "Back",
-    "step1Title": "Free Quote",
-    "step1Subtitle": "Fill in the form and we will get back to you quickly.",
+    "step1Title": "Our services & rates",
+    "step1Subtitle": "Tell us more to receive your personalized services and rates within 24h.",
     "labelNomPrenom": "Full Name",
     "placeholderNomPrenom": "Ex: Ahmed Ben Ali",
     "labelTelephone": "Phone Number",

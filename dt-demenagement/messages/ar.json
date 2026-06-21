@@ -36,8 +36,8 @@
   "DevisModal": {
     "close": "إغلاق",
     "back": "رجوع",
-    "step1Title": "عرض سعر مجاني",
-    "step1Subtitle": "أكمل النموذج وسنتواصل معك في أقرب وقت.",
+    "step1Title": "خدماتنا وأسعارنا",
+    "step1Subtitle": "أخبرنا بالمزيد لتحصل على خدماتك وأسعارك المخصّصة خلال 24 ساعة.",
     "labelNomPrenom": "الاسم الكامل",
     "placeholderNomPrenom": "مثال: أحمد بن علي",
     "labelTelephone": "رقم الهاتف",

@@ -120,6 +120,7 @@ export default function AdminLightboxProvider({ children }: { children: React.Re
       </div>
 
       {/* ── Image ────────────────────────────────────────────────────── */}
+      {/* eslint-disable-next-line @next/next/no-img-element -- aperçu admin (URL blob/dynamique), next/image inadapté */}
       <img
         src={src}
         alt="Aperçu"

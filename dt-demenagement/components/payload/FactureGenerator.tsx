@@ -4,23 +4,20 @@ import { useDocumentInfo, useFormFields } from '@payloadcms/ui'
 import { useEffect, useState, useCallback } from 'react'
 import type { CSSProperties } from 'react'
 
-type LigneFacture = {
-  designation?:  string
-  quantite?:     number
-  prixUnitaire?: number
-}
-
 type DossierSummary = {
   numeroDossier?:     string
   nomComplet?:        string
   clientId?:          string
   telephone?:         string
-  lignesFacture?:     LigneFacture[]
+  devisStatut?:       string
+  prixTotalTTC?:      number
   facturePrixTTC?:    number
+  factureTauxTVA?:    number
   factureEcheanceLe?: string
   factureNotes?:      string
   factureStatut?:     string
 }
+
 
 type Action    = 'idle' | 'pdf' | 'email' | 'whatsapp'
 type SendPanel = 'hidden' | 'choice' | 'confirm-email' | 'confirm-whatsapp'
@@ -44,16 +41,20 @@ export default function FactureGenerator() {
 
   const liveFields = useFormFields(([fields]: [Record<string, { value?: unknown }>, unknown]) => ({
     facturePrixTTC:    fields.facturePrixTTC?.value    as number | undefined,
+    factureTauxTVA:    fields.factureTauxTVA?.value    as number | undefined,
     factureEcheanceLe: fields.factureEcheanceLe?.value as string | undefined,
     factureNotes:      fields.factureNotes?.value      as string | undefined,
     factureStatut:     fields.factureStatut?.value     as string | undefined,
+    devisStatut:       fields.devisStatut?.value       as string | undefined,
+    prixTotalTTC:      fields.prixTotalTTC?.value      as number | undefined,
   }))
 
-  const [dossier,   setDossier]   = useState<DossierSummary | null>(null)
-  const [fetching,  setFetching]  = useState(true)
-  const [action,    setAction]    = useState<Action>('idle')
-  const [result,    setResult]    = useState<Result>(null)
-  const [sendPanel, setSendPanel] = useState<SendPanel>('hidden')
+  const [dossier,             setDossier]             = useState<DossierSummary | null>(null)
+  const [fetching,            setFetching]            = useState(true)
+  const [action,              setAction]              = useState<Action>('idle')
+  const [result,              setResult]              = useState<Result>(null)
+  const [sendPanel,           setSendPanel]           = useState<SendPanel>('hidden')
+  const [echeanceCorrection,  setEcheanceCorrection]  = useState<string>('')
 
   const fetchDossier = useCallback(async (showSkeleton = false) => {
     if (!id) return
@@ -68,6 +69,15 @@ export default function FactureGenerator() {
 
   useEffect(() => { fetchDossier(true) }, [fetchDossier])
 
+  // Polling: auto-refetch when live form shows 'accepte' but DB hasn't been saved yet
+  useEffect(() => {
+    const savedAccepte = dossier?.devisStatut === 'accepte'
+    const liveAccepte  = (liveFields?.devisStatut ?? dossier?.devisStatut) === 'accepte'
+    if (!liveAccepte || savedAccepte) return
+    const interval = setInterval(() => fetchDossier(false), 1500)
+    return () => clearInterval(interval)
+  }, [dossier?.devisStatut, liveFields?.devisStatut, fetchDossier])
+
   if (!id) {
     return (
       <div style={alertStyle('#fff8e6', '#f0c040', '#7a5500')}>
@@ -78,20 +88,46 @@ export default function FactureGenerator() {
 
   const dossierId = Number(id)
 
-  const livePrix     = liveFields?.facturePrixTTC    ?? dossier?.facturePrixTTC    ?? 0
-  const liveEcheance = liveFields?.factureEcheanceLe ?? dossier?.factureEcheanceLe
-  const liveStatut   = liveFields?.factureStatut     ?? dossier?.factureStatut     ?? 'brouillon'
+  const devisStatut  = liveFields?.devisStatut  ?? dossier?.devisStatut
+  const devisPrix    = liveFields?.prixTotalTTC  ?? dossier?.prixTotalTTC
+
+  // If no explicit facture price set, fall back to devis price
+  const livePrix     = (liveFields?.facturePrixTTC ?? dossier?.facturePrixTTC ?? devisPrix) ?? 0
+  const liveEcheance = echeanceCorrection || liveFields?.factureEcheanceLe || dossier?.factureEcheanceLe
+  const liveStatut   = liveFields?.factureStatut     ?? dossier?.factureStatut ?? 'brouillon'
+
+  // canAct uses the SAVED dossier value — the API reads from DB, not live form fields
+  const savedDevisAccepte = dossier?.devisStatut === 'accepte'
+  const liveDevisAccepte  = devisStatut === 'accepte'
+  const needsSave         = liveDevisAccepte && !savedDevisAccepte
+
+  const tomorrow = new Date()
+  tomorrow.setDate(tomorrow.getDate() + 1)
+  const tomorrowStr = tomorrow.toISOString().split('T')[0]
+
+  const echeancePast = (() => {
+    if (!liveEcheance) return false
+    const d = new Date(liveEcheance)
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    return d < today
+  })()
 
   const hasPrix    = livePrix > 0
   const statutInfo = STATUT[liveStatut] ?? { label: 'Brouillon', color: '#7a5500', bg: '#fff8e6' }
   const busy       = action !== 'idle'
+  const canAct     = savedDevisAccepte && hasPrix
 
   function buildOverrides() {
     const o: Record<string, unknown> = {}
-    if (liveFields?.facturePrixTTC != null)    o.facturePrixTTC    = liveFields.facturePrixTTC
-    if (liveFields?.factureEcheanceLe != null) o.factureEcheanceLe = liveFields.factureEcheanceLe
+    // Use explicit facture price; fall back to devis price if not set
+    const prix = liveFields?.facturePrixTTC ?? dossier?.facturePrixTTC ?? devisPrix
+    if (prix != null)                          o.facturePrixTTC    = prix
+    const tva = liveFields?.factureTauxTVA ?? dossier?.factureTauxTVA ?? 19
+    o.factureTauxTVA = tva
+    const echeance = echeanceCorrection || liveFields?.factureEcheanceLe
+    if (echeance) o.factureEcheanceLe = echeance
     if (liveFields?.factureNotes != null)      o.factureNotes      = liveFields.factureNotes
-    if (dossier?.lignesFacture?.length)        o.lignesFacture     = dossier.lignesFacture
     return o
   }
 
@@ -193,6 +229,13 @@ export default function FactureGenerator() {
           </div>
         )}
 
+        {/* Devis price hint — only shown when no explicit facture price set */}
+        {dossier && devisPrix != null && !dossier.facturePrixTTC && !liveFields?.facturePrixTTC && (
+          <div style={alertStyle('#e6f4e6', '#a0d0a0', '#1a5c1a')}>
+            Montant du devis accepté (<strong>{Math.round(devisPrix).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} DT TTC</strong>) utilisé par défaut — renseignez le champ ci-dessus pour personnaliser.
+          </div>
+        )}
+
         {/* Client summary */}
         {dossier && (
           <div style={{ background: '#f8f8f8', borderRadius: '6px', borderLeft: '3px solid #c9a84c', padding: '12px 14px', marginBottom: '14px' }}>
@@ -208,43 +251,8 @@ export default function FactureGenerator() {
           </div>
         )}
 
-        {/* Line items breakdown */}
-        {dossier?.lignesFacture && dossier.lignesFacture.length > 0 && (
-          <div style={{ marginBottom: '14px', border: '1px solid #e0e0e0', borderRadius: '6px', overflow: 'hidden' }}>
-            <div style={{ background: '#1a1a1a', padding: '7px 12px', fontSize: '10px', fontWeight: 700, color: '#aaa', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-              Lignes de la facture
-            </div>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead>
-                <tr style={{ background: '#f5f5f5', borderBottom: '1px solid #e0e0e0' }}>
-                  <th style={thStyle('left', '55%')}>Désignation</th>
-                  <th style={thStyle('center', '10%')}>Qté</th>
-                  <th style={thStyle('right', '17%')}>P.U. (DT)</th>
-                  <th style={thStyle('right', '18%')}>Total (DT)</th>
-                </tr>
-              </thead>
-              <tbody>
-                {dossier.lignesFacture.map((l, i) => {
-                  const qty   = l.quantite    ?? 1
-                  const pu    = l.prixUnitaire ?? 0
-                  const total = qty * pu
-                  const odd   = i % 2 === 1
-                  return (
-                    <tr key={i} style={{ background: odd ? '#fafafa' : '#fff', borderBottom: '1px solid #f0f0f0' }}>
-                      <td style={tdStyle('left')}>{l.designation ?? '—'}</td>
-                      <td style={tdStyle('center')}>{qty}</td>
-                      <td style={tdStyle('right')}>{fmtAmt(pu)}</td>
-                      <td style={tdStyle('right')}>{fmtAmt(total)}</td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
-
         {/* Live price + échéance preview */}
-        {dossier && (
+        {dossier && savedDevisAccepte && (
           <div style={{ display: 'flex', gap: '10px', marginBottom: '14px' }}>
             <div style={{ flex: 1, background: hasPrix ? '#fdf9ee' : '#fff8e6', border: `1px solid ${hasPrix ? '#e8d988' : '#f0c040'}`, borderRadius: '6px', padding: '10px 14px' }}>
               <div style={{ fontSize: '10px', color: '#999', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>Montant Total TTC</div>
@@ -264,24 +272,47 @@ export default function FactureGenerator() {
           </div>
         )}
 
-        {/* Warning if no price */}
-        {!hasPrix && dossier && (
+        {/* Save-first warning — live form shows accepted but DB not yet saved */}
+        {dossier && needsSave && (
+          <div style={alertStyle('#fff8e6', '#f0c040', '#7a5500')}>
+            ⚠️ Le statut du devis a changé mais n&apos;est pas encore sauvegardé.{' '}
+            <strong>Enregistrez le dossier</strong> (bouton en bas de page) puis revenez ici pour générer la facture.
+          </div>
+        )}
+
+        {/* Warning if no price (only shown when devis is accepted) */}
+        {!hasPrix && dossier && savedDevisAccepte && (
           <div style={alertStyle('#fff8e6', '#f0c040', '#7a5500')}>
             Renseignez le <strong>Montant total TTC</strong> dans les champs ci-dessus avant de générer.
           </div>
         )}
 
+        {/* Past-date échéance — inline date picker to correct it */}
+        {echeancePast && dossier && savedDevisAccepte && (
+          <div style={{ ...alertStyle('#fde8e8', '#f0a0a0', '#8a1820'), display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <span>⚠️ La date d&apos;échéance est dans le passé. Sélectionnez une nouvelle date :</span>
+            <input
+              type="date"
+              min={tomorrowStr}
+              onChange={(e) => { if (e.target.value) setEcheanceCorrection(e.target.value) }}
+              style={{ padding: '6px 10px', border: '1px solid #f0a0a0', borderRadius: '4px', fontSize: '13px', background: '#fff', color: '#333', cursor: 'pointer', width: 'fit-content' }}
+            />
+          </div>
+        )}
+
         {/* Primary action */}
-        <div style={{ marginTop: hasPrix ? '0' : '14px' }}>
-          <ActionButton
-            onClick={handleDownload}
-            disabled={!hasPrix || busy}
-            loading={action === 'pdf'}
-            bg="#c9a84c"
-            label="📥 Télécharger PDF"
-            loadingLabel="Génération en cours…"
-          />
-        </div>
+        {dossier && (
+          <div style={{ marginTop: '4px' }}>
+            <ActionButton
+              onClick={handleDownload}
+              disabled={!canAct || busy}
+              loading={action === 'pdf'}
+              bg="#c9a84c"
+              label="📥 Télécharger PDF"
+              loadingLabel="Génération en cours…"
+            />
+          </div>
+        )}
 
         {/* Result banner */}
         {result && (
@@ -415,6 +446,9 @@ export default function FactureGenerator() {
           </div>
         )}
 
+        {/* Next-step guidance based on facture status */}
+        {dossier && <FactureNextStep statut={liveStatut} />}
+
         <p style={{ margin: '12px 0 0', fontSize: '11px', color: '#ccc' }}>
           Le PDF utilise les valeurs actuelles des champs (même non sauvegardées).
         </p>
@@ -488,14 +522,60 @@ function alertStyle(bg: string, border: string, color: string): CSSProperties {
   }
 }
 
-function thStyle(align: 'left' | 'center' | 'right', width: string): CSSProperties {
-  return { padding: '5px 10px', fontSize: '10px', fontWeight: 700, color: '#999', textAlign: align, width, textTransform: 'uppercase', letterSpacing: '0.3px' }
+function FactureNextStep({ statut }: { statut: string }) {
+  const base: CSSProperties = {
+    marginTop: '14px', borderRadius: '6px', padding: '12px 14px', lineHeight: 1,
+  }
+
+  if (!statut || statut === 'brouillon') {
+    return (
+      <div style={{ ...base, background: '#f8f8f8', border: '1px solid #e8e8e8', borderLeft: '3px solid #ccc' }}>
+        <div style={{ fontSize: '11px', fontWeight: 700, color: '#555', marginBottom: '6px' }}>📋 Marche à suivre</div>
+        <ol style={{ margin: 0, paddingLeft: '16px', fontSize: '11px', color: '#666', lineHeight: 1.9 }}>
+          <li>Vérifiez le montant TTC (repris du devis accepté)</li>
+          <li>Ajoutez une date d&apos;échéance et des notes de paiement si nécessaire</li>
+          <li>Téléchargez le PDF pour vérification</li>
+          <li>Envoyez la facture au client par email ou WhatsApp</li>
+          <li>Quand le paiement est reçu, passez le statut à <strong>« Payée »</strong></li>
+        </ol>
+      </div>
+    )
+  }
+
+  if (statut === 'emise') {
+    return (
+      <div style={{ ...base, background: '#f0f6ff', border: '1px solid #c0d8f8', borderLeft: '3px solid #4a7fd4' }}>
+        <div style={{ fontSize: '11px', fontWeight: 700, color: '#1a3c8a', marginBottom: '5px' }}>⏳ Facture envoyée — en attente du règlement</div>
+        <div style={{ fontSize: '11px', color: '#444', lineHeight: 1.7 }}>
+          Lorsque le paiement est reçu, changez le <strong>Statut</strong> ci-dessus en <strong>« Payée »</strong> et sauvegardez pour clore le dossier.
+        </div>
+      </div>
+    )
+  }
+
+  if (statut === 'payee') {
+    return (
+      <div style={{ ...base, background: '#e6f4e6', border: '1px solid #a0d0a0', borderLeft: '3px solid #28a745' }}>
+        <div style={{ fontSize: '11px', fontWeight: 700, color: '#1a5c1a', marginBottom: '5px' }}>✅ Facture payée — dossier clôturé</div>
+        <div style={{ fontSize: '11px', color: '#1a5c1a', lineHeight: 1.7 }}>
+          Le règlement a été reçu. Pensez à passer le <strong>statut du dossier</strong> (onglet 🗓 Dossier) à <strong>« Livré »</strong> si ce n&apos;est pas encore fait.
+        </div>
+      </div>
+    )
+  }
+
+  if (statut === 'en_retard') {
+    return (
+      <div style={{ ...base, background: '#fde8e8', border: '1px solid #f0a0a0', borderLeft: '3px solid #c94040' }}>
+        <div style={{ fontSize: '11px', fontWeight: 700, color: '#8a1820', marginBottom: '5px' }}>⚠️ Paiement en retard</div>
+        <div style={{ fontSize: '11px', color: '#8a1820', lineHeight: 1.7 }}>
+          La date d&apos;échéance est dépassée. Relancez le client par email ou WhatsApp avec le bouton ci-dessus.
+          Quand le règlement est reçu, passez le statut à <strong>« Payée »</strong>.
+        </div>
+      </div>
+    )
+  }
+
+  return null
 }
 
-function tdStyle(align: 'left' | 'center' | 'right'): CSSProperties {
-  return { padding: '6px 10px', fontSize: '11px', color: '#333', textAlign: align }
-}
-
-function fmtAmt(n: number): string {
-  return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
-}

@@ -9,17 +9,11 @@ import { FacturePDF, type FactureDossier } from '@/components/pdf/FacturePDF'
 import { sendMail } from '@/lib/mailer'
 import { generateMagicLink } from '@/lib/generate-magic-link'
 
-const ligneSchema = z.object({
-  designation:  z.string().nullish(),
-  quantite:     z.number().nullish(),
-  prixUnitaire: z.number().nullish(),
-}).passthrough()
-
 const overridesSchema = z.object({
   facturePrixTTC:    z.number().nullish(),
+  factureTauxTVA:    z.number().nullish(),
   factureEcheanceLe: z.string().nullish(),
   factureNotes:      z.string().nullish(),
-  lignesFacture:     z.array(ligneSchema).optional(),
 })
 
 const schema = z.object({
@@ -40,91 +34,118 @@ function fmtDate(iso?: string): string {
 }
 
 export async function POST(request: NextRequest): Promise<Response> {
-  const payload = await getPayload({ config })
-  const { user } = await payload.auth({ headers: request.headers })
-  if (!user || user.collection !== 'admins') {
-    return Response.json({ error: 'Non autorisé' }, { status: 401 })
-  }
-
-  const body: unknown = await request.json()
-  const parsed = schema.safeParse(body)
-  if (!parsed.success) {
-    return Response.json({ error: 'Données invalides' }, { status: 422 })
-  }
-
-  const raw = await payload.findByID({ collection: 'demenagements', id: parsed.data.dossierId })
-  if (!raw) {
-    return Response.json({ error: 'Dossier introuvable' }, { status: 404 })
-  }
-
-  const settings = await payload.findGlobal({ slug: 'settings', overrideAccess: true }) as Record<string, unknown>
-  const matriculeFiscal = typeof settings.matriculeFiscal === 'string' ? settings.matriculeFiscal : ''
-
-  const dossier: FactureDossier = {
-    ...(raw as unknown as FactureDossier),
-    ...Object.fromEntries(
-      Object.entries(parsed.data.overrides ?? {}).filter(([, v]) => v !== undefined && v !== null)
-    ),
-    matriculeFiscal,
-  }
-
-  const clientEmail = typeof dossier.clientId === 'string' ? dossier.clientId : ''
-  if (!clientEmail || !clientEmail.includes('@')) {
-    return Response.json({ error: 'Email client introuvable dans le dossier' }, { status: 422 })
-  }
-
-  const element   = createElement(FacturePDF, { dossier }) as ReactElement<DocumentProps>
-  const pdfBuffer = await renderToBuffer(element)
-  const factureRef = `F-${dossier.numeroDossier ?? parsed.data.dossierId}`
-  const filename   = `Facture-${dossier.numeroDossier ?? parsed.data.dossierId}.pdf`
-
-  let magicLink: string
   try {
-    magicLink = await generateMagicLink(
-      clientEmail,
-      `/espace-client/${dossier.numeroDossier ?? ''}`,
-    )
-  } catch {
-    const base = process.env.NEXT_PUBLIC_SERVER_URL?.replace(/\/$/, '') ?? ''
-    magicLink = `${base}/connexion?callbackUrl=${encodeURIComponent(`/espace-client/${dossier.numeroDossier ?? ''}`)}`
-  }
+    const payload = await getPayload({ config })
+    const { user } = await payload.auth({ headers: request.headers })
+    if (!user || user.collection !== 'admins') {
+      return Response.json({ error: 'Non autorisé' }, { status: 401 })
+    }
 
-  try {
-    await sendMail({
-      to:      clientEmail,
-      subject: `Votre facture DT Déménagement — ${factureRef}`,
-      html:    buildEmailHtml(dossier, factureRef, magicLink),
-      attachments: [{ filename, content: Buffer.from(pdfBuffer) }],
+    const body: unknown = await request.json()
+    const parsed = schema.safeParse(body)
+    if (!parsed.success) {
+      return Response.json({ error: 'Données invalides' }, { status: 422 })
+    }
+
+    const raw = await payload.findByID({ collection: 'demenagements', id: parsed.data.dossierId })
+    if (!raw) {
+      return Response.json({ error: 'Dossier introuvable' }, { status: 404 })
+    }
+
+    if ((raw as Record<string, unknown>).devisStatut !== 'accepte') {
+      return Response.json({ error: 'La facture ne peut être envoyée que si le devis est accepté par le client.' }, { status: 422 })
+    }
+
+    let matriculeFiscal = ''
+    try {
+      const settings = await payload.findGlobal({ slug: 'settings', overrideAccess: true }) as Record<string, unknown>
+      matriculeFiscal = typeof settings.matriculeFiscal === 'string' ? settings.matriculeFiscal : ''
+    } catch { }
+
+    // Date d'émission figée au premier envoi : conservée si déjà présente.
+    const prevEmiseLe = (raw as Record<string, unknown>).factureEmiseLe
+    const emiseLe = typeof prevEmiseLe === 'string' && prevEmiseLe
+      ? prevEmiseLe
+      : new Date().toISOString()
+
+    const dossier: FactureDossier = {
+      ...(raw as unknown as FactureDossier),
+      ...Object.fromEntries(
+        Object.entries(parsed.data.overrides ?? {}).filter(([, v]) => v !== undefined && v !== null)
+      ),
+      matriculeFiscal,
+      factureEmiseLe: emiseLe,
+    }
+
+    if (dossier.facturePrixTTC == null || dossier.facturePrixTTC <= 0) {
+      return Response.json({ error: 'Le montant total TTC doit être renseigné avant d\'envoyer la facture.' }, { status: 422 })
+    }
+
+    const clientEmail = typeof dossier.clientId === 'string' ? dossier.clientId : ''
+    if (!clientEmail || !clientEmail.includes('@')) {
+      return Response.json({ error: 'Email client introuvable dans le dossier' }, { status: 422 })
+    }
+
+    const element   = createElement(FacturePDF, { dossier }) as ReactElement<DocumentProps>
+    const pdfBuffer = await renderToBuffer(element)
+    const factureRef = `F-${dossier.numeroDossier ?? parsed.data.dossierId}`
+    const filename   = `Facture-${dossier.numeroDossier ?? parsed.data.dossierId}.pdf`
+
+    let magicLink: string
+    try {
+      magicLink = await generateMagicLink(
+        clientEmail,
+        `/espace-client/${dossier.numeroDossier ?? ''}`,
+      )
+    } catch {
+      const base = process.env.NEXT_PUBLIC_SERVER_URL?.replace(/\/$/, '') ?? ''
+      magicLink = `${base}/connexion?callbackUrl=${encodeURIComponent(`/espace-client/${dossier.numeroDossier ?? ''}`)}`
+    }
+
+    try {
+      await sendMail({
+        to:      clientEmail,
+        subject: `Votre facture DT Déménagement — ${factureRef}`,
+        html:    buildEmailHtml(dossier, factureRef, magicLink),
+        attachments: [{ filename, content: Buffer.from(pdfBuffer) }],
+      })
+    } catch (mailErr) {
+      const msg = mailErr instanceof Error ? mailErr.message : 'Erreur envoi email'
+      return Response.json({ error: msg }, { status: 500 })
+    }
+
+    const prevStatut = (raw as Record<string, unknown>).factureStatut
+    await payload.update({
+      collection: 'demenagements',
+      id: parsed.data.dossierId,
+      data: {
+        // Ne pas rétrograder une facture déjà payée / en retard
+        factureStatut:  prevStatut === 'payee' || prevStatut === 'en_retard' ? prevStatut : 'emise',
+        // Conserver la date d'émission d'origine (figée au premier envoi)
+        factureEmiseLe: emiseLe,
+      },
     })
-  } catch (mailErr) {
-    const msg = mailErr instanceof Error ? mailErr.message : 'Erreur envoi email'
-    return Response.json({ error: msg }, { status: 500 })
+
+    const prixStr     = fmtPrix(dossier.facturePrixTTC)
+    const echeanceStr = dossier.factureEcheanceLe ? ` — Échéance : ${fmtDate(dossier.factureEcheanceLe)}` : ''
+    await payload.create({
+      collection: 'messages',
+      data: {
+        demenagement: parsed.data.dossierId,
+        auteur:  'admin',
+        clientId: clientEmail,
+        contenu: `📄 Facture ${factureRef} envoyée par email à ${clientEmail}.\nMontant : ${prixStr}${echeanceStr}`,
+        lu: true,
+      },
+      overrideAccess: true,
+    }).catch(() => { /* non-blocking */ })
+
+    return Response.json({ success: true })
+  } catch (err) {
+    console.error('[send-facture] error:', err)
+    const msg = err instanceof Error ? err.message : String(err)
+    return Response.json({ error: `Erreur : ${msg}` }, { status: 500 })
   }
-
-  await payload.update({
-    collection: 'demenagements',
-    id: parsed.data.dossierId,
-    data: {
-      factureStatut:  'emise',
-      factureEmiseLe: new Date().toISOString(),
-    },
-  })
-
-  const prixStr    = fmtPrix(dossier.facturePrixTTC)
-  const echeanceStr = dossier.factureEcheanceLe ? ` — Échéance : ${fmtDate(dossier.factureEcheanceLe)}` : ''
-  await payload.create({
-    collection: 'messages',
-    data: {
-      demenagement: parsed.data.dossierId,
-      auteur:  'admin',
-      clientId: clientEmail,
-      contenu: `📄 Facture ${factureRef} envoyée par email à ${clientEmail}.\nMontant : ${prixStr}${echeanceStr}`,
-      lu: true,
-    },
-    overrideAccess: true,
-  }).catch(() => { /* non-blocking */ })
-
-  return Response.json({ success: true })
 }
 
 function buildEmailHtml(d: FactureDossier, factureRef: string, magicLink: string): string {

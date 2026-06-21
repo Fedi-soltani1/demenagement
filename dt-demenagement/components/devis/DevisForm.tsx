@@ -5,10 +5,11 @@ import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   ArrowRight, ArrowLeft, CheckCircle,
-  MapPin, User, Package, Camera, ClipboardList, Home,
+  MapPin, User, Package, ClipboardList, Home,
   Truck, Building2, ArrowUpDown, Archive, PackageOpen, Wrench,
   RotateCcw,
 } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 import { StepPhotos } from './steps/StepPhotos'
 import { StepRecapitulatif } from './steps/StepRecapitulatif'
 import type { UploadedPhoto } from './PhotoUploadZone'
@@ -49,11 +50,9 @@ const TUNISIAN_CITIES = [
 ]
 
 const STEP_META = [
-  { Icon: User,          title: 'Vos coordonnées',    subtitle: 'Pour recevoir votre confirmation et numéro de dossier' },
-  { Icon: MapPin,        title: 'Adresses',            subtitle: 'Départ et destination de votre déménagement' },
-  { Icon: Package,       title: 'Vos besoins',         subtitle: 'Sélectionnez les services qui correspondent à votre projet' },
-  { Icon: Camera,        title: 'Photos (optionnel)',  subtitle: 'Des photos nous évitent une visite et accélèrent votre devis' },
-  { Icon: ClipboardList, title: 'Tout est correct ?',  subtitle: 'Vérifiez vos informations avant d\'envoyer' },
+  { Icon: User,          title: 'Coordonnées & adresses', subtitle: 'Vos coordonnées et les adresses de départ et d\'arrivée' },
+  { Icon: Package,       title: 'Vos besoins & photos',   subtitle: 'Services souhaités, date et photos (optionnel) pour un devis précis' },
+  { Icon: ClipboardList, title: 'Tout est correct ?',     subtitle: 'Vérifiez vos informations avant d\'envoyer' },
 ]
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -181,7 +180,7 @@ export function DevisForm({
     const draft = loadDraft()
     if (!draft) return
     setForm((prev) => ({ ...prev, ...draft.form }))
-    setStep(Math.min(draft.step, 3))
+    setStep(Math.min(draft.step, 1))
     setShowResume(false)
   }
 
@@ -202,13 +201,19 @@ export function DevisForm({
   }
 
   function isStepValid(): boolean {
-    if (step === 0) return !!(form.prenom.trim() && form.nom.trim() && (form.telephone.trim() || form.email.trim()))
-    if (step === 1) return !!(form.departAdresse.trim() && form.departVille.trim() && form.arriveeAdresse.trim() && form.arriveeVille.trim())
-    if (step === 2) return form.services.length > 0
+    // Étape 0 — coordonnées + adresses (départ et arrivée)
+    if (step === 0) return !!(
+      form.prenom.trim() && form.nom.trim() &&
+      (form.telephone.trim() || form.email.trim()) &&
+      form.departAdresse.trim() && form.departVille.trim() &&
+      form.arriveeAdresse.trim() && form.arriveeVille.trim()
+    )
+    // Étape 1 — besoins (services obligatoires) + photos (optionnel)
+    if (step === 1) return form.services.length > 0
     return true
   }
 
-  const STEPS = STEP_META // 5 items — drives stepper + progress
+  const STEPS = STEP_META // 3 items — drives stepper + progress
 
   function advanceStep() {
     if (step < STEPS.length - 1) {
@@ -359,78 +364,87 @@ export function DevisForm({
             transition={{ duration: 0.22, ease: 'easeOut' }}
             style={{ willChange: 'transform, opacity' }}
           >
-            {/* Step 0 — Coordonnées */}
+            {/* Step 0 — Coordonnées & adresses (fusionnées) */}
             {step === 0 && (
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <Field label="Prénom *" value={form.prenom} onChange={(v) => update('prenom', v)}
-                    placeholder="Jean" error={fieldErrs.prenom}
-                    onBlur={() => handleBlur('prenom', form.prenom)} />
-                  <Field label="Nom *" value={form.nom} onChange={(v) => update('nom', v)}
-                    placeholder="Dupont" error={fieldErrs.nom}
-                    onBlur={() => handleBlur('nom', form.nom)} />
+              <div className="space-y-8">
+                {/* Coordonnées */}
+                <div className="space-y-4">
+                  <GroupLabel Icon={User} text="Vos coordonnées" />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <Field label="Prénom *" value={form.prenom} onChange={(v) => update('prenom', v)}
+                      placeholder="Jean" error={fieldErrs.prenom}
+                      onBlur={() => handleBlur('prenom', form.prenom)} />
+                    <Field label="Nom *" value={form.nom} onChange={(v) => update('nom', v)}
+                      placeholder="Dupont" error={fieldErrs.nom}
+                      onBlur={() => handleBlur('nom', form.nom)} />
+                  </div>
+                  <Field label="Email" type="email" value={form.email} onChange={(v) => update('email', v)}
+                    placeholder="vous@exemple.com" hint="Optionnel si téléphone renseigné" error={fieldErrs.email}
+                    onBlur={() => handleBlur('email', form.email)} />
+                  <Field label="Téléphone" type="tel" value={form.telephone} onChange={(v) => update('telephone', v)}
+                    placeholder="+216 52 XXX XXX" hint="Optionnel si email renseigné — format : (+216) XX XXX XXX"
+                    error={fieldErrs.telephone} onBlur={() => handleBlur('telephone', form.telephone)} />
                 </div>
-                <Field label="Email" type="email" value={form.email} onChange={(v) => update('email', v)}
-                  placeholder="vous@exemple.com" hint="Optionnel si téléphone renseigné" error={fieldErrs.email}
-                  onBlur={() => handleBlur('email', form.email)} />
-                <Field label="Téléphone" type="tel" value={form.telephone} onChange={(v) => update('telephone', v)}
-                  placeholder="+216 52 XXX XXX" hint="Optionnel si email renseigné — format : (+216) XX XXX XXX"
-                  error={fieldErrs.telephone} onBlur={() => handleBlur('telephone', form.telephone)} />
+
+                <div className="h-px bg-white/8" />
+
+                {/* Adresses */}
+                <div className="space-y-4">
+                  <GroupLabel Icon={MapPin} text="Adresses" />
+                  <div className="flex flex-col sm:flex-row gap-5">
+                    {/* Départ */}
+                    <div className="flex-1 space-y-3">
+                      <div className="flex items-center gap-2 mb-1">
+                        <div className="w-6 h-6 rounded-full bg-[var(--color-red)]/10 border border-[var(--color-red)]/20 flex items-center justify-center">
+                          <MapPin className="w-3 h-3 text-[var(--color-red)]" aria-hidden="true" />
+                        </div>
+                        <p className="font-body text-xs font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">Départ</p>
+                      </div>
+                      <Field label="Adresse *" value={form.departAdresse}
+                        onChange={(v) => update('departAdresse', v)} placeholder="12 rue de la Liberté"
+                        error={fieldErrs.departAdresse} onBlur={() => handleBlur('departAdresse', form.departAdresse)} />
+                      <CitySelect label="Ville *" value={form.departVille}
+                        onChange={(v) => update('departVille', v)}
+                        error={fieldErrs.departVille} onBlur={() => handleBlur('departVille', form.departVille)} />
+                      <FloorSelect value={form.departEtage} onChange={(v) => update('departEtage', v)} />
+                      <TogglePill value={form.departAscenseur} onChange={(v) => update('departAscenseur', v)} label="Ascenseur ?" />
+                    </div>
+
+                    {/* Divider */}
+                    <div className="hidden sm:flex flex-col items-center gap-1 py-6">
+                      <div className="w-px flex-1 bg-white/8" />
+                      <ArrowRight className="w-3.5 h-3.5 text-[var(--color-text-muted)]" aria-hidden="true" />
+                      <div className="w-px flex-1 bg-white/8" />
+                    </div>
+                    <div className="sm:hidden h-px bg-white/8" />
+
+                    {/* Arrivée */}
+                    <div className="flex-1 space-y-3">
+                      <div className="flex items-center gap-2 mb-1">
+                        <div className="w-6 h-6 rounded-full bg-emerald-400/10 border border-emerald-400/20 flex items-center justify-center">
+                          <Home className="w-3 h-3 text-emerald-400" aria-hidden="true" />
+                        </div>
+                        <p className="font-body text-xs font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">Arrivée</p>
+                      </div>
+                      <Field label="Adresse *" value={form.arriveeAdresse}
+                        onChange={(v) => update('arriveeAdresse', v)} placeholder="8 avenue Habib Bourguiba"
+                        error={fieldErrs.arriveeAdresse} onBlur={() => handleBlur('arriveeAdresse', form.arriveeAdresse)} />
+                      <CitySelect label="Ville *" value={form.arriveeVille}
+                        onChange={(v) => update('arriveeVille', v)}
+                        error={fieldErrs.arriveeVille} onBlur={() => handleBlur('arriveeVille', form.arriveeVille)} />
+                      <FloorSelect value={form.arriveeEtage} onChange={(v) => update('arriveeEtage', v)} />
+                      <TogglePill value={form.arriveeAscenseur} onChange={(v) => update('arriveeAscenseur', v)} label="Ascenseur ?" />
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
 
-            {/* Step 1 — Adresses (départ + arrivée) */}
+            {/* Step 1 — Besoins (services/date/commentaire) + Photos (fusionnés) */}
             {step === 1 && (
-              <div className="flex flex-col sm:flex-row gap-5">
-                {/* Départ */}
-                <div className="flex-1 space-y-3">
-                  <div className="flex items-center gap-2 mb-1">
-                    <div className="w-6 h-6 rounded-full bg-[var(--color-red)]/10 border border-[var(--color-red)]/20 flex items-center justify-center">
-                      <MapPin className="w-3 h-3 text-[var(--color-red)]" aria-hidden="true" />
-                    </div>
-                    <p className="font-body text-xs font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">Départ</p>
-                  </div>
-                  <Field label="Adresse *" value={form.departAdresse}
-                    onChange={(v) => update('departAdresse', v)} placeholder="12 rue de la Liberté"
-                    error={fieldErrs.departAdresse} onBlur={() => handleBlur('departAdresse', form.departAdresse)} />
-                  <CitySelect label="Ville *" value={form.departVille}
-                    onChange={(v) => update('departVille', v)}
-                    error={fieldErrs.departVille} onBlur={() => handleBlur('departVille', form.departVille)} />
-                  <FloorSelect value={form.departEtage} onChange={(v) => update('departEtage', v)} />
-                  <TogglePill value={form.departAscenseur} onChange={(v) => update('departAscenseur', v)} label="Ascenseur ?" />
-                </div>
-
-                {/* Divider */}
-                <div className="hidden sm:flex flex-col items-center gap-1 py-6">
-                  <div className="w-px flex-1 bg-white/8" />
-                  <ArrowRight className="w-3.5 h-3.5 text-[var(--color-text-muted)]" aria-hidden="true" />
-                  <div className="w-px flex-1 bg-white/8" />
-                </div>
-                <div className="sm:hidden h-px bg-white/8" />
-
-                {/* Arrivée */}
-                <div className="flex-1 space-y-3">
-                  <div className="flex items-center gap-2 mb-1">
-                    <div className="w-6 h-6 rounded-full bg-emerald-400/10 border border-emerald-400/20 flex items-center justify-center">
-                      <Home className="w-3 h-3 text-emerald-400" aria-hidden="true" />
-                    </div>
-                    <p className="font-body text-xs font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">Arrivée</p>
-                  </div>
-                  <Field label="Adresse *" value={form.arriveeAdresse}
-                    onChange={(v) => update('arriveeAdresse', v)} placeholder="8 avenue Habib Bourguiba"
-                    error={fieldErrs.arriveeAdresse} onBlur={() => handleBlur('arriveeAdresse', form.arriveeAdresse)} />
-                  <CitySelect label="Ville *" value={form.arriveeVille}
-                    onChange={(v) => update('arriveeVille', v)}
-                    error={fieldErrs.arriveeVille} onBlur={() => handleBlur('arriveeVille', form.arriveeVille)} />
-                  <FloorSelect value={form.arriveeEtage} onChange={(v) => update('arriveeEtage', v)} />
-                  <TogglePill value={form.arriveeAscenseur} onChange={(v) => update('arriveeAscenseur', v)} label="Ascenseur ?" />
-                </div>
-              </div>
-            )}
-
-            {/* Step 2 — Services & date */}
-            {step === 2 && (
-              <div className="space-y-6">
+              <div className="space-y-8">
+                <div className="space-y-6">
+                <GroupLabel Icon={Package} text="Vos besoins" />
                 <div>
                   <p className="font-body text-xs text-[var(--color-text-muted)] uppercase tracking-wide mb-3">
                     Services souhaités *
@@ -490,24 +504,25 @@ export function DevisForm({
                     className="w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/10 text-[var(--color-text-light)] font-body text-sm placeholder:text-[var(--color-text-muted)]/50 focus:outline-none focus:ring-2 focus:ring-[var(--color-red)] focus:border-transparent resize-none transition-all"
                   />
                 </div>
+                </div>
+                {/* fin du groupe « Vos besoins » */}
+
+                <div className="h-px bg-white/8" />
+
+                {/* Photos (optionnel) — fusionné dans l'étape Besoins */}
+                <StepPhotos
+                  photosDepart={form.photosDepart}
+                  photosArrivee={form.photosArrivee}
+                  photosMeubles={form.photosMeubles}
+                  onChangeDepart={(p)  => update('photosDepart',  p)}
+                  onChangeArrivee={(p) => update('photosArrivee', p)}
+                  onChangeMeubles={(p) => update('photosMeubles', p)}
+                />
               </div>
             )}
 
-            {/* Step 3 — Photos */}
-            {step === 3 && (
-              <StepPhotos
-                photosDepart={form.photosDepart}
-                photosArrivee={form.photosArrivee}
-                photosMeubles={form.photosMeubles}
-                onChangeDepart={(p)  => update('photosDepart',  p)}
-                onChangeArrivee={(p) => update('photosArrivee', p)}
-                onChangeMeubles={(p) => update('photosMeubles', p)}
-                onSkip={advanceStep}
-              />
-            )}
-
-            {/* Step 4 — Récapitulatif */}
-            {step === 4 && (
+            {/* Step 2 — Récapitulatif */}
+            {step === 2 && (
               <StepRecapitulatif
                 form={{ ...form, type }}
                 isPending={isPending}
@@ -522,7 +537,7 @@ export function DevisForm({
       </div>
 
       {/* Navigation — hidden on recap step */}
-      {step < 4 && (
+      {step < 2 && (
         <div className="flex justify-between mt-8 pt-6 border-t border-white/8">
           <button
             type="button"
@@ -540,7 +555,7 @@ export function DevisForm({
             disabled={!isStepValid()}
             className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[var(--color-red)] text-white font-body font-bold text-sm uppercase tracking-wider hover:bg-[var(--color-red-dark)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)]"
           >
-            {step === 2 ? 'Ajouter des photos' : step === 3 ? 'Vérifier & envoyer' : 'Suivant'}
+            {step === 1 ? 'Vérifier & envoyer' : 'Suivant'}
             <ArrowRight className="w-4 h-4" aria-hidden="true" />
           </button>
         </div>
@@ -550,6 +565,17 @@ export function DevisForm({
 }
 
 // ── Sub-components ────────────────────────────────────────────────────────────
+
+function GroupLabel({ Icon, text }: { Icon: LucideIcon; text: string }) {
+  return (
+    <div className="flex items-center gap-2">
+      <Icon className="w-4 h-4 text-[var(--color-red)]" aria-hidden="true" />
+      <h3 className="font-heading font-semibold text-[var(--color-text-light)] text-sm uppercase tracking-wide">
+        {text}
+      </h3>
+    </div>
+  )
+}
 
 function StepHeader({
   step, direction, steps, gotoStep,

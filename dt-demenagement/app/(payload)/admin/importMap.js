@@ -8,6 +8,7 @@ import { default as default_5a0188a70b9b30cbd877f4236d25597f } from '@/component
 import { default as default_ba9f6cd83058905c544f217015932b9a } from '@/components/payload/DossierNumeroCell'
 import { default as default_7b1942edc728b4f0f4c01b21977f4787 } from '@/components/payload/DevisStatutCell'
 import { default as default_48385a705c89432a57989e43a54a039c } from '@/components/payload/DevisGenerator'
+import { default as default_ec8aebaaa62bee4adacf8587022b54dd } from '@/components/payload/FactureLock'
 import { default as default_3e18769631d3ddaad21383df974cc4e8 } from '@/components/payload/FactureGenerator'
 import { default as default_73c706e456fb9a9778758bdffc246dad } from '@/components/payload/MessageChatField'
 import { default as default_8ac8105d304bf750f880d02219803fb8 } from '@/components/payload/DossierNotesCell'
@@ -65,6 +66,7 @@ export const importMap = {
   "@/components/payload/DossierNumeroCell#default": default_ba9f6cd83058905c544f217015932b9a,
   "@/components/payload/DevisStatutCell#default": default_7b1942edc728b4f0f4c01b21977f4787,
   "@/components/payload/DevisGenerator#default": default_48385a705c89432a57989e43a54a039c,
+  "@/components/payload/FactureLock#default": default_ec8aebaaa62bee4adacf8587022b54dd,
   "@/components/payload/FactureGenerator#default": default_3e18769631d3ddaad21383df974cc4e8,
   "@/components/payload/MessageChatField#default": default_73c706e456fb9a9778758bdffc246dad,
   "@/components/payload/DossierNotesCell#default": default_8ac8105d304bf750f880d02219803fb8,

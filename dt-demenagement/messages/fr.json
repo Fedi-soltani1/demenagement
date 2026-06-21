@@ -36,8 +36,8 @@
   "DevisModal": {
     "close": "Fermer",
     "back": "Retour",
-    "step1Title": "Devis Gratuit",
-    "step1Subtitle": "Remplissez vos informations pour recevoir votre devis sous 24h.",
+    "step1Title": "Nos services & nos tarifs",
+    "step1Subtitle": "Dites-nous en plus pour recevoir vos services et tarifs personnalisés sous 24h.",
     "methodLabel": "Via quel canal souhaitez-vous être recontacté ?",
     "methodWhatsapp": "WhatsApp",
     "methodWhatsappDesc": "Lien envoyé sur WhatsApp",

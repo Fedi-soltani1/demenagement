@@ -109,27 +109,6 @@ const s = StyleSheet.create({
   servDot:  { width: 5, height: 5, borderRadius: 3, backgroundColor: GOLD, marginRight: 7 },
   servTxt:  { fontSize: 8, color: DARK },
 
-  linesTable: { borderWidth: 1, borderColor: BORDER, borderRadius: 3, marginBottom: 8 },
-  linesHead: {
-    backgroundColor: LIGHT, flexDirection: 'row',
-    paddingVertical: 5, paddingHorizontal: 9,
-    borderBottomWidth: 1, borderBottomColor: BORDER,
-  },
-  linesHeadTxt: { fontSize: 6.5, fontFamily: 'Helvetica-Bold', color: MUTED, letterSpacing: 0.4 },
-  lineRow: {
-    flexDirection: 'row', paddingVertical: 5, paddingHorizontal: 9,
-    borderBottomWidth: 1, borderBottomColor: BORDER,
-  },
-  lineRowLast: { flexDirection: 'row', paddingVertical: 5, paddingHorizontal: 9 },
-  lineCell:  { fontSize: 8, color: DARK },
-  lineCellR: { fontSize: 8, color: DARK, textAlign: 'right' },
-  lineTotalRow: {
-    backgroundColor: DARK, flexDirection: 'row',
-    paddingVertical: 6, paddingHorizontal: 9,
-  },
-  lineTotalLbl: { fontSize: 7, fontFamily: 'Helvetica-Bold', color: 'rgba(255,255,255,0.45)', letterSpacing: 1 },
-  lineTotalAmt: { fontSize: 8.5, fontFamily: 'Helvetica-Bold', color: GOLD, textAlign: 'right' },
-
   priceTop: {
     backgroundColor: DARK, borderTopLeftRadius: 4, borderTopRightRadius: 4,
     paddingVertical: 7, paddingHorizontal: 14,
@@ -151,6 +130,17 @@ const s = StyleSheet.create({
   },
   priceBotL: { fontSize: 7, color: 'rgba(255,255,255,0.3)' },
   priceBotR: { fontSize: 7, color: GOLD, fontFamily: 'Helvetica-Bold' },
+
+  tvaTable: {
+    backgroundColor: '#f9f9f9', borderWidth: 1, borderColor: BORDER,
+    borderTopWidth: 0, paddingVertical: 6, paddingHorizontal: 14,
+  },
+  tvaRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 3 },
+  tvaSep: { height: 1, backgroundColor: BORDER, marginVertical: 3 },
+  tvaLbl: { fontSize: 7.5, color: GRAY },
+  tvaVal: { fontSize: 8, fontFamily: 'Helvetica-Bold', color: DARK },
+  tvaTtcLbl: { fontSize: 8, fontFamily: 'Helvetica-Bold', color: DARK },
+  tvaTtcVal: { fontSize: 9, fontFamily: 'Helvetica-Bold', color: RED },
 
   notesBox: {
     backgroundColor: '#fdf9ee', borderRadius: 3,
@@ -175,12 +165,6 @@ const s = StyleSheet.create({
 
 type Adresse = { adresse?: string; ville?: string; etage?: string; ascenseur?: boolean }
 
-export type LigneFacture = {
-  designation?:  string
-  quantite?:     number
-  prixUnitaire?: number
-}
-
 export type FactureDossier = {
   numeroDossier?:     string
   nomComplet?:        string
@@ -192,8 +176,8 @@ export type FactureDossier = {
   adresseArrivee?:    Adresse
   servicesInclus?:    string[]
   volumeM3?:          number
-  lignesFacture?:     LigneFacture[]
   facturePrixTTC?:    number
+  factureTauxTVA?:    number
   factureEcheanceLe?: string
   factureNotes?:      string
   factureEmiseLe?:    string
@@ -214,7 +198,9 @@ function fmtNum(n: number): string {
 
 function etageStr(e?: string): string {
   if (!e) return ''
-  return e === 'RDC' ? 'Rez-de-chaussée' : `${e}e étage`
+  if (e === 'RDC') return 'Rez-de-chaussée'
+  if (e === '1') return '1er étage'
+  return `${e}e étage`
 }
 
 function adresseStr(a?: Adresse): string {
@@ -234,12 +220,20 @@ const SERVICE_LABELS: Record<string, string> = {
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export function FacturePDF({ dossier }: { dossier: FactureDossier }) {
-  const today      = new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' })
+  // Date d'émission stable : on utilise la date stockée (figée à l'envoi) ;
+  // pour un aperçu avant envoi, on retombe sur la date du jour.
+  const emission   = fmtDate(dossier.factureEmiseLe ?? new Date().toISOString())
   const echeance   = fmtDate(dossier.factureEcheanceLe)
   const typeClient = dossier.typeClient === 'entreprise' ? 'ENTREPRISE' : 'PARTICULIER'
   const services   = (dossier.servicesInclus ?? []).map(sv => SERVICE_LABELS[sv] ?? sv)
   const prix       = dossier.facturePrixTTC
+  const taux       = dossier.factureTauxTVA ?? 19
   const factureRef = `F-${dossier.numeroDossier ?? 'N/A'}`
+
+  // TVA breakdown
+  const prixHT      = prix != null && taux > 0 ? prix / (1 + taux / 100) : null
+  const montantTVA  = prix != null && prixHT != null ? prix - prixHT : null
+  const showTVA     = prix != null && prix > 0 && taux > 0
 
   return (
     <Document
@@ -261,7 +255,6 @@ export function FacturePDF({ dossier }: { dossier: FactureDossier }) {
             <Text style={s.companyTagline}>SOCIÉTÉ DE DÉMÉNAGEMENT PROFESSIONNEL</Text>
             <Text style={s.companyContact}>
               {'Tél : +216 52 880 311  |  +216 52 880 112\nEmail : contact@demenagement.tn  |  demenagement.tn'}
-              {dossier.matriculeFiscal ? `\nMF : ${dossier.matriculeFiscal}` : ''}
             </Text>
           </View>
           <View style={s.devisPanel}>
@@ -269,9 +262,16 @@ export function FacturePDF({ dossier }: { dossier: FactureDossier }) {
             <Text style={s.devisNum}>{factureRef}</Text>
             <View style={s.devisSep} />
             <Text style={s.devisLbl}>DATE D&apos;ÉMISSION</Text>
-            <Text style={s.devisVal}>{today}</Text>
+            <Text style={s.devisVal}>{emission}</Text>
             <Text style={[s.devisLbl, { marginTop: 5 }]}>DATE D&apos;ÉCHÉANCE</Text>
             <Text style={s.devisVal}>{echeance}</Text>
+            {dossier.matriculeFiscal ? (
+              <>
+                <View style={s.devisSep} />
+                <Text style={s.devisLbl}>MATRICULE FISCAL</Text>
+                <Text style={s.devisVal}>{dossier.matriculeFiscal}</Text>
+              </>
+            ) : null}
           </View>
         </View>
 
@@ -397,43 +397,33 @@ export function FacturePDF({ dossier }: { dossier: FactureDossier }) {
             <View style={s.secHead}>
               <View style={s.secDot} />
               <Text style={s.secTitle}>FACTURATION</Text>
+              <Text style={s.secBadge}>Réf. devis : {dossier.numeroDossier ?? '—'}</Text>
             </View>
-
-            {dossier.lignesFacture && dossier.lignesFacture.length > 0 && (
-              <View style={s.linesTable}>
-                <View style={s.linesHead}>
-                  <Text style={[s.linesHeadTxt, { flex: 4 }]}>DÉSIGNATION / PRESTATION</Text>
-                  <Text style={[s.linesHeadTxt, { flex: 1, textAlign: 'center' }]}>QTÉ</Text>
-                  <Text style={[s.linesHeadTxt, { flex: 1.5, textAlign: 'right' }]}>P.U. (DT)</Text>
-                  <Text style={[s.linesHeadTxt, { flex: 1.5, textAlign: 'right' }]}>TOTAL (DT)</Text>
-                </View>
-                {dossier.lignesFacture.map((l, i) => {
-                  const qty    = l.quantite    ?? 1
-                  const pu     = l.prixUnitaire ?? 0
-                  const total  = qty * pu
-                  const isLast = i === (dossier.lignesFacture!.length - 1)
-                  return (
-                    <View key={i} style={isLast ? s.lineRowLast : s.lineRow}>
-                      <Text style={[s.lineCell, { flex: 4 }]}>{l.designation ?? '—'}</Text>
-                      <Text style={[s.lineCell, { flex: 1, textAlign: 'center' }]}>{qty}</Text>
-                      <Text style={[s.lineCellR, { flex: 1.5 }]}>{fmtNum(pu)}</Text>
-                      <Text style={[s.lineCellR, { flex: 1.5 }]}>{fmtNum(total)}</Text>
-                    </View>
-                  )
-                })}
-                <View style={s.lineTotalRow}>
-                  <Text style={[s.lineTotalLbl, { flex: 1 }]}>TOTAL TTC</Text>
-                  <Text style={s.lineTotalAmt}>
-                    {prix != null ? `${fmtNum(prix)} DT` : '—'}
-                  </Text>
-                </View>
-              </View>
-            )}
 
             <View style={s.priceTop}>
               <Text style={s.priceTopLbl}>MONTANT TOTAL TTC</Text>
               <Text style={s.priceTopBadge}>{factureRef}</Text>
             </View>
+
+            {showTVA && prixHT != null && montantTVA != null && (
+              <View style={s.tvaTable}>
+                <View style={s.tvaRow}>
+                  <Text style={s.tvaLbl}>Sous-total HT</Text>
+                  <Text style={s.tvaVal}>{fmtNum(prixHT)} DT</Text>
+                </View>
+                <View style={s.tvaSep} />
+                <View style={s.tvaRow}>
+                  <Text style={s.tvaLbl}>TVA ({taux} %)</Text>
+                  <Text style={s.tvaVal}>{fmtNum(montantTVA)} DT</Text>
+                </View>
+                <View style={s.tvaSep} />
+                <View style={s.tvaRow}>
+                  <Text style={s.tvaTtcLbl}>TOTAL TTC</Text>
+                  <Text style={s.tvaTtcVal}>{fmtNum(prix!)} DT</Text>
+                </View>
+              </View>
+            )}
+
             <View style={s.priceMain}>
               {prix != null ? (
                 <>
@@ -445,7 +435,7 @@ export function FacturePDF({ dossier }: { dossier: FactureDossier }) {
               )}
             </View>
             <View style={s.priceBot}>
-              <Text style={s.priceBotL}>Émise le {today}</Text>
+              <Text style={s.priceBotL}>Émise le {emission}</Text>
               <Text style={s.priceBotR}>Échéance : {echeance}</Text>
             </View>
           </View>

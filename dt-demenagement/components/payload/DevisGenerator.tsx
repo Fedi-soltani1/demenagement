@@ -416,6 +416,9 @@ export default function DevisGenerator() {
           </div>
         )}
 
+        {/* Next-step guidance — persistent, status-aware */}
+        {dossier && <NextStepPanel statut={liveStatut} />}
+
         <p style={{ margin: '12px 0 0', fontSize: '11px', color: '#ccc' }}>
           Le PDF utilise les valeurs actuelles des champs (même non sauvegardées).
         </p>
@@ -487,6 +490,65 @@ function alertStyle(bg: string, border: string, color: string): CSSProperties {
     color,
     marginBottom: '14px',
   }
+}
+
+function NextStepPanel({ statut }: { statut: string }) {
+  const base: CSSProperties = {
+    marginTop: '14px', borderRadius: '6px', padding: '12px 14px',
+    borderLeft: '3px solid', lineHeight: 1,
+  }
+
+  if (!statut || statut === 'brouillon') {
+    return (
+      <div style={{ ...base, background: '#f8f8f8', border: '1px solid #e8e8e8', borderLeft: '3px solid #ccc' }}>
+        <div style={{ fontSize: '11px', fontWeight: 700, color: '#555', marginBottom: '6px' }}>📋 Comment ça marche</div>
+        <ol style={{ margin: 0, paddingLeft: '16px', fontSize: '11px', color: '#666', lineHeight: 1.9 }}>
+          <li>Renseignez le <strong>Prix total TTC</strong> ci-dessus</li>
+          <li>Téléchargez le PDF pour vérifier</li>
+          <li>Envoyez le devis au client par email ou WhatsApp</li>
+          <li>Attendez la réponse — puis passez le <strong>Statut</strong> à <em>Accepté</em> ou <em>Refusé</em></li>
+          <li>Si accepté, l&apos;onglet <strong>🧾 Facture</strong> se déverrouille automatiquement</li>
+        </ol>
+      </div>
+    )
+  }
+
+  if (statut === 'envoye') {
+    return (
+      <div style={{ ...base, background: '#f0f6ff', border: '1px solid #c0d8f8', borderLeft: '3px solid #4a7fd4' }}>
+        <div style={{ fontSize: '11px', fontWeight: 700, color: '#1a3c8a', marginBottom: '5px' }}>⏳ Devis envoyé — en attente de la réponse du client</div>
+        <div style={{ fontSize: '11px', color: '#444', lineHeight: 1.7 }}>
+          Une fois que le client confirme son accord, changez le <strong>Statut</strong> ci-dessus en <strong>« Accepté »</strong> et sauvegardez.
+          L&apos;onglet <strong>🧾 Facture</strong> se déverrouillera automatiquement.
+        </div>
+      </div>
+    )
+  }
+
+  if (statut === 'accepte') {
+    return (
+      <div style={{ ...base, background: '#e6f4e6', border: '1px solid #a0d0a0', borderLeft: '3px solid #28a745' }}>
+        <div style={{ fontSize: '11px', fontWeight: 700, color: '#1a5c1a', marginBottom: '5px' }}>✅ Devis accepté — prochaine étape : générer la facture</div>
+        <div style={{ fontSize: '11px', color: '#1a5c1a', lineHeight: 1.7 }}>
+          Rendez-vous dans l&apos;onglet <strong>🧾 Facture</strong> pour créer et envoyer la facture au client.
+          Le montant du devis sera repris automatiquement.
+        </div>
+      </div>
+    )
+  }
+
+  if (statut === 'refuse') {
+    return (
+      <div style={{ ...base, background: '#fde8e8', border: '1px solid #f0a0a0', borderLeft: '3px solid #c94040' }}>
+        <div style={{ fontSize: '11px', fontWeight: 700, color: '#8a1820', marginBottom: '5px' }}>❌ Devis refusé par le client</div>
+        <div style={{ fontSize: '11px', color: '#8a1820', lineHeight: 1.7 }}>
+          Contactez le client pour comprendre ses objections, ajustez le prix ou les conditions, puis générez et envoyez un nouveau devis.
+        </div>
+      </div>
+    )
+  }
+
+  return null
 }
 
 function thStyle(align: 'left' | 'center' | 'right', width: string): CSSProperties {
