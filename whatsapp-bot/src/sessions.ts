@@ -1,6 +1,6 @@
 // Store des sessions en mémoire. Module PUR (pas d'I/O réseau).
 
-export type Flux = 'menu' | 'devis' | 'rdv'
+export type Flux = 'menu' | 'preambule' | 'devis' | 'rdv'
 
 export interface Session {
   numero:    string                   // numéro WhatsApp de l'expéditeur (E.164 +216…)
