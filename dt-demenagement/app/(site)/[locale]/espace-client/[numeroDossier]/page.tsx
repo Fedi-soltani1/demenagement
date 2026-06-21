@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { auth } from '@/auth'
 import { getPayloadSafe } from '@/lib/payload-safe'
 import { COMPANY } from '@/lib/constants'
+import { dossierOwnershipWhere } from '@/lib/espace-client-query'
 import { Breadcrumb } from '@/components/layout/Breadcrumb'
 import { StatusBadge, StatusProgress } from '@/components/espace-client/StatusBadge'
 import { MessageThread } from '@/components/espace-client/MessageThread'
@@ -82,7 +83,7 @@ export default async function DossierPage({ params }: PageProps) {
   // Vérifier que le dossier appartient au client connecté
   const result = await payload.find({
     collection: 'demenagements',
-    where:      { numeroDossier: { equals: numeroDossier }, clientId: { equals: session.user.email } },
+    where:      { numeroDossier: { equals: numeroDossier }, ...dossierOwnershipWhere(session.user.email) },
     limit:      1,
     overrideAccess: true,
   })

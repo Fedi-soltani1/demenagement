@@ -6,6 +6,8 @@ import Link from 'next/link'
 import { auth } from '@/auth'
 import { getPayloadSafe } from '@/lib/payload-safe'
 import { COMPANY, LOCALES } from '@/lib/constants'
+import { dossierOwnershipWhere, clientLookupWhere } from '@/lib/espace-client-query'
+import { parseLoginIdentity } from '@/lib/client-identity'
 import { Breadcrumb } from '@/components/layout/Breadcrumb'
 import { StatusBadge } from '@/components/espace-client/StatusBadge'
 import { SignOutButton } from '@/components/espace-client/SignOutButton'
@@ -64,26 +66,31 @@ export default async function EspaceClientPage({ params }: PageProps) {
   let dossiers: DemenagementDoc[] = []
 
   if (payload) {
-    // Auto-create client profile if missing
-    const existing = await payload.find({
-      collection: 'clients',
-      where: { email: { equals: session.user.email } },
-      limit: 1,
-      overrideAccess: true,
-    })
-    if (existing.totalDocs === 0) {
-      const prefix = session.user.email.split('@')[0] ?? session.user.email
-      const parts  = prefix.replace(/[._-]+/g, ' ').trim().split(' ')
-      await payload.create({
+    const identity = session.user.email
+    const parsed = parseLoginIdentity(identity)
+
+    // Auto-création de la fiche client uniquement pour une identité email réelle.
+    if (parsed.kind === 'email') {
+      const existing = await payload.find({
         collection: 'clients',
-        data: { email: session.user.email, prenom: parts[0] ?? '—', nom: parts.slice(1).join(' ') || '—' },
+        where: clientLookupWhere(identity),
+        limit: 1,
         overrideAccess: true,
       })
+      if (existing.totalDocs === 0) {
+        const prefix = parsed.email.split('@')[0] ?? parsed.email
+        const partsName = prefix.replace(/[._-]+/g, ' ').trim().split(' ')
+        await payload.create({
+          collection: 'clients',
+          data: { email: parsed.email, prenom: partsName[0] ?? '—', nom: partsName.slice(1).join(' ') || '—' },
+          overrideAccess: true,
+        })
+      }
     }
 
     const result = await payload.find({
       collection: 'demenagements',
-      where:      { clientId: { equals: session.user.email } },
+      where:      dossierOwnershipWhere(identity),
       sort:       '-createdAt',
       limit:      50,
       overrideAccess: true,
@@ -116,9 +123,12 @@ export default async function EspaceClientPage({ params }: PageProps) {
   const termines        = dossiers.filter(d => d.statut === 'livre').length
   const prochainDossier = dossiers.find(d => d.dateDemenagement && ['confirme','en_preparation'].includes(d.statut))
 
+  const identityParsed = parseLoginIdentity(session.user.email)
+  const contactLabel = identityParsed.kind === 'phone' ? `+${identityParsed.phoneCore}` : session.user.email
+
   const displayName = session.user.name
-    ?? session.user.email.split('@')[0]?.replace(/[._-]+/g, ' ')
-    ?? session.user.email
+    ?? (identityParsed.kind === 'email' ? identityParsed.email.split('@')[0]?.replace(/[._-]+/g, ' ') : contactLabel)
+    ?? contactLabel
 
   return (
     <>
@@ -143,7 +153,7 @@ export default async function EspaceClientPage({ params }: PageProps) {
                   <h1 className="font-heading font-bold text-[var(--color-text-light)] text-2xl leading-tight">
                     Bonjour, {displayName.split(' ')[0]} 👋
                   </h1>
-                  <p className="font-body text-xs text-[var(--color-text-muted)]">{session.user.email}</p>
+                  <p className="font-body text-xs text-[var(--color-text-muted)]">{contactLabel}</p>
                 </div>
               </div>
             </div>

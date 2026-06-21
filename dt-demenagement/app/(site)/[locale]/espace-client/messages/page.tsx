@@ -6,6 +6,7 @@ import { ArrowLeft } from 'lucide-react'
 import { auth } from '@/auth'
 import { getPayloadSafe } from '@/lib/payload-safe'
 import { COMPANY } from '@/lib/constants'
+import { dossierOwnershipWhere } from '@/lib/espace-client-query'
 import { Breadcrumb } from '@/components/layout/Breadcrumb'
 import { MessagesHub } from '@/components/espace-client/MessagesHub'
 import type { ConversationStat } from '@/app/api/client/conversations/route'
@@ -45,7 +46,7 @@ export default async function MessagesPage({ params }: PageProps) {
   if (payload) {
     const dossiersResult = await payload.find({
       collection: 'demenagements',
-      where:      { clientId: { equals: session.user.email } },
+      where:      dossierOwnershipWhere(session.user.email),
       sort:       '-createdAt',
       limit:      50,
       depth:      0,
