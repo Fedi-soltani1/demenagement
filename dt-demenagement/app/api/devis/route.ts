@@ -29,7 +29,7 @@ const devisSchema = z.object({
   prenom:     z.string().min(2).max(50),
   nom:        z.string().min(2).max(50),
   email:      z.string().email().optional(),
-  telephone:  z.string().regex(/^\+?[0-9\s\-()]{8,20}$/),
+  telephone:  z.string().regex(/^\+?[0-9\s\-()]{8,20}$/).optional(),
 
   adresseDepart:  adresseSchema,
   adresseArrivee: adresseSchema,
@@ -86,7 +86,7 @@ export async function POST(request: Request) {
         numeroDossier,
         clientId:    d.email,
         nomComplet:  `${d.prenom} ${d.nom}`,
-        telephone:   d.telephone,
+        telephone:   d.telephone ?? '',
         typeClient:  d.type,
         commentaire: d.commentaire,
         statut:      'devis_recu',
@@ -123,7 +123,7 @@ export async function POST(request: Request) {
 
   // Le prospect a TERMINÉ le process → son lead initial n'est plus un abandon.
   // On le marque « devis_soumis » pour qu'il quitte la liste des leads.
-  await markLeadConverted(payload, d.telephone, 'devis_soumis')
+  if (d.telephone) await markLeadConverted(payload, d.telephone, 'devis_soumis')
 
   // Rattachement automatique d'une fiche client (par email ou téléphone) — non bloquant.
   await upsertClient(payload, { email: d.email, telephone: d.telephone, prenom: d.prenom, nom: d.nom })
@@ -216,7 +216,7 @@ function buildInternalEmail(
             ${row('TYPE', d.type === 'particulier' ? '🏠 Particulier' : '🏢 Entreprise')}
             ${row('NOM', `${escapeHtml(d.prenom)} ${escapeHtml(d.nom)}`)}
             ${d.email ? row('EMAIL', escapeHtml(d.email)) : ''}
-            ${row('TÉLÉPHONE', escapeHtml(d.telephone))}
+            ${d.telephone ? row('TÉLÉPHONE', escapeHtml(d.telephone)) : ''}
             ${row('DÉPART', `${escapeHtml(d.adresseDepart.adresse)}, ${escapeHtml(d.adresseDepart.ville)}${d.adresseDepart.etage ? ` — Étage ${d.adresseDepart.etage}` : ''}${d.adresseDepart.ascenseur ? ' (asc.)' : ''}`)}
             ${row('ARRIVÉE', `${escapeHtml(d.adresseArrivee.adresse)}, ${escapeHtml(d.adresseArrivee.ville)}${d.adresseArrivee.etage ? ` — Étage ${d.adresseArrivee.etage}` : ''}${d.adresseArrivee.ascenseur ? ' (asc.)' : ''}`)}
             ${row('SERVICES', escapeHtml(d.services.join(', ')))}

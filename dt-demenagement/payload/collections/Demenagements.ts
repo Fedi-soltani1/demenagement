@@ -499,7 +499,79 @@ Conditions : devis valable 30 jours à compter de sa date d'émission — paieme
           ],
         },
 
-        // ── Tab 5 : Messagerie ────────────────────────────────────────────────
+        // ── Tab 5 : Facture ───────────────────────────────────────────────────
+        {
+          label: '🧾 Facture',
+          fields: [
+            {
+              type: 'row',
+              fields: [
+                {
+                  name: 'factureStatut',
+                  label: 'Statut',
+                  type: 'select',
+                  defaultValue: 'brouillon',
+                  options: [
+                    { label: 'Brouillon',  value: 'brouillon'  },
+                    { label: 'Émise',      value: 'emise'      },
+                    { label: 'Payée',      value: 'payee'      },
+                    { label: 'En retard',  value: 'en_retard'  },
+                  ],
+                  admin: { width: '50%' },
+                },
+                {
+                  name: 'facturePrixTTC',
+                  label: 'Montant total TTC (DT)',
+                  type: 'number',
+                  admin: { width: '50%', placeholder: 'ex : 850' },
+                },
+              ],
+            },
+            {
+              type: 'row',
+              fields: [
+                {
+                  name: 'factureEmiseLe',
+                  label: 'Émise le',
+                  type: 'date',
+                  admin: { width: '50%', readOnly: true, description: 'Mis à jour automatiquement lors de l\'envoi.' },
+                },
+                {
+                  name: 'factureEcheanceLe',
+                  label: "Date d'échéance",
+                  type: 'date',
+                  admin: { width: '50%' },
+                },
+              ],
+            },
+            {
+              name: 'factureNotes',
+              label: 'Notes / Coordonnées bancaires',
+              type: 'textarea',
+              admin: { placeholder: 'Mode de paiement, RIB, instructions de paiement…', rows: 4 },
+            },
+            {
+              name: 'lignesFacture',
+              label: 'Lignes de la facture',
+              type: 'array',
+              fields: [
+                { name: 'designation',  label: 'Désignation',       type: 'text'   },
+                { name: 'quantite',     label: 'Quantité',           type: 'number', defaultValue: 1 },
+                { name: 'prixUnitaire', label: 'Prix unitaire (DT)', type: 'number' },
+              ],
+            },
+            {
+              name: 'factureGenerateur',
+              label: '🧾 Générer et envoyer la facture',
+              type: 'ui',
+              admin: {
+                components: { Field: '@/components/payload/FactureGenerator' },
+              },
+            },
+          ],
+        },
+
+        // ── Tab 6 : Messagerie ────────────────────────────────────────────────
         {
           label: '💬 Messagerie',
           fields: [

@@ -14,8 +14,10 @@ const SERVICES_LABELS: Record<string, string> = {
 
 const ETAGES_LABELS: Record<string, string> = {
   'RDC': 'Rez-de-chaussée',
-  '1': '1er étage', '2': '2ème étage', '3': '3ème étage',
-  '4': '4ème étage', '5+': '5ème et +',
+  '1': '1er étage',
+  ...Object.fromEntries(
+    Array.from({ length: 19 }, (_, i) => [String(i + 2), `${i + 2}ème étage`])
+  ),
 }
 
 interface RecapFormData {
@@ -34,7 +36,6 @@ interface RecapFormData {
   arriveeAscenseur: boolean
   services:        string[]
   dateSouhaitee:   string
-  volumeEstime:    string
   commentaire:     string
   photosDepart:    UploadedPhoto[]
   photosArrivee:   UploadedPhoto[]
@@ -123,22 +124,21 @@ export function StepRecapitulatif({ form, isPending, error, gotoStep, onSubmit }
       </Section>
 
       {/* Arrivée */}
-      <Section title="Adresse d'arrivée" step={2} gotoStep={gotoStep}>
+      <Section title="Adresse d'arrivée" step={1} gotoStep={gotoStep}>
         <Row label="Adresse" value={`${form.arriveeAdresse}, ${form.arriveeVille}`} />
         <Row label="Étage"   value={ETAGES_LABELS[form.arriveeEtage] ?? form.arriveeEtage} />
         {form.arriveeAscenseur && <Row label="" value="✓ Ascenseur disponible" />}
       </Section>
 
       {/* Services */}
-      <Section title="Services & date" step={3} gotoStep={gotoStep}>
+      <Section title="Services & date" step={2} gotoStep={gotoStep}>
         <Row label="Services" value={form.services.map((s) => SERVICES_LABELS[s] ?? s).join(', ')} />
         {form.dateSouhaitee && <Row label="Date" value={new Date(form.dateSouhaitee).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })} />}
-        {form.volumeEstime  && <Row label="Volume" value={`${form.volumeEstime} m³`} />}
         {form.commentaire   && <Row label="Commentaire" value={form.commentaire} />}
       </Section>
 
       {/* Photos */}
-      <Section title={`Photos (${donePhotos.length} ajoutée${donePhotos.length !== 1 ? 's' : ''})`} step={4} gotoStep={gotoStep}>
+      <Section title={`Photos (${donePhotos.length} ajoutée${donePhotos.length !== 1 ? 's' : ''})`} step={3} gotoStep={gotoStep}>
         {donePhotos.length === 0 ? (
           <p className="font-body text-xs text-[var(--color-text-muted)]/60 italic">Aucune photo ajoutée</p>
         ) : (

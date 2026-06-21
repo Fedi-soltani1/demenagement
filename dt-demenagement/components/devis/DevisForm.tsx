@@ -24,22 +24,36 @@ const SERVICES = [
   { value: 'montage-demontage',       label: 'Montage / Démontage',     icon: Wrench },
 ]
 
-const ETAGES = [
-  { value: 'RDC', short: 'RDC', long: 'Rez-de-chaussée' },
-  { value: '1',   short: '1er', long: '1er étage' },
-  { value: '2',   short: '2ème', long: '2ème étage' },
-  { value: '3',   short: '3ème', long: '3ème étage' },
-  { value: '4',   short: '4ème', long: '4ème étage' },
-  { value: '5+',  short: '5+',  long: '5ème et +' },
+const ETAGE_OPTIONS = [
+  { value: 'RDC', label: 'Rez-de-chaussée' },
+  ...Array.from({ length: 20 }, (_, i) => ({
+    value: String(i + 1),
+    label: i === 0 ? '1er étage' : `${i + 1}ème étage`,
+  })),
+]
+
+const TUNISIAN_CITIES = [
+  'Ariana', 'Béja', 'Ben Arous', 'Bizerte', 'Borj Louzir',
+  'Carthage', 'Djerba', 'Douar Hicher', 'El Aouina', 'El Fahs',
+  'El Haouaria', 'El Kef', 'El Mourouj', 'Ennasr', 'Ettadhamen',
+  'Gabès', 'Gafsa', 'Gammarth', 'Ghazela', 'Grombalia',
+  'Hammamet', 'Hammam Lif', 'Hammam Sousse', 'Jendouba', 'Kairouan',
+  'Kalaa Kebira', 'Kasserine', 'Kebili', 'Kelibia', 'Korba',
+  'La Goulette', 'La Marsa', 'La Mohammedia', 'La Soukra', 'Le Bardo',
+  'Les Berges du Lac', 'Mahdia', 'Manouba', 'Médenine', 'Megrine',
+  'Menzel Bourguiba', 'Menzel Bouzelfa', 'Menzel Temime', 'Monastir', 'Msaken',
+  'Nabeul', 'Oued Ellil', 'Radès', 'Raoued', 'Sfax',
+  'Sidi Bou Said', 'Sidi Bouzid', 'Siliana', 'Slimane', 'Soliman',
+  'Sousse', 'Tataouine', 'Tébourba', 'Tozeur', 'Tunis',
+  'Zaghouan', 'Zarzis',
 ]
 
 const STEP_META = [
   { Icon: User,          title: 'Vos coordonnées',    subtitle: 'Pour recevoir votre confirmation et numéro de dossier' },
-  { Icon: MapPin,        title: 'Adresse de départ',  subtitle: "D'où partiront vos affaires ?" },
-  { Icon: Home,          title: "Adresse d'arrivée",  subtitle: 'La destination finale de votre déménagement' },
-  { Icon: Package,       title: 'Vos besoins',        subtitle: 'Sélectionnez les services qui correspondent à votre projet' },
-  { Icon: Camera,        title: 'Photos (optionnel)', subtitle: 'Des photos nous évitent une visite et accélèrent votre devis' },
-  { Icon: ClipboardList, title: 'Tout est correct ?', subtitle: 'Vérifiez vos informations avant d\'envoyer' },
+  { Icon: MapPin,        title: 'Adresses',            subtitle: 'Départ et destination de votre déménagement' },
+  { Icon: Package,       title: 'Vos besoins',         subtitle: 'Sélectionnez les services qui correspondent à votre projet' },
+  { Icon: Camera,        title: 'Photos (optionnel)',  subtitle: 'Des photos nous évitent une visite et accélèrent votre devis' },
+  { Icon: ClipboardList, title: 'Tout est correct ?',  subtitle: 'Vérifiez vos informations avant d\'envoyer' },
 ]
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -50,7 +64,7 @@ interface FormData {
   prenom: string; nom: string; email: string; telephone: string
   departAdresse: string; departVille: string; departEtage: string; departAscenseur: boolean
   arriveeAdresse: string; arriveeVille: string; arriveeEtage: string; arriveeAscenseur: boolean
-  services: string[]; dateSouhaitee: string; volumeEstime: string; commentaire: string
+  services: string[]; dateSouhaitee: string; commentaire: string
   photosDepart:  UploadedPhoto[]
   photosArrivee: UploadedPhoto[]
   photosMeubles: UploadedPhoto[]
@@ -96,7 +110,7 @@ function validateField(field: keyof FieldErrors, value: string | string[]): stri
     case 'prenom':         return (value as string).trim().length >= 2 ? '' : 'Au moins 2 caractères'
     case 'nom':            return (value as string).trim().length >= 2 ? '' : 'Au moins 2 caractères'
     case 'email':          return (value as string).trim() === '' || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value as string) ? '' : 'Email invalide'
-    case 'telephone':      return /^\+?[0-9\s\-()\s]{8,20}$/.test(value as string) ? '' : 'Ex : +216 52 XXX XXX'
+    case 'telephone':      return (value as string).trim() === '' || /^\+?[0-9\s\-()\s]{8,20}$/.test(value as string) ? '' : 'Ex : +216 52 XXX XXX'
     case 'departAdresse':  return (value as string).trim().length >= 3 ? '' : 'Adresse trop courte'
     case 'departVille':    return (value as string).trim().length >= 2 ? '' : 'Ville requise'
     case 'arriveeAdresse': return (value as string).trim().length >= 3 ? '' : 'Adresse trop courte'
@@ -112,7 +126,7 @@ const INITIAL: FormData = {
   prenom: '', nom: '', email: '', telephone: '',
   departAdresse: '', departVille: '', departEtage: 'RDC', departAscenseur: false,
   arriveeAdresse: '', arriveeVille: '', arriveeEtage: 'RDC', arriveeAscenseur: false,
-  services: [], dateSouhaitee: '', volumeEstime: '', commentaire: '',
+  services: [], dateSouhaitee: '', commentaire: '',
   photosDepart: [], photosArrivee: [], photosMeubles: [],
 }
 
@@ -188,14 +202,13 @@ export function DevisForm({
   }
 
   function isStepValid(): boolean {
-    if (step === 0) return !!(form.prenom.trim() && form.nom.trim() && form.telephone.trim())
-    if (step === 1) return !!(form.departAdresse.trim() && form.departVille.trim())
-    if (step === 2) return !!(form.arriveeAdresse.trim() && form.arriveeVille.trim())
-    if (step === 3) return form.services.length > 0
+    if (step === 0) return !!(form.prenom.trim() && form.nom.trim() && (form.telephone.trim() || form.email.trim()))
+    if (step === 1) return !!(form.departAdresse.trim() && form.departVille.trim() && form.arriveeAdresse.trim() && form.arriveeVille.trim())
+    if (step === 2) return form.services.length > 0
     return true
   }
 
-  const STEPS = STEP_META // 6 items — drives stepper + progress
+  const STEPS = STEP_META // 5 items — drives stepper + progress
 
   function advanceStep() {
     if (step < STEPS.length - 1) {
@@ -233,7 +246,6 @@ export function DevisForm({
             adresseArrivee: { adresse: form.arriveeAdresse, ville: form.arriveeVille, etage: form.arriveeEtage, ascenseur: form.arriveeAscenseur },
             services:       form.services,
             dateSouhaitee:  form.dateSouhaitee || undefined,
-            volumeEstime:   form.volumeEstime ? Number(form.volumeEstime) : undefined,
             commentaire:    form.commentaire  || undefined,
             photosDepart:   form.photosDepart.filter((p)  => p.status === 'done').map((p) => p.id),
             photosArrivee:  form.photosArrivee.filter((p) => p.status === 'done').map((p) => p.id),
@@ -359,47 +371,65 @@ export function DevisForm({
                     onBlur={() => handleBlur('nom', form.nom)} />
                 </div>
                 <Field label="Email" type="email" value={form.email} onChange={(v) => update('email', v)}
-                  placeholder="vous@exemple.com" hint="Optionnel — pour recevoir votre confirmation par email" error={fieldErrs.email}
+                  placeholder="vous@exemple.com" hint="Optionnel si téléphone renseigné" error={fieldErrs.email}
                   onBlur={() => handleBlur('email', form.email)} />
-                <Field label="Téléphone *" type="tel" value={form.telephone} onChange={(v) => update('telephone', v)}
-                  placeholder="+216 52 XXX XXX" hint="Format : (+216) XX XXX XXX"
+                <Field label="Téléphone" type="tel" value={form.telephone} onChange={(v) => update('telephone', v)}
+                  placeholder="+216 52 XXX XXX" hint="Optionnel si email renseigné — format : (+216) XX XXX XXX"
                   error={fieldErrs.telephone} onBlur={() => handleBlur('telephone', form.telephone)} />
               </div>
             )}
 
-            {/* Steps 1 & 2 — Adresses */}
-            {(step === 1 || step === 2) && (() => {
-              const prefix      = step === 1 ? 'depart'  : 'arrivee'
-              const adresseKey  = (prefix + 'Adresse')   as keyof FormData
-              const villeKey    = (prefix + 'Ville')     as keyof FormData
-              const etageKey    = (prefix + 'Etage')     as keyof FormData
-              const ascKey      = (prefix + 'Ascenseur') as keyof FormData
-              const adresseErr  = step === 1 ? fieldErrs.departAdresse  : fieldErrs.arriveeAdresse
-              const villeErr    = step === 1 ? fieldErrs.departVille    : fieldErrs.arriveeVille
-              const adresseErrKey = step === 1 ? 'departAdresse' as const : 'arriveeAdresse' as const
-              const villeErrKey   = step === 1 ? 'departVille'   as const : 'arriveeVille'   as const
-              return (
-                <div className="space-y-4">
-                  <Field label="Adresse *" value={form[adresseKey] as string}
-                    onChange={(v) => update(adresseKey, v)} placeholder="12 rue de la Liberté"
-                    error={adresseErr} onBlur={() => handleBlur(adresseErrKey, form[adresseKey] as string)} />
-                  <Field label="Ville *" value={form[villeKey] as string}
-                    onChange={(v) => update(villeKey, v)} placeholder="Tunis"
-                    error={villeErr} onBlur={() => handleBlur(villeErrKey, form[villeKey] as string)} />
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start">
-                    <FloorGrid value={form[etageKey] as string} onChange={(v) => update(etageKey, v)} />
-                    <TogglePill
-                      value={form[ascKey] as boolean}
-                      onChange={(v) => update(ascKey, v)}
-                      label="Ascenseur disponible ?"
-                    />
+            {/* Step 1 — Adresses (départ + arrivée) */}
+            {step === 1 && (
+              <div className="flex flex-col sm:flex-row gap-5">
+                {/* Départ */}
+                <div className="flex-1 space-y-3">
+                  <div className="flex items-center gap-2 mb-1">
+                    <div className="w-6 h-6 rounded-full bg-[var(--color-red)]/10 border border-[var(--color-red)]/20 flex items-center justify-center">
+                      <MapPin className="w-3 h-3 text-[var(--color-red)]" aria-hidden="true" />
+                    </div>
+                    <p className="font-body text-xs font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">Départ</p>
                   </div>
+                  <Field label="Adresse *" value={form.departAdresse}
+                    onChange={(v) => update('departAdresse', v)} placeholder="12 rue de la Liberté"
+                    error={fieldErrs.departAdresse} onBlur={() => handleBlur('departAdresse', form.departAdresse)} />
+                  <CitySelect label="Ville *" value={form.departVille}
+                    onChange={(v) => update('departVille', v)}
+                    error={fieldErrs.departVille} onBlur={() => handleBlur('departVille', form.departVille)} />
+                  <FloorSelect value={form.departEtage} onChange={(v) => update('departEtage', v)} />
+                  <TogglePill value={form.departAscenseur} onChange={(v) => update('departAscenseur', v)} label="Ascenseur ?" />
                 </div>
-              )
-            })()}
 
-            {/* Step 3 — Services & date */}
-            {step === 3 && (
+                {/* Divider */}
+                <div className="hidden sm:flex flex-col items-center gap-1 py-6">
+                  <div className="w-px flex-1 bg-white/8" />
+                  <ArrowRight className="w-3.5 h-3.5 text-[var(--color-text-muted)]" aria-hidden="true" />
+                  <div className="w-px flex-1 bg-white/8" />
+                </div>
+                <div className="sm:hidden h-px bg-white/8" />
+
+                {/* Arrivée */}
+                <div className="flex-1 space-y-3">
+                  <div className="flex items-center gap-2 mb-1">
+                    <div className="w-6 h-6 rounded-full bg-emerald-400/10 border border-emerald-400/20 flex items-center justify-center">
+                      <Home className="w-3 h-3 text-emerald-400" aria-hidden="true" />
+                    </div>
+                    <p className="font-body text-xs font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">Arrivée</p>
+                  </div>
+                  <Field label="Adresse *" value={form.arriveeAdresse}
+                    onChange={(v) => update('arriveeAdresse', v)} placeholder="8 avenue Habib Bourguiba"
+                    error={fieldErrs.arriveeAdresse} onBlur={() => handleBlur('arriveeAdresse', form.arriveeAdresse)} />
+                  <CitySelect label="Ville *" value={form.arriveeVille}
+                    onChange={(v) => update('arriveeVille', v)}
+                    error={fieldErrs.arriveeVille} onBlur={() => handleBlur('arriveeVille', form.arriveeVille)} />
+                  <FloorSelect value={form.arriveeEtage} onChange={(v) => update('arriveeEtage', v)} />
+                  <TogglePill value={form.arriveeAscenseur} onChange={(v) => update('arriveeAscenseur', v)} label="Ascenseur ?" />
+                </div>
+              </div>
+            )}
+
+            {/* Step 2 — Services & date */}
+            {step === 2 && (
               <div className="space-y-6">
                 <div>
                   <p className="font-body text-xs text-[var(--color-text-muted)] uppercase tracking-wide mb-3">
@@ -434,21 +464,17 @@ export function DevisForm({
                   )}
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block font-body text-xs text-[var(--color-text-muted)] uppercase tracking-wide mb-2">
-                      Date souhaitée
-                    </label>
-                    <input
-                      type="date"
-                      value={form.dateSouhaitee}
-                      onChange={(e) => update('dateSouhaitee', e.target.value)}
-                      min={new Date().toISOString().split('T')[0]}
-                      className="w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/10 text-[var(--color-text-light)] font-body text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-red)] focus:border-transparent transition-all"
-                    />
-                  </div>
-                  <Field label="Volume estimé (m³)" type="number" value={form.volumeEstime}
-                    onChange={(v) => update('volumeEstime', v)} placeholder="ex : 25" />
+                <div>
+                  <label className="block font-body text-xs text-[var(--color-text-muted)] uppercase tracking-wide mb-2">
+                    Date souhaitée
+                  </label>
+                  <input
+                    type="date"
+                    value={form.dateSouhaitee}
+                    onChange={(e) => update('dateSouhaitee', e.target.value)}
+                    min={new Date().toISOString().split('T')[0]}
+                    className="w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/10 text-[var(--color-text-light)] font-body text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-red)] focus:border-transparent transition-all"
+                  />
                 </div>
 
                 <div>
@@ -467,8 +493,8 @@ export function DevisForm({
               </div>
             )}
 
-            {/* Step 4 — Photos */}
-            {step === 4 && (
+            {/* Step 3 — Photos */}
+            {step === 3 && (
               <StepPhotos
                 photosDepart={form.photosDepart}
                 photosArrivee={form.photosArrivee}
@@ -480,8 +506,8 @@ export function DevisForm({
               />
             )}
 
-            {/* Step 5 — Récapitulatif */}
-            {step === 5 && (
+            {/* Step 4 — Récapitulatif */}
+            {step === 4 && (
               <StepRecapitulatif
                 form={{ ...form, type }}
                 isPending={isPending}
@@ -496,7 +522,7 @@ export function DevisForm({
       </div>
 
       {/* Navigation — hidden on recap step */}
-      {step < 5 && (
+      {step < 4 && (
         <div className="flex justify-between mt-8 pt-6 border-t border-white/8">
           <button
             type="button"
@@ -514,7 +540,7 @@ export function DevisForm({
             disabled={!isStepValid()}
             className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[var(--color-red)] text-white font-body font-bold text-sm uppercase tracking-wider hover:bg-[var(--color-red-dark)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)]"
           >
-            {step === 3 ? 'Ajouter des photos' : step === 4 ? 'Vérifier & envoyer' : 'Suivant'}
+            {step === 2 ? 'Ajouter des photos' : step === 3 ? 'Vérifier & envoyer' : 'Suivant'}
             <ArrowRight className="w-4 h-4" aria-hidden="true" />
           </button>
         </div>
@@ -621,31 +647,55 @@ function StepHeader({
   )
 }
 
-function FloorGrid({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+function FloorSelect({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   return (
     <div>
       <label className="block font-body text-xs text-[var(--color-text-muted)] uppercase tracking-wide mb-2">
         Étage
       </label>
-      <div className="grid grid-cols-3 gap-2">
-        {ETAGES.map((e) => (
-          <button
-            key={e.value}
-            type="button"
-            title={e.long}
-            aria-label={e.long}
-            aria-pressed={value === e.value}
-            onClick={() => onChange(e.value)}
-            className={`py-2.5 rounded-xl border font-body text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)] ${
-              value === e.value
-                ? 'bg-[var(--color-red)]/15 border-[var(--color-red)]/40 text-[var(--color-red)]'
-                : 'bg-white/[0.02] border-white/8 text-[var(--color-text-muted)] hover:border-white/20 hover:text-[var(--color-text-light)]'
-            }`}
-          >
-            {e.short}
-          </button>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        style={{ colorScheme: 'dark' }}
+        className="w-full px-4 py-3 rounded-xl bg-[var(--color-bg-card)] border border-white/10 text-[var(--color-text-light)] font-body text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-red)] focus:border-transparent transition-all cursor-pointer"
+      >
+        {ETAGE_OPTIONS.map((opt) => (
+          <option key={opt.value} value={opt.value}>{opt.label}</option>
         ))}
-      </div>
+      </select>
+    </div>
+  )
+}
+
+function CitySelect({ label, value, onChange, error, onBlur }: {
+  label: string; value: string; onChange: (v: string) => void
+  error?: string; onBlur?: () => void
+}) {
+  return (
+    <div>
+      <label className="block font-body text-xs text-[var(--color-text-muted)] uppercase tracking-wide mb-2">
+        {label}
+      </label>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        onBlur={onBlur}
+        aria-invalid={!!error}
+        style={{ colorScheme: 'dark' }}
+        className={`w-full px-4 py-3 rounded-xl bg-[var(--color-bg-card)] border font-body text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-red)] focus:border-transparent transition-all cursor-pointer ${
+          error
+            ? 'border-[var(--color-red)]/60 text-[var(--color-text-light)]'
+            : value
+            ? 'border-emerald-400/40 text-[var(--color-text-light)]'
+            : 'border-white/10 text-[var(--color-text-muted)]'
+        }`}
+      >
+        <option value="">— Choisissez une ville —</option>
+        {TUNISIAN_CITIES.map((city) => (
+          <option key={city} value={city}>{city}</option>
+        ))}
+      </select>
+      {error && <p role="alert" className="font-body text-xs text-[var(--color-red)] mt-1">{error}</p>}
     </div>
   )
 }
