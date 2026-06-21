@@ -41,6 +41,7 @@ type DemenagementDoc = {
   numeroDossier: string
   statut: string
   clientId: string
+  telephone?: string | null
   nomComplet?: string
   dateDemenagement?: string
   adresseDepart?:  { adresse?: string; ville?: string; etage?: string; ascenseur?: boolean }

@@ -46,6 +46,7 @@ type DemenagementDoc = {
   servicesInclus?:  string[]
   devisStatut?:     string
   clientId:         string
+  telephone?:       string | null
 }
 
 function detectType(doc: DemenagementDoc): 'livraison' | 'demenagement' {
