@@ -172,6 +172,14 @@ const Settings: GlobalConfig = {
       admin: { description: 'Décocher pour désactiver toutes les animations scroll et transition sur le site.' },
     },
 
+    // ── Facturation ───────────────────────────────────────────────────────────────
+    {
+      name: 'matriculeFiscal',
+      label: '🧾 Matricule fiscal',
+      type: 'text',
+      admin: { description: 'Numéro de matricule fiscal de la société. Apparaît sur toutes les factures PDF.' },
+    },
+
     // ── Analytics ─────────────────────────────────────────────────────────────────
     {
       name: 'gtmId',
