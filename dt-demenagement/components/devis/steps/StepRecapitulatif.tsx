@@ -34,7 +34,6 @@ interface RecapFormData {
   arriveeAscenseur: boolean
   services:        string[]
   dateSouhaitee:   string
-  volumeEstime:    string
   commentaire:     string
   photosDepart:    UploadedPhoto[]
   photosArrivee:   UploadedPhoto[]
@@ -133,7 +132,6 @@ export function StepRecapitulatif({ form, isPending, error, gotoStep, onSubmit }
       <Section title="Services & date" step={2} gotoStep={gotoStep}>
         <Row label="Services" value={form.services.map((s) => SERVICES_LABELS[s] ?? s).join(', ')} />
         {form.dateSouhaitee && <Row label="Date" value={new Date(form.dateSouhaitee).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })} />}
-        {form.volumeEstime  && <Row label="Volume" value={`${form.volumeEstime} m³`} />}
         {form.commentaire   && <Row label="Commentaire" value={form.commentaire} />}
       </Section>
 

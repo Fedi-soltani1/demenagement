@@ -49,7 +49,7 @@ interface FormData {
   prenom: string; nom: string; email: string; telephone: string
   departAdresse: string; departVille: string; departEtage: string; departAscenseur: boolean
   arriveeAdresse: string; arriveeVille: string; arriveeEtage: string; arriveeAscenseur: boolean
-  services: string[]; dateSouhaitee: string; volumeEstime: string; commentaire: string
+  services: string[]; dateSouhaitee: string; commentaire: string
   photosDepart:  UploadedPhoto[]
   photosArrivee: UploadedPhoto[]
   photosMeubles: UploadedPhoto[]
@@ -111,7 +111,7 @@ const INITIAL: FormData = {
   prenom: '', nom: '', email: '', telephone: '',
   departAdresse: '', departVille: '', departEtage: 'RDC', departAscenseur: false,
   arriveeAdresse: '', arriveeVille: '', arriveeEtage: 'RDC', arriveeAscenseur: false,
-  services: [], dateSouhaitee: '', volumeEstime: '', commentaire: '',
+  services: [], dateSouhaitee: '', commentaire: '',
   photosDepart: [], photosArrivee: [], photosMeubles: [],
 }
 
@@ -231,7 +231,6 @@ export function DevisForm({
             adresseArrivee: { adresse: form.arriveeAdresse, ville: form.arriveeVille, etage: form.arriveeEtage, ascenseur: form.arriveeAscenseur },
             services:       form.services,
             dateSouhaitee:  form.dateSouhaitee || undefined,
-            volumeEstime:   form.volumeEstime ? Number(form.volumeEstime) : undefined,
             commentaire:    form.commentaire  || undefined,
             photosDepart:   form.photosDepart.filter((p)  => p.status === 'done').map((p) => p.id),
             photosArrivee:  form.photosArrivee.filter((p) => p.status === 'done').map((p) => p.id),
@@ -450,21 +449,17 @@ export function DevisForm({
                   )}
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block font-body text-xs text-[var(--color-text-muted)] uppercase tracking-wide mb-2">
-                      Date souhaitée
-                    </label>
-                    <input
-                      type="date"
-                      value={form.dateSouhaitee}
-                      onChange={(e) => update('dateSouhaitee', e.target.value)}
-                      min={new Date().toISOString().split('T')[0]}
-                      className="w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/10 text-[var(--color-text-light)] font-body text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-red)] focus:border-transparent transition-all"
-                    />
-                  </div>
-                  <Field label="Volume estimé (m³)" type="number" value={form.volumeEstime}
-                    onChange={(v) => update('volumeEstime', v)} placeholder="ex : 25" />
+                <div>
+                  <label className="block font-body text-xs text-[var(--color-text-muted)] uppercase tracking-wide mb-2">
+                    Date souhaitée
+                  </label>
+                  <input
+                    type="date"
+                    value={form.dateSouhaitee}
+                    onChange={(e) => update('dateSouhaitee', e.target.value)}
+                    min={new Date().toISOString().split('T')[0]}
+                    className="w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/10 text-[var(--color-text-light)] font-body text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-red)] focus:border-transparent transition-all"
+                  />
                 </div>
 
                 <div>
