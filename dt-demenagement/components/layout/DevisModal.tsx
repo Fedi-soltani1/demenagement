@@ -14,7 +14,7 @@ import type { ReactNode } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslations } from 'next-intl'
-import { ArrowRight, ArrowLeft, X, ClipboardList, Calendar, CheckCircle } from 'lucide-react'
+import { ArrowRight, ArrowLeft, X, ClipboardList, Calendar, CheckCircle, Mail } from 'lucide-react'
 
 // ─── Context ──────────────────────────────────────────────────────────────────
 
@@ -54,7 +54,9 @@ interface RdvData {
 
 interface FieldErrors {
   nomPrenom?:    string
+  method?:       string
   telephone?:    string
+  email?:        string
   rdvNom?:       string
   rdvPrenom?:    string
   rdvTelephone?: string
@@ -64,7 +66,8 @@ interface FieldErrors {
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const TEL_RE = /^\+?[0-9\s\-()\s]{8,20}$/
+const TEL_RE   = /^\+?[0-9\s\-()\s]{8,20}$/
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 const CONTACT_INIT: ContactData = { nomPrenom: '', telephone: '', email: '' }
 
@@ -189,6 +192,7 @@ export function DevisModalProvider({ children }: { children: ReactNode }) {
   const [isOpen,          setIsOpen]          = useState(false)
   const [screen,          setScreen]          = useState<Screen>('contact')
   const [contact,         setContact]         = useState<ContactData>(CONTACT_INIT)
+  const [contactMethod,   setContactMethod]   = useState<{ phone: boolean; email: boolean }>({ phone: false, email: false })
   const [rdv,             setRdv]             = useState<RdvData>(RDV_INIT)
   const [errors,          setErrors]          = useState<FieldErrors>({})
   const [villeContext,    setVilleContext]     = useState<string | undefined>(undefined)
@@ -205,6 +209,7 @@ export function DevisModalProvider({ children }: { children: ReactNode }) {
     leadSentRef.current = false
     setScreen('contact')
     setContact(CONTACT_INIT)
+    setContactMethod({ phone: false, email: false })
     setRdv(RDV_INIT)
     setErrors({})
     // opts priment sur l'auto-détection URL
@@ -295,10 +300,28 @@ export function DevisModalProvider({ children }: { children: ReactNode }) {
 
   function handleContactContinue() {
     const errs: FieldErrors = {}
-    if (!contact.nomPrenom.trim())       errs.nomPrenom = t('errorRequired')
-    if (!TEL_RE.test(contact.telephone)) errs.telephone = t('errorTelephone')
+    if (!contact.nomPrenom.trim()) errs.nomPrenom = t('errorRequired')
+    if (!contactMethod.phone && !contactMethod.email)
+      errs.method = t('errorMethod')
+    if (contactMethod.phone && !TEL_RE.test(contact.telephone))
+      errs.telephone = t('errorTelephone')
+    if (contactMethod.email && !EMAIL_RE.test(contact.email))
+      errs.email = t('errorEmail')
     if (Object.keys(errs).length > 0) { setErrors(errs); return }
     setErrors({})
+
+    // Fire-and-forget: create client account + send magic link for each chosen channel
+    const name = contact.nomPrenom.trim()
+    if (contactMethod.phone) void fetch('/api/auth/client-signup', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ name, telephone: contact.telephone.trim() }),
+    })
+    if (contactMethod.email) void fetch('/api/auth/client-signup', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ name, email: contact.email.trim() }),
+    })
 
     // Pas d'enregistrement de lead ici : le prospect n'est capturé comme lead
     // qu'en cas d'ABANDON à l'écran de choix (voir close()). S'il poursuit vers
@@ -312,8 +335,9 @@ export function DevisModalProvider({ children }: { children: ReactNode }) {
   function handleChoiceDevis() {
     proceededRef.current = true   // choix effectué → pas un lead abandonné
     const { prenom, nom } = splitNomPrenom(contact.nomPrenom)
-    const params = new URLSearchParams({ prenom, nom, telephone: contact.telephone })
-    if (contact.email)   params.set('email',   contact.email)
+    const params = new URLSearchParams({ prenom, nom })
+    if (contactMethod.phone && contact.telephone) params.set('telephone', contact.telephone)
+    if (contactMethod.email && contact.email)     params.set('email',     contact.email)
     if (villeContext)    params.set('ville',    villeContext)
     if (serviceContext)  params.set('service',  serviceContext)
     close()
@@ -325,12 +349,13 @@ export function DevisModalProvider({ children }: { children: ReactNode }) {
   function handleChoiceRdv() {
     proceededRef.current = true   // choix effectué → pas un lead abandonné
     const { prenom, nom } = splitNomPrenom(contact.nomPrenom)
+    const tel = contactMethod.phone ? contact.telephone : ''
     setRdv((prev) => ({
       ...prev,
       nom,
       prenom,
-      telephone: contact.telephone,
-      whatsapp:  contact.telephone,
+      telephone: tel,
+      whatsapp:  tel,
     }))
     setErrors({})
     setScreen('rdv')
@@ -449,10 +474,7 @@ export function DevisModalProvider({ children }: { children: ReactNode }) {
                       transition={{ duration: 0.18 }}
                       className="px-6 py-6 flex flex-col gap-5"
                     >
-                      <p className="font-body text-sm text-[var(--color-text-muted)]">
-                        {t('step1Subtitle')}
-                      </p>
-
+                      {/* Name */}
                       <FieldWrapper label={t('labelNomPrenom')} required error={errors.nomPrenom}>
                         <input
                           type="text"
@@ -471,33 +493,135 @@ export function DevisModalProvider({ children }: { children: ReactNode }) {
                         />
                       </FieldWrapper>
 
-                      <FieldWrapper label={t('labelTelephone')} required error={errors.telephone}>
-                        <input
-                          type="tel"
-                          value={contact.telephone}
-                          onChange={(e) => setContact((p) => ({ ...p, telephone: e.target.value }))}
-                          onBlur={() => {
-                            if (!TEL_RE.test(contact.telephone))
-                              setErrors((p) => ({ ...p, telephone: t('errorTelephone') }))
-                            else
-                              setErrors((p) => ({ ...p, telephone: undefined }))
-                          }}
-                          placeholder={t('placeholderTelephone')}
-                          aria-required="true"
-                          aria-invalid={!!errors.telephone}
-                          className={inputCls(errors.telephone)}
-                        />
-                      </FieldWrapper>
+                      {/* Contact method */}
+                      <div className="flex flex-col gap-2.5">
+                        <p className="font-body text-sm font-medium text-[var(--color-text-light)]">
+                          {t('methodLabel')}
+                        </p>
 
-                      <FieldWrapper label={t('labelEmail')}>
-                        <input
-                          type="email"
-                          value={contact.email}
-                          onChange={(e) => setContact((p) => ({ ...p, email: e.target.value }))}
-                          placeholder={t('placeholderEmail')}
-                          className={inputCls()}
-                        />
-                      </FieldWrapper>
+                        <div className="grid grid-cols-2 gap-2.5">
+                          {/* WhatsApp */}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setContactMethod((prev) => ({ ...prev, phone: !prev.phone }))
+                              setErrors((p) => ({ ...p, method: undefined, telephone: undefined }))
+                            }}
+                            aria-pressed={contactMethod.phone}
+                            className={[
+                              'flex items-center gap-3 px-4 py-3 rounded-xl border-2 text-start transition-all duration-150',
+                              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-[#128c7e]',
+                              contactMethod.phone
+                                ? 'border-[#128c7e] bg-[#128c7e]/5'
+                                : 'border-[var(--color-border)] hover:border-[#128c7e]/40',
+                            ].join(' ')}
+                          >
+                            <div className={[
+                              'w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors duration-150',
+                              contactMethod.phone ? 'bg-[#128c7e]' : 'bg-[#128c7e]/10',
+                            ].join(' ')}>
+                              <svg
+                                className={`w-4 h-4 ${contactMethod.phone ? 'text-white' : 'text-[#128c7e]'}`}
+                                fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"
+                              >
+                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+                              </svg>
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className={`font-body font-semibold text-sm leading-none mb-0.5 ${contactMethod.phone ? 'text-[#128c7e]' : 'text-[var(--color-text-light)]'}`}>
+                                {t('methodWhatsapp')}
+                              </p>
+                              <p className="font-body text-xs text-[var(--color-text-muted)] leading-snug">
+                                {t('methodWhatsappDesc')}
+                              </p>
+                            </div>
+                            {contactMethod.phone && (
+                              <CheckCircle className="w-4 h-4 text-[#128c7e] shrink-0" aria-hidden="true" />
+                            )}
+                          </button>
+
+                          {/* Email */}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setContactMethod((prev) => ({ ...prev, email: !prev.email }))
+                              setErrors((p) => ({ ...p, method: undefined, email: undefined }))
+                            }}
+                            aria-pressed={contactMethod.email}
+                            className={[
+                              'flex items-center gap-3 px-4 py-3 rounded-xl border-2 text-start transition-all duration-150',
+                              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-[var(--color-red)]',
+                              contactMethod.email
+                                ? 'border-[var(--color-red)] bg-[var(--color-red)]/5'
+                                : 'border-[var(--color-border)] hover:border-[var(--color-red)]/40',
+                            ].join(' ')}
+                          >
+                            <div className={[
+                              'w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors duration-150',
+                              contactMethod.email ? 'bg-[var(--color-red)]' : 'bg-[var(--color-red)]/10',
+                            ].join(' ')}>
+                              <Mail className={`w-4 h-4 ${contactMethod.email ? 'text-white' : 'text-[var(--color-red)]'}`} aria-hidden="true" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className={`font-body font-semibold text-sm leading-none mb-0.5 ${contactMethod.email ? 'text-[var(--color-red)]' : 'text-[var(--color-text-light)]'}`}>
+                                {t('methodEmail')}
+                              </p>
+                              <p className="font-body text-xs text-[var(--color-text-muted)] leading-snug">
+                                {t('methodEmailDesc')}
+                              </p>
+                            </div>
+                            {contactMethod.email && (
+                              <CheckCircle className="w-4 h-4 text-[var(--color-red)] shrink-0" aria-hidden="true" />
+                            )}
+                          </button>
+                        </div>
+
+                        {errors.method && (
+                          <p className="font-body text-xs text-[var(--color-red)]" role="alert">
+                            {errors.method}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Contact fields — revealed per selection */}
+                      {contactMethod.phone && (
+                        <FieldWrapper label={t('labelTelephone')} required error={errors.telephone}>
+                          <input
+                            type="tel"
+                            value={contact.telephone}
+                            onChange={(e) => setContact((p) => ({ ...p, telephone: e.target.value }))}
+                            onBlur={() => {
+                              if (!TEL_RE.test(contact.telephone))
+                                setErrors((p) => ({ ...p, telephone: t('errorTelephone') }))
+                              else
+                                setErrors((p) => ({ ...p, telephone: undefined }))
+                            }}
+                            placeholder={t('placeholderTelephone')}
+                            aria-required="true"
+                            aria-invalid={!!errors.telephone}
+                            className={inputCls(errors.telephone)}
+                          />
+                        </FieldWrapper>
+                      )}
+                      {contactMethod.email && (
+                        <FieldWrapper label={t('labelEmail')} required error={errors.email}>
+                          <input
+                            type="email"
+                            value={contact.email}
+                            onChange={(e) => setContact((p) => ({ ...p, email: e.target.value }))}
+                            onBlur={() => {
+                              if (!EMAIL_RE.test(contact.email))
+                                setErrors((p) => ({ ...p, email: t('errorEmail') }))
+                              else
+                                setErrors((p) => ({ ...p, email: undefined }))
+                            }}
+                            placeholder={t('placeholderEmail')}
+                            aria-required="true"
+                            aria-invalid={!!errors.email}
+                            className={inputCls(errors.email)}
+                          />
+                        </FieldWrapper>
+                      )}
 
                       <button
                         type="button"

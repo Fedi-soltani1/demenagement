@@ -1913,6 +1913,63 @@ input[type='radio']:checked {
   display: none !important;
 }
 
+/* ── Upload field photo thumbnails ────────────────────────────────────────── */
+
+/* Show uploaded images as a larger, nicer grid instead of the default tiny list */
+[class*='upload'] [class*='upload__filelist'],
+[class*='upload'] [class*='file-details'] {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)) !important;
+  gap: 10px !important;
+  padding: 8px 0 !important;
+}
+
+/* Each file row becomes a card */
+[class*='upload'] [class*='file-row'],
+[class*='upload'] [class*='filelist__item'] {
+  flex-direction: column !important;
+  align-items: center !important;
+  background: var(--dt-surface2) !important;
+  border: 1px solid var(--dt-border) !important;
+  border-radius: 10px !important;
+  padding: 8px !important;
+  gap: 6px !important;
+  width: 100% !important;
+  overflow: hidden !important;
+}
+
+/* Thumbnail image — fill the card */
+[class*='upload'] [class*='thumbnail'] img,
+[class*='upload'] [class*='file-thumbnail'] img,
+[class*='upload__thumbnail'] img {
+  width: 100% !important;
+  height: 100px !important;
+  object-fit: cover !important;
+  border-radius: 6px !important;
+  cursor: zoom-in !important;
+  display: block !important;
+}
+
+/* Filename label */
+[class*='upload'] [class*='file-details__label'],
+[class*='upload'] [class*='filename'] {
+  font-size: 10px !important;
+  text-align: center !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  color: var(--dt-muted) !important;
+}
+
+/* Remove button stays accessible */
+[class*='upload'] [class*='remove-button'],
+[class*='upload'] button[aria-label*='Remove'],
+[class*='upload'] button[aria-label*='Supprimer'] {
+  margin-top: auto !important;
+  font-size: 10px !important;
+}
+
 /* ═══════════════════════════════════════════
    NATIVE SELECT — status dropdowns in cells
    ═══════════════════════════════════════════ */

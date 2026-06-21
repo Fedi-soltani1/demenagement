@@ -171,8 +171,8 @@ const Demenagements: CollectionConfig = {
                   label: 'Type de client',
                   type: 'select',
                   options: [
-                    { label: '🏠 Particulier', value: 'particulier' },
-                    { label: '🏢 Entreprise', value: 'entreprise' },
+                    { label: 'Particulier', value: 'particulier' },
+                    { label: 'Entreprise',  value: 'entreprise' },
                   ],
                   admin: { width: '50%' },
                 },
@@ -202,6 +202,13 @@ const Demenagements: CollectionConfig = {
                 readOnly: true,
                 description: 'Conservé même si le partenaire est supprimé.',
                 condition: (data: Record<string, unknown>) => Boolean(data.sourcePartenaireNom),
+              },
+            },
+            {
+              name: 'clientAccessActions',
+              type: 'ui',
+              admin: {
+                components: { Field: '@/components/payload/ClientAccessActions' },
               },
             },
           ],
@@ -308,7 +315,7 @@ const Demenagements: CollectionConfig = {
             {
               type: 'collapsible',
               label: '📸 Photos envoyées par le client',
-              admin: { initCollapsed: true },
+              admin: { initCollapsed: false },
               fields: [
                 {
                   name: 'photosDepart',
@@ -316,7 +323,10 @@ const Demenagements: CollectionConfig = {
                   type: 'upload',
                   relationTo: 'media',
                   hasMany: true,
-                  admin: { description: 'Escalier, couloir, parking au départ.' },
+                  admin: {
+                    description: 'Escalier, couloir, parking au départ.',
+                    components: { Field: '@/components/payload/PhotosUploaderField' },
+                  },
                 },
                 {
                   name: 'photosArrivee',
@@ -324,7 +334,10 @@ const Demenagements: CollectionConfig = {
                   type: 'upload',
                   relationTo: 'media',
                   hasMany: true,
-                  admin: { description: 'Escalier, couloir, parking à l\'arrivée.' },
+                  admin: {
+                    description: "Escalier, couloir, parking à l'arrivée.",
+                    components: { Field: '@/components/payload/PhotosUploaderField' },
+                  },
                 },
                 {
                   name: 'photosMeubles',
@@ -332,7 +345,17 @@ const Demenagements: CollectionConfig = {
                   type: 'upload',
                   relationTo: 'media',
                   hasMany: true,
-                  admin: { description: 'Photos pour estimer le volume.' },
+                  admin: {
+                    description: 'Photos pour estimer le volume.',
+                    components: { Field: '@/components/payload/PhotosUploaderField' },
+                  },
+                },
+                {
+                  name: 'photoActions',
+                  type: 'ui',
+                  admin: {
+                    components: { Field: '@/components/payload/DemenagementPhotoActions' },
+                  },
                 },
               ],
             },
@@ -353,11 +376,11 @@ const Demenagements: CollectionConfig = {
                   required: true,
                   defaultValue: 'devis_recu',
                   options: [
-                    { label: '📥 Devis reçu', value: 'devis_recu' },
-                    { label: '✅ Confirmé', value: 'confirme' },
-                    { label: '🚛 En cours', value: 'en_cours' },
-                    { label: '🏁 Livré', value: 'livre' },
-                    { label: '❌ Annulé', value: 'annule' },
+                    { label: 'Devis reçu', value: 'devis_recu' },
+                    { label: 'Confirmé',   value: 'confirme' },
+                    { label: 'En cours',   value: 'en_cours' },
+                    { label: 'Livré',      value: 'livre' },
+                    { label: 'Annulé',     value: 'annule' },
                   ],
                   admin: {
                     width: '50%',
@@ -379,12 +402,12 @@ const Demenagements: CollectionConfig = {
               type: 'select',
               hasMany: true,
               options: [
-                { label: '🚛 Transporteur en Tunisie', value: 'transporteur-en-tunisie' },
-                { label: '🏢 Transfert Entreprises', value: 'transfert-entreprises' },
-                { label: '⬆️ Location Monte-Meubles', value: 'location-monte-meubles' },
-                { label: '📦 Garde-Meubles / Stockage', value: 'gardes-meubles' },
-                { label: '📫 Service Emballage', value: 'services-emballage' },
-                { label: '🔧 Montage & Démontage', value: 'montage-demontage' },
+                { label: 'Transporteur en Tunisie',  value: 'transporteur-en-tunisie' },
+                { label: 'Transfert Entreprises',    value: 'transfert-entreprises' },
+                { label: 'Location Monte-Meubles',   value: 'location-monte-meubles' },
+                { label: 'Garde-Meubles / Stockage', value: 'gardes-meubles' },
+                { label: 'Service Emballage',         value: 'services-emballage' },
+                { label: 'Montage & Démontage',       value: 'montage-demontage' },
               ],
             },
             {
@@ -414,10 +437,10 @@ const Demenagements: CollectionConfig = {
                   type: 'select',
                   defaultValue: 'brouillon',
                   options: [
-                    { label: '📝 Brouillon', value: 'brouillon' },
-                    { label: '📤 Envoyé',    value: 'envoye'    },
-                    { label: '✅ Accepté',   value: 'accepte'   },
-                    { label: '❌ Refusé',    value: 'refuse'    },
+                    { label: 'Brouillon', value: 'brouillon' },
+                    { label: 'Envoyé',    value: 'envoye'    },
+                    { label: 'Accepté',   value: 'accepte'   },
+                    { label: 'Refusé',    value: 'refuse'    },
                   ],
                   admin: {
                     width: '50%',

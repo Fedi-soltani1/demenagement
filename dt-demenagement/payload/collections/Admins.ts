@@ -41,9 +41,9 @@ const Admins: CollectionConfig = {
       defaultValue: 'editeur',
       admin: { description: 'Définit ce que cet utilisateur peut faire dans l\'admin.' },
       options: [
-        { label: '👑 Super Admin — accès total (créer des admins, supprimer)',   value: 'super-admin' },
-        { label: '✏️ Éditeur — modifier le contenu (pages, blog, FAQ, médias)', value: 'editeur' },
-        { label: '💼 Commercial — voir et gérer les dossiers clients',           value: 'commercial' },
+        { label: 'Super Admin — accès total (créer des admins, supprimer)',   value: 'super-admin' },
+        { label: 'Éditeur — modifier le contenu (pages, blog, FAQ, médias)', value: 'editeur' },
+        { label: 'Commercial — voir et gérer les dossiers clients',           value: 'commercial' },
       ],
       access: {
         update: ({ req: { user } }) =>
