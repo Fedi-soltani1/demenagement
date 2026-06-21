@@ -10,7 +10,7 @@ assert.equal(isEmailInput('+216 52 880 311'), false, 'téléphone')
 // isSyntheticIdentity
 assert.equal(isSyntheticIdentity('21652880311@wa.client'), true, 'synthétique')
 assert.equal(isSyntheticIdentity('alice@mail.tn'), false, 'vrai email')
-assert.equal(isSyntheticIdentity('wa.21652880311@dt-demenagement.tn'), false, 'ancien format B = PAS @wa.client')
+assert.equal(isSyntheticIdentity('wa.21652880311@dt-demenagement.tn'), true, 'ancien format wa.<chiffres>@dt-demenagement.tn = synthétique')
 assert.equal(isSyntheticIdentity(null), false, 'null')
 
 // buildPhoneIdentity

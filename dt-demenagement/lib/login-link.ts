@@ -10,14 +10,10 @@ import { sendWhatsAppMessage } from '@/lib/send-whatsapp'
 import { COMPANY } from '@/lib/constants'
 
 // Email réel (minuscule) si présent et non synthétique, sinon identité téléphone canonique.
+// isSyntheticIdentity couvre les deux formats : actuel (@wa.client) et ancien (wa.<chiffres>@dt-demenagement.tn).
 export function resolveIdentity(input: { email?: string | null; telephone?: string | null }): string {
   const email = (input.email ?? '').trim().toLowerCase()
-
-  // Vérifier si c'est un vrai email (pas une identité synthétique)
-  // Synthétique = format actuel @wa.client OU ancien format wa.XXXXX@dt-demenagement.tn
-  const isOldSyntheticFormat = email.startsWith('wa.') && email.includes('@dt-demenagement.tn')
-
-  if (email && !isSyntheticIdentity(email) && !isOldSyntheticFormat) return email
+  if (email && !isSyntheticIdentity(email)) return email
   return buildPhoneIdentity(normalizePhoneTN(input.telephone))
 }
 

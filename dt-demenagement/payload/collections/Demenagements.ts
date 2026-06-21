@@ -4,6 +4,7 @@ import { isCommercial } from '../access/isClient'
 import { upsertClient } from '../../lib/upsert-client'
 import { splitNomPrenom } from '../../lib/lead-convert'
 import { sendDossierClientEmail } from '../../lib/emails/dossier-client'
+import { normalizePhoneTN } from '../../lib/phone'
 
 const etageOptions = [
   { label: 'RDC', value: 'RDC' },
@@ -80,6 +81,12 @@ const Demenagements: CollectionConfig = {
           const year = new Date().getFullYear()
           const suffix = Math.floor(1000 + Math.random() * 9000)
           data = { ...data, numeroDossier: `DT-${year}-${suffix}` }
+        }
+        return data
+      },
+      ({ data }: { data: Record<string, unknown> }) => {
+        if (typeof data.telephone === 'string' && data.telephone.trim()) {
+          data.telephone = normalizePhoneTN(data.telephone)
         }
         return data
       },

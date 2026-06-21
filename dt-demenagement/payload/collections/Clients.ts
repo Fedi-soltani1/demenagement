@@ -1,10 +1,22 @@
 import type { CollectionConfig } from 'payload'
 import { isAdmin } from '../access/isAdmin'
 import { isAdminOrSelf } from '../access/isAdmin'
+import { normalizePhoneTN } from '../../lib/phone'
 
 const Clients: CollectionConfig = {
   slug: 'clients',
   labels: { singular: 'Client', plural: 'Clients' },
+
+  hooks: {
+    beforeChange: [
+      ({ data }: { data: Record<string, unknown> }) => {
+        if (typeof data.telephone === 'string' && data.telephone.trim()) {
+          data.telephone = normalizePhoneTN(data.telephone)
+        }
+        return data
+      },
+    ],
+  },
 
   access: {
     read:   ({ req: { user } }) => Boolean(user),

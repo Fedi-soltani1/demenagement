@@ -10,8 +10,10 @@ export function isEmailInput(input: string): boolean {
 }
 
 // true si la valeur est une identité téléphone synthétique (pas un vrai email).
+// Couvre le format actuel « <canonique>@wa.client » ET l'ancien format « wa.<chiffres>@dt-demenagement.tn ».
 export function isSyntheticIdentity(value: string | null | undefined): boolean {
-  return (value ?? '').trim().toLowerCase().endsWith(`@${PHONE_IDENTITY_DOMAIN}`)
+  const v = (value ?? '').trim().toLowerCase()
+  return v.endsWith(`@${PHONE_IDENTITY_DOMAIN}`) || /^wa\.\d+@dt-demenagement\.tn$/.test(v)
 }
 
 export function buildPhoneIdentity(canonical: string): string {

@@ -1,10 +1,25 @@
 import type { CollectionConfig } from 'payload'
 import { isAdmin } from '../access/isAdmin'
 import { isCommercial } from '../access/isClient'
+import { normalizePhoneTN } from '../../lib/phone'
 
 const RendezVous: CollectionConfig = {
   slug: 'rendez-vous',
   labels: { singular: 'Rendez-vous visite', plural: 'Rendez-vous visites' },
+
+  hooks: {
+    beforeChange: [
+      ({ data }: { data: Record<string, unknown> }) => {
+        if (typeof data.telephone === 'string' && data.telephone.trim()) {
+          data.telephone = normalizePhoneTN(data.telephone)
+        }
+        if (typeof data.whatsapp === 'string' && data.whatsapp.trim()) {
+          data.whatsapp = normalizePhoneTN(data.whatsapp)
+        }
+        return data
+      },
+    ],
+  },
 
   access: {
     read:   ({ req: { user } }) => Boolean(user),
