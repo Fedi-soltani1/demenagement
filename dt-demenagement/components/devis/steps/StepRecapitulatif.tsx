@@ -123,14 +123,14 @@ export function StepRecapitulatif({ form, isPending, error, gotoStep, onSubmit }
       </Section>
 
       {/* Arrivée */}
-      <Section title="Adresse d'arrivée" step={2} gotoStep={gotoStep}>
+      <Section title="Adresse d'arrivée" step={1} gotoStep={gotoStep}>
         <Row label="Adresse" value={`${form.arriveeAdresse}, ${form.arriveeVille}`} />
         <Row label="Étage"   value={ETAGES_LABELS[form.arriveeEtage] ?? form.arriveeEtage} />
         {form.arriveeAscenseur && <Row label="" value="✓ Ascenseur disponible" />}
       </Section>
 
       {/* Services */}
-      <Section title="Services & date" step={3} gotoStep={gotoStep}>
+      <Section title="Services & date" step={2} gotoStep={gotoStep}>
         <Row label="Services" value={form.services.map((s) => SERVICES_LABELS[s] ?? s).join(', ')} />
         {form.dateSouhaitee && <Row label="Date" value={new Date(form.dateSouhaitee).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })} />}
         {form.volumeEstime  && <Row label="Volume" value={`${form.volumeEstime} m³`} />}
@@ -138,7 +138,7 @@ export function StepRecapitulatif({ form, isPending, error, gotoStep, onSubmit }
       </Section>
 
       {/* Photos */}
-      <Section title={`Photos (${donePhotos.length} ajoutée${donePhotos.length !== 1 ? 's' : ''})`} step={4} gotoStep={gotoStep}>
+      <Section title={`Photos (${donePhotos.length} ajoutée${donePhotos.length !== 1 ? 's' : ''})`} step={3} gotoStep={gotoStep}>
         {donePhotos.length === 0 ? (
           <p className="font-body text-xs text-[var(--color-text-muted)]/60 italic">Aucune photo ajoutée</p>
         ) : (
