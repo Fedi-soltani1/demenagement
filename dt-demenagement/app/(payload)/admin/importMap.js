@@ -1,5 +1,6 @@
 import { default as default_043a135b5bf61c6c0293ccc212327364 } from '@/components/payload/DossierPipelineField'
 import { default as default_a3e73777b572bed8f65364e432be9838 } from '@/components/payload/DossierClientCell'
+import { default as default_698b0d3de9828a84194784a6b664c977 } from '@/components/payload/PhoneCell'
 import { default as default_254fb8fe22a8421212238d19daca2f78 } from '@/components/payload/ClientAccessActions'
 import { default as default_1fdddc3e87c7c22005e38a84a4e2ce34 } from '@/components/payload/PhotosUploaderField'
 import { default as default_f0cb3f03e1b4751c0cd97b384c918d76 } from '@/components/payload/DemenagementPhotoActions'
@@ -56,6 +57,7 @@ import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } f
 export const importMap = {
   "@/components/payload/DossierPipelineField#default": default_043a135b5bf61c6c0293ccc212327364,
   "@/components/payload/DossierClientCell#default": default_a3e73777b572bed8f65364e432be9838,
+  "@/components/payload/PhoneCell#default": default_698b0d3de9828a84194784a6b664c977,
   "@/components/payload/ClientAccessActions#default": default_254fb8fe22a8421212238d19daca2f78,
   "@/components/payload/PhotosUploaderField#default": default_1fdddc3e87c7c22005e38a84a4e2ce34,
   "@/components/payload/DemenagementPhotoActions#default": default_f0cb3f03e1b4751c0cd97b384c918d76,

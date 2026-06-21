@@ -87,8 +87,8 @@ const RendezVous: CollectionConfig = {
     {
       type: 'row',
       fields: [
-        { name: 'telephone', label: 'Téléphone', type: 'text', required: true, admin: { width: '50%', placeholder: '+216 XX XXX XXX' } },
-        { name: 'whatsapp',  label: 'WhatsApp',  type: 'text', required: true, admin: { width: '50%', placeholder: '+216 XX XXX XXX' } },
+        { name: 'telephone', label: 'Téléphone', type: 'text', required: true, admin: { width: '50%', placeholder: '+216 XX XXX XXX', components: { Cell: '@/components/payload/PhoneCell' } } },
+        { name: 'whatsapp',  label: 'WhatsApp',  type: 'text', required: true, admin: { width: '50%', placeholder: '+216 XX XXX XXX', components: { Cell: '@/components/payload/PhoneCell' } } },
       ],
     },
     {

@@ -156,7 +156,7 @@ const Demenagements: CollectionConfig = {
                   name: 'telephone',
                   label: 'Téléphone',
                   type: 'text',
-                  admin: { width: '50%', placeholder: '+216 XX XXX XXX' },
+                  admin: { width: '50%', placeholder: '+216 XX XXX XXX', components: { Cell: '@/components/payload/PhoneCell' } },
                 },
               ],
             },

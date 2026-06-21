@@ -8,6 +8,7 @@ import { getPayloadSafe } from '@/lib/payload-safe'
 import { COMPANY, LOCALES } from '@/lib/constants'
 import { dossierOwnershipWhere, clientLookupWhere, matchesIdentity } from '@/lib/espace-client-query'
 import { parseLoginIdentity } from '@/lib/client-identity'
+import { formatPhoneTN } from '@/lib/phone'
 import { Breadcrumb } from '@/components/layout/Breadcrumb'
 import { StatusBadge } from '@/components/espace-client/StatusBadge'
 import { SignOutButton } from '@/components/espace-client/SignOutButton'
@@ -127,7 +128,7 @@ export default async function EspaceClientPage({ params }: PageProps) {
   const termines        = dossiers.filter(d => d.statut === 'livre').length
   const prochainDossier = dossiers.find(d => d.dateDemenagement && ['confirme','en_preparation'].includes(d.statut))
 
-  const contactLabel = identityParsed.kind === 'phone' ? `+${identityParsed.canonical}` : session.user.email
+  const contactLabel = identityParsed.kind === 'phone' ? formatPhoneTN(identityParsed.canonical) : session.user.email
 
   const displayName = session.user.name
     ?? (identityParsed.kind === 'email' ? identityParsed.email.split('@')[0]?.replace(/[._-]+/g, ' ') : contactLabel)

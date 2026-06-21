@@ -69,7 +69,11 @@ const Clients: CollectionConfig = {
       name: 'telephone',
       label: 'Téléphone',
       type: 'text',
-      admin: { description: 'Format international (ex: +21652880311)', placeholder: '+216 XX XXX XXX' },
+      admin: {
+        description: 'Format international (ex: +21652880311)',
+        placeholder: '+216 XX XXX XXX',
+        components: { Cell: '@/components/payload/PhoneCell' },
+      },
     },
 
     // ── Adresse ───────────────────────────────────────────────────────────────
