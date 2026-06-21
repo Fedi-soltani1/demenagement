@@ -66,6 +66,40 @@ CONSÉQUENCE : Les nouvelles colonnes ajoutées dans les collections Payload NE 
 ## 🤖 DERNIÈRE MISE À JOUR PAR CLAUDE CODE
 
 ```
+Date        : 2026-06-21 (suite) — UNIFICATION LOGIN ESPACE CLIENT (email/téléphone)
+Session     : Dev 1 (Opus) — subagent-driven (plan docs/superpowers/plans/2026-06-21-unification-login-telephone.md)
+
+CONTEXTE : 2 systèmes de login téléphone incompatibles coexistaient après un merge
+  (notre <core>@wa.client vs le distant wa.<digits>@dt-demenagement.tn). Unifiés en UN seul.
+
+RÉSULTAT : une identité par personne = vrai email si présent, sinon téléphone canonique
+  tunisien « 216XXXXXXXX@wa.client ». Le canal (email/WhatsApp/les deux) n'est que la livraison ;
+  le lien magique porte toujours la même identité.
+
+FICHIERS CLÉS :
+  lib/phone.ts : + normalizePhoneTN (canonique 216XXXXXXXX ; étranger = tous les chiffres).
+  lib/client-identity.ts : buildPhoneIdentity/<canonical>@wa.client, isSyntheticIdentity (couvre
+    AUSSI l'ancien format @dt-demenagement.tn), parseLoginIdentity → {kind, canonical}.
+  lib/login-link.ts NOUVEAU : resolveIdentity (email réel sinon synthétique) + sendLoginLink
+    (UN lien, canaux choisis ; JAMAIS d'email vers une identité synthétique).
+  lib/espace-client-query.ts : résolution dossiers par numéro canonique (préfiltre like + filtre exact).
+  lib/upsert-client.ts : UNE fiche (dédup email réel sinon tél canonique ; phone-only → email synthétique).
+  app/actions/auth.ts : requestLoginLink sur le socle. app/api/auth/client-signup : un lien/canaux.
+  components/layout/DevisModal.tsx : un seul appel client-signup avec channels {email,whatsapp}.
+  app/api/admin/send-espace-client-whatsapp : socle unifié. app/api/auth/phone-magic-link SUPPRIMÉ.
+  payload/collections/{Clients,RendezVous,Demenagements}.ts : hook beforeChange normalise telephone
+    (+ whatsapp sur RDV) à l'écriture → matching fiable même si saisi avec espaces.
+
+MIGRATIONS PONCTUELLES (routes temp exécutées puis supprimées, aucune nouvelle colonne) :
+  - identités format B → unifié : 1 client converti.
+  - normalisation téléphones existants : 5 clients + 9 dossiers + 4 RDV.
+
+REVUE FINALE : C1 (préfiltre like ratait les tél stockés AVEC ESPACES) → corrigé par normalisation
+  à l'écriture + migration. I1 (garde legacy unifié dans isSyntheticIdentity) → corrigé. READY TO MERGE.
+VÉRIF : tsc 0 · eslint 0 err (7 warnings <img> préexistants) · 3 tests purs OK · E2E happy paths OK.
+NOTE : les téléphones sont désormais stockés/affichés en chiffres canoniques (21652880311).
+
+──────────────────────────────────────────────────────────────────────────────
 Date        : 2026-06-21 — CONNEXION ESPACE CLIENT PAR EMAIL OU TÉLÉPHONE
 Session     : Dev 1 (Opus) — exécution subagent-driven (plan docs/superpowers/plans/2026-06-21-connexion-telephone.md)
 
@@ -909,11 +943,11 @@ Reprendre à : "Déploiement production Vercel + Railway"
 > Elle lui dit exactement où reprendre sans poser de questions.
 
 ```
-PHASE ACTUELLE    : Post-Phase 6 — CONNEXION ESPACE CLIENT PAR EMAIL OU TÉLÉPHONE
-ÉTAPE ACTUELLE    : ✅ Connexion email/téléphone (champ unique, lien magique, canal préférentiel)
-STATUT            : ✅ tsc + eslint + tests + test E2E action OK — voir DERNIÈRE MISE À JOUR (2026-06-21)
-DERNIER FICHIER   : app/(site)/[locale]/espace-client/page.tsx
-PROCHAINE ACTION  : test manuel login téléphone-seul (WhatsApp, bot requis) ; revue finale
+PHASE ACTUELLE    : Post-Phase 6 — UNIFICATION LOGIN ESPACE CLIENT (email/téléphone)
+ÉTAPE ACTUELLE    : ✅ Un seul système d'identité (email sinon 216X@wa.client) + normalisation tél à l'écriture
+STATUT            : ✅ tsc + eslint + tests + E2E OK ; revue finale READY TO MERGE (C1+I1 corrigés)
+DERNIER FICHIER   : payload/collections/{Clients,RendezVous,Demenagements}.ts (hooks normalizePhoneTN)
+PROCHAINE ACTION  : test manuel login téléphone-seul WhatsApp (bot requis) ; déploiement
 BLOQUEURS         : Aucun
 
 ─── SESSION 2026-05-24 — MIGRATION SCHEMA sectionOptions + typographie ──────
