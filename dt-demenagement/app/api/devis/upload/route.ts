@@ -8,7 +8,7 @@ const MAX_SIZE_BYTES = 5 * 1024 * 1024 // 5 MB
 
 export async function POST(request: Request) {
   // Rate limiting AVANT tout traitement (20 uploads / minute / IP — plusieurs photos par devis)
-  if (!rateLimit(`upload:${clientIp(request)}`, 20, 60_000)) {
+  if (!(await rateLimit(`upload:${clientIp(request)}`, 20, 60_000))) {
     return NextResponse.json({ error: 'Trop de requêtes, réessayez plus tard.' }, { status: 429 })
   }
 

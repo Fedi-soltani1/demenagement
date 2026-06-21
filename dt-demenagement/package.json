@@ -23,7 +23,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "seed": "curl \"http://localhost:3000/api/seed?secret=seed123\"",
+    "seed": "node --env-file=.env.local -e \"fetch('http://localhost:3000/api/seed?secret='+encodeURIComponent(process.env.SEED_SECRET||'')).then(r=>r.text()).then(console.log)\"",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },

@@ -52,7 +52,7 @@ const devisSchema = z.object({
 
 export async function POST(request: Request) {
   // Rate limiting AVANT tout traitement (5 requêtes / minute / IP)
-  if (!rateLimit(`devis:${clientIp(request)}`, 5, 60_000)) {
+  if (!(await rateLimit(`devis:${clientIp(request)}`, 5, 60_000))) {
     return NextResponse.json({ error: 'Trop de requêtes, réessayez plus tard.' }, { status: 429 })
   }
 

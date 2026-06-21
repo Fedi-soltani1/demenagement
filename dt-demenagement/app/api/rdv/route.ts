@@ -29,7 +29,7 @@ const rdvSchema = z.object({
 
 export async function POST(request: Request) {
   // Rate limiting AVANT tout traitement (5 requêtes / minute / IP)
-  if (!rateLimit(`rdv:${clientIp(request)}`, 5, 60_000)) {
+  if (!(await rateLimit(`rdv:${clientIp(request)}`, 5, 60_000))) {
     return NextResponse.json({ error: 'Trop de requêtes, réessayez plus tard.' }, { status: 429 })
   }
 

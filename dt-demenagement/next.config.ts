@@ -26,6 +26,25 @@ const securityHeaders = [
     key: 'Permissions-Policy',
     value: 'camera=(), microphone=(), geolocation=()',
   },
+  // CSP en REPORT-ONLY : n'bloque RIEN (le navigateur ne fait que signaler les
+  // violations dans la console) → zéro risque de casser le site/admin. Sert à
+  // OBSERVER avant de durcir. Quand les rapports sont propres, passer la clé en
+  // 'Content-Security-Policy' (enforce) après test approfondi (admin Payload inclus).
+  {
+    key: 'Content-Security-Policy-Report-Only',
+    value: [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net https://www.clarity.ms https://*.clarity.ms",
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+      "img-src 'self' data: blob: https:",
+      "font-src 'self' data: https://fonts.gstatic.com",
+      "connect-src 'self' https://www.google-analytics.com https://region1.google-analytics.com https://*.clarity.ms https://vitals.vercel-insights.com",
+      "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://www.google.com",
+      "object-src 'none'",
+      "base-uri 'self'",
+      "frame-ancestors 'self'",
+    ].join('; '),
+  },
 ]
 
 const nextConfig: NextConfig = {

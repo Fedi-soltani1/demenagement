@@ -25,7 +25,7 @@ const contactSchema = z.object({
 
 export async function POST(request: Request): Promise<NextResponse> {
   // 1. Rate limiting AVANT tout traitement (5 requêtes / minute / IP)
-  if (!rateLimit(`contact:${clientIp(request)}`, 5, 60_000)) {
+  if (!(await rateLimit(`contact:${clientIp(request)}`, 5, 60_000))) {
     return NextResponse.json({ error: 'Trop de requêtes, réessayez plus tard.' }, { status: 429 })
   }
 
