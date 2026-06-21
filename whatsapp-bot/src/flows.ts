@@ -9,6 +9,7 @@ export interface Step {
   optional?: boolean                // accepte "passer"
   choices?:  { label: string; value: string }[]  // pour kind 'choice'
   validate?: (input: string) => string | null    // null = ok, sinon message d'erreur
+  condition?: (data: Record<string, unknown>) => boolean  // étape posée seulement si true (sinon sautée)
 }
 
 const EMAIL_OK = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -29,13 +30,31 @@ const servicesQuestion =
   'Quels services ? Répondez avec les numéros séparés par une virgule (ex : 1,3) :\n' +
   SERVICES.map((s, i) => `${i + 1}. ${s.label}`).join('\n')
 
+export const PREAMBULE_STEPS: Step[] = [
+  { key: 'prenom', kind: 'text', question: 'Votre prénom ?', validate: minLen(2) },
+  { key: 'nom',    kind: 'text', question: 'Votre nom ?',    validate: minLen(2) },
+  { key: 'canal',  kind: 'choice',
+    question: 'Comment préférez-vous être recontacté ?\n1. WhatsApp\n2. Email\n3. Les deux',
+    choices: [
+      { label: 'WhatsApp', value: 'whatsapp' },
+      { label: 'Email',    value: 'email' },
+      { label: 'Les deux', value: 'les_deux' },
+    ] },
+  { key: 'email',  kind: 'text', question: 'Votre email ?',
+    validate: (v) => EMAIL_OK.test(v) ? null : 'Email invalide. Entrez un email valide (ex : nom@email.com).',
+    condition: (d) => d.canal === 'email' || d.canal === 'les_deux' },
+  { key: 'intention', kind: 'choice',
+    question: 'Que souhaitez-vous ?\n1. Demande de devis\n2. Rendez-vous de visite\n3. Pas maintenant',
+    choices: [
+      { label: 'Devis',          value: 'devis' },
+      { label: 'Rendez-vous',    value: 'rdv' },
+      { label: 'Pas maintenant', value: 'pas_maintenant' },
+    ] },
+]
+
 export const DEVIS_STEPS: Step[] = [
   { key: 'type',           kind: 'choice', question: 'Type de client ?\n1. Particulier\n2. Entreprise',
     choices: [{ label: 'Particulier', value: 'particulier' }, { label: 'Entreprise', value: 'entreprise' }] },
-  { key: 'prenom',         kind: 'text',   question: 'Votre prénom ?',  validate: minLen(2) },
-  { key: 'nom',            kind: 'text',   question: 'Votre nom ?',     validate: minLen(2) },
-  { key: 'email',          kind: 'text',   question: 'Votre email ? (obligatoire pour recevoir votre devis)',
-    validate: (v) => EMAIL_OK.test(v) ? null : 'Email invalide. Entrez un email valide (ex : nom@email.com).' },
   { key: 'villeDepart',    kind: 'text',   question: 'Ville de départ ?',   validate: minLen(2) },
   { key: 'adresseDepart',  kind: 'text',   question: 'Adresse de départ ?', validate: minLen(3) },
   { key: 'villeArrivee',   kind: 'text',   question: "Ville d'arrivée ?",   validate: minLen(2) },
@@ -56,10 +75,6 @@ export const RDV_STEPS: Step[] = [
       { label: 'Entreprise',     value: 'entreprise' },
       { label: 'Administration', value: 'administration' },
     ] },
-  { key: 'prenom',     kind: 'text', question: 'Votre prénom ?', validate: minLen(2) },
-  { key: 'nom',        kind: 'text', question: 'Votre nom ?',    validate: minLen(2) },
-  { key: 'email',      kind: 'text', question: 'Votre email ? (ou "passer")', optional: true,
-    validate: (v) => EMAIL_OK.test(v) ? null : 'Email invalide. Réessayez ou "passer".' },
   { key: 'adresse',    kind: 'text', question: 'Votre adresse ? (ou "passer")', optional: true },
   { key: 'dateVisite', kind: 'text', question: 'Date de visite souhaitée ? (ou "passer")', optional: true },
   { key: 'heure',      kind: 'text', question: 'Heure souhaitée ? (ou "passer")', optional: true },
