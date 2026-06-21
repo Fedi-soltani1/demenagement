@@ -114,6 +114,10 @@
     "verifySpam": "Can't see the email? Check your spam folder.",
     "backToLogin": "Back to login",
     "errorDefault": "An error occurred. Please try again.",
+    "identifierLabel": "Email or phone",
+    "identifierPlaceholder": "you@email.com or +216 XX XXX XXX",
+    "errorNotFound": "No account found with these details.",
+    "verifyDescriptionPhone": "If you used your phone number, the link was sent to you via WhatsApp.",
     "metaTitle": "Login — Client Area",
     "metaDescription": "Sign in to your DT Demenagement Tunisie client area."
   },

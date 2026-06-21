@@ -114,6 +114,10 @@
     "verifySpam": "Vous ne voyez pas l'email ? Vérifiez vos spams.",
     "backToLogin": "Retour à la connexion",
     "errorDefault": "Une erreur est survenue. Veuillez réessayer.",
+    "identifierLabel": "Email ou téléphone",
+    "identifierPlaceholder": "vous@email.com ou +216 XX XXX XXX",
+    "errorNotFound": "Aucun compte trouvé avec ces informations.",
+    "verifyDescriptionPhone": "Si vous avez utilisé votre numéro, le lien vous a été envoyé sur WhatsApp.",
     "metaTitle": "Connexion — Espace Client",
     "metaDescription": "Connectez-vous à votre espace client DT Déménagement Tunisie."
   },
