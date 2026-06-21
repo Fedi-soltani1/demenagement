@@ -66,6 +66,27 @@ CONSÉQUENCE : Les nouvelles colonnes ajoutées dans les collections Payload NE 
 ## 🤖 DERNIÈRE MISE À JOUR PAR CLAUDE CODE
 
 ```
+Date        : 2026-06-21 (suite) — BOT WHATSAPP : PRÉAMBULE COMMUN + CAPTURE LEAD
+Session     : Dev 1 (Opus) — subagent-driven (plan whatsapp-bot/docs/plans/2026-06-21-bot-preambule-lead.md)
+
+OBJECTIF : le bot WhatsApp reproduit le parcours du popup du site — salutation → prénom → nom →
+  canal de contact (WhatsApp/Email/les deux) → intention (devis/RDV/pas maintenant).
+  « Pas maintenant » → crée un LEAD. Devis/RDV ne redemandent plus l'identité.
+
+FICHIERS (whatsapp-bot/src/) :
+  flows.ts : Step.condition + PREAMBULE_STEPS (prenom, nom, canal, email conditionnel, intention) ;
+    identité (prenom/nom/email) RETIRÉE de DEVIS_STEPS et RDV_STEPS.
+  sessions.ts : Flux = 'menu' | 'preambule' | 'devis' | 'rdv'.
+  conversation.ts : moteur pur — préambule, advance() saute les étapes conditionnelles (email si
+    canal email/les_deux seulement), routage intention, action 'submit-lead', GREETING. (+ conversation.test.ts)
+  payloadClient.ts : createLead() → POST /api/lead-capture (source 'whatsapp-bot').
+  index.ts : gère submit-lead (createLead + clôture) ; reset accueil après toute soumission.
+  sim.ts : séquence de simulation mise à jour au nouveau préambule.
+
+VÉRIF : npm run typecheck 0 erreur · conversation/numero/httpServer tests OK · revue finale READY TO MERGE.
+NOTE : le bot (port 3100) doit tourner pour livrer les messages ; le code est testé via le moteur pur + sim.
+
+──────────────────────────────────────────────────────────────────────────────
 Date        : 2026-06-21 (suite) — UNIFICATION LOGIN ESPACE CLIENT (email/téléphone)
 Session     : Dev 1 (Opus) — subagent-driven (plan docs/superpowers/plans/2026-06-21-unification-login-telephone.md)
 
