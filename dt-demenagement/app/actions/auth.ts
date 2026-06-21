@@ -2,12 +2,9 @@
 
 import { signIn } from '@/auth'
 import { getPayloadSafe } from '@/lib/payload-safe'
-import { isEmailInput, buildPhoneIdentity } from '@/lib/client-identity'
-import { phoneCore } from '@/lib/phone'
-import { generateMagicLink } from '@/lib/generate-magic-link'
-import { sendMail } from '@/lib/mailer'
-import { buildMagicLinkEmail } from '@/lib/emails/magic-link'
-import { sendWhatsAppMessage } from '@/lib/send-whatsapp'
+import { isEmailInput } from '@/lib/client-identity'
+import { normalizePhoneTN } from '@/lib/phone'
+import { resolveIdentity, sendLoginLink } from '@/lib/login-link'
 
 export async function sendMagicLink(email: string, callbackUrl: string): Promise<{ error?: string }> {
   try {
@@ -22,8 +19,8 @@ export async function sendMagicLink(email: string, callbackUrl: string): Promise
   }
 }
 
-type ClientDoc  = { email?: string; telephone?: string }
-type DossierDoc = { clientId?: string; telephone?: string }
+type ClientDoc  = { email?: string | null; telephone?: string | null; prenom?: string | null }
+type DossierDoc = { clientId?: string | null; telephone?: string | null; nomComplet?: string | null }
 
 // Demande un lien de connexion : détecte email/téléphone, retrouve le compte,
 // choisit le canal (email prioritaire, sinon WhatsApp) et envoie le lien magique.
@@ -45,40 +42,31 @@ export async function requestLoginLink(
         payload.find({ collection: 'demenagements', where: { clientId: { equals: email } }, limit: 1, overrideAccess: true }),
       ])
       if (clients.totalDocs === 0 && dossiers.totalDocs === 0) return { error: 'not_found' }
-
-      const url = await generateMagicLink(email, callbackPath)
-      await sendMail({ to: email, subject: 'Votre lien de connexion — DT Déménagement', html: buildMagicLinkEmail(url) })
+      const identity = resolveIdentity({ email })
+      await sendLoginLink({ identity, channels: { email: true }, callbackPath })
       return { ok: true }
     }
 
     // Téléphone
-    const core = phoneCore(input)
-    if (core.length < 8) return { error: 'not_found' }
-    const [clientsRaw, dossiersRaw] = await Promise.all([
-      payload.find({ collection: 'clients', where: { telephone: { like: core } }, limit: 20, overrideAccess: true }),
-      payload.find({ collection: 'demenagements', where: { telephone: { like: core } }, sort: '-createdAt', limit: 20, overrideAccess: true }),
+    const canonical = normalizePhoneTN(input)
+    if (canonical.length < 8) return { error: 'not_found' }
+    const national = canonical.startsWith('216') ? canonical.slice(3) : canonical
+    const [clients, dossiers] = await Promise.all([
+      payload.find({ collection: 'clients', where: { telephone: { like: national } }, limit: 20, overrideAccess: true }),
+      payload.find({ collection: 'demenagements', where: { telephone: { like: national } }, sort: '-createdAt', limit: 20, overrideAccess: true }),
     ])
-    // Re-vérification exacte : le `like` est une sous-chaîne SQL → filtrer sur l'égalité du cœur
-    const client  = (clientsRaw.docs  as ClientDoc[]).find((d) => phoneCore(d.telephone) === core)
-    const dossier = (dossiersRaw.docs as DossierDoc[]).find((d) => phoneCore(d.telephone) === core)
+    const client  = (clients.docs as ClientDoc[]).find((c) => normalizePhoneTN(c.telephone) === canonical)
+    const dossier = (dossiers.docs as DossierDoc[]).find((d) => normalizePhoneTN(d.telephone) === canonical)
     if (!client && !dossier) return { error: 'not_found' }
 
-    // Préférence email si présent
-    const email = (client?.email ?? dossier?.clientId ?? '').trim()
-    if (email) {
-      const url = await generateMagicLink(email, callbackPath)
-      await sendMail({ to: email, subject: 'Votre lien de connexion — DT Déménagement', html: buildMagicLinkEmail(url) })
-      return { ok: true }
-    }
+    const realEmail = client?.email && !client.email.endsWith('@wa.client') ? client.email
+      : (dossier?.clientId && !dossier.clientId.endsWith('@wa.client') ? dossier.clientId : undefined)
+    const telephone = (client?.telephone ?? dossier?.telephone ?? '').trim()
+    const prenom    = (client?.prenom ?? '').trim() || (dossier?.nomComplet ?? '').trim().split(' ')[0] || undefined
 
-    // Sinon WhatsApp — uniquement vers le numéro exactement vérifié (jamais vers l'input brut)
-    const sendablePhone = (client?.telephone ?? dossier?.telephone ?? '').trim()
-    if (!sendablePhone) return { error: 'not_found' }
-    const url = await generateMagicLink(buildPhoneIdentity(core), callbackPath)
-    await sendWhatsAppMessage(
-      sendablePhone,
-      `Bonjour,\n\nVoici votre lien de connexion à votre espace client DT Déménagement (valable 24h, à usage unique) :\n${url}`,
-    )
+    const identity = resolveIdentity({ email: realEmail, telephone })
+    const channels = realEmail ? { email: true } : { whatsapp: true }
+    await sendLoginLink({ identity, channels, telephone, prenom, callbackPath })
     return { ok: true }
   } catch (e) {
     console.error('[requestLoginLink] échec:', e)
