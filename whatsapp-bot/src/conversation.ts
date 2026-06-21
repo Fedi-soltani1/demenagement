@@ -31,7 +31,7 @@ function isSkip(input: string): boolean {
 function recapText(session: Session): string {
   const d = session.data
   const lines = Object.entries(d)
-    .filter(([, v]) => v !== undefined)
+    .filter(([k, v]) => v !== undefined && k !== 'canal' && k !== 'intention')
     .map(([k, v]) => `• ${k} : ${String(v)}`)
   const photos = session.flux === 'devis' ? `\n• photos : ${session.mediaIds.length}` : ''
   return 'Récapitulatif :\n' + lines.join('\n') + photos +
