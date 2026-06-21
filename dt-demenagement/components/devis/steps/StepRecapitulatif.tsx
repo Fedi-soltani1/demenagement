@@ -14,8 +14,10 @@ const SERVICES_LABELS: Record<string, string> = {
 
 const ETAGES_LABELS: Record<string, string> = {
   'RDC': 'Rez-de-chaussée',
-  '1': '1er étage', '2': '2ème étage', '3': '3ème étage',
-  '4': '4ème étage', '5+': '5ème et +',
+  '1': '1er étage',
+  ...Object.fromEntries(
+    Array.from({ length: 19 }, (_, i) => [String(i + 2), `${i + 2}ème étage`])
+  ),
 }
 
 interface RecapFormData {

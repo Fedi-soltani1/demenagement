@@ -24,13 +24,28 @@ const SERVICES = [
   { value: 'montage-demontage',       label: 'Montage / Démontage',     icon: Wrench },
 ]
 
-const ETAGES = [
-  { value: 'RDC', short: 'RDC', long: 'Rez-de-chaussée' },
-  { value: '1',   short: '1er', long: '1er étage' },
-  { value: '2',   short: '2ème', long: '2ème étage' },
-  { value: '3',   short: '3ème', long: '3ème étage' },
-  { value: '4',   short: '4ème', long: '4ème étage' },
-  { value: '5+',  short: '5+',  long: '5ème et +' },
+const ETAGE_OPTIONS = [
+  { value: 'RDC', label: 'Rez-de-chaussée' },
+  ...Array.from({ length: 20 }, (_, i) => ({
+    value: String(i + 1),
+    label: i === 0 ? '1er étage' : `${i + 1}ème étage`,
+  })),
+]
+
+const TUNISIAN_CITIES = [
+  'Ariana', 'Béja', 'Ben Arous', 'Bizerte', 'Borj Louzir',
+  'Carthage', 'Djerba', 'Douar Hicher', 'El Aouina', 'El Fahs',
+  'El Haouaria', 'El Kef', 'El Mourouj', 'Ennasr', 'Ettadhamen',
+  'Gabès', 'Gafsa', 'Gammarth', 'Ghazela', 'Grombalia',
+  'Hammamet', 'Hammam Lif', 'Hammam Sousse', 'Jendouba', 'Kairouan',
+  'Kalaa Kebira', 'Kasserine', 'Kebili', 'Kelibia', 'Korba',
+  'La Goulette', 'La Marsa', 'La Mohammedia', 'La Soukra', 'Le Bardo',
+  'Les Berges du Lac', 'Mahdia', 'Manouba', 'Médenine', 'Megrine',
+  'Menzel Bourguiba', 'Menzel Bouzelfa', 'Menzel Temime', 'Monastir', 'Msaken',
+  'Nabeul', 'Oued Ellil', 'Radès', 'Raoued', 'Sfax',
+  'Sidi Bou Said', 'Sidi Bouzid', 'Siliana', 'Slimane', 'Soliman',
+  'Sousse', 'Tataouine', 'Tébourba', 'Tozeur', 'Tunis',
+  'Zaghouan', 'Zarzis',
 ]
 
 const STEP_META = [
@@ -378,10 +393,10 @@ export function DevisForm({
                   <Field label="Adresse *" value={form.departAdresse}
                     onChange={(v) => update('departAdresse', v)} placeholder="12 rue de la Liberté"
                     error={fieldErrs.departAdresse} onBlur={() => handleBlur('departAdresse', form.departAdresse)} />
-                  <Field label="Ville *" value={form.departVille}
-                    onChange={(v) => update('departVille', v)} placeholder="Tunis"
+                  <CitySelect label="Ville *" value={form.departVille}
+                    onChange={(v) => update('departVille', v)}
                     error={fieldErrs.departVille} onBlur={() => handleBlur('departVille', form.departVille)} />
-                  <FloorGrid value={form.departEtage} onChange={(v) => update('departEtage', v)} />
+                  <FloorSelect value={form.departEtage} onChange={(v) => update('departEtage', v)} />
                   <TogglePill value={form.departAscenseur} onChange={(v) => update('departAscenseur', v)} label="Ascenseur ?" />
                 </div>
 
@@ -404,10 +419,10 @@ export function DevisForm({
                   <Field label="Adresse *" value={form.arriveeAdresse}
                     onChange={(v) => update('arriveeAdresse', v)} placeholder="8 avenue Habib Bourguiba"
                     error={fieldErrs.arriveeAdresse} onBlur={() => handleBlur('arriveeAdresse', form.arriveeAdresse)} />
-                  <Field label="Ville *" value={form.arriveeVille}
-                    onChange={(v) => update('arriveeVille', v)} placeholder="Sfax"
+                  <CitySelect label="Ville *" value={form.arriveeVille}
+                    onChange={(v) => update('arriveeVille', v)}
                     error={fieldErrs.arriveeVille} onBlur={() => handleBlur('arriveeVille', form.arriveeVille)} />
-                  <FloorGrid value={form.arriveeEtage} onChange={(v) => update('arriveeEtage', v)} />
+                  <FloorSelect value={form.arriveeEtage} onChange={(v) => update('arriveeEtage', v)} />
                   <TogglePill value={form.arriveeAscenseur} onChange={(v) => update('arriveeAscenseur', v)} label="Ascenseur ?" />
                 </div>
               </div>
@@ -632,31 +647,53 @@ function StepHeader({
   )
 }
 
-function FloorGrid({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+function FloorSelect({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   return (
     <div>
       <label className="block font-body text-xs text-[var(--color-text-muted)] uppercase tracking-wide mb-2">
         Étage
       </label>
-      <div className="grid grid-cols-3 gap-2">
-        {ETAGES.map((e) => (
-          <button
-            key={e.value}
-            type="button"
-            title={e.long}
-            aria-label={e.long}
-            aria-pressed={value === e.value}
-            onClick={() => onChange(e.value)}
-            className={`py-2.5 rounded-xl border font-body text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-red)] ${
-              value === e.value
-                ? 'bg-[var(--color-red)]/15 border-[var(--color-red)]/40 text-[var(--color-red)]'
-                : 'bg-white/[0.02] border-white/8 text-[var(--color-text-muted)] hover:border-white/20 hover:text-[var(--color-text-light)]'
-            }`}
-          >
-            {e.short}
-          </button>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/10 text-[var(--color-text-light)] font-body text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-red)] focus:border-transparent transition-all cursor-pointer"
+      >
+        {ETAGE_OPTIONS.map((opt) => (
+          <option key={opt.value} value={opt.value}>{opt.label}</option>
         ))}
-      </div>
+      </select>
+    </div>
+  )
+}
+
+function CitySelect({ label, value, onChange, error, onBlur }: {
+  label: string; value: string; onChange: (v: string) => void
+  error?: string; onBlur?: () => void
+}) {
+  return (
+    <div>
+      <label className="block font-body text-xs text-[var(--color-text-muted)] uppercase tracking-wide mb-2">
+        {label}
+      </label>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        onBlur={onBlur}
+        aria-invalid={!!error}
+        className={`w-full px-4 py-3 rounded-xl bg-white/[0.04] border font-body text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-red)] focus:border-transparent transition-all cursor-pointer ${
+          error
+            ? 'border-[var(--color-red)]/60 text-[var(--color-text-light)]'
+            : value
+            ? 'border-emerald-400/40 text-[var(--color-text-light)]'
+            : 'border-white/10 text-[var(--color-text-muted)]'
+        }`}
+      >
+        <option value="">— Choisissez une ville —</option>
+        {TUNISIAN_CITIES.map((city) => (
+          <option key={city} value={city}>{city}</option>
+        ))}
+      </select>
+      {error && <p role="alert" className="font-body text-xs text-[var(--color-red)] mt-1">{error}</p>}
     </div>
   )
 }
