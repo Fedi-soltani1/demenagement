@@ -20,6 +20,21 @@ export async function POST(request: NextRequest): Promise<Response> {
 
   const payload = await getPayload({ config })
 
+  // Contrôle de propriété : le client ne peut marquer comme lus que les messages
+  // d'un dossier QUI LUI APPARTIENT (sinon IDOR — flag « lu » d'un autre client).
+  const owns = await payload.find({
+    collection: 'demenagements',
+    where: { and: [
+      { id:       { equals: parsed.data.dossierId } },
+      { clientId: { equals: session.user.email } },
+    ] },
+    limit: 1,
+    overrideAccess: true,
+  })
+  if (owns.totalDocs === 0) {
+    return Response.json({ error: 'Dossier introuvable' }, { status: 404 })
+  }
+
   // Find admin messages not yet marked as read by client
   const result = await payload.find({
     collection: 'messages',
