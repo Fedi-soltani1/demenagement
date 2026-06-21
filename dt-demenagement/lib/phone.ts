@@ -6,3 +6,14 @@ export function phoneCore(input: string | null | undefined): string {
   const digits = (input ?? '').replace(/\D/g, '')
   return digits.length > 8 ? digits.slice(-8) : digits
 }
+
+// Normalisation canonique d'un numéro tunisien pour servir d'identité stable.
+// Retire +216 / 216 / 00216 et séparateurs ; un numéro national à 8 chiffres devient
+// « 216XXXXXXXX ». Un numéro étranger garde tous ses chiffres (distinct d'un tunisien).
+export function normalizePhoneTN(input: string | null | undefined): string {
+  let d = (input ?? '').replace(/\D/g, '')
+  if (d.startsWith('00216')) d = d.slice(5)
+  else if (d.startsWith('216')) d = d.slice(3)
+  if (d.length === 8) return `216${d}`
+  return d
+}
