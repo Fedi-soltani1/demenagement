@@ -9,9 +9,9 @@ interface CellProps {
 }
 
 const OPTIONS = [
-  { value: 'nouveau',  label: '🆕 Nouveau',  color: '#7a5500', bg: '#fff3cd' },
-  { value: 'confirme', label: '✅ Confirmé', color: '#155724', bg: '#d4edda' },
-  { value: 'annule',   label: '❌ Annulé',   color: '#721c24', bg: '#f8d7da' },
+  { value: 'nouveau',  label: 'Nouveau',  color: '#7a5500', bg: '#fff3cd' },
+  { value: 'confirme', label: 'Confirmé', color: '#155724', bg: '#d4edda' },
+  { value: 'annule',   label: 'Annulé',   color: '#721c24', bg: '#f8d7da' },
 ]
 
 export default function RDVStatutCell({ cellData, rowData }: CellProps) {

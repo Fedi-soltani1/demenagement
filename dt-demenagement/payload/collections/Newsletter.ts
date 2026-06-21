@@ -34,9 +34,9 @@ const Newsletter: CollectionConfig = {
       required: true,
       defaultValue: 'pending',
       options: [
-        { label: '⏳ En attente — email de confirmation pas encore cliqué', value: 'pending' },
-        { label: '✅ Confirmé — actif, peut recevoir des emails',            value: 'confirmed' },
-        { label: '🚫 Désabonné — ne plus envoyer',                          value: 'unsubscribed' },
+        { label: 'En attente — email de confirmation pas encore cliqué', value: 'pending' },
+        { label: 'Confirmé — actif, peut recevoir des emails',            value: 'confirmed' },
+        { label: 'Désabonné — ne plus envoyer',                          value: 'unsubscribed' },
       ],
     },
     {

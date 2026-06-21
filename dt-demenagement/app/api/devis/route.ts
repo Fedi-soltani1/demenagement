@@ -28,7 +28,7 @@ const devisSchema = z.object({
   type:       z.enum(['particulier', 'entreprise']),
   prenom:     z.string().min(2).max(50),
   nom:        z.string().min(2).max(50),
-  email:      z.string().optional(),
+  email:      z.string().email().optional(),
   telephone:  z.string().regex(/^\+?[0-9\s\-()]{8,20}$/),
 
   adresseDepart:  adresseSchema,

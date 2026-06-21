@@ -42,11 +42,11 @@ const FAQ: CollectionConfig = {
       required: true,
       admin: { description: 'Permet de regrouper les questions par thème sur la page FAQ.' },
       options: [
-        { label: '💰 Tarifs & Devis',    value: 'tarifs-devis' },
-        { label: '📋 Déroulement',        value: 'deroulement' },
-        { label: '🔧 Nos services',       value: 'services' },
-        { label: '✈️ International',      value: 'international' },
-        { label: '👤 Espace Client',      value: 'espace-client' },
+        { label: 'Tarifs & Devis', value: 'tarifs-devis' },
+        { label: 'Déroulement',   value: 'deroulement' },
+        { label: 'Nos services',  value: 'services' },
+        { label: 'International', value: 'international' },
+        { label: 'Espace Client', value: 'espace-client' },
       ],
     },
     {

@@ -14,25 +14,41 @@ export default function AdminLightboxProvider({ children }: { children: React.Re
 
   const close = useCallback(() => { setOpen(false); setZoom(1) }, [])
 
-  // Intercept clicks on upload-field image thumbnails
+  // Intercept clicks on any image large enough to be a photo (not an icon)
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
-      const img = e.target as HTMLImageElement
-      if (img.tagName !== 'IMG' || !img.src) return
+      const target = e.target as Element
 
-      // Skip tiny images (icons, UI chrome)
+      // Accept clicks on <img> or on a parent <a>/<div> that contains a single <img>
+      let img: HTMLImageElement | null = null
+      if (target.tagName === 'IMG') {
+        img = target as HTMLImageElement
+      } else {
+        const found = (target as HTMLElement).querySelector?.('img')
+        if (found) img = found
+      }
+      if (!img || !img.src) return
+
+      // Skip data-URIs and SVG blobs (inline icons)
+      if (img.src.startsWith('data:') || img.src.includes('.svg')) return
+
+      // Skip images that are too small (icons, avatars, logos)
       const rect = img.getBoundingClientRect()
-      if (rect.width < 40 || rect.height < 40) return
+      if (rect.width < 48 || rect.height < 48) return
 
-      // Skip logo / nav areas
-      if (img.closest('nav') || img.closest('[class*="logo"]') || img.closest('[class*="icon"]')) return
+      // Let custom components handle their own lightbox
+      if (img.closest('[data-no-lb]')) return
 
-      // Only target upload / media / thumbnail containers
+      // Skip nav, sidebar, header, and admin-logo areas
       if (
-        !img.closest('[class*="upload"]') &&
-        !img.closest('[class*="thumbnail"]') &&
-        !img.closest('[class*="file"]') &&
-        !img.closest('[class*="media"]')
+        img.closest('nav') ||
+        img.closest('header') ||
+        img.closest('[class*="nav"]') ||
+        img.closest('[class*="logo"]') ||
+        img.closest('[class*="sidebar"]') ||
+        img.closest('[class*="icon"]') ||
+        img.closest('[class*="NavMenu"]') ||
+        img.closest('[class*="Logo"]')
       ) return
 
       e.preventDefault()

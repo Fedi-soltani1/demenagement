@@ -39,11 +39,11 @@ const Testimonials: CollectionConfig = {
       type: 'select',
       required: true,
       options: [
-        { label: '⭐ 1 étoile',      value: '1' },
-        { label: '⭐⭐ 2 étoiles',   value: '2' },
-        { label: '⭐⭐⭐ 3 étoiles', value: '3' },
-        { label: '⭐⭐⭐⭐ 4 étoiles', value: '4' },
-        { label: '⭐⭐⭐⭐⭐ 5 étoiles (excellent)', value: '5' },
+        { label: '1 étoile',           value: '1' },
+        { label: '2 étoiles',          value: '2' },
+        { label: '3 étoiles',          value: '3' },
+        { label: '4 étoiles',          value: '4' },
+        { label: '5 étoiles (excellent)', value: '5' },
       ],
     },
     {

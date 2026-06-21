@@ -38,9 +38,9 @@ const RendezVous: CollectionConfig = {
             components: { Cell: '@/components/payload/RDVStatutCell' },
           },
           options: [
-            { label: '🆕 Nouveau — pas encore traité', value: 'nouveau' },
-            { label: '✅ Confirmé — RDV validé',        value: 'confirme' },
-            { label: '❌ Annulé',                        value: 'annule' },
+            { label: 'Nouveau — pas encore traité', value: 'nouveau' },
+            { label: 'Confirmé — RDV validé',        value: 'confirme' },
+            { label: 'Annulé',                        value: 'annule' },
           ],
         },
         {
