@@ -127,7 +127,7 @@ export default async function EspaceClientPage({ params }: PageProps) {
   const termines        = dossiers.filter(d => d.statut === 'livre').length
   const prochainDossier = dossiers.find(d => d.dateDemenagement && ['confirme','en_preparation'].includes(d.statut))
 
-  const contactLabel = identityParsed.kind === 'phone' ? `+${identityParsed.phoneCore}` : session.user.email
+  const contactLabel = identityParsed.kind === 'phone' ? `+${identityParsed.canonical}` : session.user.email
 
   const displayName = session.user.name
     ?? (identityParsed.kind === 'email' ? identityParsed.email.split('@')[0]?.replace(/[._-]+/g, ' ') : contactLabel)
