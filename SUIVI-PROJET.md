@@ -66,6 +66,33 @@ CONSÉQUENCE : Les nouvelles colonnes ajoutées dans les collections Payload NE 
 ## 🤖 DERNIÈRE MISE À JOUR PAR CLAUDE CODE
 
 ```
+Date        : 2026-06-21 — CONNEXION ESPACE CLIENT PAR EMAIL OU TÉLÉPHONE
+Session     : Dev 1 (Opus) — exécution subagent-driven (plan docs/superpowers/plans/2026-06-21-connexion-telephone.md)
+
+OBJECTIF : se connecter à l'espace client par email OU par numéro (champ unique, détection auto),
+  en réutilisant le lien magique NextAuth. Email prioritaire ; WhatsApp (bot) pour les clients sans email.
+
+FICHIERS :
+  lib/client-identity.ts (+ .test.ts) NOUVEAU : isEmailInput, buildPhoneIdentity, parseLoginIdentity ;
+    identité technique téléphone = <phoneCore>@wa.client.
+  lib/send-whatsapp.ts NOUVEAU : sendWhatsAppMessage(tel, msg) via bot (x-bot-secret).
+  lib/emails/magic-link.ts NOUVEAU : buildMagicLinkEmail(url) — template extrait de auth.ts (réutilisé).
+  auth.ts : sendVerificationRequest utilise buildMagicLinkEmail (aucun changement de comportement).
+  lib/espace-client-query.ts NOUVEAU : dossierOwnershipWhere / clientLookupWhere (retournent un Where Payload).
+  app/actions/auth.ts : action requestLoginLink(rawInput, callbackPath) — lookup compte, choix canal
+    (email prioritaire sinon WhatsApp), génère + envoie le lien magique ; refus si aucun compte.
+  components/layout/MagicLinkForm.tsx : champ unique « Email ou téléphone » → requestLoginLink.
+  messages/{fr,ar,en}.json : clés identifierLabel/identifierPlaceholder/errorNotFound/verifyDescriptionPhone.
+  app/(site)/[locale]/espace-client/{page,[numeroDossier]/page,messages/page}.tsx : dossiers résolus
+    par email OU téléphone selon l'identité ; auto-création fiche client uniquement pour identité email ;
+    header affiche le numéro (pas <core>@wa.client).
+
+VÉRIF : tsc 0 erreur · eslint OK (warning AdminLightbox préexistant) · tests purs OK ·
+  test E2E action : inconnu→not_found, email connu→ok (mail), tél connu avec email→ok (mail, preference).
+RESTE : test manuel login téléphone-SEUL → WhatsApp (nécessite le bot lancé + un dossier sans email).
+MINORS (revue finale) : buildMagicLinkEmail sans type retour explicite ; parseLoginIdentity appelé 2× dans dashboard.
+
+──────────────────────────────────────────────────────────────────────────────
 Date        : 2026-06-20 — AUTOMATISATION WORKFLOW RDV / LEADS / CLIENTS
 Session     : Dev 1 (Opus)
 
@@ -882,11 +909,11 @@ Reprendre à : "Déploiement production Vercel + Railway"
 > Elle lui dit exactement où reprendre sans poser de questions.
 
 ```
-PHASE ACTUELLE    : Post-Phase 6 — AUTOMATISATION WORKFLOW (RDV / LEADS / CLIENTS)
-ÉTAPE ACTUELLE    : ✅ RDV→email/dossier · Leads statut synchronisé · Clients auto + historique
-STATUT            : ✅ tsc + eslint + tests OK — voir DERNIÈRE MISE À JOUR (2026-06-20)
-DERNIER FICHIER   : components/payload/ClientHistory.tsx
-PROCHAINE ACTION  : tester en admin (RDV confirmé → dossier, fiche client + historique) ; feature Factures à venir
+PHASE ACTUELLE    : Post-Phase 6 — CONNEXION ESPACE CLIENT PAR EMAIL OU TÉLÉPHONE
+ÉTAPE ACTUELLE    : ✅ Connexion email/téléphone (champ unique, lien magique, canal préférentiel)
+STATUT            : ✅ tsc + eslint + tests + test E2E action OK — voir DERNIÈRE MISE À JOUR (2026-06-21)
+DERNIER FICHIER   : app/(site)/[locale]/espace-client/page.tsx
+PROCHAINE ACTION  : test manuel login téléphone-seul (WhatsApp, bot requis) ; revue finale
 BLOQUEURS         : Aucun
 
 ─── SESSION 2026-05-24 — MIGRATION SCHEMA sectionOptions + typographie ──────
