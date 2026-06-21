@@ -95,3 +95,18 @@ export async function createRdv(session: Session): Promise<void> {
     heure:      d.heure,
   })
 }
+
+/** Crée un lead (prospect qui n'a pas voulu poursuivre vers devis/RDV). */
+export async function createLead(session: Session): Promise<void> {
+  const d = session.data
+  const nomPrenom = [d.prenom, d.nom]
+    .filter((v): v is string => typeof v === 'string' && v.trim().length > 0)
+    .join(' ')
+    .trim()
+  await postJson<{ ok: boolean }>('/api/lead-capture', {
+    nomPrenom,
+    telephone: session.numero,
+    ...(typeof d.email === 'string' && d.email ? { email: d.email } : {}),
+    source: 'whatsapp-bot',
+  })
+}
