@@ -12,7 +12,7 @@ export async function sendMail(opts: {
 }): Promise<void> {
   const from = process.env.EMAIL_FROM ?? 'DT Déménagement <contact@demenagement.tn>'
 
-  const { data, error } = await resend.emails.send({
+  const { error } = await resend.emails.send({
     from,
     to:      opts.to,
     subject: opts.subject,
@@ -27,8 +27,6 @@ export async function sendMail(opts: {
     console.error('[mailer] Resend error → to:', opts.to, 'error:', error)
     throw new Error(error.message)
   }
-
-  console.log('[mailer] sent:', data?.id, '→', opts.to)
 }
 
 // Backward-compat export

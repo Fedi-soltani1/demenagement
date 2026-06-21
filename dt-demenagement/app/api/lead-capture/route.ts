@@ -5,8 +5,13 @@ import { sendMail } from '@/lib/mailer'
 import { env } from '@/lib/env'
 import { escapeHtml } from '@/lib/escape-html'
 import { resolvePartner, payloadPartnerFinder, type PartnerRef } from '@/lib/partner-attribution'
+import { rateLimit, clientIp } from '@/lib/ratelimit'
 
 export async function POST(request: Request) {
+  // Rate limiting AVANT tout traitement (10 requêtes / minute / IP)
+  if (!rateLimit(`lead:${clientIp(request)}`, 10, 60_000)) {
+    return NextResponse.json({ error: 'Trop de requêtes, réessayez plus tard.' }, { status: 429 })
+  }
   try {
     const body = await request.json() as Record<string, unknown>
 

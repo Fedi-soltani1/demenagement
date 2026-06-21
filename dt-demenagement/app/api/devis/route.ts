@@ -10,6 +10,7 @@ import { resolvePartner, payloadPartnerFinder } from '@/lib/partner-attribution'
 import { markLeadConverted } from '@/lib/leads'
 import { upsertClient } from '@/lib/upsert-client'
 import { escapeHtml } from '@/lib/escape-html'
+import { rateLimit, clientIp } from '@/lib/ratelimit'
 
 // Honeypot + rate limiting ultra-simple (sans Redis pour l'instant)
 // ⚠️ TODO: Brancher Upstash Redis quand UPSTASH_REDIS_REST_URL est configuré
@@ -50,6 +51,11 @@ const devisSchema = z.object({
 })
 
 export async function POST(request: Request) {
+  // Rate limiting AVANT tout traitement (5 requêtes / minute / IP)
+  if (!rateLimit(`devis:${clientIp(request)}`, 5, 60_000)) {
+    return NextResponse.json({ error: 'Trop de requêtes, réessayez plus tard.' }, { status: 429 })
+  }
+
   let body: unknown
   try { body = await request.json() } catch {
     return NextResponse.json({ error: 'Corps invalide' }, { status: 400 })

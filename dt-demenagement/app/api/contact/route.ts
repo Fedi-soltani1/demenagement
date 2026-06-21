@@ -4,6 +4,7 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 import { sendMail } from '@/lib/mailer'
 import { env } from '@/lib/env'
+import { rateLimit, clientIp } from '@/lib/ratelimit'
 
 // Endpoint léger pour le bloc « Formulaire de contact » embarquable.
 // Collecte un lead simple (nom, téléphone, email, message) et crée
@@ -22,26 +23,9 @@ const contactSchema = z.object({
   message:   z.string().max(2000).optional(),
 })
 
-// Rate limiting en mémoire : 5 requêtes / minute / IP.
-const RATE_LIMIT = 5
-const RATE_WINDOW_MS = 60_000
-const hits = new Map<string, { count: number; resetAt: number }>()
-
-function isRateLimited(ip: string): boolean {
-  const now = Date.now()
-  const entry = hits.get(ip)
-  if (!entry || now > entry.resetAt) {
-    hits.set(ip, { count: 1, resetAt: now + RATE_WINDOW_MS })
-    return false
-  }
-  entry.count += 1
-  return entry.count > RATE_LIMIT
-}
-
 export async function POST(request: Request): Promise<NextResponse> {
-  // 1. Rate limiting AVANT tout traitement
-  const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'anonymous'
-  if (isRateLimited(ip)) {
+  // 1. Rate limiting AVANT tout traitement (5 requêtes / minute / IP)
+  if (!rateLimit(`contact:${clientIp(request)}`, 5, 60_000)) {
     return NextResponse.json({ error: 'Trop de requêtes, réessayez plus tard.' }, { status: 429 })
   }
 

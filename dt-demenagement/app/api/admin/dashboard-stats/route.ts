@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server'
 import { getPayload } from 'payload'
+import type { Where } from 'payload'
 import config from '@payload-config'
 
 // Safe wrappers — a failing optional query returns 0 / empty instead of crashing everything
@@ -65,11 +66,11 @@ export async function GET(request: NextRequest): Promise<Response> {
       })),
       safeCount(payload.count({
         collection: 'demenagements',
-        where: { and: [
+        where: ({ and: [
           { statut: { in: ['devis_recu', 'confirme', 'en_preparation', 'en_cours'] } },
-          { dateDemenagement: { greater_than_or_equal: todayStart.toISOString() } as any },
-          { dateDemenagement: { less_than_or_equal:    todayEnd.toISOString()   } as any },
-        ]},
+          { dateDemenagement: { greater_than_equal: todayStart.toISOString() } },
+          { dateDemenagement: { less_than_equal:    todayEnd.toISOString()   } },
+        ] } satisfies Where),
         overrideAccess: true,
       })),
     ])

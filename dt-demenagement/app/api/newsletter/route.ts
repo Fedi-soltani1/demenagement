@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { env } from '@/lib/env'
+import { rateLimit, clientIp } from '@/lib/ratelimit'
 
 const schema = z.object({
   website: z.string().max(0).optional(), // honeypot
@@ -11,6 +12,11 @@ const schema = z.object({
 })
 
 export async function POST(request: Request) {
+  // Rate limiting AVANT tout traitement (5 requêtes / minute / IP)
+  if (!rateLimit(`newsletter:${clientIp(request)}`, 5, 60_000)) {
+    return NextResponse.json({ error: 'Trop de requêtes, réessayez plus tard.' }, { status: 429 })
+  }
+
   let body: unknown
   try { body = await request.json() } catch {
     return NextResponse.json({ error: 'Corps invalide' }, { status: 400 })
