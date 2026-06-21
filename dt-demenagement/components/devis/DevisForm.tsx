@@ -656,7 +656,8 @@ function FloorSelect({ value, onChange }: { value: string; onChange: (v: string)
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/10 text-[var(--color-text-light)] font-body text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-red)] focus:border-transparent transition-all cursor-pointer"
+        style={{ colorScheme: 'dark' }}
+        className="w-full px-4 py-3 rounded-xl bg-[var(--color-bg-card)] border border-white/10 text-[var(--color-text-light)] font-body text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-red)] focus:border-transparent transition-all cursor-pointer"
       >
         {ETAGE_OPTIONS.map((opt) => (
           <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -680,7 +681,8 @@ function CitySelect({ label, value, onChange, error, onBlur }: {
         onChange={(e) => onChange(e.target.value)}
         onBlur={onBlur}
         aria-invalid={!!error}
-        className={`w-full px-4 py-3 rounded-xl bg-white/[0.04] border font-body text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-red)] focus:border-transparent transition-all cursor-pointer ${
+        style={{ colorScheme: 'dark' }}
+        className={`w-full px-4 py-3 rounded-xl bg-[var(--color-bg-card)] border font-body text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-red)] focus:border-transparent transition-all cursor-pointer ${
           error
             ? 'border-[var(--color-red)]/60 text-[var(--color-text-light)]'
             : value
