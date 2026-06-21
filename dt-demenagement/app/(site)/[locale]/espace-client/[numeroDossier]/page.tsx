@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { auth } from '@/auth'
 import { getPayloadSafe } from '@/lib/payload-safe'
 import { COMPANY } from '@/lib/constants'
-import { dossierOwnershipWhere } from '@/lib/espace-client-query'
+import { dossierOwnershipWhere, matchesIdentity } from '@/lib/espace-client-query'
 import { Breadcrumb } from '@/components/layout/Breadcrumb'
 import { StatusBadge, StatusProgress } from '@/components/espace-client/StatusBadge'
 import { MessageThread } from '@/components/espace-client/MessageThread'
@@ -90,6 +90,9 @@ export default async function DossierPage({ params }: PageProps) {
 
   const dossier = result.docs[0] as DemenagementDoc | undefined
   if (!dossier) notFound()
+  // Vérification exacte du cœur de numéro — la clause `like` est une sous-chaîne SQL,
+  // on s'assure ici que le numéro stocké appartient bien à l'identité connectée.
+  if (!matchesIdentity(session.user.email, dossier)) notFound()
 
   // Fetch messages du dossier
   const messagesResult = await payload.find({

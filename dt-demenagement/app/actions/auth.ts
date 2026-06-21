@@ -53,13 +53,14 @@ export async function requestLoginLink(
 
     // Téléphone
     const core = phoneCore(input)
-    if (core.length < 6) return { error: 'not_found' }
-    const [clients, dossiers] = await Promise.all([
-      payload.find({ collection: 'clients', where: { telephone: { like: core } }, limit: 1, overrideAccess: true }),
-      payload.find({ collection: 'demenagements', where: { telephone: { like: core } }, sort: '-createdAt', limit: 1, overrideAccess: true }),
+    if (core.length < 8) return { error: 'not_found' }
+    const [clientsRaw, dossiersRaw] = await Promise.all([
+      payload.find({ collection: 'clients', where: { telephone: { like: core } }, limit: 20, overrideAccess: true }),
+      payload.find({ collection: 'demenagements', where: { telephone: { like: core } }, sort: '-createdAt', limit: 20, overrideAccess: true }),
     ])
-    const client  = clients.docs[0]  as ClientDoc  | undefined
-    const dossier = dossiers.docs[0] as DossierDoc | undefined
+    // Re-vérification exacte : le `like` est une sous-chaîne SQL → filtrer sur l'égalité du cœur
+    const client  = (clientsRaw.docs  as ClientDoc[]).find((d) => phoneCore(d.telephone) === core)
+    const dossier = (dossiersRaw.docs as DossierDoc[]).find((d) => phoneCore(d.telephone) === core)
     if (!client && !dossier) return { error: 'not_found' }
 
     // Préférence email si présent
@@ -70,8 +71,9 @@ export async function requestLoginLink(
       return { ok: true }
     }
 
-    // Sinon WhatsApp avec identité technique
-    const sendablePhone = (client?.telephone ?? dossier?.telephone ?? input).trim()
+    // Sinon WhatsApp — uniquement vers le numéro exactement vérifié (jamais vers l'input brut)
+    const sendablePhone = (client?.telephone ?? dossier?.telephone ?? '').trim()
+    if (!sendablePhone) return { error: 'not_found' }
     const url = await generateMagicLink(buildPhoneIdentity(core), callbackPath)
     await sendWhatsAppMessage(
       sendablePhone,

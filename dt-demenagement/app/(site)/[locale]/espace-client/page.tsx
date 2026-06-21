@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { auth } from '@/auth'
 import { getPayloadSafe } from '@/lib/payload-safe'
 import { COMPANY, LOCALES } from '@/lib/constants'
-import { dossierOwnershipWhere, clientLookupWhere } from '@/lib/espace-client-query'
+import { dossierOwnershipWhere, clientLookupWhere, matchesIdentity } from '@/lib/espace-client-query'
 import { parseLoginIdentity } from '@/lib/client-identity'
 import { Breadcrumb } from '@/components/layout/Breadcrumb'
 import { StatusBadge } from '@/components/espace-client/StatusBadge'
@@ -65,9 +65,12 @@ export default async function EspaceClientPage({ params }: PageProps) {
 
   let dossiers: DemenagementDoc[] = []
 
+  // Calculé une seule fois — réutilisé dans le bloc payload et pour l'affichage (M2)
+  const identity = session.user.email
+  const identityParsed = parseLoginIdentity(identity)
+
   if (payload) {
-    const identity = session.user.email
-    const parsed = parseLoginIdentity(identity)
+    const parsed = identityParsed
 
     // Auto-création de la fiche client uniquement pour une identité email réelle.
     if (parsed.kind === 'email') {
@@ -95,7 +98,7 @@ export default async function EspaceClientPage({ params }: PageProps) {
       limit:      50,
       overrideAccess: true,
     })
-    dossiers = result.docs as DemenagementDoc[]
+    dossiers = (result.docs as DemenagementDoc[]).filter((d) => matchesIdentity(identity, d))
   }
 
   // Unread messages count — use `or` on each dossier ID (safer than `in` on relationship fields)
@@ -123,7 +126,6 @@ export default async function EspaceClientPage({ params }: PageProps) {
   const termines        = dossiers.filter(d => d.statut === 'livre').length
   const prochainDossier = dossiers.find(d => d.dateDemenagement && ['confirme','en_preparation'].includes(d.statut))
 
-  const identityParsed = parseLoginIdentity(session.user.email)
   const contactLabel = identityParsed.kind === 'phone' ? `+${identityParsed.phoneCore}` : session.user.email
 
   const displayName = session.user.name

@@ -6,7 +6,7 @@ import { ArrowLeft } from 'lucide-react'
 import { auth } from '@/auth'
 import { getPayloadSafe } from '@/lib/payload-safe'
 import { COMPANY } from '@/lib/constants'
-import { dossierOwnershipWhere } from '@/lib/espace-client-query'
+import { dossierOwnershipWhere, matchesIdentity } from '@/lib/espace-client-query'
 import { Breadcrumb } from '@/components/layout/Breadcrumb'
 import { MessagesHub } from '@/components/espace-client/MessagesHub'
 import type { ConversationStat } from '@/app/api/client/conversations/route'
@@ -31,7 +31,7 @@ type MessageDoc = {
   demenagement: number | { id: number } | null
 }
 
-type DossierDoc = { id: number; numeroDossier: string; statut: string }
+type DossierDoc = { id: number; numeroDossier: string; statut: string; clientId?: string | null; telephone?: string | null }
 
 export default async function MessagesPage({ params }: PageProps) {
   const { locale } = await params
@@ -44,16 +44,18 @@ export default async function MessagesPage({ params }: PageProps) {
   let conversations: ConversationStat[] = []
 
   if (payload) {
+    // session.user.email est garanti non-null par le redirect ci-dessus
+    const identity = session.user.email!
     const dossiersResult = await payload.find({
       collection: 'demenagements',
-      where:      dossierOwnershipWhere(session.user.email),
+      where:      dossierOwnershipWhere(identity),
       sort:       '-createdAt',
       limit:      50,
       depth:      0,
       overrideAccess: true,
     })
 
-    const docs = dossiersResult.docs as DossierDoc[]
+    const docs = (dossiersResult.docs as DossierDoc[]).filter((d) => matchesIdentity(identity, d))
     const ids  = docs.map((d) => d.id)
 
     let allMessages: MessageDoc[] = []
