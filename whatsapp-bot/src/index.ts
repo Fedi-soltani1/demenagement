@@ -2,7 +2,7 @@ import { downloadMediaMessage, type WASocket, type proto } from '@whiskeysockets
 import pino from 'pino'
 import { handleMessage } from './conversation.js'
 import { getSession, saveSession, type Session } from './sessions.js'
-import { createDevis, createRdv, uploadMedia } from './payloadClient.js'
+import { createDevis, createRdv, createLead, uploadMedia } from './payloadClient.js'
 import { startSocket } from './connection.js'
 import { startHttpServer } from './httpServer.js'
 import { senderNumero } from './numero.js'
@@ -85,15 +85,18 @@ async function onMessage(sock: WASocket, msg: proto.IWebMessageInfo): Promise<vo
       if (result.action.type === 'submit-devis') {
         const numeroDossier = await createDevis(result.session)
         await send(sock, jid, `✅ Demande envoyée ! Votre dossier est le ${numeroDossier}. Notre équipe vous recontacte vite.`)
-      } else {
+      } else if (result.action.type === 'submit-rdv') {
         await createRdv(result.session)
         await send(sock, jid, '✅ Demande de visite enregistrée ! Notre équipe vous recontacte pour confirmer.')
+      } else {
+        await createLead(result.session)
+        await send(sock, jid, 'Merci 🙏 Nous gardons vos coordonnées et notre équipe vous recontactera. À bientôt chez DT Déménagement !')
       }
     } catch (e) {
-      await send(sock, jid, "Une erreur est survenue lors de l'envoi. Réessayez plus tard ou appelez le +216 52 880 311.")
+      await send(sock, jid, "Une erreur est survenue. Réessayez plus tard ou appelez le +216 52 880 311.")
       console.error('[submit]', e)
     } finally {
-      // repartir au menu après soumission
+      // repartir à l'accueil après toute soumission
       const reset = getSession(numero)
       reset.flux = 'menu'; reset.stepIndex = 0; reset.data = {}; reset.mediaIds = []
       saveSession(reset)
