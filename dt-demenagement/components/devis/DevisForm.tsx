@@ -95,7 +95,7 @@ function validateField(field: keyof FieldErrors, value: string | string[]): stri
   switch (field) {
     case 'prenom':         return (value as string).trim().length >= 2 ? '' : 'Au moins 2 caractères'
     case 'nom':            return (value as string).trim().length >= 2 ? '' : 'Au moins 2 caractères'
-    case 'email':          return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value as string) ? '' : 'Email invalide'
+    case 'email':          return (value as string).trim() === '' || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value as string) ? '' : 'Email invalide'
     case 'telephone':      return /^\+?[0-9\s\-()\s]{8,20}$/.test(value as string) ? '' : 'Ex : +216 52 XXX XXX'
     case 'departAdresse':  return (value as string).trim().length >= 3 ? '' : 'Adresse trop courte'
     case 'departVille':    return (value as string).trim().length >= 2 ? '' : 'Ville requise'
@@ -274,10 +274,16 @@ export function DevisForm({
             <p className="font-mono text-xl font-bold text-[var(--color-gold)] mt-1">{dossier}</p>
           </div>
         )}
-        <p className="font-body text-sm text-[var(--color-text-muted)] mb-6">
-          Un email de confirmation a été envoyé à{' '}
-          <strong className="text-[var(--color-text-light)]">{form.email}</strong>
-        </p>
+        {form.email ? (
+          <p className="font-body text-sm text-[var(--color-text-muted)] mb-6">
+            Un email de confirmation a été envoyé à{' '}
+            <strong className="text-[var(--color-text-light)]">{form.email}</strong>
+          </p>
+        ) : (
+          <p className="font-body text-sm text-[var(--color-text-muted)] mb-6">
+            Notre équipe vous contactera par téléphone sous 24h.
+          </p>
+        )}
         <Link
           href="/espace-client"
           className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[var(--color-red)]/10 border border-[var(--color-red)]/20 text-[var(--color-red)] font-body font-semibold text-sm hover:bg-[var(--color-red)]/20 transition-colors"
@@ -352,8 +358,8 @@ export function DevisForm({
                     placeholder="Dupont" error={fieldErrs.nom}
                     onBlur={() => handleBlur('nom', form.nom)} />
                 </div>
-                <Field label="Email *" type="email" value={form.email} onChange={(v) => update('email', v)}
-                  placeholder="vous@exemple.com" error={fieldErrs.email}
+                <Field label="Email" type="email" value={form.email} onChange={(v) => update('email', v)}
+                  placeholder="vous@exemple.com" hint="Optionnel — pour recevoir votre confirmation par email" error={fieldErrs.email}
                   onBlur={() => handleBlur('email', form.email)} />
                 <Field label="Téléphone *" type="tel" value={form.telephone} onChange={(v) => update('telephone', v)}
                   placeholder="+216 52 XXX XXX" hint="Format : (+216) XX XXX XXX"
