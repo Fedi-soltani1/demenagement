@@ -312,9 +312,9 @@ export async function seed(payload: Payload): Promise<void> {
   await payload.updateGlobal({
     slug: 'settings',
     data: {
-      telephone1:      '+21652880311',
+      telephone1:      '+21652880112',
       telephone2:      '+21652880112',
-      whatsapp:        '+21652880311',
+      whatsapp:        '+21652880112',
       whatsappMessage: 'Bonjour, je souhaite obtenir un devis pour mon déménagement.',
       email:           'contact@demenagement.tn',
       adresse:         'Tunis, Tunisie',

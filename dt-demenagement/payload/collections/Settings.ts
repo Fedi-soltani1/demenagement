@@ -22,8 +22,8 @@ const Settings: GlobalConfig = {
       label: '📞 Téléphone principal',
       type: 'text',
       required: true,
-      defaultValue: '+21652880311',
-      admin: { description: 'Format international obligatoire. Ex: +21652880311' },
+      defaultValue: '+21652880112',
+      admin: { description: 'Format international obligatoire. Ex: +21652880112' },
     },
     {
       name: 'telephone2',
@@ -36,7 +36,7 @@ const Settings: GlobalConfig = {
       label: '💬 Numéro WhatsApp',
       type: 'text',
       required: true,
-      defaultValue: '+21652880311',
+      defaultValue: '+21652880112',
       admin: { description: 'Numéro utilisé pour le bouton WhatsApp flottant. Format international.' },
     },
     {

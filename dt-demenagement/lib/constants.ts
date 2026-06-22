@@ -4,9 +4,9 @@
 export const COMPANY = {
   name:             'DT Déménagement Tunisie',
   siteUrl:          'https://demenagement.tn',
-  phone1:           '+21652880311',
+  phone1:           '+21652880112',
   phone2:           '+21652880112',
-  whatsapp:         '+21652880311',
+  whatsapp:         '+21652880112',
   whatsappMessage:  'Bonjour, je souhaite un devis pour mon déménagement.',
   email:            'contact@demenagement.tn',
   address:          'Tunis, Tunisie',

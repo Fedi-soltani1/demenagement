@@ -209,9 +209,9 @@ function buildEmailHtml(d: FactureDossier, factureRef: string, magicLink: string
               Pour toute question, contactez-nous :
             </p>
             <ul style="color:#555;font-size:14px;line-height:2.2;margin:0 0 24px;">
-              <li>Téléphone : <strong>+216 52 880 311</strong></li>
+              <li>Téléphone : <strong>+216 52 880 112</strong></li>
               <li>Email : <strong>contact@demenagement.tn</strong></li>
-              <li>WhatsApp : <a href="https://wa.me/21652880311" style="color:#c9a84c;">+216 52 880 311</a></li>
+              <li>WhatsApp : <a href="https://wa.me/21652880112" style="color:#c9a84c;">+216 52 880 112</a></li>
             </ul>
             <p style="color:#555;font-size:14px;margin:0;">
               Merci de votre confiance,<br/>
@@ -222,7 +222,7 @@ function buildEmailHtml(d: FactureDossier, factureRef: string, magicLink: string
         <tr><td style="background:#c9a84c;height:3px;"></td></tr>
         <tr>
           <td style="background:#0f0f0f;padding:14px 32px;text-align:center;">
-            <p style="color:#555;font-size:11px;margin:0;">DT Déménagement Tunisie — demenagement.tn<br/>+216 52 880 311 | contact@demenagement.tn</p>
+            <p style="color:#555;font-size:11px;margin:0;">DT Déménagement Tunisie — demenagement.tn<br/>+216 52 880 112 | contact@demenagement.tn</p>
           </td>
         </tr>
       </table>

@@ -290,11 +290,11 @@ export async function POST(request: Request): Promise<NextResponse> {
             <p style="margin:0;font-size:15px;font-weight:bold;color:#f8f5f0;">${dateFr} à ${heureFr}</p>
           </div>
           <p style="margin:0;font-size:13px;color:#a0a0a0;line-height:1.6;">
-            En cas de question, contactez-nous au <strong style="color:#f8f5f0;"><a href="tel:+21652880311" style="color:#c9a84c;text-decoration:none;">+216 52 880 311</a></strong> ou sur WhatsApp.
+            En cas de question, contactez-nous au <strong style="color:#f8f5f0;"><a href="tel:+21652880112" style="color:#c9a84c;text-decoration:none;">+216 52 880 112</a></strong> ou sur WhatsApp.
           </p>
         </td></tr>
         <tr><td style="padding:16px 28px;border-top:1px solid #2a2a2a;">
-          <p style="margin:0;font-size:11px;color:#555;">+216 52 880 311 — contact@demenagement.tn — © ${new Date().getFullYear()} DT Déménagement Tunisie</p>
+          <p style="margin:0;font-size:11px;color:#555;">+216 52 880 112 — contact@demenagement.tn — © ${new Date().getFullYear()} DT Déménagement Tunisie</p>
         </td></tr>
       </table>
     </td></tr>
@@ -321,12 +321,12 @@ export async function POST(request: Request): Promise<NextResponse> {
             <p style="margin:0;font-size:14px;color:#f8f5f0;white-space:pre-wrap;">${escapeHtml(commentaire)}</p>
           </div>` : ''}
           <p style="margin:0;font-size:13px;color:#a0a0a0;line-height:1.6;">
-            N'hésitez pas à nous appeler au <a href="tel:+21652880311" style="color:#c9a84c;text-decoration:none;">+216 52 880 311</a>.
+            N'hésitez pas à nous appeler au <a href="tel:+21652880112" style="color:#c9a84c;text-decoration:none;">+216 52 880 112</a>.
             <br><strong style="color:#f8f5f0;">L'équipe DT Déménagement Tunisie</strong>
           </p>
         </td></tr>
         <tr><td style="padding:16px 28px;border-top:1px solid #2a2a2a;">
-          <p style="margin:0;font-size:11px;color:#555;">+216 52 880 311 — contact@demenagement.tn — © ${new Date().getFullYear()} DT Déménagement Tunisie</p>
+          <p style="margin:0;font-size:11px;color:#555;">+216 52 880 112 — contact@demenagement.tn — © ${new Date().getFullYear()} DT Déménagement Tunisie</p>
         </td></tr>
       </table>
     </td></tr>
