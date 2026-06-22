@@ -6,6 +6,7 @@ import { postgresAdapter } from '@payloadcms/db-postgres'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import nodemailer from 'nodemailer'
 import { resendAdapter } from '@payloadcms/email-resend'
+import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
 
 import Admins from './payload/collections/Admins'
 import Media from './payload/collections/Media'
@@ -181,6 +182,21 @@ export default buildConfig({
   globals: [Settings],
 
   sharp,
+
+  // Stockage des médias sur Vercel Blob (disque Vercel éphémère → indispensable
+  // en prod, sinon les images uploadées disparaissent à chaque redéploiement).
+  // clientUploads:true → l'upload va directement du navigateur vers Blob, ce qui
+  // contourne la limite de 4,5 Mo des fonctions serverless Vercel.
+  plugins: [
+    vercelBlobStorage({
+      enabled: true,
+      collections: {
+        media: true,
+      },
+      token: process.env.BLOB_READ_WRITE_TOKEN ?? '',
+      clientUploads: true,
+    }),
+  ],
 
   // Emails internes de Payload (ex : « mot de passe oublié » de l'admin, vérifications).
   // On les fait passer par Resend — comme TOUT le reste de l'app (cf. lib/mailer.ts) —
