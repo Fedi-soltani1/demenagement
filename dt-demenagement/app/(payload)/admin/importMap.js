@@ -51,6 +51,7 @@ import { default as default_313e964a7107ac39e31c5ff2e54b6ba9 } from '@/component
 import { default as default_90396af18c2250adfc20df25d311cd9a } from '@/components/payload/AdminDashboard'
 import { default as default_ef39643ec38f84ef279eda1676af9ec2 } from '@/components/payload/AdminUnreadBadge'
 import { default as default_2747d5abd180ca9058dbf9aafd7e3e69 } from '@/components/payload/AdminLightbox'
+import { VercelBlobClientUploadHandler as VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e } from '@payloadcms/storage-vercel-blob/client'
 import { default as default_83caa34b9c33d3543c6ac49d8e8a5659 } from '@/components/payload/RDVCalendarView'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
@@ -109,6 +110,7 @@ export const importMap = {
   "@/components/payload/AdminDashboard#default": default_90396af18c2250adfc20df25d311cd9a,
   "@/components/payload/AdminUnreadBadge#default": default_ef39643ec38f84ef279eda1676af9ec2,
   "@/components/payload/AdminLightbox#default": default_2747d5abd180ca9058dbf9aafd7e3e69,
+  "@payloadcms/storage-vercel-blob/client#VercelBlobClientUploadHandler": VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e,
   "@/components/payload/RDVCalendarView#default": default_83caa34b9c33d3543c6ac49d8e8a5659,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }
