@@ -38,7 +38,11 @@ const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
 export default buildConfig({
-  serverURL: process.env.NEXT_PUBLIC_PAYLOAD_URL ?? 'http://localhost:3000',
+  // URL serveur : relative par défaut (chaîne vide) → l'admin et l'API utilisent
+  // le MÊME domaine que celui qui sert la page. Fonctionne donc identiquement sur
+  // l'URL Vercel (*.vercel.app) ET sur le domaine final (demenagement.tn) sans
+  // redéploiement. Un localhost codé en dur cassait l'admin en production (écran blanc).
+  serverURL: process.env.NEXT_PUBLIC_PAYLOAD_URL ?? '',
 
   secret: process.env.PAYLOAD_SECRET ?? '',
 
