@@ -31,6 +31,24 @@ export async function startSocket(
 
   sock.ev.on('creds.update', saveCreds)
 
+  // Code de jumelage (pairing code) — alternative au QR, plus simple sur un serveur
+  // headless où le QR ASCII est difficile à scanner. Si BOT_PAIRING_NUMBER est défini
+  // et que la session n'est pas encore enregistrée, on demande un code à 8 caractères
+  // à saisir dans WhatsApp (Appareils connectés → Lier un appareil →
+  // « Lier avec le numéro de téléphone »). Le délai laisse la socket s'établir.
+  const pairingNumber = process.env.BOT_PAIRING_NUMBER?.replace(/[^0-9]/g, '')
+  if (pairingNumber && !sock.authState.creds.registered) {
+    setTimeout(async () => {
+      try {
+        const code = await sock.requestPairingCode(pairingNumber)
+        console.log(`\n🔑 CODE DE JUMELAGE : ${code}`)
+        console.log('   → WhatsApp → Appareils connectés → Lier un appareil → « Lier avec le numéro de téléphone » → entre ce code.\n')
+      } catch (err) {
+        console.log('⚠️ Impossible de générer le code de jumelage :', err)
+      }
+    }, 3000)
+  }
+
   sock.ev.on('connection.update', (update) => {
     const { connection, lastDisconnect, qr } = update
     if (qr) {
