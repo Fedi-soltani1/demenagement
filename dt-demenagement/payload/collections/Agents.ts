@@ -13,11 +13,21 @@ const Agents: CollectionConfig = {
   auth: true,
 
   access: {
-    // Gestion réservée au super-admin (opérationnel). Le self-access agent
-    // (lecture de son propre profil depuis l'app) sera ajouté au Plan 2/3.
-    read:   isAdmin,
+    // Super-admin : tout. Agent : uniquement son propre enregistrement (profil).
+    read: ({ req: { user } }) => {
+      if (!user) return false
+      if ((user as { role?: string }).role === 'super-admin') return true
+      if ((user as { collection?: string }).collection === 'agents' && user.id != null) {
+        return { id: { equals: user.id } }
+      }
+      return false
+    },
     create: isAdmin,
-    update: isAdmin,
+    update: ({ req: { user }, id }) => {
+      if (!user) return false
+      if ((user as { role?: string }).role === 'super-admin') return true
+      return (user as { collection?: string }).collection === 'agents' && String(user.id) === String(id)
+    },
     delete: isAdmin,
   },
 
