@@ -1,6 +1,5 @@
 import type { CollectionConfig } from 'payload'
-import { isAdmin } from '../access/isAdmin'
-import { isEditor } from '../access/isEditor'
+import { isSeo } from '../access/isEditor'
 import { HeroBlock }           from '../blocks/HeroBlock'
 import { MiniFeaturesBlock }   from '../blocks/MiniFeaturesBlock'
 import { ServicesBlock }       from '../blocks/ServicesBlock'
@@ -44,17 +43,20 @@ const Blog: CollectionConfig = {
 
   access: {
     read: ({ req: { user } }) => {
-      if (user && ((user as { role?: string }).role === 'admin' || (user as { role?: string }).role === 'editeur')) {
+      // Le SEO voit aussi les brouillons (non publiés) ; le public ne voit que le publié.
+      if (user && (user as { role?: string }).role === 'seo') {
         return true
       }
       return { publie: { equals: true } }
     },
-    create: isEditor,
-    update: isEditor,
-    delete: isAdmin,
+    create: isSeo,
+    update: isSeo,
+    delete: isSeo,
   },
 
   admin: {
+    // Contenu → visible UNIQUEMENT pour le SEO (caché du super-admin).
+    hidden: ({ user }) => (user as { role?: string } | null | undefined)?.role !== 'seo',
     group: '📝 Contenu du site',
     useAsTitle: 'titre',
     defaultColumns: ['titre', 'publie', 'datePublication', 'auteur'],

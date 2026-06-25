@@ -1,15 +1,14 @@
 import type { CollectionConfig } from 'payload'
 import { isAdmin } from '../access/isAdmin'
-import { isCommercial } from '../access/isClient'
 
 const Messages: CollectionConfig = {
   slug: 'messages',
   labels: { singular: 'Message', plural: 'Messages' },
 
   access: {
-    read:   isCommercial,
+    read:   isAdmin,
     create: ({ req: { user } }) => Boolean(user),
-    update: isCommercial,
+    update: isAdmin,
     delete: isAdmin,
   },
 

@@ -2,8 +2,16 @@
 
 import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { useAuth } from '@payloadcms/ui'
 
 export default function AdminUnreadBadge() {
+  // Le badge "messages non lus" est une info opérationnelle → super-admin uniquement.
+  const { user } = useAuth()
+  if ((user as { role?: string } | null | undefined)?.role !== 'super-admin') return null
+  return <AdminUnreadBadgeInner />
+}
+
+function AdminUnreadBadgeInner() {
   const [count, setCount] = useState(0)
 
   async function loadCount() {

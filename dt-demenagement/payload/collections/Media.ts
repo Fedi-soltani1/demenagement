@@ -1,6 +1,5 @@
 import type { CollectionConfig } from 'payload'
-import { isAdmin } from '../access/isAdmin'
-import { isEditor } from '../access/isEditor'
+import { isAdminOrSeo } from '../access/isEditor'
 
 const Media: CollectionConfig = {
   slug: 'media',
@@ -8,9 +7,9 @@ const Media: CollectionConfig = {
 
   access: {
     read: () => true,
-    create: isEditor,
-    update: isEditor,
-    delete: isAdmin,
+    create: isAdminOrSeo,
+    update: isAdminOrSeo,
+    delete: isAdminOrSeo,
   },
 
   admin: {

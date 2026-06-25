@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
+import { useAuth } from '@payloadcms/ui'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -233,6 +234,15 @@ function KPI({ value, label, color, bg, icon, href, loading }: {
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function AdminDashboard() {
+  // Le dashboard opérationnel (dossiers, RDV, messages…) n'est visible QUE pour le
+  // super-admin. Pour le SEO, on ne monte rien ici → le dashboard Payload par défaut
+  // (cartes des collections de contenu autorisées) reste affiché.
+  const { user } = useAuth()
+  if ((user as { role?: string } | null | undefined)?.role !== 'super-admin') return null
+  return <AdminDashboardInner />
+}
+
+function AdminDashboardInner() {
   const [stats,   setStats]   = useState<Stats | null>(null)
   const [loading, setLoading] = useState(true)
   const [error,   setError]   = useState(false)

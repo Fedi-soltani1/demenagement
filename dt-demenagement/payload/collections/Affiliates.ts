@@ -1,6 +1,5 @@
 import type { CollectionConfig } from 'payload'
 import { isAdmin } from '../access/isAdmin'
-import { isEditor } from '../access/isEditor'
 import { slugify } from '../../lib/slugify'
 
 // Partenaires APPORTEURS / AFFILIÉS : entreprises qui mettent un lien sur leur site
@@ -12,12 +11,14 @@ const Affiliates: CollectionConfig = {
 
   access: {
     read:   () => true,
-    create: isEditor,
-    update: isEditor,
+    create: isAdmin,
+    update: isAdmin,
     delete: isAdmin,
   },
 
   admin: {
+    // Opérationnel → visible UNIQUEMENT pour le super-admin (caché du SEO).
+    hidden: ({ user }) => (user as { role?: string } | null | undefined)?.role !== 'super-admin',
     group: '🤝 Affiliation',
     useAsTitle: 'nom',
     defaultColumns: ['nom', 'slug'],

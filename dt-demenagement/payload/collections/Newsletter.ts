@@ -1,15 +1,15 @@
 import type { CollectionConfig } from 'payload'
-import { isAdmin } from '../access/isAdmin'
+import { isSeo } from '../access/isEditor'
 
 const Newsletter: CollectionConfig = {
   slug: 'newsletter',
   labels: { singular: 'Abonné newsletter', plural: 'Abonnés newsletter' },
 
   access: {
-    read: isAdmin,
+    read: isSeo,
     create: () => true,
-    update: isAdmin,
-    delete: isAdmin,
+    update: isSeo,
+    delete: isSeo,
   },
 
   admin: {

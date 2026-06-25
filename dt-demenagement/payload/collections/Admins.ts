@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { isAdminOrSelf } from '../access/isAdmin'
 
 const Admins: CollectionConfig = {
   slug: 'admins',
@@ -7,9 +8,13 @@ const Admins: CollectionConfig = {
   auth: true,
 
   access: {
-    read:   ({ req: { user } }) => Boolean(user),
+    // isAdminOrSelf : le super-admin voit/modifie tous les comptes (la liste lui est
+    // donc visible) ; un SEO ne voit/modifie QUE son propre compte (page « mon compte »)
+    // → la collection Administrateurs est cachée de la barre du SEO, mais il peut quand
+    // même changer son mot de passe.
+    read:   isAdminOrSelf,
     create: ({ req: { user } }) => Boolean(user && (user as { role?: string }).role === 'super-admin'),
-    update: ({ req: { user } }) => Boolean(user),
+    update: isAdminOrSelf,
     delete: ({ req: { user } }) => Boolean(user && (user as { role?: string }).role === 'super-admin'),
   },
 
@@ -38,12 +43,11 @@ const Admins: CollectionConfig = {
       label: 'Rôle et niveau d\'accès',
       type: 'select',
       required: true,
-      defaultValue: 'editeur',
+      defaultValue: 'seo',
       admin: { description: 'Définit ce que cet utilisateur peut faire dans l\'admin.' },
       options: [
-        { label: 'Super Admin — accès total (créer des admins, supprimer)',   value: 'super-admin' },
-        { label: 'Éditeur — modifier le contenu (pages, blog, FAQ, médias)', value: 'editeur' },
-        { label: 'Commercial — voir et gérer les dossiers clients',           value: 'commercial' },
+        { label: 'Super Admin — opérationnel : dossiers, messages, RDV, leads, clients, admins, affiliés', value: 'super-admin' },
+        { label: 'SEO — contenu du site : pages, services, blog, FAQ, villes, pays, avis, partenaires, newsletter', value: 'seo' },
       ],
       access: {
         update: ({ req: { user } }) =>

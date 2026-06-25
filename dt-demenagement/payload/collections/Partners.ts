@@ -1,6 +1,5 @@
 import type { CollectionConfig } from 'payload'
-import { isAdmin } from '../access/isAdmin'
-import { isEditor } from '../access/isEditor'
+import { isSeo } from '../access/isEditor'
 
 const Partners: CollectionConfig = {
   slug: 'partners',
@@ -8,12 +7,14 @@ const Partners: CollectionConfig = {
 
   access: {
     read: () => true,
-    create: isEditor,
-    update: isEditor,
-    delete: isAdmin,
+    create: isSeo,
+    update: isSeo,
+    delete: isSeo,
   },
 
   admin: {
+    // Contenu → visible UNIQUEMENT pour le SEO (caché du super-admin).
+    hidden: ({ user }) => (user as { role?: string } | null | undefined)?.role !== 'seo',
     group: '⭐ Avis & Réputation',
     useAsTitle: 'nom',
     defaultColumns: ['nom', 'ordre', 'publie'],

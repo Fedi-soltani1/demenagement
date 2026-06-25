@@ -1,6 +1,5 @@
 import type { Block, CollectionConfig } from 'payload'
-import { isAdmin } from '../access/isAdmin'
-import { isEditor } from '../access/isEditor'
+import { isSeo } from '../access/isEditor'
 import { HeroBlock }           from '../blocks/HeroBlock'
 import { MiniFeaturesBlock }   from '../blocks/MiniFeaturesBlock'
 import { ServicesBlock }       from '../blocks/ServicesBlock'
@@ -60,12 +59,14 @@ const Services: CollectionConfig = {
 
   access: {
     read: () => true,
-    create: isAdmin,
-    update: isEditor,
-    delete: isAdmin,
+    create: isSeo,
+    update: isSeo,
+    delete: isSeo,
   },
 
   admin: {
+    // Contenu → visible UNIQUEMENT pour le SEO (caché du super-admin).
+    hidden: ({ user }) => (user as { role?: string } | null | undefined)?.role !== 'seo',
     group: '📝 Contenu du site',
     useAsTitle: 'nom',
     defaultColumns: ['nom', 'tarifDepuis', 'publie', 'ordre'],

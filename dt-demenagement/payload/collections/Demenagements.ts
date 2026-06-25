@@ -1,6 +1,5 @@
 import type { CollectionConfig } from 'payload'
 import { isAdmin } from '../access/isAdmin'
-import { isCommercial } from '../access/isClient'
 import { upsertClient } from '../../lib/upsert-client'
 import { splitNomPrenom } from '../../lib/lead-convert'
 import { sendDossierClientEmail } from '../../lib/emails/dossier-client'
@@ -20,9 +19,9 @@ const Demenagements: CollectionConfig = {
   labels: { singular: 'Dossier déménagement', plural: 'Dossiers déménagement' },
 
   access: {
-    read:   isCommercial,
+    read:   isAdmin,
     create: isAdmin,
-    update: isCommercial,
+    update: isAdmin,
     delete: isAdmin,
   },
 

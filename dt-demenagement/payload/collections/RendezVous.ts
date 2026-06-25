@@ -1,6 +1,5 @@
 import type { CollectionConfig } from 'payload'
 import { isAdmin } from '../access/isAdmin'
-import { isCommercial } from '../access/isClient'
 import { normalizePhoneTN } from '../../lib/phone'
 
 const RendezVous: CollectionConfig = {
@@ -22,9 +21,9 @@ const RendezVous: CollectionConfig = {
   },
 
   access: {
-    read:   ({ req: { user } }) => Boolean(user),
+    read:   isAdmin,
     create: ({ req: { user } }) => Boolean(user),
-    update: isCommercial,
+    update: isAdmin,
     delete: isAdmin,
   },
 

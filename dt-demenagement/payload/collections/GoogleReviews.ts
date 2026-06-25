@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload'
-import { isAdmin } from '../access/isAdmin'
+import { isSeo } from '../access/isEditor'
 
 const GoogleReviews: CollectionConfig = {
   slug: 'google-reviews',
@@ -7,12 +7,14 @@ const GoogleReviews: CollectionConfig = {
 
   access: {
     read: () => true,
-    create: isAdmin,
-    update: isAdmin,
-    delete: isAdmin,
+    create: isSeo,
+    update: isSeo,
+    delete: isSeo,
   },
 
   admin: {
+    // Contenu → visible UNIQUEMENT pour le SEO (caché du super-admin).
+    hidden: ({ user }) => (user as { role?: string } | null | undefined)?.role !== 'seo',
     group: '⭐ Avis & Réputation',
     useAsTitle: 'nomAuteur',
     defaultColumns: ['nomAuteur', 'note', 'dateOriginal'],

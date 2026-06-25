@@ -19,7 +19,7 @@ const Clients: CollectionConfig = {
   },
 
   access: {
-    read:   ({ req: { user } }) => Boolean(user),
+    read:   isAdminOrSelf,
     create: () => true,
     update: isAdminOrSelf,
     delete: isAdmin,

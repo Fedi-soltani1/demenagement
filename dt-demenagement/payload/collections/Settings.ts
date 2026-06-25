@@ -1,5 +1,5 @@
 import type { GlobalConfig } from 'payload'
-import { isEditor } from '../access/isEditor'
+import { isAdminOrSeo } from '../access/isEditor'
 
 const Settings: GlobalConfig = {
   slug: 'settings',
@@ -7,7 +7,7 @@ const Settings: GlobalConfig = {
 
   access: {
     read: () => true,
-    update: isEditor,
+    update: isAdminOrSeo,
   },
 
   admin: {
