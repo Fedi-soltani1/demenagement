@@ -47,7 +47,12 @@ Champs :
 - `email` (requis, identifiant de connexion — géré par l'auth Payload)
 - `agence` (nom de l'agence immobilière)
 - `telephone`
+- `photo` (upload → `media`) — photo de l'agent
+- `rib` (IBAN / coordonnées bancaires) — sert aux virements de commission
 - `actif` (booléen — désactiver un agent sans le supprimer)
+
+> `photo`, `rib`, `telephone` sont modifiables **par l'admin à la création** ET
+> **par l'agent lui-même** depuis l'écran Profil de l'app.
 
 Comportement :
 - Création **par le super-admin** depuis Payload.
@@ -96,7 +101,8 @@ Le `demenagements` (et `rendez-vous`) créé à la conversion porte **toujours**
    progressif** (essentiels requis, détails optionnels).
 4. **Détail d'une demande** — statut courant, historique, infos client saisies.
 5. **Notifications** — pastille (compteur non-lus) + liste.
-6. **Profil / Déconnexion**.
+6. **Profil / Déconnexion** — l'agent modifie sa **photo**, son **RIB**, son
+   **téléphone**, son **mot de passe**.
 
 L'agent ne voit **que ses propres demandes**.
 
@@ -131,6 +137,16 @@ automatiquement à `realisee`.
 - **Dans l'app** : notification stockée (pastille non-lus + liste).
 - L'agent ne voit **jamais** les sous-statuts internes (uniquement les 5 jalons).
 
+### 6.1 Notifications ad-hoc (admin → agent)
+
+Le super-admin peut **envoyer un message libre** à un agent précis depuis Payload
+(ex : « Commission de 10% sur le dossier X », « Sera attribué la prochaine fois »).
+→ Délivré comme **email (Resend) + notification dans l'app**.
+
+C'est un **message texte libre** (pas une comptabilité de commission structurée —
+hors périmètre v1). Implémentation : action « Envoyer une notification » sur la fiche
+Agent (ou un champ/bouton dédié) → crée une notification in-app + envoie l'email.
+
 ---
 
 ## 7. Sécurité & accès
@@ -150,7 +166,9 @@ automatiquement à `realisee`.
 
 - **Push téléphone** (web push) : reporté ; v1 = email + dans l'app.
 - **App native** (React Native) : non retenu.
-- **Suivi de commission / facturation agent** : non demandé, non inclus.
+- **Comptabilité / facturation de commission structurée** (montants, calculs, soldes,
+  paiements) : hors périmètre. En revanche, l'admin peut **mentionner une commission
+  dans un message ad-hoc** (cf. §6.1) — le RIB de l'agent est stocké pour les virements.
 - **Distribution d'un vrai `.apk`** : possible plus tard en emballant la PWA, sans refonte.
 
 ---
