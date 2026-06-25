@@ -13,6 +13,7 @@ import Media from './payload/collections/Media'
 import Categories from './payload/collections/Categories'
 import Partners from './payload/collections/Partners'
 import Affiliates from './payload/collections/Affiliates'
+import Agents from './payload/collections/Agents'
 import Services from './payload/collections/Services'
 import FAQ from './payload/collections/FAQ'
 import Villes from './payload/collections/Villes'
@@ -170,6 +171,7 @@ export default buildConfig({
 
     // 🤝 Affiliation
     Affiliates,
+    Agents,
 
     // 📧 Marketing
     Newsletter,
