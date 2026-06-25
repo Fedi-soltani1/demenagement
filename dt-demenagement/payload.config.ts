@@ -15,6 +15,7 @@ import Partners from './payload/collections/Partners'
 import Affiliates from './payload/collections/Affiliates'
 import Agents from './payload/collections/Agents'
 import DemandesAgents from './payload/collections/DemandesAgents'
+import NotificationsAgents from './payload/collections/NotificationsAgents'
 import Services from './payload/collections/Services'
 import FAQ from './payload/collections/FAQ'
 import Villes from './payload/collections/Villes'
@@ -174,6 +175,7 @@ export default buildConfig({
     // 🤝 Affiliation
     Affiliates,
     Agents,
+    NotificationsAgents,
 
     // 📧 Marketing
     Newsletter,
