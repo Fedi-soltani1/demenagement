@@ -53,10 +53,12 @@ const Agents: CollectionConfig = {
     // et le mémoriser dans req.context pour l'envoyer par email après création.
     beforeValidate: [
       ({ data, operation, req }) => {
-        if (operation === 'create' && data && !data.password) {
-          const temp = randomPassword()
-          data.password = temp
-          ;(req.context as Record<string, unknown>).agentTempPassword = temp
+        if (operation === 'create' && data) {
+          // Si l'admin n'a pas saisi de mot de passe, en générer un automatiquement.
+          if (!data.password) data.password = randomPassword()
+          // Mémoriser le mot de passe EN CLAIR (saisi par l'admin OU généré) pour
+          // l'envoyer dans l'email d'identifiants après création.
+          ;(req.context as Record<string, unknown>).agentTempPassword = String(data.password)
         }
         return data
       },
@@ -77,6 +79,7 @@ const Agents: CollectionConfig = {
         })
         try {
           await sendMail({ to: String(doc.email), subject, html })
+          req.payload.logger.info(`[agents] email identifiants envoyé à ${doc.email}`)
         } catch (err) {
           req.payload.logger.error(`[agents] échec envoi email identifiants à ${doc.email}: ${String(err)}`)
         }
