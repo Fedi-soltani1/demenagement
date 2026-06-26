@@ -67,8 +67,8 @@ export default function NotificationsPage() {
           </div>
         ) : (
           <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {notifs.map((n) => (
-              <li key={n.id} style={{ background: '#111', border: `1px solid ${n.lu ? '#2a2a2a' : '#c9a84c66'}`, borderRadius: 14, padding: '14px 16px' }}>
+            {notifs.map((n, i) => (
+              <li key={n.id} className={`dt-in dt-d${Math.min(i + 1, 5)}`} style={{ background: '#111', border: `1px solid ${n.lu ? '#2a2a2a' : '#c9a84c66'}`, borderRadius: 14, padding: '14px 16px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
                   {!n.lu && <span style={{ width: 8, height: 8, borderRadius: 4, background: '#c9a84c', flexShrink: 0 }} />}
                   <span style={{ fontWeight: 700, fontSize: 15 }}>{n.titre || 'Message'}</span>

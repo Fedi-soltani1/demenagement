@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import type { ReactNode } from 'react'
 import { AgentServiceWorker } from './AgentServiceWorker'
+import './agent.css'
 
 // Layout racine de l'espace agent (PWA installable, design sombre charte DT).
 export const metadata: Metadata = {

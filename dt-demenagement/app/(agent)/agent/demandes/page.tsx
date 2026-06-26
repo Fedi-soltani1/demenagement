@@ -33,6 +33,27 @@ function formatDate(iso?: string): string {
   catch { return '' }
 }
 
+// Compteur animé (0 → valeur) — uniquement opacity/texte, requestAnimationFrame.
+function Counter({ value, color }: { value: number; color: string }) {
+  const [n, setN] = useState(0)
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setN(value); return
+    }
+    let raf = 0
+    const start = performance.now()
+    const dur = 650
+    const tick = (t: number) => {
+      const p = Math.min(1, (t - start) / dur)
+      setN(Math.round((1 - Math.pow(1 - p, 3)) * value))
+      if (p < 1) raf = requestAnimationFrame(tick)
+    }
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
+  }, [value])
+  return <span style={{ fontSize: 26, fontWeight: 800, color, lineHeight: 1 }}>{n}</span>
+}
+
 export default function MesDemandesPage() {
   const router = useRouter()
   const [agent, setAgent]       = useState<Agent | null>(null)
@@ -96,16 +117,16 @@ export default function MesDemandesPage() {
         <button type="button" onClick={logout} style={{ background: 'transparent', border: '1px solid #2a2a2a', color: '#a0a0a0', borderRadius: 8, padding: '7px 12px', fontSize: 13, cursor: 'pointer' }}>Déconnexion</button>
       </header>
 
-      {/* Widgets statistiques */}
+      {/* Widgets statistiques (entrée 3D + compteurs animés) */}
       <div style={{ display: 'flex', gap: 10, padding: '16px 18px 4px' }}>
         {([
           { label: 'Total', value: stats.total, color: '#f8f5f0' },
           { label: 'En cours', value: stats.enCours, color: '#c9a84c' },
           { label: 'Réalisées', value: stats.realisees, color: '#3aa657' },
-        ]).map((s) => (
-          <div key={s.label} style={{ flex: 1, background: '#111', border: '1px solid #2a2a2a', borderRadius: 14, padding: '14px 10px', textAlign: 'center' }}>
-            <div style={{ fontSize: 26, fontWeight: 800, color: s.color, lineHeight: 1 }}>{s.value}</div>
-            <div style={{ fontSize: 11, color: '#a0a0a0', marginTop: 6 }}>{s.label}</div>
+        ]).map((s, i) => (
+          <div key={s.label} className={`dt-flip dt-d${i + 1}`} style={{ flex: 1, background: 'linear-gradient(160deg,#161616,#0e0e0e)', border: '1px solid #2a2a2a', borderRadius: 14, padding: '15px 10px', textAlign: 'center' }}>
+            <Counter value={s.value} color={s.color} />
+            <div style={{ fontSize: 11, color: '#a0a0a0', marginTop: 7 }}>{s.label}</div>
           </div>
         ))}
       </div>
@@ -137,7 +158,7 @@ export default function MesDemandesPage() {
               const s = agentStatutInfo(d.statut ?? 'soumise')
               return (
                 <li key={d.id}>
-                  <Link href={`/agent/demandes/${d.id}`} style={{ display: 'block', textDecoration: 'none', color: 'inherit', background: '#111', border: '1px solid #2a2a2a', borderRadius: 14, padding: '14px 16px' }}>
+                  <Link href={`/agent/demandes/${d.id}`} className="dt-card" style={{ display: 'block', textDecoration: 'none', color: 'inherit', background: '#111', border: '1px solid #2a2a2a', borderRadius: 14, padding: '14px 16px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
                       <span style={{ fontWeight: 700, fontSize: 15 }}>{d.clientNom ?? 'Client'}</span>
                       <span style={{ fontSize: 11, fontWeight: 700, color: s.color, border: `1px solid ${s.color}55`, borderRadius: 20, padding: '3px 9px', whiteSpace: 'nowrap' }}>{s.label}</span>

@@ -1,0 +1,53 @@
+/* Animations & micro-interactions de l'espace agent (PWA).
+   Règles projet : on n'anime QUE transform / opacity, et on respecte
+   prefers-reduced-motion. Effets « 3D » via perspective CSS (pas de Three.js,
+   donc sûr sur mobile). */
+
+@keyframes dtFadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes dtFlipIn {
+  from { opacity: 0; transform: perspective(700px) rotateX(-26deg) translateY(14px); }
+  to   { opacity: 1; transform: perspective(700px) rotateX(0deg) translateY(0); }
+}
+
+@keyframes dtFloat {
+  0%, 100% { transform: translateY(0) rotateZ(0deg); }
+  50%      { transform: translateY(-5px) rotateZ(0.6deg); }
+}
+
+/* Entrée en fondu vers le haut */
+.dt-in { opacity: 0; animation: dtFadeUp .5s cubic-bezier(.2,.7,.3,1) forwards; }
+
+/* Entrée « 3D » : bascule en perspective (widgets de stats) */
+.dt-flip { opacity: 0; transform-style: preserve-3d; animation: dtFlipIn .6s cubic-bezier(.2,.7,.3,1) forwards; }
+
+/* Flottement doux continu (avatar / accents) */
+.dt-float { animation: dtFloat 4.5s ease-in-out infinite; will-change: transform; }
+
+/* Décalages en cascade */
+.dt-d1 { animation-delay: .05s; }
+.dt-d2 { animation-delay: .13s; }
+.dt-d3 { animation-delay: .21s; }
+.dt-d4 { animation-delay: .29s; }
+.dt-d5 { animation-delay: .37s; }
+
+/* Retour tactile : léger enfoncement au press */
+.dt-press { transition: transform .12s ease; }
+.dt-press:active { transform: scale(.96); }
+
+/* Cartes interactives : profondeur au survol/press */
+.dt-card { transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease; }
+.dt-card:hover { border-color: #3a3a3a; box-shadow: 0 8px 26px rgba(0,0,0,.45); }
+.dt-card:active { transform: scale(.985); }
+
+@media (prefers-reduced-motion: reduce) {
+  .dt-in, .dt-flip, .dt-float {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .dt-press, .dt-card { transition: none !important; }
+}
