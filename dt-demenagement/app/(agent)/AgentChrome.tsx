@@ -15,12 +15,20 @@ const TABS: { key: Tab; href: string; icon: string; label: string }[] = [
 // Restent dans le cadre centré (maxWidth) y compris sur grand écran.
 export function AgentChrome({ active, showFab = false }: { active: Tab; showFab?: boolean }) {
   const [unread, setUnread] = useState(0)
+  const [photo, setPhoto]   = useState<string | undefined>(undefined)
 
   useEffect(() => {
     let on = true
     fetch('/api/notifications-agents?where[lu][equals]=false&depth=0&limit=0', { credentials: 'include' })
       .then((r) => (r.ok ? r.json() : null))
       .then((d: { totalDocs?: number } | null) => { if (on && d) setUnread(d.totalDocs ?? 0) })
+      .catch(() => { /* silencieux */ })
+    // Photo de l'agent pour l'afficher dans l'onglet Profil (si elle existe).
+    fetch('/api/agents/me?depth=1', { credentials: 'include' })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d: { user?: { photo?: { url?: string } | null } | null } | null) => {
+        if (on && d?.user?.photo?.url) setPhoto(d.user.photo.url)
+      })
       .catch(() => { /* silencieux */ })
     return () => { on = false }
   }, [])
@@ -47,8 +55,13 @@ export function AgentChrome({ active, showFab = false }: { active: Tab; showFab?
             return (
               <Link key={t.key} href={t.href}
                 style={{ flex: 1, textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: '9px 0 11px', color: on ? '#f8f5f0' : '#6a6a6a' }}>
-                <span style={{ position: 'relative', fontSize: 19, opacity: on ? 1 : 0.7 }}>
-                  {t.icon}
+                <span style={{ position: 'relative', fontSize: 19, opacity: on ? 1 : 0.7, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: 22 }}>
+                  {t.key === 'profil' && photo ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={photo} alt="" width={22} height={22} style={{ width: 22, height: 22, borderRadius: '50%', objectFit: 'cover', border: on ? '1.5px solid #b52027' : '1.5px solid #3a3a3a' }} />
+                  ) : (
+                    t.icon
+                  )}
                   {t.key === 'notifications' && unread > 0 && (
                     <span style={{ position: 'absolute', top: -4, right: -9, minWidth: 16, height: 16, padding: '0 4px', borderRadius: 8, background: '#b52027', color: '#fff', fontSize: 10, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', boxSizing: 'border-box' }}>
                       {unread > 9 ? '9+' : unread}

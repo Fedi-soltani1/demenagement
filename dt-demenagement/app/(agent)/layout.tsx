@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import type { ReactNode } from 'react'
 import { AgentServiceWorker } from './AgentServiceWorker'
+import { AgentBackground } from './AgentBackground'
 import './agent.css'
 
 // Layout racine de l'espace agent (PWA installable, design sombre charte DT).
@@ -38,15 +39,18 @@ export default function AgentRootLayout({ children }: { children: ReactNode }) {
         }}
       >
         <AgentServiceWorker />
-        {/* Cadre type application : plein écran sur mobile, colonne centrée sur desktop */}
+        {/* Fond animé 3D (couche fixe, derrière tout le contenu) */}
+        <AgentBackground />
+        {/* Cadre type application : plein écran sur mobile, colonne centrée sur desktop.
+            Fond transparent pour laisser apparaître l'animation 3D derrière. */}
         <div
           style={{
             maxWidth: 520,
             margin: '0 auto',
             minHeight: '100dvh',
-            background: '#0a0a0a',
+            background: 'transparent',
             position: 'relative',
-            boxShadow: '0 0 80px rgba(0,0,0,0.7)',
+            zIndex: 1,
           }}
         >
           {children}
