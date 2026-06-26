@@ -27,6 +27,7 @@ export default function ProfilPage() {
   const [msgPhoto, setMsgPhoto] = useState('')
 
   // Champs éditables
+  const [email, setEmail]         = useState('')
   const [agence, setAgence]       = useState('')
   const [telephone, setTelephone] = useState('')
   const [whatsapp, setWhatsapp]   = useState('')
@@ -49,6 +50,7 @@ export default function ProfilPage() {
         if (!data.user) { router.replace('/agent'); return }
         if (!active) return
         setMe(data.user)
+        setEmail(data.user.email ?? '')
         setAgence(data.user.agence ?? '')
         setTelephone(data.user.telephone ?? '')
         setWhatsapp(data.user.whatsapp ?? '')
@@ -74,7 +76,14 @@ export default function ProfilPage() {
       if (res.status === 401) { router.replace('/agent'); return }
       const data = await res.json() as { url?: string; error?: string }
       if (!res.ok) { setMsgPhoto(`❌ ${data.error ?? 'Échec de l’envoi.'}`); return }
-      setPhotoUrl(data.url)
+      // Récupère l'URL canonique (même source que l'affichage admin) pour un rendu fiable.
+      try {
+        const meRes = await fetch('/api/agents/me?depth=1', { credentials: 'include' })
+        const meData = await meRes.json() as { user?: AgentMe | null }
+        setPhotoUrl(meData.user?.photo?.url ?? data.url)
+      } catch {
+        setPhotoUrl(data.url)
+      }
       setMsgPhoto('✅ Photo mise à jour.')
     } catch {
       setMsgPhoto('❌ Connexion impossible.')
@@ -91,7 +100,7 @@ export default function ProfilPage() {
     try {
       const res = await fetch(`/api/agents/${me.id}`, {
         method: 'PATCH', headers: { 'Content-Type': 'application/json' }, credentials: 'include',
-        body: JSON.stringify({ agence, telephone, whatsapp, rib }),
+        body: JSON.stringify({ email: email.trim(), agence, telephone, whatsapp, rib }),
       })
       if (res.status === 401 || res.status === 403) { router.replace('/agent'); return }
       if (!res.ok) { setMsgInfo('❌ Échec de l’enregistrement.'); return }
@@ -171,6 +180,8 @@ export default function ProfilPage() {
         {/* Modifier les informations */}
         <form onSubmit={saveInfos} className="dt-in dt-d2" style={cardStyle}>
           <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 14 }}>Mes informations</div>
+          <label style={labelStyle} htmlFor="p-email">Email <span style={{ color: '#666' }}>(identifiant de connexion)</span></label>
+          <input id="p-email" style={inputStyle} type="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" />
           <label style={labelStyle} htmlFor="p-agence">Agence immobilière</label>
           <input id="p-agence" style={inputStyle} value={agence} onChange={(e) => setAgence(e.target.value)} />
           <label style={labelStyle} htmlFor="p-tel">Téléphone</label>

@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload'
 import { isAdmin } from '../access/isAdmin'
 import { isAgentOwner } from '../access/isAgentOwner'
+import { agentStatutInfo } from '../../lib/agent-statut-labels'
 
 const DemandesAgents: CollectionConfig = {
   slug: 'demandes-agents',
@@ -34,6 +35,50 @@ const DemandesAgents: CollectionConfig = {
           data.agent = req.user.id
         }
         return data
+      },
+    ],
+    // Au changement de statut par l'admin : notifier l'agent (in-app + email).
+    // On crée une notification dont le hook envoie l'email — une seule source d'infra.
+    afterChange: [
+      async ({ doc, previousDoc, operation, req }) => {
+        if (operation !== 'update') return doc
+        const before = (previousDoc as { statut?: string } | undefined)?.statut
+        const after = (doc as { statut?: string }).statut
+        if (!after || before === after) return doc
+
+        const agentRel = (doc as { agent?: unknown }).agent
+        const agentId = typeof agentRel === 'object' && agentRel !== null
+          ? (agentRel as { id: string | number }).id
+          : agentRel
+        if (agentId == null) return doc
+
+        const label = agentStatutInfo(after).label
+        const clientNom = String((doc as { clientNom?: string }).clientNom ?? 'votre client')
+        const villeDepart = String((doc as { villeDepart?: string }).villeDepart ?? '')
+        const villeArrivee = String((doc as { villeArrivee?: string }).villeArrivee ?? '')
+        const motifRefus = String((doc as { motifRefus?: string }).motifRefus ?? '')
+
+        const trajet = villeDepart || villeArrivee ? ` (${villeDepart} → ${villeArrivee})` : ''
+        let message = `Le statut de votre demande pour ${clientNom}${trajet} est maintenant : ${label}.`
+        if (after === 'refusee' && motifRefus) message += `\n\nMotif : ${motifRefus}`
+
+        try {
+          await req.payload.create({
+            collection: 'notifications-agents',
+            data: {
+              agent: agentId as string | number,
+              titre: `Demande ${clientNom} — ${label}`,
+              message,
+              canalEmail: true,
+              canalWhatsapp: false,
+            },
+            overrideAccess: true,
+          })
+          req.payload.logger.info(`[demandes-agents] notif statut « ${after} » créée pour agent ${String(agentId)}`)
+        } catch (err) {
+          req.payload.logger.error(`[demandes-agents] notif statut échouée: ${String(err)}`)
+        }
+        return doc
       },
     ],
   },
