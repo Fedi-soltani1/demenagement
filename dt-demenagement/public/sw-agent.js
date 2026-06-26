@@ -1,7 +1,7 @@
 // Service worker minimal de l'espace agent (PWA installable).
 // Rôle : satisfaire le critère d'installabilité (manifest + SW avec handler fetch)
 // et fournir un cache "app shell" léger pour un démarrage rapide hors-ligne.
-const CACHE = 'dt-agents-v1'
+const CACHE = 'dt-agents-v2'
 const SHELL = ['/agent', '/agent-icon-192.png', '/agent-icon-512.png']
 
 self.addEventListener('install', (event) => {

@@ -18,6 +18,31 @@
   50%      { transform: translateY(-5px) rotateZ(0.6deg); }
 }
 
+/* Hero du tableau de bord : entrée 3D en bascule + léger balancement continu */
+@keyframes dtHeroIn {
+  from { opacity: 0; transform: perspective(900px) rotateX(16deg) translateY(22px); }
+  to   { opacity: 1; transform: perspective(900px) rotateX(0deg) translateY(0); }
+}
+@keyframes dtHeroTilt {
+  0%, 100% { transform: perspective(900px) rotateX(0deg) rotateY(-1.5deg); }
+  50%      { transform: perspective(900px) rotateX(2deg) rotateY(1.5deg); }
+}
+/* Reflet qui balaie le hero */
+@keyframes dtShine {
+  0%        { transform: translateX(-130%) skewX(-18deg); opacity: 0; }
+  18%       { opacity: .55; }
+  55%, 100% { transform: translateX(240%) skewX(-18deg); opacity: 0; }
+}
+/* Caisse / camion qui flotte en 3D */
+@keyframes dtBox {
+  0%, 100% { transform: translateY(0) rotateZ(-6deg); }
+  50%      { transform: translateY(-7px) rotateZ(6deg); }
+}
+
+.dt-hero { animation: dtHeroIn .7s cubic-bezier(.2,.7,.3,1) both, dtHeroTilt 7s ease-in-out 1s infinite; transform-style: preserve-3d; will-change: transform; }
+.dt-shine { animation: dtShine 4.2s ease-in-out 1s infinite; will-change: transform, opacity; }
+.dt-box { animation: dtBox 3.6s ease-in-out infinite; will-change: transform; }
+
 /* Entrée en fondu vers le haut */
 .dt-in { opacity: 0; animation: dtFadeUp .5s cubic-bezier(.2,.7,.3,1) forwards; }
 
