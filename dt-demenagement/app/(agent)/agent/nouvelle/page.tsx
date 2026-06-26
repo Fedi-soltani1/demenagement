@@ -76,7 +76,7 @@ export default function NouvelleDemandePage() {
         <input style={inputStyle} type="tel" value={form.clientTelephone ?? ''} onChange={(e) => set('clientTelephone', e.target.value)} required />
         <label style={labelStyle}>Ville de départ *</label>
         <input style={inputStyle} value={form.villeDepart ?? ''} onChange={(e) => set('villeDepart', e.target.value)} required />
-        <label style={labelStyle}>Ville d'arrivée *</label>
+        <label style={labelStyle}>Ville d’arrivée *</label>
         <input style={inputStyle} value={form.villeArrivee ?? ''} onChange={(e) => set('villeArrivee', e.target.value)} required />
         <label style={labelStyle}>Date approximative *</label>
         <input style={inputStyle} value={form.dateApprox ?? ''} onChange={(e) => set('dateApprox', e.target.value)} placeholder="Ex: Juillet 2026" required />
@@ -91,7 +91,7 @@ export default function NouvelleDemandePage() {
             <input style={inputStyle} type="email" value={form.clientEmail ?? ''} onChange={(e) => set('clientEmail', e.target.value)} />
             <label style={labelStyle}>Adresse de départ</label>
             <input style={inputStyle} value={form.adresseDepart ?? ''} onChange={(e) => set('adresseDepart', e.target.value)} />
-            <label style={labelStyle}>Adresse d'arrivée</label>
+            <label style={labelStyle}>Adresse d’arrivée</label>
             <input style={inputStyle} value={form.adresseArrivee ?? ''} onChange={(e) => set('adresseArrivee', e.target.value)} />
             <label style={labelStyle}>Type de bien</label>
             <input style={inputStyle} value={form.typeBien ?? ''} onChange={(e) => set('typeBien', e.target.value)} placeholder="Ex: Appartement S+2" />

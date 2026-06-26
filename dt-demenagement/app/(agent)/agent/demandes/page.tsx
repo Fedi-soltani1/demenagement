@@ -62,7 +62,7 @@ export default function MesDemandesPage() {
         {demandes.length === 0 ? (
           <div style={{ textAlign: 'center', color: '#a0a0a0', padding: '48px 16px' }}>
             <div style={{ fontSize: 40, marginBottom: 10 }}>📭</div>
-            <p style={{ margin: 0 }}>Aucune demande pour l'instant.</p>
+            <p style={{ margin: 0 }}>Aucune demande pour l’instant.</p>
             <p style={{ margin: '6px 0 0', fontSize: 13 }}>Touchez le bouton + pour créer votre première demande.</p>
           </div>
         ) : (
