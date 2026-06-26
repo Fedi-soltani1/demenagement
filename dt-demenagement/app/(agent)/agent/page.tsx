@@ -34,31 +34,47 @@ export default function AgentLoginPage() {
   }
 
   return (
-    <main style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px 18px' }}>
-      <div style={{ width: '100%', maxWidth: 380 }}>
-        {/* En-tête marque */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, justifyContent: 'center', marginBottom: 28 }}>
-          <div style={{ width: 44, height: 44, borderRadius: 11, background: 'linear-gradient(145deg,#cc2a33,#8a1820)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(181,32,39,0.4)' }}>
-            <span style={{ color: '#fff', fontWeight: 900, fontSize: 16, letterSpacing: '-0.5px' }}>DT</span>
+    <main style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px 18px', position: 'relative', overflow: 'hidden' }}>
+      {/* Styles d'animation — uniquement transform/opacity, désactivés si reduced-motion */}
+      <style>{`
+        @keyframes dtGlow { 0%,100% { opacity: .35; transform: scale(1); } 50% { opacity: .65; transform: scale(1.12); } }
+        @keyframes dtPop  { from { opacity: 0; transform: scale(.78); } to { opacity: 1; transform: scale(1); } }
+        @keyframes dtUp   { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes dtTruck { 0% { transform: translateX(-12px); } 50% { transform: translateX(12px); } 100% { transform: translateX(-12px); } }
+        .dt-anim { opacity: 0; animation: dtUp .6s cubic-bezier(.2,.7,.3,1) forwards; }
+        @media (prefers-reduced-motion: reduce) {
+          .dt-glow, .dt-pop, .dt-anim, .dt-truck { animation: none !important; opacity: 1 !important; transform: none !important; }
+        }
+      `}</style>
+
+      {/* Halo lumineux animé en fond */}
+      <div className="dt-glow" aria-hidden="true" style={{ position: 'absolute', top: '24%', left: '50%', width: 320, height: 320, marginLeft: -160, borderRadius: '50%', background: 'radial-gradient(circle, rgba(181,32,39,0.55) 0%, rgba(181,32,39,0) 70%)', filter: 'blur(8px)', animation: 'dtGlow 4.5s ease-in-out infinite', pointerEvents: 'none', willChange: 'transform, opacity' }} />
+
+      <div style={{ width: '100%', maxWidth: 380, position: 'relative', zIndex: 1 }}>
+        {/* Hero animé de bienvenue */}
+        <div style={{ textAlign: 'center', marginBottom: 30 }}>
+          <div className="dt-pop" style={{ width: 78, height: 78, margin: '0 auto 16px', borderRadius: 22, background: 'linear-gradient(145deg,#cc2a33,#8a1820)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 10px 34px rgba(181,32,39,0.5)', animation: 'dtPop .6s cubic-bezier(.2,.9,.3,1.2) forwards', willChange: 'transform, opacity' }}>
+            <span style={{ color: '#fff', fontWeight: 900, fontSize: 28, letterSpacing: '-1px' }}>DT</span>
           </div>
-          <div style={{ lineHeight: 1.25 }}>
-            <div style={{ fontWeight: 700, fontSize: 16 }}>DT Déménagement</div>
-            <div style={{ color: '#c9a84c', fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' }}>Espace Agent</div>
-          </div>
+          <div className="dt-truck" aria-hidden="true" style={{ fontSize: 22, marginBottom: 10, animation: 'dtTruck 3s ease-in-out infinite', willChange: 'transform' }}>🚚</div>
+          <h1 className="dt-anim" style={{ margin: '0 0 6px', fontSize: 23, fontWeight: 800, animationDelay: '.1s' }}>Bienvenue 👋</h1>
+          <p className="dt-anim" style={{ margin: 0, color: '#a0a0a0', fontSize: 14, animationDelay: '.22s' }}>
+            Votre espace agent <span style={{ color: '#c9a84c', fontWeight: 700 }}>DT Déménagement</span>
+          </p>
         </div>
 
-        <form onSubmit={handleSubmit} style={{ background: '#111', border: '1px solid #2a2a2a', borderRadius: 16, padding: 24 }}>
-          <h1 style={{ margin: '0 0 18px', fontSize: 18, fontWeight: 700 }}>Connexion</h1>
+        <form onSubmit={handleSubmit} className="dt-anim" style={{ background: '#111', border: '1px solid #2a2a2a', borderRadius: 18, padding: 24, boxShadow: '0 12px 40px rgba(0,0,0,0.5)', animationDelay: '.34s' }}>
+          <h2 style={{ margin: '0 0 18px', fontSize: 17, fontWeight: 700 }}>Connexion</h2>
 
-          <label style={{ display: 'block', fontSize: 13, color: '#a0a0a0', marginBottom: 6 }}>Email</label>
+          <label htmlFor="agent-email" style={{ display: 'block', fontSize: 13, color: '#a0a0a0', marginBottom: 6 }}>Email</label>
           <input
-            type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email"
+            id="agent-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email"
             style={{ width: '100%', boxSizing: 'border-box', padding: '12px 14px', marginBottom: 16, borderRadius: 9, border: '1px solid #2a2a2a', background: '#0a0a0a', color: '#f8f5f0', fontSize: 15 }}
           />
 
-          <label style={{ display: 'block', fontSize: 13, color: '#a0a0a0', marginBottom: 6 }}>Mot de passe</label>
+          <label htmlFor="agent-password" style={{ display: 'block', fontSize: 13, color: '#a0a0a0', marginBottom: 6 }}>Mot de passe</label>
           <input
-            type="password" value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete="current-password"
+            id="agent-password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete="current-password"
             style={{ width: '100%', boxSizing: 'border-box', padding: '12px 14px', marginBottom: 18, borderRadius: 9, border: '1px solid #2a2a2a', background: '#0a0a0a', color: '#f8f5f0', fontSize: 15 }}
           />
 
@@ -72,7 +88,7 @@ export default function AgentLoginPage() {
           </button>
         </form>
 
-        <p style={{ textAlign: 'center', color: '#555', fontSize: 11, marginTop: 18 }}>
+        <p className="dt-anim" style={{ textAlign: 'center', color: '#555', fontSize: 11, marginTop: 18, animationDelay: '.46s' }}>
           Identifiants reçus par email. Problème ? Contactez DT Déménagement.
         </p>
       </div>

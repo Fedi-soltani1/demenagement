@@ -1,9 +1,10 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { agentStatutInfo } from '@/lib/agent-statut-labels'
+import { AgentChrome } from '../../AgentChrome'
 
 interface Agent { id: number; prenom?: string; nom?: string }
 interface Demande {
@@ -11,11 +12,33 @@ interface Demande {
   statut?: string; createdAt?: string
 }
 
+type Filtre = 'toutes' | 'en-cours' | 'realisee' | 'refusee'
+const FILTRES: { key: Filtre; label: string }[] = [
+  { key: 'toutes',   label: 'Toutes' },
+  { key: 'en-cours', label: 'En cours' },
+  { key: 'realisee', label: 'Réalisées' },
+  { key: 'refusee',  label: 'Refusées' },
+]
+
+function matchFiltre(statut: string, f: Filtre): boolean {
+  if (f === 'toutes') return true
+  if (f === 'realisee') return statut === 'realisee'
+  if (f === 'refusee') return statut === 'refusee'
+  return statut === 'soumise' || statut === 'vue' || statut === 'acceptee' // en-cours
+}
+
+function formatDate(iso?: string): string {
+  if (!iso) return ''
+  try { return new Date(iso).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' }) }
+  catch { return '' }
+}
+
 export default function MesDemandesPage() {
   const router = useRouter()
   const [agent, setAgent]       = useState<Agent | null>(null)
   const [demandes, setDemandes] = useState<Demande[]>([])
   const [loading, setLoading]   = useState(true)
+  const [filtre, setFiltre]     = useState<Filtre>('toutes')
 
   useEffect(() => {
     let active = true
@@ -26,7 +49,7 @@ export default function MesDemandesPage() {
         if (!meData.user) { router.replace('/agent'); return }
         if (!active) return
         setAgent(meData.user)
-        const res = await fetch('/api/demandes-agents?limit=100&sort=-createdAt', { credentials: 'include' })
+        const res = await fetch('/api/demandes-agents?limit=100&sort=-createdAt&depth=0', { credentials: 'include' })
         const data = await res.json() as { docs?: Demande[] }
         if (active) setDemandes(data.docs ?? [])
       } catch {
@@ -38,6 +61,21 @@ export default function MesDemandesPage() {
     return () => { active = false }
   }, [router])
 
+  const stats = useMemo(() => {
+    const s = { total: demandes.length, enCours: 0, realisees: 0 }
+    for (const d of demandes) {
+      const st = d.statut ?? 'soumise'
+      if (st === 'realisee') s.realisees++
+      else if (st !== 'refusee') s.enCours++
+    }
+    return s
+  }, [demandes])
+
+  const filtered = useMemo(
+    () => demandes.filter((d) => matchFiltre(d.statut ?? 'soumise', filtre)),
+    [demandes, filtre]
+  )
+
   async function logout() {
     await fetch('/api/agents/logout', { method: 'POST', credentials: 'include' }).catch(() => {})
     router.replace('/agent')
@@ -48,37 +86,66 @@ export default function MesDemandesPage() {
   }
 
   return (
-    <main style={{ minHeight: '100dvh', paddingBottom: 90 }}>
+    <main style={{ minHeight: '100dvh', paddingBottom: 96 }}>
       {/* En-tête */}
-      <header style={{ position: 'sticky', top: 0, background: '#0a0a0acc', backdropFilter: 'blur(8px)', borderBottom: '1px solid #2a2a2a', padding: '14px 18px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <header style={{ position: 'sticky', top: 0, zIndex: 10, background: '#0a0a0acc', backdropFilter: 'blur(8px)', borderBottom: '1px solid #2a2a2a', padding: '14px 18px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
-          <div style={{ fontWeight: 700, fontSize: 15 }}>Bonjour {agent?.prenom ?? ''}</div>
-          <div style={{ color: '#c9a84c', fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Mes demandes</div>
+          <div style={{ fontWeight: 700, fontSize: 16 }}>Bonjour {agent?.prenom ?? agent?.nom ?? ''} 👋</div>
+          <div style={{ color: '#c9a84c', fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Espace agent DT</div>
         </div>
-        <button onClick={logout} style={{ background: 'transparent', border: '1px solid #2a2a2a', color: '#a0a0a0', borderRadius: 8, padding: '7px 12px', fontSize: 13, cursor: 'pointer' }}>Déconnexion</button>
+        <button type="button" onClick={logout} style={{ background: 'transparent', border: '1px solid #2a2a2a', color: '#a0a0a0', borderRadius: 8, padding: '7px 12px', fontSize: 13, cursor: 'pointer' }}>Déconnexion</button>
       </header>
 
-      <div style={{ padding: '18px' }}>
-        {demandes.length === 0 ? (
+      {/* Widgets statistiques */}
+      <div style={{ display: 'flex', gap: 10, padding: '16px 18px 4px' }}>
+        {([
+          { label: 'Total', value: stats.total, color: '#f8f5f0' },
+          { label: 'En cours', value: stats.enCours, color: '#c9a84c' },
+          { label: 'Réalisées', value: stats.realisees, color: '#3aa657' },
+        ]).map((s) => (
+          <div key={s.label} style={{ flex: 1, background: '#111', border: '1px solid #2a2a2a', borderRadius: 14, padding: '14px 10px', textAlign: 'center' }}>
+            <div style={{ fontSize: 26, fontWeight: 800, color: s.color, lineHeight: 1 }}>{s.value}</div>
+            <div style={{ fontSize: 11, color: '#a0a0a0', marginTop: 6 }}>{s.label}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Filtres */}
+      <div style={{ display: 'flex', gap: 8, padding: '14px 18px 6px', overflowX: 'auto' }}>
+        {FILTRES.map((f) => {
+          const on = f.key === filtre
+          return (
+            <button type="button" key={f.key} onClick={() => setFiltre(f.key)}
+              style={{ flexShrink: 0, padding: '7px 14px', borderRadius: 20, fontSize: 13, fontWeight: 700, cursor: 'pointer', border: `1px solid ${on ? '#b52027' : '#2a2a2a'}`, background: on ? '#b52027' : '#111', color: on ? '#fff' : '#a0a0a0' }}>
+              {f.label}
+            </button>
+          )
+        })}
+      </div>
+
+      {/* Liste */}
+      <div style={{ padding: '8px 18px 0' }}>
+        {filtered.length === 0 ? (
           <div style={{ textAlign: 'center', color: '#a0a0a0', padding: '48px 16px' }}>
             <div style={{ fontSize: 40, marginBottom: 10 }}>📭</div>
-            <p style={{ margin: 0 }}>Aucune demande pour l’instant.</p>
-            <p style={{ margin: '6px 0 0', fontSize: 13 }}>Touchez le bouton + pour créer votre première demande.</p>
+            <p style={{ margin: 0 }}>{demandes.length === 0 ? 'Aucune demande pour l’instant.' : 'Aucune demande dans ce filtre.'}</p>
+            <p style={{ margin: '6px 0 0', fontSize: 13 }}>Touchez le bouton + pour en créer une.</p>
           </div>
         ) : (
           <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {demandes.map((d) => {
+            {filtered.map((d) => {
               const s = agentStatutInfo(d.statut ?? 'soumise')
               return (
                 <li key={d.id}>
-                  <Link href={`/agent/demandes/${d.id}`} style={{ display: 'block', textDecoration: 'none', color: 'inherit', background: '#111', border: '1px solid #2a2a2a', borderRadius: 12, padding: '14px 16px' }}>
+                  <Link href={`/agent/demandes/${d.id}`} style={{ display: 'block', textDecoration: 'none', color: 'inherit', background: '#111', border: '1px solid #2a2a2a', borderRadius: 14, padding: '14px 16px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
                       <span style={{ fontWeight: 700, fontSize: 15 }}>{d.clientNom ?? 'Client'}</span>
-                      <span style={{ fontSize: 11, fontWeight: 700, color: s.color, border: `1px solid ${s.color}55`, borderRadius: 20, padding: '3px 9px' }}>{s.label}</span>
+                      <span style={{ fontSize: 11, fontWeight: 700, color: s.color, border: `1px solid ${s.color}55`, borderRadius: 20, padding: '3px 9px', whiteSpace: 'nowrap' }}>{s.label}</span>
                     </div>
                     <div style={{ fontSize: 13, color: '#a0a0a0' }}>
                       {d.type === 'rendez-vous' ? '📅 Rendez-vous' : '📦 Devis / Déménagement'} · {d.villeDepart ?? '?'} → {d.villeArrivee ?? '?'}
                     </div>
+                    {d.createdAt && <div style={{ fontSize: 11, color: '#666', marginTop: 6 }}>{formatDate(d.createdAt)}</div>}
                   </Link>
                 </li>
               )
@@ -87,8 +154,7 @@ export default function MesDemandesPage() {
         )}
       </div>
 
-      {/* Bouton flottant Nouvelle demande */}
-      <Link href="/agent/nouvelle" aria-label="Nouvelle demande" style={{ position: 'fixed', bottom: 22, right: 22, width: 58, height: 58, borderRadius: 29, background: '#b52027', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 30, textDecoration: 'none', boxShadow: '0 6px 18px rgba(181,32,39,0.5)' }}>+</Link>
+      <AgentChrome active="demandes" showFab />
     </main>
   )
 }

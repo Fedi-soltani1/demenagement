@@ -29,7 +29,7 @@ export default function AgentRootLayout({ children }: { children: ReactNode }) {
       <body
         style={{
           margin: 0,
-          background: '#0a0a0a',
+          background: '#050505',
           color: '#f8f5f0',
           fontFamily: 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif',
           minHeight: '100dvh',
@@ -37,7 +37,19 @@ export default function AgentRootLayout({ children }: { children: ReactNode }) {
         }}
       >
         <AgentServiceWorker />
-        {children}
+        {/* Cadre type application : plein écran sur mobile, colonne centrée sur desktop */}
+        <div
+          style={{
+            maxWidth: 520,
+            margin: '0 auto',
+            minHeight: '100dvh',
+            background: '#0a0a0a',
+            position: 'relative',
+            boxShadow: '0 0 80px rgba(0,0,0,0.7)',
+          }}
+        >
+          {children}
+        </div>
       </body>
     </html>
   )
