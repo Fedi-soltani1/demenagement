@@ -1,3 +1,9 @@
 # Claude Code - personal/machine-specific, not for teammates
 .claude/skills/
 .claude/settings.local.json
+DEPLOY-DATABASE_URL-prod.txt
+
+DEPLOY-vercel-env.txt
+DEPLOY-vercel-env-FILLED.txt
+
+.vercel

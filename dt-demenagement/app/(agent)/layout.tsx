@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import type { ReactNode } from 'react'
+import { AgentServiceWorker } from './AgentServiceWorker'
 
 // Layout racine de l'espace agent (PWA installable, design sombre charte DT).
 export const metadata: Metadata = {
@@ -7,6 +8,10 @@ export const metadata: Metadata = {
   description: 'Espace agent immobilier — DT Déménagement Tunisie',
   manifest: '/agent-manifest.webmanifest',
   appleWebApp: { capable: true, statusBarStyle: 'black-translucent', title: 'DT Agents' },
+  icons: {
+    icon: [{ url: '/agent-icon-192.png', sizes: '192x192', type: 'image/png' }],
+    apple: [{ url: '/agent-icon-180.png', sizes: '180x180', type: 'image/png' }],
+  },
   robots: { index: false, follow: false },
 }
 
@@ -31,6 +36,7 @@ export default function AgentRootLayout({ children }: { children: ReactNode }) {
           WebkitTapHighlightColor: 'transparent',
         }}
       >
+        <AgentServiceWorker />
         {children}
       </body>
     </html>
