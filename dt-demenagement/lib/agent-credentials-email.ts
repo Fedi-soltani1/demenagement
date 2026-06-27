@@ -32,6 +32,10 @@ export function buildAgentCredentialsEmail(input: {
             <p style="margin:0;font-size:15px;color:#f8f5f0;font-family:monospace;">${escapeHtml(input.tempPassword)}</p>
           </div>
           <a href="${input.appUrl}" style="display:inline-block;background:#b52027;color:#fff;text-decoration:none;padding:12px 22px;border-radius:8px;font-weight:bold;">Ouvrir l'application</a>
+          <p style="margin:14px 0 0;font-size:12px;color:#a0a0a0;line-height:1.6;word-break:break-all;">
+            Ou copiez ce lien dans votre navigateur :<br>
+            <a href="${input.appUrl}" style="color:#c9a84c;">${escapeHtml(input.appUrl)}</a>
+          </p>
           <p style="margin:18px 0 0;font-size:12px;color:#a0a0a0;line-height:1.6;">
             Pour des raisons de sécurité, il vous sera demandé de changer ce mot de passe à votre première connexion.
             Sur mobile, ajoutez l'application à votre écran d'accueil pour l'utiliser comme une app.
