@@ -15,7 +15,6 @@ export async function POST(request: Request) {
   const adresseArrivee = body.adresseArrivee as { adresse?: string; ville?: string; etage?: string; ascenseur?: boolean } | undefined
   const dateSouhaitee  = typeof body.dateSouhaitee === 'string' ? body.dateSouhaitee : ''
   const services       = Array.isArray(body.services) ? (body.services as string[]) : []
-  const volumeM3       = typeof body.volumeM3 === 'number' && body.volumeM3 > 0 ? body.volumeM3 : undefined
   const commentaire    = typeof body.commentaire === 'string' ? body.commentaire.trim() : ''
 
   if (!adresseDepart?.adresse?.trim() || !adresseDepart?.ville?.trim()) {
@@ -63,7 +62,6 @@ export async function POST(request: Request) {
         },
         ...(dateSouhaitee ? { dateDemenagement: dateSouhaitee } : {}),
         ...(services.length > 0 ? { servicesInclus: services } : {}),
-        ...(volumeM3 ? { volumeM3 } : {}),
         commentaire: fullNote,
       },
       overrideAccess: true,

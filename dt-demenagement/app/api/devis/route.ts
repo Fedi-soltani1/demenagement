@@ -37,9 +37,6 @@ const devisSchema = z.object({
 
   services:       z.array(z.string()).min(1).max(6),
   dateSouhaitee:  z.string().optional(),
-  // Volume estimé en m³ — limite généreuse pour couvrir les gros déménagements
-  // d'entreprise/entrepôt (500 était trop bas et bloquait l'envoi du devis en 422).
-  volumeEstime:   z.number().min(0).max(5000).optional(),
   commentaire:    z.string().max(1000).optional(),
 
   // IDs Payload Media — uploadés via /api/devis/upload.
@@ -109,7 +106,6 @@ export async function POST(request: Request) {
           ascenseur: d.adresseArrivee.ascenseur ?? false,
         },
         servicesInclus:   d.services,
-        volumeM3:         d.volumeEstime,
         dateDemenagement: d.dateSouhaitee ? new Date(d.dateSouhaitee).toISOString() : undefined,
         photosDepart:     (d.photosDepart  ?? []).map(Number).filter(Boolean),
         photosArrivee:    (d.photosArrivee ?? []).map(Number).filter(Boolean),
@@ -227,7 +223,6 @@ function buildInternalEmail(
             ${row('ARRIVÉE', `${escapeHtml(d.adresseArrivee.adresse)}, ${escapeHtml(d.adresseArrivee.ville)}${d.adresseArrivee.etage ? ` — Étage ${d.adresseArrivee.etage}` : ''}${d.adresseArrivee.ascenseur ? ' (asc.)' : ''}`)}
             ${row('SERVICES', escapeHtml(d.services.join(', ')))}
             ${d.dateSouhaitee ? `<tr style="border-bottom:1px solid #2a2a2a;"><td style="padding:10px 0;color:#a0a0a0;font-size:12px;width:140px;">DATE SOUHAITÉE</td><td style="padding:10px 0;color:#c9a84c;font-size:14px;font-weight:bold;">${escapeHtml(d.dateSouhaitee)}</td></tr>` : ''}
-            ${d.volumeEstime  ? row('VOLUME ESTIMÉ', `${d.volumeEstime} m³`) : ''}
             ${d.commentaire   ? row('COMMENTAIRE', escapeHtml(d.commentaire)) : ''}
           </table>
           ${hasPhotos ? `<div style="margin-top:16px;padding-top:16px;border-top:1px solid #2a2a2a;">

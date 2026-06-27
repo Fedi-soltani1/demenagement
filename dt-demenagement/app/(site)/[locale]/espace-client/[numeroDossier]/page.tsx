@@ -47,7 +47,6 @@ type DemenagementDoc = {
   adresseDepart?:  { adresse?: string; ville?: string; etage?: string; ascenseur?: boolean }
   adresseArrivee?: { adresse?: string; ville?: string; etage?: string; ascenseur?: boolean }
   servicesInclus?: string[]
-  volumeM3?: number
   demenageur?: { nom?: string; telephone?: string }
   documents?: { id: string; nom: string; type: string; fichier?: { url?: string } }[]
   // Champs devis
@@ -297,13 +296,6 @@ export default async function DossierPage({ params }: PageProps) {
                       icon={<Calendar className="w-3.5 h-3.5" />}
                       label={t('dateLabel')}
                       value={new Date(dossier.dateDemenagement).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
-                    />
-                  )}
-                  {dossier.volumeM3 && (
-                    <InfoRow
-                      icon={<Package className="w-3.5 h-3.5" />}
-                      label={t('volumeLabel')}
-                      value={`${dossier.volumeM3} m³`}
                     />
                   )}
                 </dl>

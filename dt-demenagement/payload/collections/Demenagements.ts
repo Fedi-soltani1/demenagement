@@ -627,7 +627,6 @@ Conditions : devis valable 30 jours à compter de sa date d'émission — paieme
     },
 
     // ── Champs hors formulaire (données API + cellules liste) ─────────────────
-    { name: 'volumeM3',          type: 'number',   label: 'Volume m³',        admin: { hidden: true } },
     { name: 'devisValiditeJours',type: 'number',   label: 'Validité devis',   admin: { hidden: true }, defaultValue: 30 },
     { name: 'devisEnvoyeLe',     type: 'text',     label: 'Devis envoyé le',  admin: { hidden: true } },
     { name: 'devisReponduLe',    type: 'text',     label: 'Devis répondu le', admin: { hidden: true } },

@@ -23,7 +23,6 @@ interface FormState {
   adresseArrivee: AdresseForm
   dateSouhaitee: string
   services:      string[]
-  volumeM3:      string
   commentaire:   string
 }
 
@@ -51,7 +50,6 @@ export function NouvelleDemandeForm({ locale }: { locale: string }) {
     adresseArrivee: emptyAdresse(),
     dateSouhaitee:  '',
     services:       [],
-    volumeM3:       '',
     commentaire:    '',
   })
 
@@ -98,7 +96,6 @@ export function NouvelleDemandeForm({ locale }: { locale: string }) {
           adresseArrivee: form.adresseArrivee,
           dateSouhaitee:  form.dateSouhaitee || undefined,
           services:       form.services,
-          volumeM3:       form.volumeM3 ? Number(form.volumeM3) : undefined,
           commentaire:    form.commentaire,
         }),
       })
@@ -276,25 +273,6 @@ export function NouvelleDemandeForm({ locale }: { locale: string }) {
             </div>
           </div>
 
-          {/* Volume */}
-          <div>
-            <label className="block font-body text-xs text-[var(--color-text-muted)] uppercase tracking-widest mb-3">
-              Volume estimé (m³) <span className="normal-case">(optionnel)</span>
-            </label>
-            <div className="flex items-center gap-3">
-              <input
-                type="number"
-                min="1"
-                max="500"
-                placeholder="ex: 25"
-                value={form.volumeM3}
-                onChange={e => setForm(f => ({ ...f, volumeM3: e.target.value }))}
-                className="w-32 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-[var(--color-text-light)] font-body text-sm focus:outline-none focus:border-[var(--color-red)]/50 focus:ring-1 focus:ring-[var(--color-red)]/30"
-              />
-              <span className="font-body text-sm text-[var(--color-text-muted)]">m³</span>
-            </div>
-          </div>
-
           {/* Notes */}
           <div>
             <label className="block font-body text-xs text-[var(--color-text-muted)] uppercase tracking-widest mb-3">
@@ -338,9 +316,6 @@ export function NouvelleDemandeForm({ locale }: { locale: string }) {
             )}
             {form.services.length > 0 && (
               <RecapRow label="Services" value={form.services.map(s => SERVICES_OPTIONS.find(o => o.value === s)?.label ?? s).join(', ')} />
-            )}
-            {form.volumeM3 && (
-              <RecapRow label="Volume estimé" value={`${form.volumeM3} m³`} />
             )}
             {form.commentaire && (
               <RecapRow label="Notes" value={form.commentaire} />

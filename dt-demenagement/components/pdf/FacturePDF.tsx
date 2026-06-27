@@ -175,7 +175,6 @@ export type FactureDossier = {
   adresseDepart?:     Adresse
   adresseArrivee?:    Adresse
   servicesInclus?:    string[]
-  volumeM3?:          number
   facturePrixTTC?:    number
   factureTauxTVA?:    number
   factureEcheanceLe?: string
@@ -347,26 +346,15 @@ export function FacturePDF({ dossier }: { dossier: FactureDossier }) {
               </View>
             </View>
 
-            {(dossier.dateDemenagement || dossier.volumeM3) && (
+            {dossier.dateDemenagement && (
               <View style={s.metaRow}>
-                {dossier.dateDemenagement && (
-                  <View style={dossier.volumeM3 ? s.metaCell : s.metaCellLast}>
-                    <View style={s.metaIcon}><Text style={s.metaIconTxt}>i</Text></View>
-                    <View>
-                      <Text style={s.metaLbl}>DATE DU DÉMÉNAGEMENT</Text>
-                      <Text style={s.metaVal}>{fmtDate(dossier.dateDemenagement)}</Text>
-                    </View>
+                <View style={s.metaCellLast}>
+                  <View style={s.metaIcon}><Text style={s.metaIconTxt}>i</Text></View>
+                  <View>
+                    <Text style={s.metaLbl}>DATE DU DÉMÉNAGEMENT</Text>
+                    <Text style={s.metaVal}>{fmtDate(dossier.dateDemenagement)}</Text>
                   </View>
-                )}
-                {dossier.volumeM3 && (
-                  <View style={s.metaCellLast}>
-                    <View style={s.metaIcon}><Text style={s.metaIconTxt}>V</Text></View>
-                    <View>
-                      <Text style={s.metaLbl}>VOLUME</Text>
-                      <Text style={s.metaVal}>{dossier.volumeM3} m³</Text>
-                    </View>
-                  </View>
-                )}
+                </View>
               </View>
             )}
           </View>

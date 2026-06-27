@@ -8,7 +8,7 @@ import { AGENT_STATUTS, agentStatutInfo } from '@/lib/agent-statut-labels'
 interface Demande {
   id: number; type?: string; statut?: string; clientNom?: string; clientTelephone?: string;
   clientEmail?: string; villeDepart?: string; villeArrivee?: string; dateApprox?: string;
-  adresseDepart?: string; adresseArrivee?: string; typeBien?: string; volume?: string;
+  adresseDepart?: string; adresseArrivee?: string; typeBien?: string;
   notes?: string; motifRefus?: string; createdAt?: string
 }
 
@@ -102,7 +102,6 @@ export default function DemandeDetailPage() {
           <Row label="Adresse départ" value={demande.adresseDepart} />
           <Row label="Adresse arrivée" value={demande.adresseArrivee} />
           <Row label="Type de bien" value={demande.typeBien} />
-          <Row label="Volume" value={demande.volume} />
           <Row label="Notes" value={demande.notes} />
         </div>
       </div>

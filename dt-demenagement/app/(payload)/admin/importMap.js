@@ -19,6 +19,7 @@ import { default as default_910c7e073b078d622691d5105cff119a } from '@/component
 import { default as default_caf9c22b533487b41773d1e26f424a09 } from '@/components/payload/RDVActions'
 import { default as default_a76aaf64c20e7385011a1c906f529098 } from '@/components/payload/LeadStatutSelect'
 import { default as default_27f08bc658dd86fa22e8a75a55e06630 } from '@/components/payload/LeadActions'
+import { default as default_22f0d39b4ed0e968e7065fa763bbd656 } from '@/components/payload/DemandeConverter'
 import { default as default_f953daf5db8866abfe8554ebfb0d5519 } from '@/components/payload/ClientHistory'
 import { RscEntryLexicalCell as RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { RscEntryLexicalField as RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
@@ -78,6 +79,7 @@ export const importMap = {
   "@/components/payload/RDVActions#default": default_caf9c22b533487b41773d1e26f424a09,
   "@/components/payload/LeadStatutSelect#default": default_a76aaf64c20e7385011a1c906f529098,
   "@/components/payload/LeadActions#default": default_27f08bc658dd86fa22e8a75a55e06630,
+  "@/components/payload/DemandeConverter#default": default_22f0d39b4ed0e968e7065fa763bbd656,
   "@/components/payload/ClientHistory#default": default_f953daf5db8866abfe8554ebfb0d5519,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalCell": RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalField": RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e,

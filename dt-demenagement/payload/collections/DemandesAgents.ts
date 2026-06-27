@@ -84,41 +84,86 @@ const DemandesAgents: CollectionConfig = {
   },
 
   fields: [
-    { name: 'agent', type: 'relationship', relationTo: 'agents', label: 'Agent', admin: { readOnly: true } },
+    // ── Résumé : agent · type · statut ────────────────────────────────────────
     {
-      name: 'type', type: 'select', required: true, defaultValue: 'devis', label: 'Type de demande',
-      options: [
-        { label: 'Devis / Déménagement', value: 'devis' },
-        { label: 'Rendez-vous', value: 'rendez-vous' },
+      type: 'row',
+      fields: [
+        { name: 'agent', type: 'relationship', relationTo: 'agents', label: 'Agent', admin: { readOnly: true, width: '40%' } },
+        {
+          name: 'type', type: 'select', required: true, defaultValue: 'devis', label: 'Type',
+          admin: { width: '30%' },
+          options: [
+            { label: 'Déménagement', value: 'devis' },
+            { label: 'Rendez-vous',  value: 'rendez-vous' },
+          ],
+        },
+        {
+          name: 'statut', type: 'select', defaultValue: 'soumise', label: 'Statut',
+          admin: { width: '30%' },
+          options: [
+            { label: 'Soumise',              value: 'soumise' },
+            { label: 'Vue par DT',           value: 'vue' },
+            { label: 'Acceptée',             value: 'acceptee' },
+            { label: 'Refusée',              value: 'refusee' },
+            { label: 'Déménagement réalisé', value: 'realisee' },
+          ],
+        },
       ],
     },
-    // Client — essentiels (requis)
-    { name: 'clientNom',       type: 'text', required: true, label: 'Nom du client' },
-    { name: 'clientTelephone', type: 'text', required: true, label: 'Téléphone du client' },
-    { name: 'villeDepart',     type: 'text', required: true, label: 'Ville de départ' },
-    { name: 'villeArrivee',    type: 'text', required: true, label: 'Ville d\'arrivée' },
-    { name: 'dateApprox',      type: 'text', required: true, label: 'Date approximative' },
-    // Client — optionnels
-    { name: 'clientEmail',    type: 'email', label: 'Email du client' },
-    { name: 'adresseDepart',  type: 'textarea', label: 'Adresse de départ complète' },
-    { name: 'adresseArrivee', type: 'textarea', label: 'Adresse d\'arrivée complète' },
-    { name: 'typeBien',       type: 'text', label: 'Type de bien' },
-    { name: 'volume',         type: 'text', label: 'Volume estimé' },
-    { name: 'notes',          type: 'textarea', label: 'Notes' },
-    // Suivi
+    { name: 'motifRefus', type: 'textarea', label: 'Motif du refus', admin: { rows: 2, condition: (d) => d.statut === 'refusee' } },
+
+    // ── Client & trajet ───────────────────────────────────────────────────────
     {
-      name: 'statut', type: 'select', defaultValue: 'soumise', label: 'Statut (jalon agent)',
-      options: [
-        { label: 'Soumise',              value: 'soumise' },
-        { label: 'Vue par DT',           value: 'vue' },
-        { label: 'Acceptée',             value: 'acceptee' },
-        { label: 'Refusée',              value: 'refusee' },
-        { label: 'Déménagement réalisé', value: 'realisee' },
+      type: 'row',
+      fields: [
+        { name: 'clientNom',       type: 'text', required: true, label: 'Nom du client', admin: { width: '50%' } },
+        { name: 'clientTelephone', type: 'text', required: true, label: 'Téléphone',     admin: { width: '50%' } },
       ],
     },
-    { name: 'motifRefus', type: 'textarea', label: 'Motif du refus', admin: { condition: (d) => d.statut === 'refusee' } },
-    { name: 'dossierLie', type: 'relationship', relationTo: 'demenagements', label: 'Dossier lié', admin: { readOnly: true } },
-    { name: 'rdvLie',     type: 'relationship', relationTo: 'rendez-vous',   label: 'RDV lié',     admin: { readOnly: true } },
+    {
+      type: 'row',
+      fields: [
+        { name: 'clientEmail', type: 'email', label: 'Email',                            admin: { width: '50%' } },
+        { name: 'dateApprox',  type: 'text', required: true, label: 'Date approximative', admin: { width: '50%' } },
+      ],
+    },
+    {
+      type: 'row',
+      fields: [
+        { name: 'villeDepart',  type: 'text', required: true, label: 'Ville de départ', admin: { width: '50%' } },
+        { name: 'villeArrivee', type: 'text', label: 'Ville d\'arrivée / visite',       admin: { width: '50%' } },
+      ],
+    },
+
+    // ── Conversion (action principale) ────────────────────────────────────────
+    {
+      name: 'convertisseur',
+      type: 'ui',
+      label: ' ',
+      admin: { components: { Field: '@/components/payload/DemandeConverter' } },
+    },
+
+    // ── Détails du bien & adresses (repliés) ──────────────────────────────────
+    {
+      type: 'collapsible',
+      label: 'Adresses & détails du bien (facultatif)',
+      admin: { initCollapsed: true },
+      fields: [
+        { name: 'adresseDepart',  type: 'textarea', label: 'Adresse de départ complète',  admin: { rows: 2 } },
+        { name: 'adresseArrivee', type: 'textarea', label: 'Adresse d\'arrivée complète', admin: { rows: 2 } },
+        { name: 'typeBien', type: 'text', label: 'Type de bien' },
+        { name: 'notes', type: 'textarea', label: 'Notes', admin: { rows: 3 } },
+      ],
+    },
+
+    // ── Liens (visibles seulement après conversion) ───────────────────────────
+    {
+      type: 'row',
+      fields: [
+        { name: 'dossierLie', type: 'relationship', relationTo: 'demenagements', label: 'Dossier lié', admin: { readOnly: true, width: '50%', condition: (d) => Boolean(d.dossierLie) } },
+        { name: 'rdvLie',     type: 'relationship', relationTo: 'rendez-vous',   label: 'RDV lié',     admin: { readOnly: true, width: '50%', condition: (d) => Boolean(d.rdvLie) } },
+      ],
+    },
   ],
 }
 
