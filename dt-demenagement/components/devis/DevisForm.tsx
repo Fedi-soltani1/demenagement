@@ -102,6 +102,32 @@ function clearDraft() {
   try { localStorage.removeItem(DRAFT_KEY) } catch { /* noop */ }
 }
 
+// ── Coordonnées mémorisées (persistent, non effacé à l'envoi) ───────────────────
+// Mémorise nom/téléphone/email pour pré-remplir une NOUVELLE demande de devis
+// (le brouillon, lui, est effacé à l'envoi). 90 jours.
+const CONTACT_KEY    = 'dt-contact'
+const CONTACT_TTL_MS = 90 * 24 * 60 * 60 * 1000
+
+type SavedContact = { prenom: string; nom: string; email: string; telephone: string }
+
+function saveContact(form: FormData) {
+  try {
+    if (!form.prenom.trim() && !form.nom.trim() && !form.telephone.trim() && !form.email.trim()) return
+    const data = { prenom: form.prenom, nom: form.nom, email: form.email, telephone: form.telephone, savedAt: Date.now() }
+    localStorage.setItem(CONTACT_KEY, JSON.stringify(data))
+  } catch { /* blocked */ }
+}
+
+function loadContact(): SavedContact | null {
+  try {
+    const raw = localStorage.getItem(CONTACT_KEY)
+    if (!raw) return null
+    const p = JSON.parse(raw) as SavedContact & { savedAt: number }
+    if (Date.now() - p.savedAt > CONTACT_TTL_MS) { localStorage.removeItem(CONTACT_KEY); return null }
+    return { prenom: p.prenom ?? '', nom: p.nom ?? '', email: p.email ?? '', telephone: p.telephone ?? '' }
+  } catch { return null }
+}
+
 // ── Validation ────────────────────────────────────────────────────────────────
 
 function validateField(field: keyof FieldErrors, value: string | string[]): string {
@@ -110,9 +136,9 @@ function validateField(field: keyof FieldErrors, value: string | string[]): stri
     case 'nom':            return (value as string).trim().length >= 2 ? '' : 'Au moins 2 caractères'
     case 'email':          return (value as string).trim() === '' || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value as string) ? '' : 'Email invalide'
     case 'telephone':      return (value as string).trim() === '' || /^\+?[0-9\s\-()\s]{8,20}$/.test(value as string) ? '' : 'Ex : +216 52 XXX XXX'
-    case 'departAdresse':  return (value as string).trim().length >= 3 ? '' : 'Adresse trop courte'
+    case 'departAdresse':  return (value as string).trim() === '' || (value as string).trim().length >= 3 ? '' : 'Adresse trop courte'
     case 'departVille':    return (value as string).trim().length >= 2 ? '' : 'Ville requise'
-    case 'arriveeAdresse': return (value as string).trim().length >= 3 ? '' : 'Adresse trop courte'
+    case 'arriveeAdresse': return (value as string).trim() === '' || (value as string).trim().length >= 3 ? '' : 'Adresse trop courte'
     case 'arriveeVille':   return (value as string).trim().length >= 2 ? '' : 'Ville requise'
     case 'services':       return (value as string[]).length > 0 ? '' : 'Choisissez au moins un service'
     default:               return ''
@@ -174,6 +200,18 @@ export function DevisForm({
   useEffect(() => {
     const draft = loadDraft()
     if (draft?.form?.prenom || draft?.form?.email) setShowResume(true)
+    // Pré-remplit nom/téléphone/email depuis les coordonnées mémorisées, sans écraser
+    // ce qui vient de l'URL/modal (initialContact) ni un champ déjà saisi.
+    const c = loadContact()
+    if (c) {
+      setForm((prev) => ({
+        ...prev,
+        prenom:    prev.prenom    || c.prenom,
+        nom:       prev.nom       || c.nom,
+        email:     prev.email     || c.email,
+        telephone: prev.telephone || c.telephone,
+      }))
+    }
   }, [])
 
   function resumeDraft() {
@@ -201,12 +239,11 @@ export function DevisForm({
   }
 
   function isStepValid(): boolean {
-    // Étape 0 — coordonnées + adresses (départ et arrivée)
+    // Étape 0 — coordonnées + villes (adresses détaillées facultatives → moins d'abandon)
     if (step === 0) return !!(
       form.prenom.trim() && form.nom.trim() &&
       (form.telephone.trim() || form.email.trim()) &&
-      form.departAdresse.trim() && form.departVille.trim() &&
-      form.arriveeAdresse.trim() && form.arriveeVille.trim()
+      form.departVille.trim() && form.arriveeVille.trim()
     )
     // Étape 1 — besoins (services obligatoires) + photos (optionnel)
     if (step === 1) return form.services.length > 0
@@ -221,6 +258,7 @@ export function DevisForm({
       const next = step + 1
       setStep(next)
       saveDraft(next, form)
+      saveContact(form) // mémorise nom/téléphone/email pour la prochaine demande
     }
   }
 
@@ -259,6 +297,7 @@ export function DevisForm({
         })
         const data = await res.json() as { success?: boolean; numeroDossier?: string }
         if (!res.ok) throw new Error('Erreur serveur')
+        saveContact(form) // conserve les coordonnées (le brouillon, lui, est effacé)
         clearDraft()
         setDossier(data.numeroDossier ?? '')
         setSuccess(true)
@@ -400,9 +439,9 @@ export function DevisForm({
                         </div>
                         <p className="font-body text-xs font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">Départ</p>
                       </div>
-                      <Field label="Adresse *" value={form.departAdresse}
+                      <Field label="Adresse" value={form.departAdresse}
                         onChange={(v) => update('departAdresse', v)} placeholder="12 rue de la Liberté"
-                        error={fieldErrs.departAdresse} onBlur={() => handleBlur('departAdresse', form.departAdresse)} />
+                        hint="Optionnel" error={fieldErrs.departAdresse} onBlur={() => handleBlur('departAdresse', form.departAdresse)} />
                       <CitySelect label="Ville *" value={form.departVille}
                         onChange={(v) => update('departVille', v)}
                         error={fieldErrs.departVille} onBlur={() => handleBlur('departVille', form.departVille)} />
@@ -426,9 +465,9 @@ export function DevisForm({
                         </div>
                         <p className="font-body text-xs font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">Arrivée</p>
                       </div>
-                      <Field label="Adresse *" value={form.arriveeAdresse}
+                      <Field label="Adresse" value={form.arriveeAdresse}
                         onChange={(v) => update('arriveeAdresse', v)} placeholder="8 avenue Habib Bourguiba"
-                        error={fieldErrs.arriveeAdresse} onBlur={() => handleBlur('arriveeAdresse', form.arriveeAdresse)} />
+                        hint="Optionnel" error={fieldErrs.arriveeAdresse} onBlur={() => handleBlur('arriveeAdresse', form.arriveeAdresse)} />
                       <CitySelect label="Ville *" value={form.arriveeVille}
                         onChange={(v) => update('arriveeVille', v)}
                         error={fieldErrs.arriveeVille} onBlur={() => handleBlur('arriveeVille', form.arriveeVille)} />
