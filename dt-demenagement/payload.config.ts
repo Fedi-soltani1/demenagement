@@ -143,9 +143,9 @@ export default buildConfig({
   },
 
   localization: {
-    locales: ['fr'],
+    locales: ['fr', 'ar'],
     defaultLocale: 'fr',
-    fallback: true,
+    fallback: true, // ar vide → retombe sur le contenu fr (le temps de tout traduire)
   },
 
   // Langue de l'interface d'administration (chrome : boutons « Create New », « Save »,
