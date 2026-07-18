@@ -9,6 +9,27 @@ export default function AgentLoginPage() {
   const [password, setPassword] = useState('')
   const [loading, setLoading]   = useState(false)
   const [error, setError]       = useState('')
+  const [mode, setMode]         = useState<'login' | 'forgot'>('login')
+  const [forgotSent, setForgotSent] = useState(false)
+
+  async function handleForgot(e: React.FormEvent) {
+    e.preventDefault()
+    setError('')
+    setLoading(true)
+    try {
+      // L'endpoint renvoie toujours 200 (anti-énumération d'emails).
+      await fetch('/api/agents/forgot-password', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ email: email.trim() }),
+      })
+      setForgotSent(true)
+    } catch {
+      setError('Envoi impossible. Réessayez.')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -63,34 +84,87 @@ export default function AgentLoginPage() {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="dt-anim" style={{ background: '#111', border: '1px solid #2a2a2a', borderRadius: 18, padding: 24, boxShadow: '0 12px 40px rgba(0,0,0,0.5)', animationDelay: '.34s' }}>
-          <h2 style={{ margin: '0 0 18px', fontSize: 17, fontWeight: 700 }}>Connexion</h2>
+        {mode === 'login' ? (
+          <form onSubmit={handleSubmit} className="dt-anim" style={{ background: '#111', border: '1px solid #2a2a2a', borderRadius: 18, padding: 24, boxShadow: '0 12px 40px rgba(0,0,0,0.5)', animationDelay: '.34s' }}>
+            <h2 style={{ margin: '0 0 18px', fontSize: 17, fontWeight: 700 }}>Connexion</h2>
 
-          <label htmlFor="agent-email" style={{ display: 'block', fontSize: 13, color: '#a0a0a0', marginBottom: 6 }}>Email</label>
-          <input
-            id="agent-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email"
-            style={{ width: '100%', boxSizing: 'border-box', padding: '12px 14px', marginBottom: 16, borderRadius: 9, border: '1px solid #2a2a2a', background: '#0a0a0a', color: '#f8f5f0', fontSize: 15 }}
-          />
+            <label htmlFor="agent-email" style={{ display: 'block', fontSize: 13, color: '#a0a0a0', marginBottom: 6 }}>Email</label>
+            <input
+              id="agent-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email"
+              style={{ width: '100%', boxSizing: 'border-box', padding: '12px 14px', marginBottom: 16, borderRadius: 9, border: '1px solid #2a2a2a', background: '#0a0a0a', color: '#f8f5f0', fontSize: 15 }}
+            />
 
-          <label htmlFor="agent-password" style={{ display: 'block', fontSize: 13, color: '#a0a0a0', marginBottom: 6 }}>Mot de passe</label>
-          <input
-            id="agent-password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete="current-password"
-            style={{ width: '100%', boxSizing: 'border-box', padding: '12px 14px', marginBottom: 18, borderRadius: 9, border: '1px solid #2a2a2a', background: '#0a0a0a', color: '#f8f5f0', fontSize: 15 }}
-          />
+            <label htmlFor="agent-password" style={{ display: 'block', fontSize: 13, color: '#a0a0a0', marginBottom: 6 }}>Mot de passe</label>
+            <input
+              id="agent-password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete="current-password"
+              style={{ width: '100%', boxSizing: 'border-box', padding: '12px 14px', marginBottom: 12, borderRadius: 9, border: '1px solid #2a2a2a', background: '#0a0a0a', color: '#f8f5f0', fontSize: 15 }}
+            />
 
-          {error && <p style={{ margin: '0 0 14px', color: '#ff6b6b', fontSize: 13 }}>{error}</p>}
+            {error && <p style={{ margin: '0 0 14px', color: '#ff6b6b', fontSize: 13 }}>{error}</p>}
 
-          <button
-            type="submit" disabled={loading}
-            style={{ width: '100%', padding: '13px', borderRadius: 9, border: 'none', background: loading ? '#6a1318' : '#b52027', color: '#fff', fontSize: 15, fontWeight: 700, cursor: loading ? 'default' : 'pointer' }}
-          >
-            {loading ? 'Connexion…' : 'Se connecter'}
-          </button>
-        </form>
+            <button
+              type="submit" disabled={loading}
+              style={{ width: '100%', padding: '13px', borderRadius: 9, border: 'none', background: loading ? '#6a1318' : '#b52027', color: '#fff', fontSize: 15, fontWeight: 700, cursor: loading ? 'default' : 'pointer' }}
+            >
+              {loading ? 'Connexion…' : 'Se connecter'}
+            </button>
 
-        <p className="dt-anim" style={{ textAlign: 'center', color: '#555', fontSize: 11, marginTop: 18, animationDelay: '.46s' }}>
-          Identifiants reçus par email. Problème ? Contactez DT Déménagement.
-        </p>
+            <button
+              type="button"
+              onClick={() => { setMode('forgot'); setError(''); setForgotSent(false) }}
+              style={{ display: 'block', width: '100%', marginTop: 14, background: 'transparent', border: 'none', color: '#c9a84c', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+            >
+              Mot de passe oublié ?
+            </button>
+          </form>
+        ) : (
+          <form onSubmit={handleForgot} className="dt-anim" style={{ background: '#111', border: '1px solid #2a2a2a', borderRadius: 18, padding: 24, boxShadow: '0 12px 40px rgba(0,0,0,0.5)' }}>
+            <h2 style={{ margin: '0 0 6px', fontSize: 17, fontWeight: 700 }}>Mot de passe oublié</h2>
+            {forgotSent ? (
+              <>
+                <p style={{ margin: '10px 0 18px', color: '#a0a0a0', fontSize: 14 }}>
+                  Si un compte existe pour <strong style={{ color: '#f8f5f0' }}>{email.trim()}</strong>, un lien de réinitialisation vient d'être envoyé par email.
+                </p>
+                <button
+                  type="button" onClick={() => { setMode('login'); setForgotSent(false) }}
+                  style={{ width: '100%', padding: '13px', borderRadius: 9, border: '1px solid #2a2a2a', background: 'transparent', color: '#f8f5f0', fontSize: 15, fontWeight: 700, cursor: 'pointer' }}
+                >
+                  ← Retour à la connexion
+                </button>
+              </>
+            ) : (
+              <>
+                <p style={{ margin: '6px 0 16px', color: '#a0a0a0', fontSize: 13.5 }}>
+                  Entrez votre email : nous vous enverrons un lien pour réinitialiser votre mot de passe.
+                </p>
+                <label htmlFor="forgot-email" style={{ display: 'block', fontSize: 13, color: '#a0a0a0', marginBottom: 6 }}>Email</label>
+                <input
+                  id="forgot-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email"
+                  style={{ width: '100%', boxSizing: 'border-box', padding: '12px 14px', marginBottom: 16, borderRadius: 9, border: '1px solid #2a2a2a', background: '#0a0a0a', color: '#f8f5f0', fontSize: 15 }}
+                />
+                {error && <p style={{ margin: '0 0 14px', color: '#ff6b6b', fontSize: 13 }}>{error}</p>}
+                <button
+                  type="submit" disabled={loading}
+                  style={{ width: '100%', padding: '13px', borderRadius: 9, border: 'none', background: loading ? '#6a1318' : '#b52027', color: '#fff', fontSize: 15, fontWeight: 700, cursor: loading ? 'default' : 'pointer' }}
+                >
+                  {loading ? 'Envoi…' : 'Envoyer le lien'}
+                </button>
+                <button
+                  type="button" onClick={() => { setMode('login'); setError('') }}
+                  style={{ display: 'block', width: '100%', marginTop: 14, background: 'transparent', border: 'none', color: '#a0a0a0', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+                >
+                  ← Retour à la connexion
+                </button>
+              </>
+            )}
+          </form>
+        )}
+
+        {mode === 'login' && (
+          <p className="dt-anim" style={{ textAlign: 'center', color: '#555', fontSize: 11, marginTop: 18, animationDelay: '.46s' }}>
+            Identifiants reçus par email. Problème ? Contactez DT Déménagement.
+          </p>
+        )}
       </div>
     </main>
   )

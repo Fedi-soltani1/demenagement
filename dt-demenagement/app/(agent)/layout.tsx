@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import type { ReactNode } from 'react'
 import { AgentServiceWorker } from './AgentServiceWorker'
 import { AgentBackground } from './AgentBackground'
+import { AgentInstallPrompt } from './AgentInstallPrompt'
 import './agent.css'
 
 // Layout racine de l'espace agent (PWA installable, design sombre charte DT).
@@ -55,6 +56,7 @@ export default function AgentRootLayout({ children }: { children: ReactNode }) {
         >
           {children}
         </div>
+        <AgentInstallPrompt />
       </body>
     </html>
   )

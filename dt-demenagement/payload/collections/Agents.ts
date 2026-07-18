@@ -17,6 +17,25 @@ const Agents: CollectionConfig = {
   // les ouvertures de l'app au lieu d'être déconnecté à chaque session.
   auth: {
     tokenExpiration: 60 * 60 * 24 * 30, // 30 jours (en secondes)
+    // « Mot de passe oublié » : l'email pointe vers la page de réinitialisation de
+    // l'app agent (et non l'admin Payload). Endpoints auto-exposés :
+    // POST /api/agents/forgot-password  et  POST /api/agents/reset-password.
+    forgotPassword: {
+      generateEmailSubject: () => 'Réinitialisation de votre mot de passe — DT Déménagement',
+      generateEmailHTML: (args) => {
+        const token = (args as { token?: string } | undefined)?.token ?? ''
+        const link = `${resolveAgentAppUrl()}/reset-password?token=${encodeURIComponent(token)}`
+        return `<!doctype html><html lang="fr"><body style="font-family:Arial,Helvetica,sans-serif;color:#1b2a4a;line-height:1.5">
+  <p>Bonjour,</p>
+  <p>Vous avez demandé la réinitialisation de votre mot de passe pour l'espace partenaire <strong>DT Déménagement</strong>.</p>
+  <p style="margin:24px 0">
+    <a href="${link}" style="display:inline-block;background:#b52027;color:#fff;padding:12px 22px;border-radius:8px;text-decoration:none;font-weight:700">Réinitialiser mon mot de passe</a>
+  </p>
+  <p>Ou copiez ce lien dans votre navigateur :<br><a href="${link}">${link}</a></p>
+  <p style="color:#9a9a9a;font-size:13px">Ce lien expire sous 1 heure. Si vous n'êtes pas à l'origine de cette demande, ignorez cet email.</p>
+</body></html>`
+      },
+    },
   },
 
   access: {

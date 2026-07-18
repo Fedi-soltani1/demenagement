@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { agentStatutInfo } from '@/lib/agent-statut-labels'
 import { AgentChrome } from '../../AgentChrome'
+import { AgentNewsCarousel } from '../../AgentNewsCarousel'
 
 interface Agent { id: number; prenom?: string; nom?: string }
 interface Demande {
@@ -111,29 +112,14 @@ export default function MesDemandesPage() {
       {/* En-tête */}
       <header style={{ position: 'sticky', top: 0, zIndex: 10, background: '#0a0a0acc', backdropFilter: 'blur(8px)', borderBottom: '1px solid #2a2a2a', padding: '14px 18px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
-          <div style={{ fontWeight: 700, fontSize: 16 }}>DT Déménagement</div>
+          <div style={{ fontWeight: 700, fontSize: 16 }}>Bonjour {agent?.prenom ?? agent?.nom ?? ''} 👋</div>
           <div style={{ color: '#c9a84c', fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Espace partenaire</div>
         </div>
         <button type="button" onClick={logout} style={{ background: 'transparent', border: '1px solid #2a2a2a', color: '#a0a0a0', borderRadius: 8, padding: '7px 12px', fontSize: 13, cursor: 'pointer' }}>Déconnexion</button>
       </header>
 
-      {/* Hero animé 3D du tableau de bord */}
-      <div style={{ padding: '16px 18px 2px' }}>
-        <div className="dt-hero" style={{ position: 'relative', overflow: 'hidden', borderRadius: 18, padding: '20px 18px', background: 'linear-gradient(135deg,#b52027 0%,#8a1820 55%,#5e0f14 100%)', boxShadow: '0 14px 38px rgba(181,32,39,0.4)' }}>
-          {/* Reflet qui balaie */}
-          <div className="dt-shine" aria-hidden="true" style={{ position: 'absolute', top: 0, bottom: 0, left: 0, width: 80, background: 'linear-gradient(90deg,transparent,rgba(255,255,255,0.35),transparent)', pointerEvents: 'none' }} />
-          <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
-            <div style={{ minWidth: 0 }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: '#ffd9db', letterSpacing: '0.05em', textTransform: 'uppercase' }}>Espace partenaire DT</div>
-              <div style={{ fontSize: 22, fontWeight: 800, color: '#fff', marginTop: 4, lineHeight: 1.15 }}>Bonjour {agent?.prenom ?? agent?.nom ?? ''} 👋</div>
-              <div style={{ fontSize: 13, color: '#ffe3e4', marginTop: 6 }}>
-                {stats.total === 0 ? 'Créez votre première demande →' : `${stats.total} demande${stats.total > 1 ? 's' : ''} · ${stats.enCours} en cours`}
-              </div>
-            </div>
-            <div className="dt-box" aria-hidden="true" style={{ fontSize: 46, flexShrink: 0, filter: 'drop-shadow(0 6px 10px rgba(0,0,0,0.35))' }}>🚚</div>
-          </div>
-        </div>
-      </div>
+      {/* Carrousel d'actualités (remplace l'ancienne box rouge) */}
+      <AgentNewsCarousel />
 
       {/* Widgets statistiques (entrée 3D + compteurs animés) */}
       <div style={{ display: 'flex', gap: 10, padding: '14px 18px 4px' }}>
