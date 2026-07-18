@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { agentDemandeSchema } from '@/lib/agent-demande-schema'
+import { PhoneField } from '@/components/ui/PhoneField'
 
 const inputStyle: React.CSSProperties = {
   width: '100%', boxSizing: 'border-box', padding: '11px 13px',
@@ -123,7 +124,17 @@ export default function NouvelleDemandePage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           <div style={sectionTitle}>Client</div>
           {field('clientNom', 'Nom du client', { required: true })}
-          {field('clientTelephone', 'Téléphone', { required: true, type: 'tel', placeholder: '+216 XX XXX XXX' })}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <label style={labelStyle}>Téléphone<span style={{ color: '#b52027' }}> *</span></label>
+            <PhoneField
+              value={form.clientTelephone ?? ''}
+              onChange={(v) => { set('clientTelephone', v); clearErr('clientTelephone') }}
+              invalid={Boolean(fieldErrors.clientTelephone)}
+            />
+            {fieldErrors.clientTelephone ? (
+              <span style={{ color: '#ff6b6b', fontSize: 12, marginTop: 4, display: 'block' }}>{fieldErrors.clientTelephone}</span>
+            ) : null}
+          </div>
         </div>
 
         {/* Trajet */}

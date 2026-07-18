@@ -15,6 +15,7 @@ import { useRouter, usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslations } from 'next-intl'
 import { ArrowRight, ArrowLeft, X, ClipboardList, Calendar, CheckCircle, Mail } from 'lucide-react'
+import { PhoneField } from '@/components/ui/PhoneField'
 
 // ─── Context ──────────────────────────────────────────────────────────────────
 
@@ -586,20 +587,16 @@ export function DevisModalProvider({ children }: { children: ReactNode }) {
                       {/* Contact fields — revealed per selection */}
                       {contactMethod.phone && (
                         <FieldWrapper label={t('labelTelephone')} required error={errors.telephone}>
-                          <input
-                            type="tel"
+                          <PhoneField
+                            themed
                             value={contact.telephone}
-                            onChange={(e) => setContact((p) => ({ ...p, telephone: e.target.value }))}
-                            onBlur={() => {
-                              if (!TEL_RE.test(contact.telephone))
-                                setErrors((p) => ({ ...p, telephone: t('errorTelephone') }))
-                              else
+                            onChange={(v) => {
+                              setContact((p) => ({ ...p, telephone: v }))
+                              if (errors.telephone && TEL_RE.test(v))
                                 setErrors((p) => ({ ...p, telephone: undefined }))
                             }}
-                            placeholder={t('placeholderTelephone')}
-                            aria-required="true"
-                            aria-invalid={!!errors.telephone}
-                            className={inputCls(errors.telephone)}
+                            invalid={!!errors.telephone}
+                            ariaLabel={t('labelTelephone')}
                           />
                         </FieldWrapper>
                       )}
