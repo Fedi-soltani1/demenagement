@@ -123,17 +123,28 @@ const DemandesAgents: CollectionConfig = {
     {
       type: 'row',
       fields: [
-        { name: 'clientEmail', type: 'email', label: 'Email',                            admin: { width: '50%' } },
-        { name: 'dateApprox',  type: 'text', required: true, label: 'Date approximative', admin: { width: '50%' } },
+        { name: 'clientWhatsapp', type: 'text',  label: 'WhatsApp',                       admin: { width: '50%' } },
+        { name: 'clientEmail',    type: 'email', label: 'Email',                          admin: { width: '50%' } },
       ],
     },
     {
       type: 'row',
       fields: [
-        { name: 'villeDepart',  type: 'text', required: true, label: 'Ville de départ', admin: { width: '50%' } },
-        { name: 'villeArrivee', type: 'text', label: 'Ville d\'arrivée / visite',       admin: { width: '50%' } },
+        { name: 'gouvernoratDepart',  type: 'text', label: 'Gouvernorat de départ',  admin: { width: '50%' } },
+        { name: 'gouvernoratArrivee', type: 'text', label: 'Gouvernorat d\'arrivée', admin: { width: '50%' } },
       ],
     },
+    {
+      type: 'row',
+      fields: [
+        { name: 'pointFinal', type: 'text', label: 'Point final (ville d\'arrivée)', admin: { width: '50%' } },
+        { name: 'dateApprox', type: 'text', required: true, label: 'Date souhaitée', admin: { width: '50%' } },
+      ],
+    },
+    // Champs hérités : renseignés automatiquement depuis gouvernorat/point final à la
+    // création (rétro-compatibilité notif/conversion). Masqués du formulaire admin.
+    { name: 'villeDepart',  type: 'text', label: 'Ville de départ (hérité)',  admin: { hidden: true } },
+    { name: 'villeArrivee', type: 'text', label: 'Ville d\'arrivée (hérité)', admin: { hidden: true } },
 
     // ── Conversion (action principale) ────────────────────────────────────────
     {

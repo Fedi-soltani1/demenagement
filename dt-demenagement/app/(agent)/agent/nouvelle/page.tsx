@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { agentDemandeSchema } from '@/lib/agent-demande-schema'
 import { PhoneField } from '@/components/ui/PhoneField'
+import { GOUVERNORATS, VILLES } from '@/lib/constants'
 
 const inputStyle: React.CSSProperties = {
   width: '100%', boxSizing: 'border-box', padding: '11px 13px',
@@ -13,6 +14,9 @@ const inputStyle: React.CSSProperties = {
 const inputErrStyle: React.CSSProperties = { borderColor: '#ff6b6b', boxShadow: '0 0 0 2px #ff6b6b22' }
 const labelStyle: React.CSSProperties = { display: 'block', fontSize: 12.5, color: '#9a9a9a', marginBottom: 5, fontWeight: 600 }
 const sectionTitle: React.CSSProperties = { fontSize: 11, fontWeight: 800, letterSpacing: 1, textTransform: 'uppercase', color: '#c9a84c', margin: '2px 0 0' }
+
+// Liste des villes (point final / point d'arrivée), triée pour la liste déroulante.
+const CITY_NAMES = [...VILLES.map((v) => v.nom)].sort((a, b) => a.localeCompare(b, 'fr'))
 
 export default function NouvelleDemandePage() {
   const router = useRouter()
@@ -55,10 +59,41 @@ export default function NouvelleDemandePage() {
     )
   }
 
+  // Liste déroulante (gouvernorats, villes…).
+  const selectField = (
+    name: string,
+    label: string,
+    options: readonly string[],
+    opts: { required?: boolean; placeholder?: string } = {},
+  ) => {
+    const err = fieldErrors[name]
+    return (
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <label style={labelStyle}>{label}{opts.required ? <span style={{ color: '#b52027' }}> *</span> : null}</label>
+        <select
+          value={form[name] ?? ''}
+          onChange={(e) => { set(name, e.target.value); clearErr(name) }}
+          aria-invalid={Boolean(err)}
+          style={{ ...inputStyle, cursor: 'pointer', ...(err ? inputErrStyle : {}) }}
+        >
+          <option value="">{opts.placeholder ?? '— Choisir —'}</option>
+          {options.map((o) => <option key={o} value={o}>{o}</option>)}
+        </select>
+        {err ? <span style={{ color: '#ff6b6b', fontSize: 12, marginTop: 4, display: 'block' }}>{err}</span> : null}
+      </div>
+    )
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError('')
-    const parsed = agentDemandeSchema.safeParse({ type, ...form })
+    // Rétro-compat : on renseigne villeDepart/villeArrivee (notif, conversion admin)
+    // à partir du gouvernorat de départ et du point final (ville d'arrivée).
+    const legacy = {
+      villeDepart: form.gouvernoratDepart ?? '',
+      villeArrivee: form.pointFinal || form.gouvernoratArrivee || '',
+    }
+    const parsed = agentDemandeSchema.safeParse({ type, ...form, ...legacy })
     if (!parsed.success) {
       const fe: Record<string, string> = {}
       for (const issue of parsed.error.issues) {
@@ -94,7 +129,7 @@ export default function NouvelleDemandePage() {
     }
   }
 
-  const arriveeLabel = type === 'rendez-vous' ? 'Ville de la visite' : 'Ville d’arrivée'
+  const arriveeLabel = type === 'rendez-vous' ? 'Gouvernorat de la visite' : 'Gouvernorat d’arrivée'
 
   return (
     <main style={{ minHeight: '100dvh', paddingBottom: 40 }}>
@@ -135,16 +170,26 @@ export default function NouvelleDemandePage() {
               <span style={{ color: '#ff6b6b', fontSize: 12, marginTop: 4, display: 'block' }}>{fieldErrors.clientTelephone}</span>
             ) : null}
           </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <label style={labelStyle}>WhatsApp</label>
+            <PhoneField
+              value={form.clientWhatsapp ?? ''}
+              onChange={(v) => { set('clientWhatsapp', v); clearErr('clientWhatsapp') }}
+              invalid={Boolean(fieldErrors.clientWhatsapp)}
+              ariaLabel="Numéro WhatsApp"
+            />
+          </div>
         </div>
 
         {/* Trajet */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           <div style={sectionTitle}>{type === 'rendez-vous' ? 'Visite' : 'Trajet'}</div>
           <div style={{ display: 'flex', gap: 10 }}>
-            {field('villeDepart', 'Ville de départ', { required: true })}
-            {field('villeArrivee', arriveeLabel, { required: type === 'devis' })}
+            {selectField('gouvernoratDepart', 'Gouvernorat de départ', GOUVERNORATS, { required: true })}
+            {selectField('gouvernoratArrivee', arriveeLabel, GOUVERNORATS, { required: type === 'devis' })}
           </div>
-          {field('dateApprox', 'Date approximative', { required: true, placeholder: 'Ex : Juillet 2026' })}
+          {selectField('pointFinal', type === 'rendez-vous' ? 'Ville de la visite' : 'Point final (ville d’arrivée)', CITY_NAMES, { placeholder: '— Choisir une ville —' })}
+          {field('dateApprox', 'Date souhaitée', { required: true, type: 'date' })}
         </div>
 
         {/* Détails facultatifs */}

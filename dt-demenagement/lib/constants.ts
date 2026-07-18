@@ -21,6 +21,14 @@ export const LOCALES = ['fr', 'ar'] as const
 export const DEFAULT_LOCALE = 'fr' as const
 export type Locale = (typeof LOCALES)[number]
 
+// Les 24 gouvernorats de Tunisie (pour les listes déroulantes des formulaires).
+export const GOUVERNORATS = [
+  'Tunis', 'Ariana', 'Ben Arous', 'La Manouba', 'Nabeul', 'Zaghouan', 'Bizerte',
+  'Béja', 'Jendouba', 'Le Kef', 'Siliana', 'Kairouan', 'Kasserine', 'Sidi Bouzid',
+  'Sousse', 'Monastir', 'Mahdia', 'Sfax', 'Gafsa', 'Tozeur', 'Kébili', 'Gabès',
+  'Médenine', 'Tataouine',
+] as const
+
 export const VILLES = [
   { nom: 'Tunis',       slug: 'tunis',       region: 'Nord' },
   { nom: 'Ariana',      slug: 'ariana',      region: 'Nord' },

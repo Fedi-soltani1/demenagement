@@ -7,19 +7,24 @@ export const agentDemandeSchema = z.object({
   // Essentiels (requis)
   clientNom: z.string().min(2, 'Nom du client requis'),
   clientTelephone: z.string().min(6, 'Téléphone requis'),
-  villeDepart: z.string().min(1, 'Ville de départ requise'),
-  // Requise pour un déménagement (devis) ; facultative pour un rendez-vous (visite).
-  villeArrivee: z.string().optional(),
-  dateApprox: z.string().min(1, 'Date approximative requise'),
+  gouvernoratDepart: z.string().min(1, 'Gouvernorat de départ requis'),
+  // Requis pour un déménagement (devis) ; facultatif pour un rendez-vous (visite).
+  gouvernoratArrivee: z.string().optional(),
+  pointFinal: z.string().optional(),
+  dateApprox: z.string().min(1, 'Date souhaitée requise'),
   // Optionnels (détails)
+  clientWhatsapp: z.string().optional(),
   clientEmail: z.string().email('Email invalide').optional().or(z.literal('')),
   adresseDepart: z.string().optional(),
   adresseArrivee: z.string().optional(),
   typeBien: z.string().optional(),
   notes: z.string().optional(),
+  // Champs hérités : renseignés automatiquement (rétro-compat), non saisis directement.
+  villeDepart: z.string().optional(),
+  villeArrivee: z.string().optional(),
 }).superRefine((val, ctx) => {
-  if (val.type === 'devis' && !(val.villeArrivee && val.villeArrivee.trim())) {
-    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['villeArrivee'], message: 'Ville d\'arrivée requise' })
+  if (val.type === 'devis' && !(val.gouvernoratArrivee && val.gouvernoratArrivee.trim())) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['gouvernoratArrivee'], message: 'Gouvernorat d\'arrivée requis' })
   }
 })
 
