@@ -72,7 +72,14 @@
     "successTitle": "تم استلام طلبك!",
     "successMessage": "سنتواصل معك في أقرب وقت لتأكيد موعدك.",
     "successClose": "إغلاق",
-    "errorSubmit": "حدث خطأ. يرجى المحاولة مرة أخرى أو الاتصال بنا مباشرة."
+    "errorSubmit": "حدث خطأ. يرجى المحاولة مرة أخرى أو الاتصال بنا مباشرة.",
+    "methodLabel": "عبر أي وسيلة تريد أن نعاود الاتصال بك؟",
+    "methodWhatsapp": "واتساب",
+    "methodWhatsappDesc": "يُرسَل الرابط عبر واتساب",
+    "methodEmail": "البريد الإلكتروني",
+    "methodEmailDesc": "يُرسَل الرابط عبر البريد الإلكتروني",
+    "errorMethod": "يرجى اختيار وسيلة تواصل واحدة على الأقل",
+    "errorEmail": "عنوان بريد إلكتروني غير صالح"
   },
   "Footer": {
     "ariaLabel": "تذييل صفحة DT للنقل والتحويل تونس",
@@ -119,7 +126,13 @@
     "errorNotFound": "لم يُعثر على أي حساب بهذه المعلومات.",
     "verifyDescriptionPhone": "إن استخدمت رقم هاتفك، تم إرسال الرابط إليك عبر واتساب.",
     "metaTitle": "تسجيل الدخول — مساحة العميل",
-    "metaDescription": "سجّل الدخول إلى مساحة عميل DT للنقل والتحويل تونس."
+    "metaDescription": "سجّل الدخول إلى مساحة عميل DT للنقل والتحويل تونس.",
+    "subtitlePhone": "أدخل رقم واتساب الخاص بك — سنرسل لك رابط دخول آمن.",
+    "tabEmail": "عبر البريد الإلكتروني",
+    "tabPhone": "عبر واتساب",
+    "phoneLabel": "رقم واتساب",
+    "phonePlaceholder": "+216 XX XXX XXX",
+    "submitPhone": "الإرسال عبر واتساب"
   },
   "Home": {
     "hero": {
@@ -353,7 +366,16 @@
     "devisRefusedTitle": "تم رفض العرض",
     "devisRefusedSubtitle": "لقد أخذنا رفضكم بعين الاعتبار. تواصلوا معنا لمناقشة عرض جديد.",
     "devisRespondedOn": "تم تسجيل الرد في",
-    "devisCancelBtn": "إلغاء"
+    "devisCancelBtn": "إلغاء",
+    "devisPdfError": "تعذّر إنشاء ملف PDF. يرجى المحاولة مرة أخرى.",
+    "devisErrorConfirmRequired": "يرجى تحديد خانة التأكيد قبل القبول.",
+    "devisConfirmAcceptTitle": "تأكيد القبول",
+    "devisConfirmAcceptBody": "هل أنت متأكد من قبول هذا العرض؟ هذا الإجراء نهائي.",
+    "devisConfirmRefuseTitle": "تأكيد الرفض",
+    "devisConfirmRefuseBody": "هل أنت متأكد من رفض هذا العرض؟",
+    "devisConfirmYesAccept": "نعم، أقبل",
+    "devisConfirmYesRefuse": "نعم، أرفض",
+    "devisConfirmCancel": "إلغاء"
   },
   "NotFound": {
     "badge": "خطأ 404",

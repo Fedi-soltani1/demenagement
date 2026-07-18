@@ -10,6 +10,7 @@ import { PhoneLink } from '@/components/ui/PhoneLink'
 import { MenuToggleIcon } from '@/components/ui/MenuToggleIcon'
 import { COMPANY, VILLES, PAYS } from '@/lib/constants'
 import { useDevisModal } from '@/components/layout/DevisModal'
+import { LanguageSwitcher } from '@/components/layout/LanguageSwitcher'
 
 export type NavService  = { nom: string; slug: string }
 export type NavVille    = { nom: string; slug: string }
@@ -359,6 +360,7 @@ function Navbar({
             {/* ── Desktop right actions ── */}
             <div className="hidden lg:flex items-center gap-2 ms-auto ps-4">
               <PhoneLink numero={phone1} source="navbar" />
+              <LanguageSwitcher />
               <ThemeToggle labelDark={t('switchToDark')} labelLight={t('switchToLight')} />
               {settingsProp?.navbarCtaLien && !settingsProp.navbarCtaLien.startsWith('/devis') ? (
                 <Link
@@ -515,7 +517,8 @@ function Navbar({
                   {settingsProp?.navbarCtaTexte ?? t('devis')}
                 </button>
               )}
-              <div className="flex items-center justify-end pt-1">
+              <div className="flex items-center justify-between pt-1">
+                <LanguageSwitcher />
                 <ThemeToggle labelDark={t('switchToDark')} labelLight={t('switchToLight')} />
               </div>
             </div>
