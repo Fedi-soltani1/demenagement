@@ -80,7 +80,7 @@ export default function AgentLoginPage() {
           <div className="dt-truck" aria-hidden="true" style={{ fontSize: 22, marginBottom: 10, animation: 'dtTruck 3s ease-in-out infinite', willChange: 'transform' }}>🚚</div>
           <h1 className="dt-anim" style={{ margin: '0 0 6px', fontSize: 23, fontWeight: 800, animationDelay: '.1s' }}>Bienvenue 👋</h1>
           <p className="dt-anim" style={{ margin: 0, color: '#a0a0a0', fontSize: 14, animationDelay: '.22s' }}>
-            Votre espace partenaire <span style={{ color: '#c9a84c', fontWeight: 700 }}>DT Déménagement</span>
+            Votre espace partenaire <span style={{ color: '#d4a017', fontWeight: 700 }}>DT Déménagement</span>
           </p>
         </div>
 
@@ -112,7 +112,7 @@ export default function AgentLoginPage() {
             <button
               type="button"
               onClick={() => { setMode('forgot'); setError(''); setForgotSent(false) }}
-              style={{ display: 'block', width: '100%', marginTop: 14, background: 'transparent', border: 'none', color: '#c9a84c', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+              style={{ display: 'block', width: '100%', marginTop: 14, background: 'transparent', border: 'none', color: '#d4a017', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
             >
               Mot de passe oublié ?
             </button>

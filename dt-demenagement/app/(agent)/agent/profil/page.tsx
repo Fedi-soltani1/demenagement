@@ -149,7 +149,7 @@ export default function ProfilPage() {
     <main style={{ minHeight: '100dvh', paddingBottom: 96 }}>
       <header style={{ position: 'sticky', top: 0, zIndex: 10, background: '#0a0a0acc', backdropFilter: 'blur(8px)', borderBottom: '1px solid #2a2a2a', padding: '14px 18px' }}>
         <div style={{ fontWeight: 700, fontSize: 16 }}>Mon profil</div>
-        <div style={{ color: '#c9a84c', fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Espace partenaire DT</div>
+        <div style={{ color: '#d4a017', fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Espace partenaire DT</div>
       </header>
 
       <div style={{ padding: 18 }}>

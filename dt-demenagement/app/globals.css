@@ -10,13 +10,18 @@
      COULEURS — IMMUABLES (charte client DT Déménagement)
      ---------------------------------------------------------- */
 
-  /* Rouge client — NE JAMAIS MODIFIER */
-  --color-red:          #b52027;
-  --color-red-dark:     #8a1820;
+  /* Rouge client — charte officielle DT (NE JAMAIS MODIFIER le rouge principal) */
+  --color-red:          #b52027;   /* Rouge Principal — charte */
+  --color-red-dark:     #8a161b;   /* Rouge Foncé — charte (hover, ombres) */
   --color-red-light:    #d4353d;
 
-  /* Or — accent premium, usage parcimonieux */
-  --color-gold:         #c9a84c;
+  /* Or — accent premium (avis, étoiles, badges), usage parcimonieux */
+  --color-gold:         #d4a017;   /* Or Accent — charte */
+
+  /* Bleu — couleur SECONDAIRE de la charte (headers, encarts, accents) */
+  --color-navy:         #1b2a4a;   /* Bleu Foncé — charte */
+  --color-navy-2:       #243660;   /* Bleu Moyen — charte */
+  --color-navy-light:   #e8ecf4;   /* Bleu Clair — charte */
 
   /* Fonds mode sombre (DÉFAUT) */
   --color-bg:           #0a0a0a;

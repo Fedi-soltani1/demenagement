@@ -13,7 +13,7 @@ export const COMPANY = {
   facebook:         'https://www.facebook.com/dtdemenagementtunisie',
   instagram:        'https://www.instagram.com/dtdemenagement',
   colorPrimary:     '#b52027',   // IMMUABLE — charte client
-  colorDark:        '#8a1820',
+  colorDark:        '#8a161b',   // Rouge Foncé — charte
   colorLight:       '#d4353d',
 } as const
 

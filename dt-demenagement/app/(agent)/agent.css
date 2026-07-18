@@ -81,7 +81,7 @@
 /* Orbes lumineux flottants (profondeur) */
 .dt-bg-orb { position: absolute; border-radius: 50%; filter: blur(64px); will-change: transform; }
 .dt-bg-orb1 { width: 270px; height: 270px; top: -50px; left: -70px; background: #b52027; opacity: .42; animation: dtOrb1 15s ease-in-out infinite; }
-.dt-bg-orb2 { width: 230px; height: 230px; bottom: 90px; right: -60px; background: #c9a84c; opacity: .24; animation: dtOrb2 18s ease-in-out infinite; }
+.dt-bg-orb2 { width: 230px; height: 230px; bottom: 90px; right: -60px; background: #d4a017; opacity: .24; animation: dtOrb2 18s ease-in-out infinite; }
 /* Sol en grille 3D qui défile vers l'observateur */
 .dt-bg-floor {
   position: absolute; left: 0; right: 0; bottom: 0; height: 44%; overflow: hidden; opacity: .5;

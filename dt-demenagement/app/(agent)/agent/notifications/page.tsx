@@ -59,7 +59,7 @@ export default function NotificationsPage() {
     <main style={{ minHeight: '100dvh', paddingBottom: 96 }}>
       <header style={{ position: 'sticky', top: 0, zIndex: 10, background: '#0a0a0acc', backdropFilter: 'blur(8px)', borderBottom: '1px solid #2a2a2a', padding: '14px 18px' }}>
         <div style={{ fontWeight: 700, fontSize: 16 }}>Notifications</div>
-        <div style={{ color: '#c9a84c', fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Messages de DT Déménagement</div>
+        <div style={{ color: '#d4a017', fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Messages de DT Déménagement</div>
       </header>
 
       <div style={{ padding: 18 }}>
@@ -74,11 +74,11 @@ export default function NotificationsPage() {
             {notifs.map((n, i) => (
               <li key={n.id} className={`dt-in dt-d${Math.min(i + 1, 5)}`}>
                 <button type="button" onClick={() => openNotif(n)} className="dt-card"
-                  style={{ width: '100%', textAlign: 'start', cursor: 'pointer', background: n.lu ? '#111' : 'linear-gradient(135deg,#15110a,#111)', border: `1px solid ${n.lu ? '#2a2a2a' : '#c9a84c66'}`, borderRadius: 14, padding: '14px 16px', color: 'inherit', display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <span style={{ width: 38, height: 38, borderRadius: 11, flexShrink: 0, background: n.lu ? '#1c1c1c' : '#c9a84c22', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>{n.lu ? '📨' : '🔔'}</span>
+                  style={{ width: '100%', textAlign: 'start', cursor: 'pointer', background: n.lu ? '#111' : 'linear-gradient(135deg,#15110a,#111)', border: `1px solid ${n.lu ? '#2a2a2a' : '#d4a01766'}`, borderRadius: 14, padding: '14px 16px', color: 'inherit', display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <span style={{ width: 38, height: 38, borderRadius: 11, flexShrink: 0, background: n.lu ? '#1c1c1c' : '#d4a01722', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>{n.lu ? '📨' : '🔔'}</span>
                   <span style={{ minWidth: 0, flex: 1 }}>
                     <span style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
-                      {!n.lu && <span style={{ width: 8, height: 8, borderRadius: 4, background: '#c9a84c', flexShrink: 0 }} />}
+                      {!n.lu && <span style={{ width: 8, height: 8, borderRadius: 4, background: '#d4a017', flexShrink: 0 }} />}
                       <span style={{ fontWeight: 700, fontSize: 15 }}>{n.titre || 'Message'}</span>
                     </span>
                     <span style={{ display: 'block', fontSize: 13, color: '#a0a0a0', marginTop: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{n.message}</span>

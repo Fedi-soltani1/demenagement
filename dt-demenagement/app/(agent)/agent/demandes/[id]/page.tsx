@@ -48,7 +48,7 @@ export default function DemandeDetailPage() {
   }, [params.id, router])
 
   if (loading) return <main style={{ minHeight: '100dvh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0a0a0' }}>Chargement…</main>
-  if (notFound || !demande) return <main style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#a0a0a0', gap: 14 }}>Demande introuvable.<Link href="/agent/demandes" style={{ color: '#c9a84c' }}>← Mes demandes</Link></main>
+  if (notFound || !demande) return <main style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#a0a0a0', gap: 14 }}>Demande introuvable.<Link href="/agent/demandes" style={{ color: '#d4a017' }}>← Mes demandes</Link></main>
 
   const current = agentStatutInfo(demande.statut ?? 'soumise')
   const refused = demande.statut === 'refusee'

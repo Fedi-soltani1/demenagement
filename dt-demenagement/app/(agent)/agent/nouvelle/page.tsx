@@ -13,7 +13,7 @@ const inputStyle: React.CSSProperties = {
 }
 const inputErrStyle: React.CSSProperties = { borderColor: '#ff6b6b', boxShadow: '0 0 0 2px #ff6b6b22' }
 const labelStyle: React.CSSProperties = { display: 'block', fontSize: 12.5, color: '#9a9a9a', marginBottom: 5, fontWeight: 600 }
-const sectionTitle: React.CSSProperties = { fontSize: 11, fontWeight: 800, letterSpacing: 1, textTransform: 'uppercase', color: '#c9a84c', margin: '2px 0 0' }
+const sectionTitle: React.CSSProperties = { fontSize: 11, fontWeight: 800, letterSpacing: 1, textTransform: 'uppercase', color: '#d4a017', margin: '2px 0 0' }
 
 // Liste des villes (point final / point d'arrivée), triée pour la liste déroulante.
 const CITY_NAMES = [...VILLES.map((v) => v.nom)].sort((a, b) => a.localeCompare(b, 'fr'))
@@ -195,7 +195,7 @@ export default function NouvelleDemandePage() {
         {/* Détails facultatifs */}
         <div>
           <button type="button" onClick={() => setShowOptions((v) => !v)}
-            style={{ background: 'transparent', border: 'none', color: '#c9a84c', fontSize: 13, fontWeight: 700, cursor: 'pointer', padding: 0 }}>
+            style={{ background: 'transparent', border: 'none', color: '#d4a017', fontSize: 13, fontWeight: 700, cursor: 'pointer', padding: 0 }}>
             {showOptions ? '− Masquer les détails' : '+ Ajouter des détails (facultatif)'}
           </button>
           {showOptions && (

@@ -113,7 +113,7 @@ export default function MesDemandesPage() {
       <header style={{ position: 'sticky', top: 0, zIndex: 10, background: '#0a0a0acc', backdropFilter: 'blur(8px)', borderBottom: '1px solid #2a2a2a', padding: '14px 18px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
           <div style={{ fontWeight: 700, fontSize: 16 }}>Bonjour {agent?.prenom ?? agent?.nom ?? ''} 👋</div>
-          <div style={{ color: '#c9a84c', fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Espace partenaire</div>
+          <div style={{ color: '#d4a017', fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Espace partenaire</div>
         </div>
         <button type="button" onClick={logout} style={{ background: 'transparent', border: '1px solid #2a2a2a', color: '#a0a0a0', borderRadius: 8, padding: '7px 12px', fontSize: 13, cursor: 'pointer' }}>Déconnexion</button>
       </header>
@@ -125,7 +125,7 @@ export default function MesDemandesPage() {
       <div style={{ display: 'flex', gap: 10, padding: '14px 18px 4px' }}>
         {([
           { label: 'Total', value: stats.total, color: '#f8f5f0' },
-          { label: 'En cours', value: stats.enCours, color: '#c9a84c' },
+          { label: 'En cours', value: stats.enCours, color: '#d4a017' },
           { label: 'Réalisées', value: stats.realisees, color: '#3aa657' },
         ]).map((s, i) => (
           <div key={s.label} className={`dt-flip dt-d${i + 1}`} style={{ flex: 1, background: 'linear-gradient(160deg,#161616,#0e0e0e)', border: '1px solid #2a2a2a', borderRadius: 14, padding: '15px 10px', textAlign: 'center' }}>

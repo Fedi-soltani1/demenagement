@@ -60,7 +60,7 @@ function ResetPasswordInner() {
         {!token ? (
           <div style={{ background: '#111', border: '1px solid #2a2a2a', borderRadius: 18, padding: 24, textAlign: 'center' }}>
             <p style={{ color: '#ff6b6b', fontSize: 14, margin: '0 0 16px' }}>Lien invalide : jeton manquant.</p>
-            <Link href="/agent" style={{ color: '#c9a84c', fontSize: 14, fontWeight: 700 }}>← Retour à la connexion</Link>
+            <Link href="/agent" style={{ color: '#d4a017', fontSize: 14, fontWeight: 700 }}>← Retour à la connexion</Link>
           </div>
         ) : done ? (
           <div style={{ background: '#111', border: '1px solid #2a2a2a', borderRadius: 18, padding: 24, textAlign: 'center' }}>
