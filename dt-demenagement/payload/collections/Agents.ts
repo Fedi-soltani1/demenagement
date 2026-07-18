@@ -13,7 +13,11 @@ const Agents: CollectionConfig = {
 
   // Auth standard (login / logout / mot de passe oublié via Resend).
   // Le changement de mot de passe forcé à la 1re connexion sera géré côté app (Plan 3).
-  auth: true,
+  // tokenExpiration : 30 jours (défaut Payload = 2h) → l'agent reste connecté entre
+  // les ouvertures de l'app au lieu d'être déconnecté à chaque session.
+  auth: {
+    tokenExpiration: 60 * 60 * 24 * 30, // 30 jours (en secondes)
+  },
 
   access: {
     // Super-admin : tout. Agent : uniquement son propre enregistrement (profil).

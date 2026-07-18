@@ -1,7 +1,7 @@
 {
-  "name": "DT Déménagement — Espace Agent",
-  "short_name": "DT Agents",
-  "description": "Espace agent immobilier — DT Déménagement Tunisie",
+  "name": "DT Déménagement — Espace Partenaire",
+  "short_name": "DT Partenaire",
+  "description": "Espace partenaire — DT Déménagement Tunisie",
   "start_url": "/agent",
   "scope": "/agent",
   "display": "standalone",

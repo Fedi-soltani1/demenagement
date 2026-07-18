@@ -6,10 +6,10 @@ import './agent.css'
 
 // Layout racine de l'espace agent (PWA installable, design sombre charte DT).
 export const metadata: Metadata = {
-  title: 'Espace Agent — DT Déménagement',
-  description: 'Espace agent immobilier — DT Déménagement Tunisie',
+  title: 'Espace Partenaire — DT Déménagement',
+  description: 'Espace partenaire — DT Déménagement Tunisie',
   manifest: '/agent-manifest.webmanifest',
-  appleWebApp: { capable: true, statusBarStyle: 'black-translucent', title: 'DT Agents' },
+  appleWebApp: { capable: true, statusBarStyle: 'black-translucent', title: 'DT Partenaire' },
   icons: {
     icon: [{ url: '/agent-icon-192.png', sizes: '192x192', type: 'image/png' }],
     apple: [{ url: '/agent-icon-180.png', sizes: '180x180', type: 'image/png' }],

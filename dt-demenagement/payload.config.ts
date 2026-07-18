@@ -7,6 +7,7 @@ import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import nodemailer from 'nodemailer'
 import { resendAdapter } from '@payloadcms/email-resend'
 import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
+import { translations as allTranslations } from '@payloadcms/translations/all'
 
 import Admins from './payload/collections/Admins'
 import Media from './payload/collections/Media'
@@ -145,6 +146,15 @@ export default buildConfig({
     locales: ['fr'],
     defaultLocale: 'fr',
     fallback: true,
+  },
+
+  // Langue de l'interface d'administration (chrome : boutons « Create New », « Save »,
+  // filtres, pagination, sélecteur de date…). On restreint à UNE seule langue (français)
+  // pour que l'admin s'affiche en français quel que soit l'Accept-Language du navigateur.
+  // Sans ce bloc, Payload retombait sur l'anglais. Les labels de champs sont déjà en français.
+  i18n: {
+    supportedLanguages: { fr: allTranslations.fr },
+    fallbackLanguage: 'fr',
   },
 
   // 17 collections — ordered to drive sidebar group order
