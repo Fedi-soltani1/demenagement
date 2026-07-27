@@ -834,6 +834,25 @@ label.field-label {
   color: var(--dt-red) !important;
 }
 
+/* Texte du select — thème clair : valeur choisie + saisie + placeholder.
+   (react-select laissait ces zones à ses gris par défaut, trop pâles) */
+.rs__single-value,
+.ReactSelect__single-value {
+  color: var(--dt-text) !important;
+}
+
+.rs__input,
+.ReactSelect__input,
+.rs__input input,
+.ReactSelect__input input {
+  color: var(--dt-text) !important;
+}
+
+.rs__placeholder,
+.ReactSelect__placeholder {
+  color: #6b7280 !important; /* gris ~4,7:1 sur fond clair — lisible (WCAG AA) */
+}
+
 .field-type textarea {
   min-height: 100px !important;
   resize: vertical !important;
@@ -1666,9 +1685,16 @@ input[type='radio']:checked {
   color: #e2e6f0 !important;
 }
 
+[data-theme='dark'] .rs__input,
+[data-theme='dark'] .ReactSelect__input,
+[data-theme='dark'] .rs__input input,
+[data-theme='dark'] .ReactSelect__input input {
+  color: #e2e6f0 !important;
+}
+
 [data-theme='dark'] .rs__placeholder,
 [data-theme='dark'] .ReactSelect__placeholder {
-  color: #4a5068 !important;
+  color: #8a92a8 !important; /* était #4a5068 (~2:1, illisible) → ~5:1 (WCAG AA) */
 }
 
 [data-theme='dark'] .rs__indicator,
