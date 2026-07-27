@@ -134,9 +134,9 @@ const Demenagements: CollectionConfig = {
       type: 'tabs',
       tabs: [
 
-        // ── Tab 1 : Client ────────────────────────────────────────────────────
+        // ── Tab 1 : Dossier (Client + Adresses + Suivi) ─────
         {
-          label: '👤 Client',
+          label: '📄 Dossier',
           fields: [
             {
               type: 'row',
@@ -217,13 +217,7 @@ const Demenagements: CollectionConfig = {
                 components: { Field: '@/components/payload/ClientAccessActions' },
               },
             },
-          ],
-        },
-
-        // ── Tab 2 : Adresses ──────────────────────────────────────────────────
-        {
-          label: '📍 Adresses',
-          fields: [
+          // ── Adresses ───────────────────────
             {
               name: 'adresseDepart',
               type: 'group',
@@ -365,13 +359,7 @@ const Demenagements: CollectionConfig = {
                 },
               ],
             },
-          ],
-        },
-
-        // ── Tab 3 : Dossier ───────────────────────────────────────────────────
-        {
-          label: '🗓 Dossier',
-          fields: [
+          // ── Dossier ───────────────────────
             {
               type: 'row',
               fields: [
@@ -430,9 +418,9 @@ const Demenagements: CollectionConfig = {
           ],
         },
 
-        // ── Tab 4 : Devis ─────────────────────────────────────────────────────
+        // ── Tab 2 : Facturation (Devis + Facture) ─────
         {
-          label: '💰 Devis',
+          label: '💰 Facturation',
           fields: [
             {
               type: 'row',
@@ -495,13 +483,7 @@ Conditions : devis valable 30 jours à compter de sa date d'émission — paieme
                 components: { Field: '@/components/payload/DevisGenerator' },
               },
             },
-          ],
-        },
-
-        // ── Tab 5 : Facture ───────────────────────────────────────────────────
-        {
-          label: '🧾 Facture',
-          fields: [
+          // ── Facture ───────────────────────
             // Always mounted — shows lock UI when devis not accepted, null when accepted
             {
               name: 'factureLock',
@@ -609,7 +591,7 @@ Conditions : devis valable 30 jours à compter de sa date d'émission — paieme
           ],
         },
 
-        // ── Tab 6 : Messagerie ────────────────────────────────────────────────
+        // ── Tab 3 : Messagerie ─────────────
         {
           label: '💬 Messagerie',
           fields: [
