@@ -123,7 +123,7 @@ export default function AgentLoginPage() {
             {forgotSent ? (
               <>
                 <p style={{ margin: '10px 0 18px', color: '#a0a0a0', fontSize: 14 }}>
-                  Si un compte existe pour <strong style={{ color: '#f8f5f0' }}>{email.trim()}</strong>, un lien de réinitialisation vient d'être envoyé par email.
+                  Si un compte existe pour <strong style={{ color: '#f8f5f0' }}>{email.trim()}</strong>, un lien de réinitialisation vient d&apos;être envoyé par email.
                 </p>
                 <button
                   type="button" onClick={() => { setMode('login'); setForgotSent(false) }}
