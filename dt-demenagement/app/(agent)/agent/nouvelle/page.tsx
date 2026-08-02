@@ -20,7 +20,6 @@ const CITY_NAMES = [...VILLES.map((v) => v.nom)].sort((a, b) => a.localeCompare(
 
 export default function NouvelleDemandePage() {
   const router = useRouter()
-  const [type, setType] = useState<'devis' | 'rendez-vous'>('devis')
   const [form, setForm] = useState<Record<string, string>>({})
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const [showOptions, setShowOptions] = useState(false)
@@ -93,7 +92,7 @@ export default function NouvelleDemandePage() {
       villeDepart: form.gouvernoratDepart ?? '',
       villeArrivee: form.pointFinal || form.gouvernoratArrivee || '',
     }
-    const parsed = agentDemandeSchema.safeParse({ type, ...form, ...legacy })
+    const parsed = agentDemandeSchema.safeParse({ type: 'devis', ...form, ...legacy })
     if (!parsed.success) {
       const fe: Record<string, string> = {}
       for (const issue of parsed.error.issues) {
@@ -129,7 +128,7 @@ export default function NouvelleDemandePage() {
     }
   }
 
-  const arriveeLabel = type === 'rendez-vous' ? 'Gouvernorat de la visite' : 'Gouvernorat d’arrivée'
+  const arriveeLabel = 'Gouvernorat d’arrivée'
 
   return (
     <main style={{ minHeight: '100dvh', paddingBottom: 40 }}>
@@ -139,22 +138,6 @@ export default function NouvelleDemandePage() {
       </header>
 
       <form onSubmit={handleSubmit} noValidate style={{ padding: 18, maxWidth: 480, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 18 }}>
-        {/* Type — segmented */}
-        <div style={{ display: 'flex', gap: 8, padding: 4, background: '#111', border: '1px solid #2a2a2a', borderRadius: 11 }}>
-          {([['devis', '📦', 'Déménagement'], ['rendez-vous', '📅', 'Rendez-vous']] as const).map(([val, icon, lbl]) => (
-            <button key={val} type="button" onClick={() => setType(val)}
-              style={{
-                flex: 1, padding: '10px 8px', borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: 'pointer',
-                border: 'none', transition: 'all .15s',
-                background: type === val ? '#b52027' : 'transparent',
-                color: type === val ? '#fff' : '#9a9a9a',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-              }}>
-              <span>{icon}</span> {lbl}
-            </button>
-          ))}
-        </div>
-
         {/* Client */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           <div style={sectionTitle}>Client</div>
@@ -183,12 +166,12 @@ export default function NouvelleDemandePage() {
 
         {/* Trajet */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <div style={sectionTitle}>{type === 'rendez-vous' ? 'Visite' : 'Trajet'}</div>
+          <div style={sectionTitle}>Trajet</div>
           <div style={{ display: 'flex', gap: 10 }}>
             {selectField('gouvernoratDepart', 'Gouvernorat de départ', GOUVERNORATS, { required: true })}
-            {selectField('gouvernoratArrivee', arriveeLabel, GOUVERNORATS, { required: type === 'devis' })}
+            {selectField('gouvernoratArrivee', arriveeLabel, GOUVERNORATS, { required: true })}
           </div>
-          {selectField('pointFinal', type === 'rendez-vous' ? 'Ville de la visite' : 'Point final (ville d’arrivée)', CITY_NAMES, { placeholder: '— Choisir une ville —' })}
+          {selectField('pointFinal', 'Point final (ville d’arrivée)', CITY_NAMES, { placeholder: '— Choisir une ville —' })}
           {field('dateApprox', 'Date souhaitée', { required: true, type: 'date' })}
         </div>
 

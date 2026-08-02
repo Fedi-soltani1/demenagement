@@ -60,8 +60,9 @@ export default function DemandeConverter() {
     )
   }
 
-  const type        = (demande?.type ?? 'devis') as keyof typeof TARGET
-  const target      = TARGET[type] ?? TARGET.devis
+  // Le flux agent ne produit plus que des déménagements → cible toujours « Dossier ».
+  // (L'affichage d'un ancien RDV déjà lié reste géré par la branche « déjà converti ».)
+  const target      = TARGET.devis
   const dossierId   = relId(demande?.dossierLie)
   const rdvId       = relId(demande?.rdvLie)
   const alreadyId   = dossierId ?? rdvId

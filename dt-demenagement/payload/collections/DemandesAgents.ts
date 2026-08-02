@@ -24,7 +24,7 @@ const DemandesAgents: CollectionConfig = {
     group: '🚚 Opérations',
     useAsTitle: 'clientNom',
     defaultColumns: ['clientNom', 'type', 'statut', 'agent', 'createdAt'],
-    description: 'Demandes soumises par les agents immobiliers. Examiner puis convertir en Dossier ou RDV.',
+    description: 'Demandes soumises par les agents immobiliers. Examiner puis convertir en Dossier déménagement.',
   },
 
   hooks: {
@@ -94,7 +94,6 @@ const DemandesAgents: CollectionConfig = {
           admin: { width: '30%' },
           options: [
             { label: 'Déménagement', value: 'devis' },
-            { label: 'Rendez-vous',  value: 'rendez-vous' },
           ],
         },
         {

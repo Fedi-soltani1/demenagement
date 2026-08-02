@@ -66,38 +66,10 @@ export async function POST(request: NextRequest): Promise<Response> {
     const notes         = String(demande.notes ?? '').trim()
     const agentId       = relId(demande.agent)
 
-    // ── type 'rendez-vous' → RDV ────────────────────────────────────────────────
-    if (demande.type === 'rendez-vous') {
-      const adresse = [adrDepart || villeDepart, villeArrivee ? `→ ${villeArrivee}` : '', notes]
-        .filter(Boolean)
-        .join(' · ')
-      const rdv = await payload.create({
-        collection: 'rendez-vous',
-        data: {
-          type: 'client',
-          statut: 'nouveau',
-          nom: clientNom || '—',
-          prenom: '—',
-          telephone: clientTel,
-          whatsapp: clientTel,
-          email: clientEmail || undefined,
-          adresse: adresse || undefined,
-          dateVisite: dateApprox || undefined,
-        },
-        overrideAccess: true,
-      }) as { id: string | number }
-
-      await payload.update({
-        collection: 'demandes-agents',
-        id: demande.id,
-        data: { rdvLie: rdv.id, statut: 'acceptee' },
-        overrideAccess: true,
-      })
-      payload.logger.info(`[convert-demande] demande ${String(demande.id)} → RDV ${String(rdv.id)}`)
-      return Response.json({ success: true, target: 'rdv', id: rdv.id })
-    }
-
-    // ── type 'devis' → Dossier déménagement ──────────────────────────────────────
+    // Toute demande agent est convertie en Dossier déménagement.
+    // Le type « Rendez-vous » a été retiré du flux agent : il recopiait la demande
+    // dans la collection rendez-vous (doublon avec « Nouvelle demande »). Ticket #25.
+    // ── Dossier déménagement ──────────────────────────────────────────────────
     const commentaire = [
       `Issu d'une demande agent (#${String(demande.id)}${agentId != null ? ` — agent ${String(agentId)}` : ''}).`,
       dateApprox ? `Date approximative : ${dateApprox}.` : '',
